@@ -77,7 +77,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -274,8 +274,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

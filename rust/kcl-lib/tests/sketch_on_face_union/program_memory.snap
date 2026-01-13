@@ -61,7 +61,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -221,8 +221,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -281,7 +280,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -426,7 +425,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -586,8 +585,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -613,8 +611,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -696,7 +693,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -856,8 +853,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -1015,7 +1011,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1175,8 +1171,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1264,7 +1259,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1424,8 +1419,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2126,7 +2120,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2245,8 +2239,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2291,7 +2284,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2410,8 +2403,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

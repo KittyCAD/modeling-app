@@ -124,7 +124,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -401,8 +401,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1047,7 +1046,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1166,8 +1165,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1205,7 +1203,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1307,8 +1305,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1694,7 +1691,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1884,8 +1881,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1995,7 +1991,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2185,8 +2181,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2301,7 +2296,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2491,8 +2486,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2602,7 +2596,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2792,8 +2786,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",

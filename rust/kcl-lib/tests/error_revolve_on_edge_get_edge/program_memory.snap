@@ -47,7 +47,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -179,8 +179,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -201,7 +200,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -332,7 +331,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -464,8 +463,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -491,8 +489,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

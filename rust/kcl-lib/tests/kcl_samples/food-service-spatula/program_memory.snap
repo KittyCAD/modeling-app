@@ -143,7 +143,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -534,8 +534,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -845,7 +844,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1069,8 +1068,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1273,7 +1271,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1497,8 +1495,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1890,7 +1887,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2084,8 +2081,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2567,7 +2563,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -2791,8 +2787,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "mm"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",

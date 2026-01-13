@@ -65,7 +65,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -197,8 +197,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -229,7 +228,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -340,7 +339,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -472,8 +471,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -499,8 +497,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -552,7 +549,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -669,7 +666,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -780,7 +777,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -912,8 +909,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "in"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -939,8 +935,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -972,8 +967,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1025,7 +1019,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1163,7 +1157,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1280,7 +1274,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -1391,7 +1385,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           }
                         ],
                         "sketch": {
-                          "type": "Sketch",
+                          "type": "SketchBase",
                           "id": "[uuid]",
                           "paths": [
                             {
@@ -1523,8 +1517,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             }
                           },
                           "artifactId": "[uuid]",
-                          "originalId": "[uuid]",
-                          "units": "in"
+                          "originalId": "[uuid]"
                         },
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
@@ -1550,8 +1543,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "in"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -1583,8 +1575,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -1616,8 +1607,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1648,7 +1638,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1759,7 +1749,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1897,7 +1887,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -2014,7 +2004,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           }
                         ],
                         "sketch": {
-                          "type": "Sketch",
+                          "type": "SketchBase",
                           "id": "[uuid]",
                           "paths": [
                             {
@@ -2125,7 +2115,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 }
                               ],
                               "sketch": {
-                                "type": "Sketch",
+                                "type": "SketchBase",
                                 "id": "[uuid]",
                                 "paths": [
                                   {
@@ -2257,8 +2247,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   }
                                 },
                                 "artifactId": "[uuid]",
-                                "originalId": "[uuid]",
-                                "units": "in"
+                                "originalId": "[uuid]"
                               },
                               "startCapId": "[uuid]",
                               "endCapId": "[uuid]",
@@ -2284,8 +2273,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             }
                           },
                           "artifactId": "[uuid]",
-                          "originalId": "[uuid]",
-                          "units": "in"
+                          "originalId": "[uuid]"
                         },
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
@@ -2317,8 +2305,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "in"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -2350,8 +2337,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -2377,8 +2363,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2405,7 +2390,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2491,7 +2476,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2623,8 +2608,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -2650,8 +2634,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2675,7 +2658,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2761,7 +2744,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2893,8 +2876,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -2920,8 +2902,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2945,7 +2926,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3031,7 +3012,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3163,8 +3144,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -3190,8 +3170,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3215,7 +3194,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3301,7 +3280,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3433,8 +3412,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -3460,8 +3438,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3726,7 +3703,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3858,8 +3835,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4003,7 +3979,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4135,8 +4111,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4286,7 +4261,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4397,7 +4372,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -4529,8 +4504,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -4556,8 +4530,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4734,7 +4707,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4851,7 +4824,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -4962,7 +4935,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         }
                       ],
                       "sketch": {
-                        "type": "Sketch",
+                        "type": "SketchBase",
                         "id": "[uuid]",
                         "paths": [
                           {
@@ -5094,8 +5067,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           }
                         },
                         "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "in"
+                        "originalId": "[uuid]"
                       },
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
@@ -5121,8 +5093,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -5154,8 +5125,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5280,7 +5250,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5418,7 +5388,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -5535,7 +5505,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         }
                       ],
                       "sketch": {
-                        "type": "Sketch",
+                        "type": "SketchBase",
                         "id": "[uuid]",
                         "paths": [
                           {
@@ -5646,7 +5616,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               }
                             ],
                             "sketch": {
-                              "type": "Sketch",
+                              "type": "SketchBase",
                               "id": "[uuid]",
                               "paths": [
                                 {
@@ -5778,8 +5748,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 }
                               },
                               "artifactId": "[uuid]",
-                              "originalId": "[uuid]",
-                              "units": "in"
+                              "originalId": "[uuid]"
                             },
                             "startCapId": "[uuid]",
                             "endCapId": "[uuid]",
@@ -5805,8 +5774,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           }
                         },
                         "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "in"
+                        "originalId": "[uuid]"
                       },
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
@@ -5838,8 +5806,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -5871,8 +5838,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6016,7 +5982,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6154,7 +6120,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -6271,7 +6237,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         }
                       ],
                       "sketch": {
-                        "type": "Sketch",
+                        "type": "SketchBase",
                         "id": "[uuid]",
                         "paths": [
                           {
@@ -6382,7 +6348,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               }
                             ],
                             "sketch": {
-                              "type": "Sketch",
+                              "type": "SketchBase",
                               "id": "[uuid]",
                               "paths": [
                                 {
@@ -6514,8 +6480,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 }
                               },
                               "artifactId": "[uuid]",
-                              "originalId": "[uuid]",
-                              "units": "in"
+                              "originalId": "[uuid]"
                             },
                             "startCapId": "[uuid]",
                             "endCapId": "[uuid]",
@@ -6541,8 +6506,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           }
                         },
                         "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "in"
+                        "originalId": "[uuid]"
                       },
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
@@ -6574,8 +6538,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "in"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -6607,8 +6570,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6727,7 +6689,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6859,8 +6821,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6979,7 +6940,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7111,8 +7072,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7231,7 +7191,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7363,8 +7323,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7483,7 +7442,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7615,8 +7574,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7780,7 +7738,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -7912,8 +7870,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -7962,7 +7919,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -8073,7 +8030,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               ],
               "sketch": {
-                "type": "Sketch",
+                "type": "SketchBase",
                 "id": "[uuid]",
                 "paths": [
                   {
@@ -8205,8 +8162,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 },
                 "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": "in"
+                "originalId": "[uuid]"
               },
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
@@ -8232,8 +8188,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -8303,7 +8258,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -8420,7 +8375,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               ],
               "sketch": {
-                "type": "Sketch",
+                "type": "SketchBase",
                 "id": "[uuid]",
                 "paths": [
                   {
@@ -8531,7 +8486,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       }
                     ],
                     "sketch": {
-                      "type": "Sketch",
+                      "type": "SketchBase",
                       "id": "[uuid]",
                       "paths": [
                         {
@@ -8663,8 +8618,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         }
                       },
                       "artifactId": "[uuid]",
-                      "originalId": "[uuid]",
-                      "units": "in"
+                      "originalId": "[uuid]"
                     },
                     "startCapId": "[uuid]",
                     "endCapId": "[uuid]",
@@ -8690,8 +8644,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 },
                 "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": "in"
+                "originalId": "[uuid]"
               },
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
@@ -8723,8 +8676,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -8794,7 +8746,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -8932,7 +8884,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 }
               ],
               "sketch": {
-                "type": "Sketch",
+                "type": "SketchBase",
                 "id": "[uuid]",
                 "paths": [
                   {
@@ -9049,7 +9001,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       }
                     ],
                     "sketch": {
-                      "type": "Sketch",
+                      "type": "SketchBase",
                       "id": "[uuid]",
                       "paths": [
                         {
@@ -9160,7 +9112,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             }
                           ],
                           "sketch": {
-                            "type": "Sketch",
+                            "type": "SketchBase",
                             "id": "[uuid]",
                             "paths": [
                               {
@@ -9292,8 +9244,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               }
                             },
                             "artifactId": "[uuid]",
-                            "originalId": "[uuid]",
-                            "units": "in"
+                            "originalId": "[uuid]"
                           },
                           "startCapId": "[uuid]",
                           "endCapId": "[uuid]",
@@ -9319,8 +9270,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         }
                       },
                       "artifactId": "[uuid]",
-                      "originalId": "[uuid]",
-                      "units": "in"
+                      "originalId": "[uuid]"
                     },
                     "startCapId": "[uuid]",
                     "endCapId": "[uuid]",
@@ -9352,8 +9302,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   }
                 },
                 "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": "in"
+                "originalId": "[uuid]"
               },
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
@@ -9385,8 +9334,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -9456,7 +9404,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -9588,8 +9536,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "in"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",

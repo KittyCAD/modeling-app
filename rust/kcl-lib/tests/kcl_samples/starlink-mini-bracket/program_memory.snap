@@ -245,7 +245,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -422,8 +422,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -496,7 +495,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -716,7 +715,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -893,8 +892,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -920,8 +918,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -994,7 +991,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1214,7 +1211,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1391,8 +1388,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -1418,8 +1414,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1471,7 +1466,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1619,8 +1614,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1644,7 +1638,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1730,7 +1724,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1878,8 +1872,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "in"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -1905,8 +1898,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1954,7 +1946,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2073,8 +2065,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2119,7 +2110,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2238,8 +2229,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2284,7 +2274,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2403,8 +2393,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2449,7 +2438,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2568,8 +2557,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2614,7 +2602,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2733,8 +2721,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2779,7 +2766,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2898,8 +2885,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2944,7 +2930,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3063,8 +3049,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3109,7 +3094,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3228,8 +3213,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3274,7 +3258,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3393,8 +3377,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3439,7 +3422,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3558,8 +3541,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3604,7 +3586,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3723,8 +3705,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3769,7 +3750,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3888,8 +3869,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3934,7 +3914,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4053,8 +4033,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4099,7 +4078,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4218,8 +4197,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4264,7 +4242,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4383,8 +4361,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4429,7 +4406,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4548,8 +4525,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4594,7 +4570,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4713,8 +4689,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4759,7 +4734,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4878,8 +4853,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4924,7 +4898,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5043,8 +5017,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5089,7 +5062,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5208,8 +5181,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5254,7 +5226,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5373,8 +5345,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5419,7 +5390,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5538,8 +5509,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5584,7 +5554,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5703,8 +5673,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5749,7 +5718,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5868,8 +5837,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5914,7 +5882,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6033,8 +6001,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6079,7 +6046,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6198,8 +6165,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6244,7 +6210,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6363,8 +6329,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6409,7 +6374,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6528,8 +6493,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6574,7 +6538,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6693,8 +6657,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6739,7 +6702,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6858,8 +6821,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6904,7 +6866,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7023,8 +6985,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7069,7 +7030,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7188,8 +7149,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7234,7 +7194,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7353,8 +7313,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7399,7 +7358,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7518,8 +7477,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7564,7 +7522,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7683,8 +7641,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7729,7 +7686,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7848,8 +7805,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "in"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",

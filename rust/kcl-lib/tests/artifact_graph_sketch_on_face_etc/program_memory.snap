@@ -40,7 +40,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -155,8 +155,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -194,7 +193,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -301,7 +300,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -416,8 +415,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -443,8 +441,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -489,7 +486,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -596,7 +593,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -703,7 +700,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -818,8 +815,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "mm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -845,8 +841,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": null,
             "endCapId": "[uuid]",
@@ -878,8 +873,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -917,7 +911,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1024,7 +1018,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1131,7 +1125,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -1238,7 +1232,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           }
                         ],
                         "sketch": {
-                          "type": "Sketch",
+                          "type": "SketchBase",
                           "id": "[uuid]",
                           "paths": [
                             {
@@ -1353,8 +1347,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             }
                           },
                           "artifactId": "[uuid]",
-                          "originalId": "[uuid]",
-                          "units": "mm"
+                          "originalId": "[uuid]"
                         },
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
@@ -1380,8 +1373,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "mm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": null,
                   "endCapId": "[uuid]",
@@ -1413,8 +1405,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": null,
             "endCapId": "[uuid]",
@@ -1440,8 +1431,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -1691,7 +1681,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1806,8 +1796,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1947,7 +1936,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2054,7 +2043,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2169,8 +2158,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -2196,8 +2184,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2343,7 +2330,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2450,7 +2437,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2557,7 +2544,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         }
                       ],
                       "sketch": {
-                        "type": "Sketch",
+                        "type": "SketchBase",
                         "id": "[uuid]",
                         "paths": [
                           {
@@ -2672,8 +2659,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           }
                         },
                         "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "mm"
+                        "originalId": "[uuid]"
                       },
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
@@ -2699,8 +2685,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": null,
                 "endCapId": "[uuid]",
@@ -2732,8 +2717,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",

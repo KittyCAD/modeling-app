@@ -19,7 +19,7 @@ description: Variables in memory after executing basic_revolve_circle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -93,8 +93,7 @@ description: Variables in memory after executing basic_revolve_circle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

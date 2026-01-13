@@ -33,7 +33,7 @@ description: Variables in memory after executing revolve-colinear.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -152,8 +152,7 @@ description: Variables in memory after executing revolve-colinear.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

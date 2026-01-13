@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -230,8 +230,7 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

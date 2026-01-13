@@ -26,7 +26,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -123,8 +123,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -401,7 +400,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -520,8 +519,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -566,7 +564,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -685,8 +683,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -731,7 +728,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -850,8 +847,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -896,7 +892,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1015,8 +1011,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1212,7 +1207,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1314,8 +1309,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1353,7 +1347,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1455,8 +1449,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1494,7 +1487,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1596,8 +1589,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1635,7 +1627,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1737,8 +1729,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1938,7 +1929,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2108,8 +2099,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -2349,7 +2339,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2446,8 +2436,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2750,7 +2739,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2847,8 +2836,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2886,7 +2874,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2988,8 +2976,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3027,7 +3014,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3129,8 +3116,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3168,7 +3154,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3270,8 +3256,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3309,7 +3294,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3411,8 +3396,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3595,7 +3579,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3669,8 +3653,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3839,7 +3822,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3913,8 +3896,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4019,7 +4001,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4093,8 +4075,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4408,7 +4389,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4482,8 +4463,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4521,7 +4501,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4640,8 +4620,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4837,7 +4816,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4956,8 +4935,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5121,7 +5099,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5240,8 +5218,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5437,7 +5414,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5556,8 +5533,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5852,7 +5828,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5926,8 +5902,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5958,7 +5933,7 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -6055,8 +6030,7 @@ description: Variables in memory after executing saturn-v.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

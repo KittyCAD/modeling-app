@@ -68,7 +68,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -233,8 +233,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

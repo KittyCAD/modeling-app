@@ -68,7 +68,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -233,8 +233,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -331,7 +330,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -445,7 +444,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -610,8 +609,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -701,8 +699,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -763,7 +760,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -877,7 +874,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -1042,8 +1039,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -1133,8 +1129,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -1231,7 +1226,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1305,8 +1300,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1322,7 +1316,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1396,8 +1390,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",

@@ -89,7 +89,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -251,8 +251,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -376,7 +375,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -570,7 +569,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -732,8 +731,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -831,8 +829,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -1261,7 +1258,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1423,8 +1420,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1723,7 +1719,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1885,8 +1881,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",

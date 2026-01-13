@@ -63,7 +63,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -195,8 +195,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "mm"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -250,7 +249,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -382,8 +381,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -428,7 +426,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -559,7 +557,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -691,8 +689,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -718,8 +715,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -764,7 +760,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -895,7 +891,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -1027,8 +1023,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -1054,8 +1049,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -1232,7 +1226,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1635,7 +1629,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -1767,8 +1761,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -1794,8 +1787,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -1952,7 +1944,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2355,7 +2347,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2487,8 +2479,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -2514,8 +2505,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -2672,7 +2662,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3075,7 +3065,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3207,8 +3197,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -3234,8 +3223,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -3392,7 +3380,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3795,7 +3783,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3927,8 +3915,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -3954,8 +3941,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -4112,7 +4098,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -4515,7 +4501,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -4647,8 +4633,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -4674,8 +4659,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": null,
@@ -4837,7 +4821,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5240,7 +5224,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -5372,8 +5356,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -5399,8 +5382,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -5557,7 +5539,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -5960,7 +5942,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -6092,8 +6074,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -6119,8 +6100,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -6277,7 +6257,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -6680,7 +6660,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -6812,8 +6792,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -6839,8 +6818,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -6997,7 +6975,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7400,7 +7378,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -7532,8 +7510,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -7559,8 +7536,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -7717,7 +7693,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -8120,7 +8096,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -8252,8 +8228,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -8279,8 +8254,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -8448,7 +8422,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -8817,7 +8791,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -8949,8 +8923,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -8976,8 +8949,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -9069,7 +9041,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -9155,7 +9127,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -9287,8 +9259,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -9314,8 +9285,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -9339,7 +9309,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -9425,7 +9395,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -9557,8 +9527,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -9584,8 +9553,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -9609,7 +9577,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -9695,7 +9663,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -9827,8 +9795,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -9854,8 +9821,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -9879,7 +9845,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -9965,7 +9931,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -10097,8 +10063,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -10124,8 +10089,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

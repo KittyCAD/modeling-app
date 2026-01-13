@@ -100,7 +100,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -245,8 +245,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -623,7 +622,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -841,7 +840,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -986,8 +985,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "cm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -1115,8 +1113,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1350,7 +1347,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -1568,7 +1565,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -1713,8 +1710,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "cm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -1842,8 +1838,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "cm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2096,7 +2091,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -2314,7 +2309,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -2459,8 +2454,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "cm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -2588,8 +2582,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "cm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2842,7 +2835,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3060,7 +3053,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3205,8 +3198,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "cm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -3334,8 +3326,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "cm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3588,7 +3579,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -3806,7 +3797,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
-                  "type": "Sketch",
+                  "type": "SketchBase",
                   "id": "[uuid]",
                   "paths": [
                     {
@@ -3951,8 +3942,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "cm"
+                  "originalId": "[uuid]"
                 },
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
@@ -4080,8 +4070,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "cm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4191,7 +4180,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4265,8 +4254,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4464,7 +4452,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4620,7 +4608,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -4838,7 +4826,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -4983,8 +4971,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "cm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -5112,8 +5099,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "cm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -5203,8 +5189,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -5251,7 +5236,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5407,7 +5392,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -5625,7 +5610,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -5770,8 +5755,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "cm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -5899,8 +5883,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "cm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -5990,8 +5973,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -6038,7 +6020,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -6194,7 +6176,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -6412,7 +6394,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -6557,8 +6539,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "cm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -6686,8 +6667,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "cm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -6777,8 +6757,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -6825,7 +6804,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -6981,7 +6960,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -7199,7 +7178,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
-                    "type": "Sketch",
+                    "type": "SketchBase",
                     "id": "[uuid]",
                     "paths": [
                       {
@@ -7344,8 +7323,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": "cm"
+                    "originalId": "[uuid]"
                   },
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
@@ -7473,8 +7451,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "cm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -7564,8 +7541,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7833,7 +7809,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -7978,8 +7954,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "cm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8206,7 +8181,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         ],
         "sketch": {
-          "type": "Sketch",
+          "type": "SketchBase",
           "id": "[uuid]",
           "paths": [
             {
@@ -8351,8 +8326,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           },
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "cm"
+          "originalId": "[uuid]"
         },
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
@@ -8604,7 +8578,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -8749,8 +8723,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "cm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

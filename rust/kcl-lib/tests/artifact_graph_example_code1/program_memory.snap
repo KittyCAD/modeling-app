@@ -54,7 +54,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -197,8 +197,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -252,7 +251,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -373,7 +372,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               }
             ],
             "sketch": {
-              "type": "Sketch",
+              "type": "SketchBase",
               "id": "[uuid]",
               "paths": [
                 {
@@ -516,8 +515,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 }
               },
               "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": "mm"
+              "originalId": "[uuid]"
             },
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
@@ -559,8 +557,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -852,7 +849,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             }
           ],
           "sketch": {
-            "type": "Sketch",
+            "type": "SketchBase",
             "id": "[uuid]",
             "paths": [
               {
@@ -995,8 +992,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               }
             },
             "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "originalId": "[uuid]"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",

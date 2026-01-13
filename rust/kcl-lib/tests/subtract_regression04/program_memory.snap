@@ -54,7 +54,7 @@ description: Variables in memory after executing subtract_regression04.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -207,8 +207,7 @@ description: Variables in memory after executing subtract_regression04.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -232,7 +231,7 @@ description: Variables in memory after executing subtract_regression04.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -306,8 +305,7 @@ description: Variables in memory after executing subtract_regression04.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -366,7 +364,7 @@ description: Variables in memory after executing subtract_regression04.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -519,8 +517,7 @@ description: Variables in memory after executing subtract_regression04.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

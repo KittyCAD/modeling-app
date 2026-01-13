@@ -33,7 +33,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -152,8 +152,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -191,7 +190,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -310,8 +309,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -540,7 +538,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -727,8 +725,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -794,7 +791,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -981,8 +978,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1253,7 +1249,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1344,8 +1340,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1390,7 +1385,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1481,8 +1476,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1548,7 +1542,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1639,8 +1633,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1826,7 +1819,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1900,8 +1893,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1925,7 +1917,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1999,8 +1991,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2169,7 +2160,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2243,8 +2234,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2268,7 +2258,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2342,8 +2332,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2526,7 +2515,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2645,8 +2634,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -2684,7 +2672,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -2803,8 +2791,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3162,7 +3149,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3310,8 +3297,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3349,7 +3335,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3480,8 +3466,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3519,7 +3504,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3650,8 +3635,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3689,7 +3673,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3820,8 +3804,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3859,7 +3842,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -3990,8 +3973,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4029,7 +4011,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4160,8 +4142,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4369,7 +4350,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4500,8 +4481,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4539,7 +4519,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4670,8 +4650,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4709,7 +4688,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -4840,8 +4819,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4879,7 +4857,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5010,8 +4988,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -5200,7 +5177,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -5608,8 +5585,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -5766,7 +5742,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -6174,8 +6150,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -6332,7 +6307,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -6740,8 +6715,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -6898,7 +6872,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -7306,8 +7280,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7879,7 +7852,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -8287,8 +8260,7 @@ description: Variables in memory after executing sls.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "m"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,

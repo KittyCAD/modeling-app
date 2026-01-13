@@ -598,7 +598,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
         }
       ],
       "sketch": {
-        "type": "Sketch",
+        "type": "SketchBase",
         "id": "[uuid]",
         "paths": [
           {
@@ -1012,8 +1012,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "in"
+        "originalId": "[uuid]"
       },
       "startCapId": null,
       "endCapId": null,
