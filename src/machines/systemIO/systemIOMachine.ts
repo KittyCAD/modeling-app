@@ -848,9 +848,14 @@ export const systemIOMachine = setup({
           actions: [
             SystemIOMachineActions.toastSuccess,
             assign({
-              requestedProjectName: ({ event }) => {
+              requestedProjectName: ({ event, context }) => {
                 assertEvent(event, SystemIOMachineEvents.done_renameProject)
-                return { name: event.output.newName }
+                // Only update (and therefore navigate) if we don't already have a project set
+                return {
+                  name: context.requestedFileName.project
+                    ? event.output.newName
+                    : undefined,
+                }
               },
             }),
           ],
