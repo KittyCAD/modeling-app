@@ -180,7 +180,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -207,19 +207,6 @@ impl Node<NonCodeNode> {
                     }
                 }
             },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{add_start_new_line}{indentation}//\n")
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }

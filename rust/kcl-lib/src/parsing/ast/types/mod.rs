@@ -1654,18 +1654,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
