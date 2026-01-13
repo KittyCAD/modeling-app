@@ -7,11 +7,14 @@
  */
 
 import { getBridgeClient } from '../bridge/client.js'
+import {
+  USE_FRESH_GRAPH_NOTICE,
+  USE_RECENT_GRAPH_NOTICE,
+} from './descriptions.js'
 
 export const filletEdgeTool = {
   name: 'fillet_edge',
-  description:
-    'Create a fillet (rounded edge) on selected edges. Requires edge selections and a radius value. The edges must be from geometry in the current model.',
+  description: `Create a fillet (rounded edge) on selected edges. Requires edge selections and a radius value. The edges must be from the current model - use IDs from a recently fetched artifact graph. ${USE_FRESH_GRAPH_NOTICE}`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -27,8 +30,7 @@ export const filletEdgeTool = {
       },
       edges: {
         type: 'array',
-        description:
-          'Array of edge artifact IDs to fillet. If provided, these edges will be used instead of the current selection. If not provided, the current selection will be used.',
+        description: `Array of edge artifact IDs to fillet. If provided, these edges will be used instead of the current selection. If not provided, the current selection will be used. ${USE_RECENT_GRAPH_NOTICE}`,
         items: {
           type: 'string',
         },

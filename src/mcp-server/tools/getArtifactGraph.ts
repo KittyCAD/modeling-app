@@ -6,11 +6,14 @@
  */
 
 import { getBridgeClient } from '../bridge/client.js'
+import {
+  ARTIFACT_GRAPH_SNAPSHOT_DESCRIPTION,
+  ARTIFACT_GRAPH_STALENESS_WARNING,
+} from './descriptions.js'
 
 export const getArtifactGraphTool = {
   name: 'get_artifact_graph',
-  description:
-    "Get the current ArtifactGraph, which maps geometry artifacts in the 3D scene to the code/AST. This allows you to understand how geometry relates to the user's code.",
+  description: `Get the current ArtifactGraph (a snapshot of the current state), which maps geometry artifacts in the 3D scene to the code/AST. This allows you to understand how geometry relates to the user's code. ${ARTIFACT_GRAPH_STALENESS_WARNING}`,
   inputSchema: {
     type: 'object',
     properties: {},
@@ -34,8 +37,7 @@ export async function handleGetArtifactGraphTool(): Promise<{
           text: JSON.stringify(
             {
               artifactGraph: artifactGraphData,
-              description:
-                'The ArtifactGraph is an array of [artifactId, artifact] pairs. Each artifact represents a piece of geometry in the 3D scene and contains references to the code that created it.',
+              description: `The ArtifactGraph is an array of [artifactId, artifact] pairs. Each artifact represents a piece of geometry in the 3D scene and contains references to the code that created it. IMPORTANT: ${ARTIFACT_GRAPH_SNAPSHOT_DESCRIPTION}`,
             },
             null,
             2
