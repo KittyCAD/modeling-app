@@ -11,6 +11,8 @@ import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import { kclManager, rustContext } from '@src/lib/singletons'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
+import { createSelectionFromArtifacts } from '@src/lib/testHelpers'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 
 /**
  * Initialize MCP bridge IPC handlers in the renderer
@@ -95,29 +97,51 @@ export function initMcpBridgeHandlers(): void {
           const artifactGraph = kclManager.artifactGraph
           const wasmInstance = await kclManager.wasmInstancePromise
 
-          // Get selection
-          let selection = kclManager.selectionRanges
-          if (!data.useCurrentSelection && data.edges) {
-            // TODO: Convert edge IDs to selections
-            // For now, we'll use current selection
-            // This is a limitation - we'd need to look up artifacts by ID
-            window.electron?.mcpBridge?.sendResponse(data.requestId, {
-              error:
-                'Using edge IDs directly is not yet supported. Please use current selection.',
-            })
-            return
-          }
+          // Get selection: either from provided edge IDs or current selection
+          let selection: typeof kclManager.selectionRanges
+          if (data.edges && data.edges.length > 0) {
+            // Autonomous mode: convert edge IDs to selections
+            const edgeArtifacts = []
+            for (const edgeId of data.edges) {
+              const artifact = getArtifactOfTypes(
+                { key: edgeId, types: ['segment', 'sweepEdge'] },
+                artifactGraph
+              )
+              if (err(artifact)) {
+                window.electron?.mcpBridge?.sendResponse(data.requestId, {
+                  error: `Edge with ID ${edgeId} not found or is not a valid edge type (segment or sweepEdge).`,
+                })
+                return
+              }
+              edgeArtifacts.push(artifact)
+            }
 
-          // Validate selection has edges
-          if (
-            !selection.graphSelections ||
-            selection.graphSelections.length === 0
-          ) {
-            window.electron?.mcpBridge?.sendResponse(data.requestId, {
-              error:
-                'No edges selected. Please select edges in the app before calling fillet_edge.',
-            })
-            return
+            if (edgeArtifacts.length === 0) {
+              window.electron?.mcpBridge?.sendResponse(data.requestId, {
+                error: 'No valid edge artifacts found from provided IDs.',
+              })
+              return
+            }
+
+            selection = createSelectionFromArtifacts(
+              edgeArtifacts,
+              artifactGraph
+            )
+          } else {
+            // Convenience mode: use current selection
+            selection = kclManager.selectionRanges
+
+            // Validate selection has edges
+            if (
+              !selection.graphSelections ||
+              selection.graphSelections.length === 0
+            ) {
+              window.electron?.mcpBridge?.sendResponse(data.requestId, {
+                error:
+                  'No edges selected. Please select edges in the app before calling fillet_edge, or provide edge IDs in the edges parameter.',
+              })
+              return
+            }
           }
 
           // Convert radius string to KclCommandValue

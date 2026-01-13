@@ -87,9 +87,6 @@ uv.lock
 dist
 venv
 
-# MCP server build artifacts
-# dist/mcp-server
-
 .vscode-test
 .biome/
 .million

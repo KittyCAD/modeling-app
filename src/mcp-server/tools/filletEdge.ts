@@ -25,19 +25,19 @@ export const filletEdgeTool = {
         description:
           'Optional tag name for the fillet operation. If provided, only one edge can be filleted at a time.',
       },
-      useCurrentSelection: {
-        type: 'boolean',
-        description:
-          'If true, use the current selection from the app. If false, edges must be provided in the edges parameter. Defaults to true.',
-        default: true,
-      },
       edges: {
         type: 'array',
         description:
-          'Array of edge artifact IDs to fillet. Only used if useCurrentSelection is false.',
+          'Array of edge artifact IDs to fillet. If provided, these edges will be used instead of the current selection. If not provided, the current selection will be used.',
         items: {
           type: 'string',
         },
+      },
+      useCurrentSelection: {
+        type: 'boolean',
+        description:
+          'If true and edges are not provided, use the current selection from the app. Defaults to true. If edges are provided, this parameter is ignored.',
+        default: true,
       },
     },
     required: ['radius'],
@@ -77,15 +77,16 @@ export async function handleFilletEdgeTool(args: {
 
     const client = getBridgeClient()
 
-    // Determine selection source
-    const useCurrentSelection = args.useCurrentSelection !== false
+    // Determine selection source: if edges are provided, use them; otherwise use current selection
+    const hasEdgeIds = args.edges && args.edges.length > 0
 
-    if (useCurrentSelection) {
-      // Use current selection from app
+    if (hasEdgeIds) {
+      // Use provided edge IDs (autonomous mode)
       const result = await client.request('filletEdge', {
         radius: args.radius,
         tag: args.tag,
-        useCurrentSelection: true,
+        edges: args.edges,
+        useCurrentSelection: false,
       })
 
       return {
@@ -106,31 +107,12 @@ export async function handleFilletEdgeTool(args: {
         ],
       }
     } else {
-      // Use provided edge IDs
-      if (!args.edges || args.edges.length === 0) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(
-                {
-                  error: 'No edges provided',
-                  message:
-                    'When useCurrentSelection is false, you must provide edge IDs in the edges parameter.',
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        }
-      }
-
+      // Use current selection from app (convenience mode)
+      const useCurrentSelection = args.useCurrentSelection !== false
       const result = await client.request('filletEdge', {
         radius: args.radius,
         tag: args.tag,
-        useCurrentSelection: false,
-        edges: args.edges,
+        useCurrentSelection,
       })
 
       return {
