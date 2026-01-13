@@ -156,7 +156,7 @@ async fn fix_tags_and_references(
 
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
-            let sketch = Sketch::from(&solid.sketch);
+            let sketch = Sketch::from_base_with_solid_context(&solid.sketch, solid);
             let new_solid = do_post_extrude(
                 &sketch,
                 new_geometry_id.into(),

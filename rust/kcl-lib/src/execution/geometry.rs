@@ -713,17 +713,6 @@ pub struct SketchBase {
     /// If the sketch is a clone of another sketch.
     #[serde(skip)]
     pub clone: Option<uuid::Uuid>,
-    pub units: UnitLength,
-    /// Metadata.
-    #[serde(skip)]
-    pub meta: Vec<Metadata>,
-    /// Has the profile been closed?
-    /// If not given, defaults to yes, closed explicitly.
-    #[serde(
-        default = "ProfileClosed::explicitly",
-        skip_serializing_if = "ProfileClosed::is_explicitly"
-    )]
-    pub is_closed: ProfileClosed,
 }
 
 impl From<Sketch> for SketchBase {
@@ -739,41 +728,12 @@ impl From<Sketch> for SketchBase {
             original_id: value.original_id,
             mirror: value.mirror,
             clone: value.clone,
-            units: value.units,
-            meta: value.meta,
-            is_closed: value.is_closed,
         }
     }
 }
 
 impl From<&Sketch> for SketchBase {
     fn from(value: &Sketch) -> Self {
-        value.clone().into()
-    }
-}
-
-impl From<SketchBase> for Sketch {
-    fn from(value: SketchBase) -> Self {
-        Self {
-            id: value.id,
-            paths: value.paths,
-            inner_paths: value.inner_paths,
-            on: value.on,
-            start: value.start,
-            tags: value.tags,
-            artifact_id: value.artifact_id,
-            original_id: value.original_id,
-            mirror: value.mirror,
-            clone: value.clone,
-            units: value.units,
-            meta: value.meta,
-            is_closed: value.is_closed,
-        }
-    }
-}
-
-impl From<&SketchBase> for Sketch {
-    fn from(value: &SketchBase) -> Self {
         value.clone().into()
     }
 }
@@ -1010,6 +970,26 @@ impl SketchBase {
                     self.tags.insert(t.value.clone(), t.clone());
                 }
             }
+        }
+    }
+}
+
+impl Sketch {
+    pub(crate) fn from_base_with_solid_context(base: &SketchBase, solid: &Solid) -> Self {
+        Self {
+            id: base.id,
+            paths: base.paths.clone(),
+            inner_paths: base.inner_paths.clone(),
+            on: base.on.clone(),
+            start: base.start.clone(),
+            tags: base.tags.clone(),
+            artifact_id: base.artifact_id,
+            original_id: base.original_id,
+            mirror: base.mirror,
+            clone: base.clone,
+            units: solid.units,
+            meta: solid.meta.clone(),
+            is_closed: ProfileClosed::Explicitly,
         }
     }
 }
