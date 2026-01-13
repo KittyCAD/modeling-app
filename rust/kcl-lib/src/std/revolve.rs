@@ -223,6 +223,7 @@ async fn inner_revolve(
                 edge_id,
                 None,
                 body_type,
+                crate::std::extrude::BeingExtruded::Sketch,
             )
             .await?,
         );

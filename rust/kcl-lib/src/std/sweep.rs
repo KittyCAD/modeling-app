@@ -114,6 +114,7 @@ async fn inner_sweep(
                 None,
                 None,
                 BodyType::Solid, // TODO: Support surface sweep
+                crate::std::extrude::BeingExtruded::Sketch,
             )
             .await?,
         );

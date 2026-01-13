@@ -114,7 +114,7 @@ async fn inner_appearance(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::ObjectSetMaterialParamsPbr::builder()
-                        .object_id(solid_id)
+                        .object_id(dbg!(solid_id))
                         .color(color)
                         .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
                         .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
