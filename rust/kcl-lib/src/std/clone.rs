@@ -18,7 +18,10 @@ use crate::{
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{Args, extrude::NamedCapTags},
+    std::{
+        Args,
+        extrude::{BeingExtruded, NamedCapTags},
+    },
 };
 
 type Result<T> = std::result::Result<T, KclError>;
@@ -170,6 +173,7 @@ async fn fix_tags_and_references(
                 None,
                 Some(&entity_id_map.clone()),
                 BodyType::Solid, // TODO: Support surface clones.
+                BeingExtruded::Sketch,
             )
             .await?;
 

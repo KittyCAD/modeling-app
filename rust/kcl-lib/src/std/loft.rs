@@ -132,6 +132,7 @@ async fn inner_loft(
             None,
             None,
             body_type,
+            crate::std::extrude::BeingExtruded::Sketch,
         )
         .await?,
     ))

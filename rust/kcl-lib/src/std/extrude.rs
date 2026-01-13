@@ -19,7 +19,6 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
-use crate::execution::Metadata;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -100,7 +99,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
-    sketches: Vec<Extrudable>,
+    extrudables: Vec<Extrudable>,
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
@@ -119,7 +118,8 @@ async fn inner_extrude(
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
 
-    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed(), ProfileClosed::No)) {
+    if matches!(body_type, BodyType::Solid) && extrudables.iter().any(|sk| matches!(sk.is_closed(), ProfileClosed::No))
+    {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
             vec![args.source_range],
@@ -168,9 +168,10 @@ async fn inner_extrude(
         (Some(false), Some(length)) => Opposite::Other(length),
     };
 
-    for sketch in &sketches {
-        let id = exec_state.next_uuid();
-        let sketch_or_face_id = sketch.id_to_extrude(exec_state, &args, false).await?;
+    for extrudable in &extrudables {
+        let extrude_cmd_id = exec_state.next_uuid();
+        let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
+        println!("ADAM: Extruding {sketch_or_face_id}");
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -345,15 +346,25 @@ async fn inner_extrude(
             }
         };
 
-        if let Some(post_extr_sketch) = sketch.as_sketch() {
-            let cmds = post_extr_sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
+        let being_extruded = match extrudable {
+            Extrudable::Sketch(..) => BeingExtruded::Sketch,
+            Extrudable::Face(..) => BeingExtruded::Face,
+        };
+        if let Some(post_extr_sketch) = extrudable.as_sketch() {
+            let cmds = post_extr_sketch.build_sketch_mode_cmds(
+                exec_state,
+                ModelingCmdReq {
+                    cmd_id: extrude_cmd_id.into(),
+                    cmd,
+                },
+            );
             exec_state
-                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, id), &cmds)
+                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), &cmds)
                 .await?;
             solids.push(
                 do_post_extrude(
                     &post_extr_sketch,
-                    id.into(),
+                    extrude_cmd_id.into(),
                     false,
                     &NamedCapTags {
                         start: tag_start.as_ref(),
@@ -365,6 +376,7 @@ async fn inner_extrude(
                     None,
                     None,
                     body_type,
+                    being_extruded,
                 )
                 .await?,
             );
@@ -385,10 +397,16 @@ pub(crate) struct NamedCapTags<'a> {
     pub end: Option<&'a TagNode>,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum BeingExtruded {
+    Sketch,
+    Face,
+}
+
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
-    solid_id: ArtifactId,
+    extrude_cmd_id: ArtifactId,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     extrude_method: ExtrudeMethod,
@@ -397,6 +415,7 @@ pub(crate) async fn do_post_extrude<'a>(
     edge_id: Option<Uuid>,
     clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
     body_type: BodyType,
+    being_extruded: BeingExtruded,
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -446,11 +465,46 @@ pub(crate) async fn do_post_extrude<'a>(
         BodyType::Surface => {}
     }
 
-    // If we were sketching on a face, we need the original face id.
-    if let SketchSurface::Face(ref face) = sketch.on {
-        // If we are creating a new body we need to preserve its new id.
-        if extrude_method != ExtrudeMethod::New {
-            sketch.id = face.solid.sketch.id;
+    // 1st time: Merge, Sketch
+    // 2nd time: New, Face
+    // dbg!(extrude_method, &being_extruded);
+    match (extrude_method, being_extruded) {
+        (ExtrudeMethod::Merge, BeingExtruded::Face) => {
+            // Merge the IDs.
+            // If we were sketching on a face, we need the original face id.
+            if let SketchSurface::Face(ref face) = sketch.on {
+                match extrude_method {
+                    // If we are creating a new body we need to preserve its new id.
+                    ExtrudeMethod::New => {
+                        // The sketch's ID is already correct here, it should be the ID of the sketch.
+                    }
+                    // If we're merging into an existing body, then assign the existing body's ID,
+                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
+                }
+            }
+        }
+        (ExtrudeMethod::New, BeingExtruded::Face) => {
+            // We're creating a new solid, it's not based on any existing sketch (it's based on a face).
+            // So we need a new ID, the extrude command ID.
+            sketch.id = dbg!(extrude_cmd_id.into());
+        }
+        (ExtrudeMethod::New, BeingExtruded::Sketch) => {
+            // If we are creating a new body we need to preserve its new id.
+            // The sketch's ID is already correct here, it should be the ID of the sketch.
+        }
+        (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
+            if let SketchSurface::Face(ref face) = sketch.on {
+                match extrude_method {
+                    // If we are creating a new body we need to preserve its new id.
+                    ExtrudeMethod::New => {
+                        // The sketch's ID is already correct here, it should be the ID of the sketch.
+                    }
+                    // If we're merging into an existing body, then assign the existing body's ID,
+                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
+                }
+            }
         }
     }
 
@@ -630,14 +684,8 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     Ok(Solid {
-        // Ok so you would think that the id would be the id of the solid,
-        // that we passed in to the function, but it's actually the id of the
-        // sketch.
-        //
-        // Why? Because when you extrude a sketch, the engine lets the solid absorb the
-        // sketch's ID. So the solid should take over the sketch's ID.
-        id: sketch.id,
-        artifact_id: solid_id,
+        id: dbg!(sketch.id),
+        artifact_id: extrude_cmd_id,
         value: new_value,
         meta: sketch.meta.clone(),
         units: sketch.units,
@@ -649,69 +697,85 @@ pub(crate) async fn do_post_extrude<'a>(
     })
 }
 
+/// `solid_id` is the original solid whose face is being extruded.
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn do_post_extrude_face<'a>(
-    extrude_cmd_id: Uuid,
-    solid_id: ArtifactId,
-    sectional: bool,
-    named_cap_tags: &'a NamedCapTags<'a>,
-    extrude_method: ExtrudeMethod,
-    exec_state: &mut ExecState,
-    args: &Args,
-    edge_id: Option<Uuid>,
-    clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
-    body_type: BodyType,
-    units: kittycad_modeling_cmds::units::UnitLength,
-) -> Result<Solid, KclError> {
-    // Bring the object to the front of the scene.
-    // See: https://github.com/KittyCAD/modeling-app/issues/806
+// pub(crate) async fn do_post_extrude_face<'a>(
+//     extrude_cmd_id: Uuid,
+//     solid_id: ArtifactId,
+//     named_cap_tags: &'a NamedCapTags<'a>,
+//     extrude_method: ExtrudeMethod,
+//     exec_state: &mut ExecState,
+//     args: &Args,
+//     body_type: BodyType,
+//     units: kittycad_modeling_cmds::units::UnitLength,
+//     face_being_extruded: Face,
+// ) -> Result<Solid, KclError> {
+//     // Bring the object to the front of the scene.
+//     // See: https://github.com/KittyCAD/modeling-app/issues/806
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(extrude_cmd_id).build()),
-        )
-        .await?;
+//     exec_state
+//         .batch_modeling_cmd(
+//             ModelingCmdMeta::from_args(exec_state, args),
+//             ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(extrude_cmd_id).build()),
+//         )
+//         .await?;
 
-    // Add the tags for the start or end caps.
-    if let Some(tag_start) = named_cap_tags.start {
-        return Err(KclError::new_type(KclErrorDetails::new(
-            format!("Tags are not yet supported for extruded faces"),
-            vec![args.source_range],
-        )));
-    }
-    if let Some(tag_end) = named_cap_tags.end {
-        return Err(KclError::new_type(KclErrorDetails::new(
-            format!("Tags are not yet supported for extruded faces"),
-            vec![args.source_range],
-        )));
-    }
+//     // Add the tags for the start or end caps.
+//     if let Some(_tag_start) = named_cap_tags.start {
+//         return Err(KclError::new_type(KclErrorDetails::new(
+//             format!("Tags are not yet supported for extruded faces"),
+//             vec![args.source_range],
+//         )));
+//     }
+//     if let Some(_tag_end) = named_cap_tags.end {
+//         return Err(KclError::new_type(KclErrorDetails::new(
+//             format!("Tags are not yet supported for extruded faces"),
+//             vec![args.source_range],
+//         )));
+//     }
 
-    // TODO: We don't yet know the IDs of the created faces.
-    let extruded_surfaces = Vec::new();
+//     // TODO: We don't yet know the IDs of the created faces.
+//     let extruded_surfaces = Vec::new();
 
-    Ok(Solid {
-        id: match extrude_method {
-            ExtrudeMethod::New => {
-                // When you extrude a sketch, its ID is "absorbed" and becomes the ID of the solid.
-                // Here, there's no sketch to absorb, and the face being extruded must keep its ID, because
-                // it's not going anywhere.
-                extrude_cmd_id
-            }
-            ExtrudeMethod::Merge => todo!(),
-        },
-        artifact_id: solid_id,
-        value: extruded_surfaces,
-        meta: vec![Metadata::from(args.source_range)],
-        units,
-        sectional: false,
-        sketch: todo!(),
-        start_cap_id: None,
-        end_cap_id: None,
-        edge_cuts: Vec::new(),
-    })
-}
-
+//     Ok(Solid {
+//         id: match extrude_method {
+//             ExtrudeMethod::New => {
+//                 // When you extrude a sketch, its ID is "absorbed" and becomes the ID of the solid.
+//                 // Here, there's no sketch to absorb, and the face being extruded must keep its ID, because
+//                 // it's not going anywhere.
+//                 extrude_cmd_id
+//             }
+//             ExtrudeMethod::Merge => {
+//                 // Use the ID of the solid whose face is being extruded,
+//                 // because this is going to be merged into that solid. There's no difference between them.
+//                 solid_id.into()
+//             }
+//         },
+//         artifact_id: solid_id,
+//         value: extruded_surfaces,
+//         meta: vec![Metadata::from(args.source_range)],
+//         units,
+//         sectional: false,
+//         sketch: Sketch {
+//             id: solid_id.into(),
+//             paths: Vec::new(),
+//             inner_paths: Vec::new(),
+//             on: SketchSurface::Face(Box::new(face_being_extruded)),
+//             start: todo!(),
+//             tags: todo!(),
+//             artifact_id: todo!(),
+//             original_id: todo!(),
+//             mirror: todo!(),
+//             clone: todo!(),
+//             units,
+//             meta: todo!(),
+//             is_closed: ProfileClosed::Explicitly,
+//         },
+//         start_cap_id: None,
+//         end_cap_id: None,
+//         edge_cuts: Vec::new(),
+//     })
+// }
 #[derive(Default)]
 struct Faces {
     /// Maps curve ID to face ID for each side.
