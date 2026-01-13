@@ -146,6 +146,15 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
+
+        // When executing only the new statements in incremental execution or
+        // mock executing for sketch mode, we need the scene objects that were
+        // created during the last execution, which are in the execution cache.
+        // The cache is read to create the initial module state. Depending on
+        // whether it's mock execution or engine execution, it's rehydrated
+        // differently, so we need to clone them from a different place. Then
+        // make sure the object ID generator matches the number of existing
+        // scene objects.
         #[cfg(not(feature = "artifact-graph"))]
         let next_object_id = 0;
         #[cfg(feature = "artifact-graph")]
