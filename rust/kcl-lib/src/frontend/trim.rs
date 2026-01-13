@@ -252,7 +252,7 @@ pub fn perpendicular_distance_to_segment(point: Coords2d, segment_start: Coords2
     let t = (point_dx * dx + point_dy * dy) / segment_length_sq;
 
     // Clamp t to [0, 1] to get closest point on segment
-    let clamped_t = t.max(0.0).min(1.0);
+    let clamped_t = t.clamp(0.0, 1.0);
     let closest_point = Coords2d {
         x: segment_start.x + clamped_t * dx,
         y: segment_start.y + clamped_t * dy,
@@ -1570,7 +1570,7 @@ async fn execute_trim_operations_simple(
                 }
 
                 // Extract segment and ctor
-                let (segment_type, original_ctor) = match &original_segment.kind {
+                let (_segment_type, original_ctor) = match &original_segment.kind {
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                         crate::frontend::sketch::Segment::Line(line) => ("Line", line.ctor.clone()),
                         crate::frontend::sketch::Segment::Arc(arc) => ("Arc", arc.ctor.clone()),
@@ -1637,7 +1637,7 @@ async fn execute_trim_operations_simple(
                     }
                 };
 
-                let (add_source_delta, mut add_scene_graph_delta) = frontend
+                let (_add_source_delta, add_scene_graph_delta) = frontend
                     .add_segment(ctx, version, sketch_id, new_segment_ctor, None)
                     .await
                     .map_err(|e| format!("Failed to add new segment: {}", e.msg))?;
@@ -1698,7 +1698,7 @@ async fn execute_trim_operations_simple(
                     }
                 };
 
-                let (edit_source_delta, edit_scene_graph_delta) = frontend
+                let (_edit_source_delta, edit_scene_graph_delta) = frontend
                     .edit_segments(
                         ctx,
                         version,
@@ -1962,7 +1962,7 @@ async fn execute_trim_operations_simple(
                         let references_end = distance.points.iter().any(|pt| pt.0 == original_end_id);
 
                         if references_start && references_end {
-                            distance_constraints_to_re_add.push(distance.distance.clone());
+                            distance_constraints_to_re_add.push(distance.distance);
                         }
                     }
                 }
@@ -2013,7 +2013,7 @@ async fn execute_trim_operations_simple(
 
                                 batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
                                     points: new_points,
-                                    distance: distance.distance.clone(),
+                                    distance: distance.distance,
                                 }));
                             }
                             _ => {}
@@ -2106,7 +2106,7 @@ async fn execute_trim_operations_simple(
                         ObjectId(new_segment_id),
                         ObjectId(new_segment_start_point_id),
                         ObjectId(new_segment_end_point_id),
-                        new_segment_center_point_id.map(|id| ObjectId(id)),
+                        new_segment_center_point_id.map(ObjectId),
                     )
                     .await
                     .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg))
@@ -4597,12 +4597,6 @@ mod tests {
     ) -> Result<String, String> {
         // Use the public execute_trim_flow function
         super::execute_trim_flow(kcl_code, trim_points, sketch_id).await
-    }
-
-    /// Normalize KCL code for comparison (remove extra whitespace, normalize formatting)
-    fn normalize_kcl_code(code: &str) -> String {
-        // For now, just trim - we can add more normalization later
-        code.trim().to_string()
     }
 
     #[tokio::test]
