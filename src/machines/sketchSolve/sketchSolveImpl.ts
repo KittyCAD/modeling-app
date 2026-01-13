@@ -24,7 +24,6 @@ import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 
 import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
-import { machine as cornerRectTool } from '@src/machines/sketchSolve/tools/cornerRectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
@@ -118,7 +117,6 @@ export type SketchSolveMachineEvent =
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
   | ActorRefFrom<typeof centerRectTool>
-  | ActorRefFrom<typeof cornerRectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof centerArcTool>
@@ -147,7 +145,7 @@ export type SketchSolveContext = {
 }
 export const equipTools = Object.freeze({
   centerRectTool,
-  cornerRectTool,
+  cornerRectTool: centerRectTool,
   dimensionTool,
   pointTool,
   lineTool,

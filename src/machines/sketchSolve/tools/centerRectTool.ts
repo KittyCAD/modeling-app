@@ -5,23 +5,27 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import type {
-  SegmentCtor,
   SourceDelta,
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { baseUnitToNumericSuffix } from '@src/lang/wasm'
-import { roundOff } from '@src/lib/utils'
+
+import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
+import {
+  createDraftRectangle,
+  updateDraftRectanglePoints,
+} from '@src/machines/sketchSolve/tools/rectUtils'
 
 export const TOOL_ID = 'Center Rectangle tool'
-export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding first point`
+export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.adding first point`
 export type CenterRectToolEvent =
   | BaseToolEvent
+  | { type: 'finalize' }
   | {
       type: typeof ADDING_POINT
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        draft: RectDraftIds
       }
     }
 
@@ -30,7 +34,9 @@ type CenterRectToolContext = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
-  draftPointId?: number
+  firstPointId?: number
+  draft?: RectDraftIds
+  origin: [number, number]
 }
 
 //type ToolActionArgs = ActionArgs<ToolContext, ToolEvents, ToolEvents>
@@ -73,45 +79,29 @@ export const machine = setup({
       let isEditInProgress = false
       context.sceneInfra.setCallbacks({
         onMove: async (args) => {
-          if (!args || !context.draftPointId) return
+          if (!args || !context.draft) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD && !isEditInProgress) {
-            // Send the add point event with the clicked coordinates
-
-            const units = baseUnitToNumericSuffix(
-              context.kclManager.fileSettings.defaultLengthUnit
-            )
             try {
               isEditInProgress = true
-              const settings = await jsAppSettings(
-                context.rustContext.settingsActor
-              )
-              // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
-              const result = await context.rustContext.editSegments(
-                0,
-                context.sketchId,
-                [
-                  {
-                    id: context.draftPointId,
-                    ctor: {
-                      type: 'Point',
-                      position: {
-                        x: {
-                          type: 'Var',
-                          value: roundOff(twoD.x),
-                          units,
-                        },
-                        y: {
-                          type: 'Var',
-                          value: roundOff(twoD.y),
-                          units,
-                        },
-                      },
-                    },
-                  },
-                ],
-                settings
-              )
+
+              const [x0, y0] = context.origin
+              const x2 = twoD.x
+              const y2 = twoD.y
+
+              const p0: [number, number] = [x0, y0]
+              const p1: [number, number] = [x2, y0]
+              const p2: [number, number] = [x2, y2]
+              const p3: [number, number] = [x0, y2]
+
+              const result = await updateDraftRectanglePoints({
+                rustContext: context.rustContext,
+                kclManager: context.kclManager,
+                sketchId: context.sketchId,
+                draft: context.draft,
+                points: { p0, p1, p2, p3 },
+              })
+
               self._parent?.send({
                 type: 'update sketch outcome',
                 data: { ...result, writeToDisk: false },
@@ -127,8 +117,11 @@ export const machine = setup({
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
-          const twoD = args.intersectionPoint?.twoD
-          if (!twoD) return
+          // const twoD = args.intersectionPoint?.twoD
+          // if (!twoD) return
+          self.send({
+            type: 'finalize',
+          })
         },
       })
     },
@@ -136,70 +129,24 @@ export const machine = setup({
       ({ event, self }: CenterRectToolAssignArgs) => {
         if (
           event.type !==
-          'xstate.done.actor.0.Center Rectangle tool.Adding first point'
+          'xstate.done.actor.0.Center Rectangle tool.adding first point'
         ) {
           return {}
         }
 
         const output = event.output
 
-        // Find the 2 points for the line we just added
-        const pointIds =
-          output.sceneGraphDelta?.new_objects.filter((objId) => {
-            const obj = output.sceneGraphDelta.new_graph.objects[objId]
-            if (!obj) return false
-            return (
-              obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
-            )
-          }) || []
+        self._parent?.send({
+          type: 'set draft entities',
+          data: {
+            segmentIds: output.draft.segmentIds,
+            constraintIds: output.draft.constraintIds,
+          },
+        })
 
-        // Find the line segment to get its end point ID
-        const lineId = [...(output.sceneGraphDelta?.new_objects || [])]
-          .reverse()
-          .find((objId) => {
-            const obj = output.sceneGraphDelta.new_graph.objects[objId]
-            if (!obj) return false
-            return (
-              obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
-            )
-          })
-
-        // Track entities created in first point creation for potential deletion on unequip
-        const entitiesToTrack: {
-          segmentIds: Array<number>
-          constraintIds: Array<number>
-        } = {
-          segmentIds: [],
-          constraintIds: [],
+        return {
+          draft: output.draft,
         }
-
-        // Add point IDs and line ID to tracking
-        if (pointIds.length > 0 && output.sceneGraphDelta) {
-          entitiesToTrack.segmentIds.push(...pointIds)
-        }
-        if (lineId !== undefined) {
-          entitiesToTrack.segmentIds.push(lineId)
-        }
-
-        // Send draft entities to parent for tracking
-        if (entitiesToTrack.segmentIds.length > 0) {
-          self._parent?.send({
-            type: 'set draft entities',
-            data: entitiesToTrack,
-          })
-        }
-
-        const pointId = pointIds[pointIds.length - 1]
-
-        if (pointId !== undefined && output.sceneGraphDelta) {
-          return {
-            draftPointId: pointId,
-            // lastLineEndPointId,
-            //sceneGraphDelta: output.sceneGraphDelta,
-          }
-        }
-
-        return {}
       }
     ),
     'show draft geometry': () => {
@@ -225,39 +172,18 @@ export const machine = setup({
           rustContext: RustContext
           kclManager: KclManager
           sketchId: number
+          origin: [number, number]
         }
       }) => {
-        const { pointData, rustContext, kclManager, sketchId } = input
-        const [x, y] = pointData
-
-        const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
-        )
+        const { rustContext, kclManager, sketchId, origin } = input
 
         try {
-          // Note: x and y come from intersectionPoint.twoD which is in world coordinates, and scaled to units
-          // we're creating a line with the same start and end point initially
-          // that's because we'll then 'animate' the line by moving the endpoint with the user's mouse
-          const segmentCtor: SegmentCtor = {
-            type: 'Line',
-            start: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
-            },
-            end: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
-            },
-          }
-
-          // Call the addSegment method using the rustContext from context
-          const result = await rustContext.addSegment(
-            0, // version - TODO: Get this from actual context
-            sketchId, // sketchId from context
-            segmentCtor,
-            'line-segment', // label
-            await jsAppSettings(rustContext.settingsActor)
-          )
+          const result = await createDraftRectangle({
+            origin,
+            rustContext,
+            kclManager,
+            sketchId,
+          })
 
           return result
         } catch (error) {
@@ -278,6 +204,7 @@ export const machine = setup({
     rustContext: input.rustContext,
     kclManager: input.kclManager,
     sketchId: input.sketchId,
+    origin: [0, 0],
   }),
   id: 'Center Rectangle tool',
   initial: 'awaiting first point',
@@ -299,18 +226,24 @@ export const machine = setup({
       entry: 'add first point listener',
       on: {
         'add point': {
-          target: 'Adding first point',
+          actions: assign(({ event }) => {
+            return {
+              origin: event.data,
+            }
+          }),
+          target: 'adding first point',
         },
         // TODO escape
       },
     },
-    'Adding first point': {
+    'adding first point': {
       invoke: {
         src: 'modAndSolveFirstClick',
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
           return {
             pointData: event.data,
+            origin: context.origin,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -325,27 +258,39 @@ export const machine = setup({
     },
     'awaiting second point': {
       on: {
-        'add point': {
-          target: 'Confirming dimensions',
+        // 'add point': {
+        //   target: 'Confirming dimensions',
+        // },
+        finalize: {
+          actions: [
+            ({ self }) => {
+              self._parent?.send({ type: 'clear draft entities' })
+            },
+            assign({
+              origin: undefined,
+              draft: undefined,
+            }),
+          ],
+          target: 'awaiting first point',
         },
       },
       entry: 'add second point listener',
       exit: 'remove point listener',
     },
-    'Confirming dimensions': {
-      invoke: {
-        input: {},
-        onDone: {
-          target: 'unequipping',
-        },
-        onError: {
-          target: 'unequipping',
-        },
-        src: 'askUserForDimensionValues',
-      },
-      description:
-        'Show the user form fields for the width and height of the rectangle, allowing them to input values directly. This will add dimension-type constraints for either of the fields that are filled out.',
-    },
+    // 'Confirming dimensions': {
+    //   invoke: {
+    //     input: {},
+    //     onDone: {
+    //       target: 'unequipping',
+    //     },
+    //     onError: {
+    //       target: 'unequipping',
+    //     },
+    //     src: 'askUserForDimensionValues',
+    //   },
+    //   description:
+    //     'Show the user form fields for the width and height of the rectangle, allowing them to input values directly. This will add dimension-type constraints for either of the fields that are filled out.',
+    // },
     unequipping: {
       type: 'final',
       entry: 'remove point listener',
