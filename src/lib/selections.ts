@@ -695,6 +695,12 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const sketchBlock = entries.find(
+    (entry) => entry.artifact.type === 'sketchBlock'
+  )
+  if (sketchBlock) {
+    return sketchBlock
+  }
 
   for (const entry of entries) {
     // Segments take precedence
