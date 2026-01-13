@@ -21,7 +21,7 @@ use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSk
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
         ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
@@ -30,6 +30,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
+        faces::make_face,
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -190,16 +191,17 @@ async fn inner_involute_circular(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::CircularInvolute {
-                    start_radius: LengthUnit(start_radius.to_mm()),
-                    end_radius: LengthUnit(end_radius.to_mm()),
-                    angle: Angle::from_degrees(angle_deg),
-                    reverse: reverse.unwrap_or_default(),
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::CircularInvolute {
+                        start_radius: LengthUnit(start_radius.to_mm()),
+                        end_radius: LengthUnit(end_radius.to_mm()),
+                        angle: Angle::from_degrees(angle_deg),
+                        reverse: reverse.unwrap_or_default(),
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -343,14 +345,15 @@ async fn straight_line(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
-                    relative: !is_absolute,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Line {
+                        end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
+                        relative: !is_absolute,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -581,16 +584,17 @@ async fn inner_angled_line_length(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(untyped_point_to_mm(delta, from.units))
-                        .with_z(0.0)
-                        .map(LengthUnit),
-                    relative,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(delta, from.units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -1004,7 +1008,7 @@ async fn inner_start_sketch_on(
 
                 Ok(SketchSurface::Plane(plane))
             } else {
-                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+                let face = make_face(solid, tag, exec_state, args).await?;
 
                 #[cfg(feature = "artifact-graph")]
                 {
@@ -1023,27 +1027,6 @@ async fn inner_start_sketch_on(
     }
 }
 
-async fn start_sketch_on_face(
-    solid: Box<Solid>,
-    tag: FaceTag,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
-
-    Ok(Box::new(Face {
-        id: extrude_plane_id,
-        artifact_id: extrude_plane_id.into(),
-        value: tag.to_string(),
-        // TODO: get this from the extrude plane data.
-        x_axis: solid.sketch.on.x_axis(),
-        y_axis: solid.sketch.on.y_axis(),
-        units: solid.units,
-        solid,
-        meta: vec![args.source_range.into()],
-    }))
-}
-
 pub async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
@@ -1055,17 +1038,28 @@ pub async fn make_sketch_plane_from_orientation(
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
+    let cmd = if let Some(hide) = hide {
+        mcmd::MakePlane::builder()
+            .clobber(clobber)
+            .origin(plane.info.origin.into())
+            .size(size)
+            .x_axis(plane.info.x_axis.into())
+            .y_axis(plane.info.y_axis.into())
+            .hide(hide)
+            .build()
+    } else {
+        mcmd::MakePlane::builder()
+            .clobber(clobber)
+            .origin(plane.info.origin.into())
+            .size(size)
+            .x_axis(plane.info.x_axis.into())
+            .y_axis(plane.info.y_axis.into())
+            .build()
+    };
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, plane.id),
-            ModelingCmd::from(mcmd::MakePlane {
-                clobber,
-                origin: plane.info.origin.into(),
-                size,
-                x_axis: plane.info.x_axis.into(),
-                y_axis: plane.info.y_axis.into(),
-                hide,
-            }),
+            ModelingCmd::from(cmd),
         )
         .await?;
     #[cfg(feature = "artifact-graph")]
@@ -1122,10 +1116,7 @@ pub(crate) async fn inner_start_profile(
             exec_state
                 .batch_end_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::ObjectVisible {
-                        object_id: plane.id,
-                        hidden: true,
-                    }),
+                    ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(plane.id).hidden(true).build()),
                 )
                 .await?;
         }
@@ -1143,18 +1134,23 @@ pub(crate) async fn inner_start_profile(
                 // Enter sketch mode on the surface.
                 // We call this here so you can reuse the sketch surface for multiple sketches.
                 ModelingCmdReq {
-                    cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                        animated: false,
-                        ortho: false,
-                        entity_id: sketch_surface.id(),
-                        adjust_camera: false,
-                        planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
-                            // We pass in the normal for the plane here.
-                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                            Some(normal.into())
-                        } else {
-                            None
-                        },
+                    cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &sketch_surface {
+                        // We pass in the normal for the plane here.
+                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                        mcmd::EnableSketchMode::builder()
+                            .animated(false)
+                            .ortho(false)
+                            .entity_id(sketch_surface.id())
+                            .adjust_camera(false)
+                            .planar_normal(normal.into())
+                            .build()
+                    } else {
+                        mcmd::EnableSketchMode::builder()
+                            .animated(false)
+                            .ortho(false)
+                            .entity_id(sketch_surface.id())
+                            .adjust_camera(false)
+                            .build()
                     }),
                     cmd_id: enable_sketch_id.into(),
                 },
@@ -1163,10 +1159,12 @@ pub(crate) async fn inner_start_profile(
                     cmd_id: path_id.into(),
                 },
                 ModelingCmdReq {
-                    cmd: ModelingCmd::from(mcmd::MovePathPen {
-                        path: path_id.into(),
-                        to: KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit),
-                    }),
+                    cmd: ModelingCmd::from(
+                        mcmd::MovePathPen::builder()
+                            .path(path_id.into())
+                            .to(KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit))
+                            .build(),
+                    ),
                     cmd_id: move_pen_id.into(),
                 },
                 ModelingCmdReq {
@@ -1298,7 +1296,7 @@ pub(crate) async fn inner_close(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(sketch.id).build()),
         )
         .await?;
 
@@ -1420,23 +1418,24 @@ pub async fn absolute_arc(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::ArcTo {
-                    end: kcmc::shared::Point3d {
-                        x: LengthUnit(end_absolute[0].to_mm()),
-                        y: LengthUnit(end_absolute[1].to_mm()),
-                        z: LengthUnit(0.0),
-                    },
-                    interior: kcmc::shared::Point3d {
-                        x: LengthUnit(interior_absolute[0].to_mm()),
-                        y: LengthUnit(interior_absolute[1].to_mm()),
-                        z: LengthUnit(0.0),
-                    },
-                    relative: false,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::ArcTo {
+                        end: kcmc::shared::Point3d {
+                            x: LengthUnit(end_absolute[0].to_mm()),
+                            y: LengthUnit(end_absolute[1].to_mm()),
+                            z: LengthUnit(0.0),
+                        },
+                        interior: kcmc::shared::Point3d {
+                            x: LengthUnit(interior_absolute[0].to_mm()),
+                            y: LengthUnit(interior_absolute[1].to_mm()),
+                            z: LengthUnit(0.0),
+                        },
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -1500,19 +1499,20 @@ pub async fn relative_arc(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Arc {
-                    start: a_start,
-                    end: a_end,
-                    center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                    radius: LengthUnit(
-                        crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
-                    ),
-                    relative: false,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Arc {
+                        start: a_start,
+                        end: a_end,
+                        center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
+                        radius: LengthUnit(
+                            crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                        ),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -1677,14 +1677,15 @@ async fn inner_tangential_arc_radius_angle(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                    ModelingCmd::from(mcmd::ExtendPath {
-                        label: Default::default(),
-                        path: sketch.id.into(),
-                        segment: PathSegment::TangentialArc {
-                            radius: LengthUnit(radius.to_mm()),
-                            offset,
-                        },
-                    }),
+                    ModelingCmd::from(
+                        mcmd::ExtendPath::builder()
+                            .path(sketch.id.into())
+                            .segment(PathSegment::TangentialArc {
+                                radius: LengthUnit(radius.to_mm()),
+                                offset,
+                            })
+                            .build(),
+                    ),
                 )
                 .await?;
             (center, to, ccw)
@@ -1722,16 +1723,17 @@ async fn inner_tangential_arc_radius_angle(
 
 // `to` must be in sketch.units
 fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
-    ModelingCmd::from(mcmd::ExtendPath {
-        label: Default::default(),
-        path: sketch.id.into(),
-        segment: PathSegment::TangentialArcTo {
-            angle_snap_increment: None,
-            to: KPoint2d::from(untyped_point_to_mm(to, sketch.units))
-                .with_z(0.0)
-                .map(LengthUnit),
-        },
-    })
+    ModelingCmd::from(
+        mcmd::ExtendPath::builder()
+            .path(sketch.id.into())
+            .segment(PathSegment::TangentialArcTo {
+                angle_snap_increment: None,
+                to: KPoint2d::from(untyped_point_to_mm(to, sketch.units))
+                    .with_z(0.0)
+                    .map(LengthUnit),
+            })
+            .build(),
+    )
 }
 
 async fn inner_tangential_arc_to_point(
@@ -1881,16 +1883,17 @@ async fn inner_bezier_curve(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                    ModelingCmd::from(mcmd::ExtendPath {
-                        label: Default::default(),
-                        path: sketch.id.into(),
-                        segment: PathSegment::Bezier {
-                            control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
-                            control2: KPoint2d::from(point_to_mm(control2)).with_z(0.0).map(LengthUnit),
-                            end: KPoint2d::from(point_to_mm(delta)).with_z(0.0).map(LengthUnit),
-                            relative: true,
-                        },
-                    }),
+                    ModelingCmd::from(
+                        mcmd::ExtendPath::builder()
+                            .path(sketch.id.into())
+                            .segment(PathSegment::Bezier {
+                                control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
+                                control2: KPoint2d::from(point_to_mm(control2)).with_z(0.0).map(LengthUnit),
+                                end: KPoint2d::from(point_to_mm(delta)).with_z(0.0).map(LengthUnit),
+                                relative: true,
+                            })
+                            .build(),
+                    ),
                 )
                 .await?;
             to
@@ -1901,16 +1904,17 @@ async fn inner_bezier_curve(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                    ModelingCmd::from(mcmd::ExtendPath {
-                        label: Default::default(),
-                        path: sketch.id.into(),
-                        segment: PathSegment::Bezier {
-                            control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
-                            control2: KPoint2d::from(point_to_mm(control2)).with_z(0.0).map(LengthUnit),
-                            end: KPoint2d::from(point_to_mm(end)).with_z(0.0).map(LengthUnit),
-                            relative: false,
-                        },
-                    }),
+                    ModelingCmd::from(
+                        mcmd::ExtendPath::builder()
+                            .path(sketch.id.into())
+                            .segment(PathSegment::Bezier {
+                                control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
+                                control2: KPoint2d::from(point_to_mm(control2)).with_z(0.0).map(LengthUnit),
+                                end: KPoint2d::from(point_to_mm(end)).with_z(0.0).map(LengthUnit),
+                                relative: false,
+                            })
+                            .build(),
+                    ),
                 )
                 .await?;
             to
@@ -1975,10 +1979,12 @@ async fn inner_subtract_2d(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::Solid2dAddHole {
-                    object_id: sketch.id,
-                    hole_id: hole_sketch.id,
-                }),
+                ModelingCmd::from(
+                    mcmd::Solid2dAddHole::builder()
+                        .object_id(sketch.id)
+                        .hole_id(hole_sketch.id)
+                        .build(),
+                ),
             )
             .await?;
 
@@ -1987,10 +1993,12 @@ async fn inner_subtract_2d(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::ObjectVisible {
-                    object_id: hole_sketch.id,
-                    hidden: true,
-                }),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(hole_sketch.id)
+                        .hidden(true)
+                        .build(),
+                ),
             )
             .await?;
 
@@ -2158,17 +2166,18 @@ pub(crate) async fn inner_elliptic(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Ellipse {
-                    center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_axis: axis.map(LengthUnit).into(),
-                    minor_radius: LengthUnit(minor_radius.to_mm()),
-                    start_angle,
-                    end_angle,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Ellipse {
+                        center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
+                        major_axis: axis.map(LengthUnit).into(),
+                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        start_angle,
+                        end_angle,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -2329,17 +2338,18 @@ pub(crate) async fn inner_hyperbolic(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::ConicTo {
-                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                    relative,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::ConicTo {
+                        start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                        end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                        end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                        interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                        relative,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -2546,17 +2556,18 @@ pub(crate) async fn inner_parabolic(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::ConicTo {
-                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                    relative,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::ConicTo {
+                        start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                        end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                        end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                        interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                        relative,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -2700,17 +2711,18 @@ pub(crate) async fn inner_conic(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::ConicTo {
-                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                    relative,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::ConicTo {
+                        start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                        end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                        end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                        interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                        relative,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 

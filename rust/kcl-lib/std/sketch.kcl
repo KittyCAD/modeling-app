@@ -2484,3 +2484,29 @@ export fn planeOf(
   /// Find the plane which this face lies on.
   face: TaggedFace,
 ): Plane {}
+
+/// Get the face of a solid.
+///```kcl
+/// @settings(experimentalFeatures = allow)
+/// 
+/// triangle = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [2, 0])
+///   |> line(end = [0, 2], tag = $side)
+///   |> line(end = [-2, -2])
+///   |> close()
+///   |> extrude(length = 2)
+/// 
+/// // Get the face of the triangle's side face.
+/// sideFace = faceOf(triangle, face = side)
+/// 
+/// // Create a new sketch, on the triangle's side face.
+/// //sketch(on = sideFace) {}
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn faceOf(
+  /// The solid that has the face.
+  @solid: Solid,
+  /// Which face of the solid.
+  face: TaggedFace,
+): Face {}

@@ -1,4 +1,4 @@
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SegmentCtor, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
@@ -24,13 +24,9 @@ import {
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
-import {
-  KCL_DEFAULT_COLOR,
-  packRgbToColor,
-  SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
-  SKETCH_SELECTION_RGB_STR,
-} from '@src/lib/constants'
+import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
+// Import and re-export pure utility functions
+import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 
 export const SEGMENT_TYPE_POINT = 'POINT'
 export const SEGMENT_TYPE_LINE = 'LINE'
@@ -44,6 +40,7 @@ interface CreateSegmentArgs {
   id: number
   scale: number
   isDraft?: boolean
+  freedom?: Freedom | null
 }
 
 interface UpdateSegmentArgs {
@@ -54,6 +51,7 @@ interface UpdateSegmentArgs {
   group: Group
   selectedIds: Array<number>
   isDraft?: boolean
+  freedom?: Freedom | null
 }
 
 /**
@@ -111,8 +109,23 @@ class PointSegment implements SketchEntityUtils {
       isSelected: boolean
       isHovered: boolean
       isDraft?: boolean
+      freedom?: Freedom | null
     }
   ): void {
+    // Use color precedence system
+    const color = getSegmentColor({
+      isDraft: status.isDraft,
+      isHovered: status.isHovered,
+      isSelected: status.isSelected,
+      freedom: status.freedom,
+    })
+
+    // Convert hex color to RGB string for CSS
+    const r = (color >> 16) & 0xff
+    const g = (color >> 8) & 0xff
+    const b = color & 0xff
+    const rgbStr = `${r}, ${g}, ${b}`
+
     // Draft segments are grey
     if (status.isDraft) {
       innerCircle.style.backgroundColor = '#888888'
@@ -120,20 +133,14 @@ class PointSegment implements SketchEntityUtils {
       return // draft styles take precedence
     }
     if (status.isHovered) {
-      // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
-      const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
-        Math.round(val * 0.7)
-      )
-      const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
-      innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
-      innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
-      return // Hover styles take precedence over isSelection status
+      // getSegmentColor already returns the hover color at 70% brightness
+      innerCircle.style.backgroundColor = `rgb(${rgbStr})`
+      innerCircle.style.border = `1px solid rgba(${rgbStr}, 0.5)`
+      return // Hover styles take precedence
     }
-    innerCircle.style.backgroundColor = status.isSelected
-      ? `rgb(${SKETCH_SELECTION_RGB_STR})`
-      : KCL_DEFAULT_COLOR
+    innerCircle.style.backgroundColor = `rgb(${rgbStr})`
     innerCircle.style.border = status.isSelected
-      ? `2px solid rgba(${SKETCH_SELECTION_RGB_STR}, 0.5)`
+      ? `2px solid rgba(${rgbStr}, 0.5)`
       : '0px solid #CCCCCC'
   }
 
@@ -189,10 +196,12 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
+      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
         isDraft,
+        freedom,
       })
     })
 
@@ -202,7 +211,13 @@ class PointSegment implements SketchEntityUtils {
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
-      this.updatePointColors(innerCircle, { isSelected, isHovered, isDraft })
+      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
+      this.updatePointColors(innerCircle, {
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom,
+      })
     })
 
     const cssObject = new CSS2DObject(handleDiv)
@@ -215,6 +230,9 @@ class PointSegment implements SketchEntityUtils {
     }
     segmentGroup.add(cssObject)
 
+    // Store freedom in userData for later access
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: args.input,
       theme: args.theme,
@@ -223,6 +241,7 @@ class PointSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
     return segmentGroup
   }
@@ -247,10 +266,17 @@ class PointSegment implements SketchEntityUtils {
       if (!innerCircle) return
 
       const isSelected = selectedIds.includes(id)
+      // Get freedom from args or group userData
+      const freedom = args.freedom ?? group.userData.freedom ?? null
+      // Update userData for consistency
+      group.userData.freedom = freedom
+
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
       // Store draft state in data attribute for hover handlers
       el.dataset.isDraft = String(isDraft ?? false)
+      // Store freedom state in data attribute for hover handlers
+      el.dataset.freedom = freedom ?? ''
 
       // Only update colors if not hovering (hover styles take precedence)
       if (!el.matches(':hover')) {
@@ -258,6 +284,7 @@ class PointSegment implements SketchEntityUtils {
           isSelected,
           isHovered: false,
           isDraft,
+          freedom,
         })
       }
     }
@@ -272,9 +299,15 @@ class LineSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft?: boolean,
+    freedom?: Freedom | null
   ): void {
-    updateLineMaterial(mesh.material, { isSelected, isHovered, isDraft })
+    updateLineMaterial(mesh.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
   }
 
   init = (args: CreateSegmentArgs) => {
@@ -314,6 +347,9 @@ class LineSegment implements SketchEntityUtils {
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
       theme: args.theme,
@@ -322,6 +358,7 @@ class LineSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
 
     return segmentGroup
@@ -364,7 +401,18 @@ class LineSegment implements SketchEntityUtils {
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = straightSegmentBody.userData.isHovered === true
-    this.updateLineColors(straightSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Update userData for consistency
+    group.userData.freedom = freedom
+
+    this.updateLineColors(
+      straightSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -447,9 +495,15 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft?: boolean,
+    freedom?: Freedom | null
   ): void {
-    updateLineMaterial(mesh.material, { isSelected, isHovered, isDraft })
+    updateLineMaterial(mesh.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
   }
 
   /**
@@ -536,6 +590,9 @@ class ArcSegment implements SketchEntityUtils {
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
       theme: args.theme,
@@ -544,6 +601,7 @@ class ArcSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
 
     return segmentGroup
@@ -587,7 +645,18 @@ class ArcSegment implements SketchEntityUtils {
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = arcSegmentBody.userData.isHovered === true
-    this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Update userData for consistency
+    group.userData.freedom = freedom
+
+    this.updateArcColors(
+      arcSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -597,22 +666,23 @@ function updateLineMaterial(
     isSelected,
     isHovered,
     isDraft,
-  }: { isSelected: boolean; isHovered: boolean; isDraft?: boolean }
+    freedom,
+  }: {
+    isSelected: boolean
+    isHovered: boolean
+    isDraft?: boolean
+    freedom?: Freedom | null
+  }
 ) {
   if (!material) return
 
-  if (isHovered) {
-    material.color.set(
-      packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-    )
-  } else if (isSelected) {
-    material.color.set(SKETCH_SELECTION_COLOR)
-  } else if (isDraft) {
-    material.color.set(0x888888)
-  } else {
-    material.color.set(KCL_DEFAULT_COLOR)
-  }
-  material.needsUpdate = true
+  const color = getSegmentColor({
+    isDraft,
+    isHovered,
+    isSelected,
+    freedom,
+  })
+  material.color.set(color)
 }
 
 /**
@@ -644,6 +714,7 @@ export function updateSegmentHover(
 
   const isSelected = selectedIds.includes(segmentId)
   const isDraft = draftEntityIds?.includes(segmentId) ?? false
+  const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
   if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
@@ -652,7 +723,8 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        isDraft
+        isDraft,
+        freedom
       )
     } else {
       console.error('Straight segment body is not a Line2 anymore', mesh)
@@ -663,7 +735,8 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        isDraft
+        isDraft,
+        freedom
       )
     } else {
       console.error('Straight segment body is not a Line2 anymore', mesh)

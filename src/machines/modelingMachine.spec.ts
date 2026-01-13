@@ -922,7 +922,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
             await kclManagerInThisFile.executeAst({ ast })
 
@@ -1055,7 +1055,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
@@ -1199,7 +1199,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
@@ -1330,7 +1330,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })

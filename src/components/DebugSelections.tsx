@@ -124,9 +124,6 @@ function codeRangeToIds(
     otherSelections: [],
   }
 
-  const editorView = kclManager.getEditorView()
-  if (!editorView) return []
-
   // We have to mock as if the user was selecting these instead of reading from the
   // actual code mirror instance
   const asIfItWasSelected = EditorSelection.create([
@@ -254,8 +251,8 @@ export function DebugSelections() {
     _setSelectedRange(range)
   }
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const highlightMinor = 'bg-red-950'
-  const highlightMajor = 'bg-red-800'
+  const highlightMinor = 'bg-red-200 dark:bg-red-950'
+  const highlightMajor = 'bg-red-100 dark:bg-red-800'
   const artifactGraphTree = useMemo(() => {
     return formatArtifactGraph(kclManager.artifactGraph, wasmInstance)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -266,80 +263,188 @@ export function DebugSelections() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
   return (
-    <div>
-      <h2>Selection Debugger</h2>
-      {artifactGraphTree.map((artifact) => {
-        const highlightMyId = artifact.id === selectedId
-        const highlightMyRange = artifact?.range?.join(',') === selectedRange
-        return (
-          <div className="text-xs flex flex-col justify-between">
-            <div className="text-xs hover:bg-cyan-600 flex flex-row justify-between bg-chalkboard-80">
-              <div
-                className={`cursor-pointer ${highlightMyId ? highlightMajor : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  selectionFromId(artifact.id).catch(reportRejection)
-                  setSelectedId(artifact.id)
-                }}
-              >
-                {artifact.id}
-              </div>
-              <div>{artifact.type}</div>
-              <div
-                className={`cursor-pointer ${highlightMyRange ? highlightMajor : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  if (artifact.range) {
-                    selectCodeMirrorRange(artifact.range).catch(reportRejection)
-                    const rangeString = artifact.range.join(',')
-                    setSelectedRange(rangeString)
-                  }
-                }}
-              >
-                {`[${artifact.range}]` || ''}
-              </div>
-            </div>
+    <details data-testid="debug-selections" className="relative">
+      <summary>Selections Debugger</summary>
+      <div>
+        {artifactGraphTree.map((artifact) => {
+          const highlightMyId = artifact.id === selectedId
+          const highlightMyRange = artifact?.range?.join(',') === selectedRange
+          return (
             <div className="text-xs flex flex-col justify-between">
-              <div className="ml-2">Range(s) from id</div>
-              {artifact.sourceRanges.map((range) => {
-                const highlightMyRange = range.join(',') === selectedRange
-                return (
-                  <div
-                    className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => {
-                      const codeRef = {
-                        range: range,
-                      }
-                      selectCodeMirrorRange(range).catch(reportRejection)
-                      const rangeString = codeRef.range.join(',')
+              <div className="text-xs hover:bg-cyan-600 hover:text-white flex flex-row justify-between bg-chalkboard-40 dark:bg-chalkboard-80">
+                <div
+                  className={`cursor-pointer ${highlightMyId ? highlightMajor : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    selectionFromId(artifact.id).catch(reportRejection)
+                    setSelectedId(artifact.id)
+                  }}
+                >
+                  {artifact.id}
+                </div>
+                <div>{artifact.type}</div>
+                <div
+                  className={`cursor-pointer ${highlightMyRange ? highlightMajor : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    if (artifact.range) {
+                      selectCodeMirrorRange(artifact.range).catch(
+                        reportRejection
+                      )
+                      const rangeString = artifact.range.join(',')
                       setSelectedRange(rangeString)
-                    }}
-                  >
-                    {`[${range}]` || ''}
-                  </div>
-                )
-              })}
-            </div>
-            <div className="text-xs flex flex-col justify-between">
-              <div
-                className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  if (artifact.range) {
-                    selectCodeMirrorRange(artifact.range).catch(reportRejection)
-                    const rangeString = artifact.range.join(',')
-                    setSelectedRange(rangeString)
-                  }
-                }}
-              >
-                {`[${artifact.range}] range to id(s)` || ''}
+                    }
+                  }}
+                >
+                  {`[${artifact.range}]` || ''}
+                </div>
               </div>
-              {artifact.codeRefToIds.map((id) => {
+              <div className="text-xs flex flex-col justify-between">
+                <div className="ml-2">Range(s) from id</div>
+                {artifact.sourceRanges.map((range) => {
+                  const highlightMyRange = range.join(',') === selectedRange
+                  return (
+                    <div
+                      className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        const codeRef = {
+                          range: range,
+                        }
+                        selectCodeMirrorRange(range).catch(reportRejection)
+                        const rangeString = codeRef.range.join(',')
+                        setSelectedRange(rangeString)
+                      }}
+                    >
+                      {`[${range}]` || ''}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="text-xs flex flex-col justify-between">
+                <div
+                  className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    if (artifact.range) {
+                      selectCodeMirrorRange(artifact.range).catch(
+                        reportRejection
+                      )
+                      const rangeString = artifact.range.join(',')
+                      setSelectedRange(rangeString)
+                    }
+                  }}
+                >
+                  {`[${artifact.range}] range to id(s)` || ''}
+                </div>
+                {artifact.codeRefToIds.map((id) => {
+                  const highlightMyId = id === selectedId
+                  return (
+                    <div
+                      className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        selectionFromId(id).catch(reportRejection)
+                        setSelectedId(id)
+                      }}
+                    >
+                      {id}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="ml-2 text-xs">Range to Feature Tree item(s)</div>
+              <div className="ml-4 text-xs flex flex-col justify-between">
+                {artifact.featureTreeFromSourceRange.map((operation) => {
+                  let highlightMyRange = false
+                  let range: SourceRange = defaultSourceRange()
+                  let name: string = '[name not found]'
+                  if ('sourceRange' in operation) {
+                    highlightMyRange =
+                      operation.sourceRange.join(',') === selectedRange
+                    range = operation.sourceRange
+                  }
+                  if ('name' in operation) {
+                    name = operation.name
+                  }
+                  return (
+                    <div className="text-xs flex flex-col justify-between">
+                      <div className="flex flex-row justify-between">
+                        <div>{name}</div>
+                        <div>{operation.type}</div>
+                        <div
+                          className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => {
+                            selectCodeMirrorRange(range).catch(reportRejection)
+                            const rangeString = range.join(',')
+                            setSelectedRange(rangeString)
+                          }}
+                        >
+                          {`[${range}]` || ''}
+                        </div>
+                      </div>
+                      {operation?.codeRefToIds?.map((id) => {
+                        const highlightMyId = id === selectedId
+                        return (
+                          <div
+                            className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => {
+                              selectionFromId(id).catch(reportRejection)
+                              setSelectedId(id)
+                            }}
+                          >
+                            {id}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+        <div>Feature Tree</div>
+        {operationList.map((operation) => {
+          let highlightMyRange = false
+          let range: SourceRange = defaultSourceRange()
+          let name: string = '[name not found]'
+          if ('sourceRange' in operation) {
+            highlightMyRange =
+              operation?.sourceRange?.join(',') === selectedRange
+            range = operation.sourceRange
+          }
+          if ('name' in operation) {
+            name = operation.name
+          }
+          return (
+            <div className="text-xs flex flex-col justify-between">
+              <div className="flex flex-row justify-between">
+                <div>{name}</div>
+                <div>{operation.type}</div>
+                <div
+                  className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    selectCodeMirrorRange(range).catch(reportRejection)
+                    const rangeString = range.join(',')
+                    setSelectedRange(rangeString)
+                  }}
+                >
+                  {`[${range}]` || ''}
+                </div>
+              </div>
+              {operation.codeRefToIds.map((id) => {
                 const highlightMyId = id === selectedId
                 return (
                   <div
@@ -356,110 +461,9 @@ export function DebugSelections() {
                 )
               })}
             </div>
-            <div className="ml-2 text-xs">Range to Feature Tree item(s)</div>
-            <div className="ml-4 text-xs flex flex-col justify-between">
-              {artifact.featureTreeFromSourceRange.map((operation) => {
-                let highlightMyRange = false
-                let range: SourceRange = defaultSourceRange()
-                let name: string = '[name not found]'
-                if ('sourceRange' in operation) {
-                  highlightMyRange =
-                    operation.sourceRange.join(',') === selectedRange
-                  range = operation.sourceRange
-                }
-                if ('name' in operation) {
-                  name = operation.name
-                }
-                return (
-                  <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
-                    <div className="flex flex-row justify-between">
-                      <div>{name}</div>
-                      <div>{operation.type}</div>
-                      <div
-                        className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => {
-                          selectCodeMirrorRange(range).catch(reportRejection)
-                          const rangeString = range.join(',')
-                          setSelectedRange(rangeString)
-                        }}
-                      >
-                        {`[${range}]` || ''}
-                      </div>
-                    </div>
-                    {operation?.codeRefToIds?.map((id) => {
-                      const highlightMyId = id === selectedId
-                      return (
-                        <div
-                          className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => {
-                            selectionFromId(id).catch(reportRejection)
-                            setSelectedId(id)
-                          }}
-                        >
-                          {id}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )
-      })}
-      <div>Feature Tree</div>
-      {operationList.map((operation) => {
-        let highlightMyRange = false
-        let range: SourceRange = defaultSourceRange()
-        let name: string = '[name not found]'
-        if ('sourceRange' in operation) {
-          highlightMyRange = operation?.sourceRange?.join(',') === selectedRange
-          range = operation.sourceRange
-        }
-        if ('name' in operation) {
-          name = operation.name
-        }
-        return (
-          <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
-            <div className="flex flex-row justify-between">
-              <div>{name}</div>
-              <div>{operation.type}</div>
-              <div
-                className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  selectCodeMirrorRange(range).catch(reportRejection)
-                  const rangeString = range.join(',')
-                  setSelectedRange(rangeString)
-                }}
-              >
-                {`[${range}]` || ''}
-              </div>
-            </div>
-            {operation.codeRefToIds.map((id) => {
-              const highlightMyId = id === selectedId
-              return (
-                <div
-                  className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    selectionFromId(id).catch(reportRejection)
-                    setSelectedId(id)
-                  }}
-                >
-                  {id}
-                </div>
-              )
-            })}
-          </div>
-        )
-      })}
-    </div>
+          )
+        })}
+      </div>
+    </details>
   )
 }

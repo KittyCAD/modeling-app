@@ -121,10 +121,10 @@ pub async fn import_foreign(
     Ok(PreImportedGeometry {
         id: exec_state.next_uuid(),
         source_range,
-        command: mcmd::ImportFiles {
-            files: import_files.clone(),
-            format,
-        },
+        command: mcmd::ImportFiles::builder()
+            .files(import_files.clone())
+            .format(format)
+            .build(),
     })
 }
 
@@ -218,6 +218,7 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
     match fmt {
         InputFormat3d::Obj(opts) => opts.coords = coords,
         InputFormat3d::Ply(opts) => opts.coords = coords,
+        InputFormat3d::Step(opts) => opts.coords = coords,
         InputFormat3d::Stl(opts) => opts.coords = coords,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -348,6 +349,12 @@ fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result
 
     if let InputFormat3d::Ply(_) = ext
         && let InputFormat3d::Ply(_) = given
+    {
+        return Ok(());
+    }
+
+    if let InputFormat3d::Step(_) = ext
+        && let InputFormat3d::Step(_) = given
     {
         return Ok(());
     }

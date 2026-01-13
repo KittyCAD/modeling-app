@@ -142,24 +142,26 @@ async fn inner_revolve(
                 exec_state
                     .batch_modeling_cmd(
                         ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
-                        ModelingCmd::from(mcmd::Revolve {
-                            angle,
-                            target: sketch.id.into(),
-                            axis: Point3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: 0.0,
-                            },
-                            origin: Point3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(0.0),
-                            },
-                            tolerance: LengthUnit(tolerance),
-                            axis_is_2d: true,
-                            opposite: opposite.clone(),
-                            body_type,
-                        }),
+                        ModelingCmd::from(
+                            mcmd::Revolve::builder()
+                                .angle(angle)
+                                .target(sketch.id.into())
+                                .axis(Point3d {
+                                    x: direction[0].to_mm(),
+                                    y: direction[1].to_mm(),
+                                    z: 0.0,
+                                })
+                                .origin(Point3d {
+                                    x: LengthUnit(origin[0].to_mm()),
+                                    y: LengthUnit(origin[1].to_mm()),
+                                    z: LengthUnit(0.0),
+                                })
+                                .tolerance(LengthUnit(tolerance))
+                                .axis_is_2d(true)
+                                .opposite(opposite.clone())
+                                .body_type(body_type)
+                                .build(),
+                        ),
                     )
                     .await?;
                 glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
@@ -169,14 +171,16 @@ async fn inner_revolve(
                 exec_state
                     .batch_modeling_cmd(
                         ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
-                        ModelingCmd::from(mcmd::RevolveAboutEdge {
-                            angle,
-                            target: sketch.id.into(),
-                            edge_id,
-                            tolerance: LengthUnit(tolerance),
-                            opposite: opposite.clone(),
-                            body_type,
-                        }),
+                        ModelingCmd::from(
+                            mcmd::RevolveAboutEdge::builder()
+                                .angle(angle)
+                                .target(sketch.id.into())
+                                .edge_id(edge_id)
+                                .tolerance(LengthUnit(tolerance))
+                                .opposite(opposite.clone())
+                                .body_type(body_type)
+                                .build(),
+                        ),
                     )
                     .await?;
                 //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear

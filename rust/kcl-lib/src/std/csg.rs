@@ -57,10 +57,12 @@ pub(crate) async fn inner_union(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanUnion {
-                solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanUnion::builder()
+                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -128,10 +130,12 @@ pub(crate) async fn inner_intersect(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanIntersection {
-                solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanIntersection::builder()
+                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -195,11 +199,13 @@ pub(crate) async fn inner_subtract(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanSubtract {
-                target_ids: solids.iter().map(|s| s.id).collect(),
-                tool_ids: tools.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanSubtract::builder()
+                    .target_ids(solids.iter().map(|s| s.id).collect())
+                    .tool_ids(tools.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
