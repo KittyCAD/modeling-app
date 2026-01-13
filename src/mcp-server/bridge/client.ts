@@ -1,7 +1,21 @@
 /**
  * Bridge Client
  *
- * Handles communication between MCP server and Electron app via TCP socket
+ * Handles communication between MCP server and Electron app via TCP socket.
+ *
+ * The bridge client:
+ * - Connects to Electron's bridge server on localhost:9877
+ * - Sends requests using newline-delimited JSON
+ * - Manages request/response correlation with unique IDs
+ * - Handles connection retries and timeouts
+ *
+ * Protocol:
+ * - Transport: TCP socket
+ * - Format: Newline-delimited JSON messages
+ * - Pattern: Request/response with unique request IDs
+ *
+ * @see {@link ../types.ts} for message type definitions
+ * @see {@link ../../main/mcpBridge.ts} for bridge server implementation
  */
 
 import { connect, type Socket } from 'net'
@@ -16,7 +30,16 @@ const DEFAULT_BRIDGE_PORT = 9877
 
 /**
  * MCP Bridge Client
- * Connects to Electron app's bridge server to query app state
+ *
+ * Connects to Electron app's bridge server to query app state.
+ * Uses a singleton pattern - get instance via `getBridgeClient()`.
+ *
+ * @example
+ * ```typescript
+ * const client = getBridgeClient()
+ * await client.connect()
+ * const data = await client.request('getArtifactGraph')
+ * ```
  */
 export class McpBridgeClient {
   private socket: Socket | null = null
@@ -44,6 +67,12 @@ export class McpBridgeClient {
 
   /**
    * Connect to the Electron bridge server
+   *
+   * Establishes a TCP connection to the bridge server.
+   * If already connected, returns immediately.
+   *
+   * @returns Promise that resolves when connected, or rejects on error
+   * @throws Error if connection fails or times out (5 second timeout)
    */
   async connect(): Promise<void> {
     if (this.connected && this.socket) {
@@ -109,6 +138,15 @@ export class McpBridgeClient {
 
   /**
    * Send a request to the Electron app and wait for response
+   *
+   * Creates a request with a unique ID, sends it to the bridge server,
+   * and waits for the corresponding response. Automatically connects
+   * if not already connected.
+   *
+   * @param type - The type of bridge request (e.g., 'getArtifactGraph')
+   * @param params - Optional parameters for the request
+   * @returns Promise that resolves with the response data, or rejects on error
+   * @throws Error if request times out (10 second timeout) or connection fails
    */
   async request(
     type: BridgeMessageType,
@@ -204,6 +242,11 @@ let bridgeClient: McpBridgeClient | null = null
 
 /**
  * Get or create the bridge client instance
+ *
+ * Uses singleton pattern to ensure only one bridge client exists.
+ * The client is lazily created on first access.
+ *
+ * @returns The singleton bridge client instance
  */
 export function getBridgeClient(): McpBridgeClient {
   if (!bridgeClient) {
@@ -214,6 +257,9 @@ export function getBridgeClient(): McpBridgeClient {
 
 /**
  * Reset the singleton (for testing)
+ *
+ * Disconnects and clears the singleton instance.
+ * Useful for testing to ensure clean state between tests.
  */
 export function resetBridgeClient(): void {
   if (bridgeClient) {

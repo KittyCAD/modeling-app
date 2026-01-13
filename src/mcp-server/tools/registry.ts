@@ -1,7 +1,20 @@
 /**
  * Tool Registry
  *
- * Registers all MCP tools with the server
+ * Central registry for all MCP tools. This module:
+ * - Maintains the list of available tools
+ * - Registers tool listing handler (tools/list)
+ * - Registers tool call handler (tools/call)
+ * - Routes tool calls to appropriate handlers
+ *
+ * To add a new tool:
+ * 1. Create tool file in `tools/` directory
+ * 2. Import tool and handler here
+ * 3. Add to `tools` array
+ * 4. Add case to switch statement
+ *
+ * @see {@link ./getArtifactGraph.ts} for example tool implementation
+ * @see {@link ../docs/mcp-adding-tools.md} for detailed guide
  */
 
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js'
@@ -24,7 +37,13 @@ import {
 } from './getCurrentSelection.js'
 
 /**
- * All available tools
+ * All available MCP tools
+ *
+ * Add new tools to this array to make them available to MCP clients.
+ * Each tool must have:
+ * - `name`: Unique tool identifier (snake_case)
+ * - `description`: Human-readable description for AI assistants
+ * - `inputSchema`: JSON Schema defining tool parameters
  */
 const tools = [
   getArtifactGraphTool,
@@ -34,6 +53,13 @@ const tools = [
 
 /**
  * Registers all tools with the MCP server
+ *
+ * Sets up two request handlers:
+ * 1. `tools/list`: Returns list of all available tools
+ * 2. `tools/call`: Routes tool calls to appropriate handlers
+ *
+ * @param server - The MCP server instance to register tools with
+ * @returns Promise that resolves when tools are registered
  */
 export async function registerTools(server: Server): Promise<void> {
   // Register handler for listing tools
