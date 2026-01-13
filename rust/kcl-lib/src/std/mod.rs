@@ -11,6 +11,7 @@ pub mod constraints;
 pub mod csg;
 pub mod edge;
 pub mod extrude;
+pub mod faces;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
@@ -305,6 +306,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "planeOf") => (
             |e, a| Box::pin(crate::std::planes::plane_of(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::planeOf"),
+        ),
+        ("sketch", "faceOf") => (
+            |e, a| Box::pin(crate::std::faces::face_of(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::faceOf"),
         ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a).map(|r| r.map(KclValue::continue_))),

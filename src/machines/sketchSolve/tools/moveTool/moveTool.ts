@@ -244,7 +244,7 @@ export function createOnDragEndCallback({
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
 }): (arg: {
-  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
