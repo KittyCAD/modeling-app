@@ -700,6 +700,17 @@ export class ConnectionManager extends EventTarget {
       reject(value)
       isSettled = true
     }
+
+    if (this.pendingCommands[id]) {
+      const duplicateCommandMessage =
+        'You are attempting to send the same command twice. Rejecting this attempt.'
+      console.error(duplicateCommandMessage)
+      console.error(message)
+      console.error(new Error().stack)
+      reject(duplicateCommandMessage)
+      return promise
+    }
+
     this.pendingCommands[id] = {
       resolve: wrappedResolved,
       reject: wrappedReject,

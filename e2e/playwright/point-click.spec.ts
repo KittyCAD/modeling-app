@@ -473,7 +473,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: '',
+        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -510,7 +510,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: '',
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -1059,7 +1059,7 @@ sketch002 = startSketchOn(plane001)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 

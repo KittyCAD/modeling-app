@@ -719,18 +719,23 @@ impl Sketch {
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
             ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
+                cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &self.on {
+                    // We pass in the normal for the plane here.
+                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .planar_normal(normal.into())
+                        .build()
+                } else {
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .build()
                 }),
                 cmd_id: exec_state.next_uuid().into(),
             },

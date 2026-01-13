@@ -9,7 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
+    execution::{ExecState, KclValue, ModelingCmdMeta, ProfileClosed, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
@@ -34,6 +34,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let value = inner_loft(
         sketches,
@@ -43,6 +44,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         tolerance,
         tag_start,
         tag_end,
+        body_type,
         exec_state,
         args,
     )
@@ -59,9 +61,18 @@ async fn inner_loft(
     tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    body_type: Option<BodyType>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
+    let body_type = body_type.unwrap_or_default();
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot solid loft an open profile. Either close the profile, or use a surface loft.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     // Make sure we have at least two sketches.
     if sketches.len() < 2 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -77,13 +88,27 @@ async fn inner_loft(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Loft {
-                section_ids: sketches.iter().map(|group| group.id).collect(),
-                base_curve_index,
-                bez_approximate_rational,
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-                v_degree,
-                body_type: Default::default(), // TODO ben
+            ModelingCmd::from(if let Some(base_curve_index) = base_curve_index {
+                mcmd::Loft::builder()
+                    .section_ids(sketches.iter().map(|group| group.id).collect())
+                    .bez_approximate_rational(bez_approximate_rational)
+                    .tolerance(LengthUnit(
+                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
+                    .v_degree(v_degree)
+                    .body_type(body_type)
+                    .base_curve_index(base_curve_index)
+                    .build()
+            } else {
+                mcmd::Loft::builder()
+                    .section_ids(sketches.iter().map(|group| group.id).collect())
+                    .bez_approximate_rational(bez_approximate_rational)
+                    .tolerance(LengthUnit(
+                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
+                    .v_degree(v_degree)
+                    .body_type(body_type)
+                    .build()
             }),
         )
         .await?;
@@ -106,7 +131,7 @@ async fn inner_loft(
             &args,
             None,
             None,
-            BodyType::Solid, // TODO: Support surface loft.
+            body_type,
         )
         .await?,
     ))

@@ -150,7 +150,7 @@ pub struct Point {
     pub position: Point2d<Number>,
     pub ctor: Option<PointCtor>,
     pub owner: Option<ObjectId>,
-    pub freedom: Option<Freedom>,
+    pub freedom: Freedom,
     pub constraints: Vec<ObjectId>,
 }
 
