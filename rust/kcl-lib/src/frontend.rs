@@ -2683,7 +2683,7 @@ mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
-        front::{Distance, Object, Sketch},
+        front::{Distance, Object, Plane, Sketch},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
     };
@@ -4268,6 +4268,91 @@ face = faceOf(cube, face = side)
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_plane_incremental() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+len = 2mm
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [len, 0], tag = $side)
+  |> line(end = [0, len])
+  |> line(end = [-len, 0])
+  |> line(end = [0, -len])
+  |> close()
+  |> extrude(length = len)
+
+plane = planeOf(cube, face = side)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        // Find the last plane since the first plane is the XY plane.
+        let plane_object = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .rev()
+            .find(|object| matches!(&object.kind, ObjectKind::Plane(_)))
+            .unwrap();
+        let plane_id = plane_object.id;
+
+        let sketch_args = SketchCtor { on: "plane".to_owned() };
+        let (src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+len = 2mm
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [len, 0], tag = $side)
+  |> line(end = [0, len])
+  |> line(end = [-len, 0])
+  |> line(end = [0, -len])
+  |> close()
+  |> extrude(length = len)
+
+plane = planeOf(cube, face = side)
+sketch(on = plane) {
+}
+"
+        );
+        assert_eq!(sketch_id, ObjectId(2));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
+        let sketch_object = &scene_delta.new_graph.objects[2];
+        assert_eq!(sketch_object.id, ObjectId(2));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchCtor { on: "plane".to_owned() },
+                plane: plane_id,
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+
+        let plane_object = scene_delta.new_graph.objects.get(plane_id.0).unwrap();
+        assert_eq!(plane_object.id, plane_id);
+        assert_eq!(plane_object.kind, ObjectKind::Plane(Plane::Object(plane_id)));
 
         ctx.close().await;
         mock_ctx.close().await;
