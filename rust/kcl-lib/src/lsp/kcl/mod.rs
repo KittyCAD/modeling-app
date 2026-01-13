@@ -1847,4 +1847,15 @@ return 42"#;
         let index = position_to_char_index(position, code);
         assert_eq!(index, 0);
     }
+
+    #[test]
+    fn test_position_to_char_at_newline() {
+        let code = r#"dog = 42
+
+// nice
+"#;
+        let position = Position::new(1, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 9);
+    }
 }
