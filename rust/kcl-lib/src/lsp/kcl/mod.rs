@@ -1783,7 +1783,10 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    std::cmp::min(char_position, code.len() - 1)
+    // do not crash on subtraction overflow! an empty file is 0
+    let end_of_file = if code.len() == 0 { 0 } else {code.len() - 1};
+
+    std::cmp::min(char_position, end_of_file)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
@@ -1835,5 +1838,13 @@ return 42"#;
         let position = Position::new(1, 8);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 19);
+    }
+
+    #[test]
+    fn test_position_to_char_empty() {
+        let code = r#""#;
+        let position = Position::new(0, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 0);
     }
 }
