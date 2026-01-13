@@ -106,7 +106,7 @@ async function handleBridgeRequest(
 
     switch (request.type) {
       case 'getArtifactGraph': {
-        const data = await queryRenderer('mcp:getArtifactGraph', {})
+        const data = await queryRenderer('mcp:getArtifactGraph')
         response = {
           type: request.type,
           id: request.id,
@@ -118,7 +118,7 @@ async function handleBridgeRequest(
       }
 
       case 'getFeatureTree': {
-        const data = await queryRenderer('mcp:getFeatureTree', {})
+        const data = await queryRenderer('mcp:getFeatureTree')
         response = {
           type: request.type,
           id: request.id,
@@ -130,7 +130,7 @@ async function handleBridgeRequest(
       }
 
       case 'getCurrentSelection': {
-        const data = await queryRenderer('mcp:getCurrentSelection', {})
+        const data = await queryRenderer('mcp:getCurrentSelection')
         response = {
           type: request.type,
           id: request.id,
@@ -166,7 +166,10 @@ async function handleBridgeRequest(
  * Query the renderer process via IPC
  * Uses a request/response pattern with unique IDs
  */
-function queryRenderer(channel: string, data: unknown): Promise<unknown> {
+function queryRenderer(
+  channel: string,
+  data: Record<string, unknown> = {}
+): Promise<unknown> {
   return new Promise((resolve, reject) => {
     if (!mainWindow) {
       reject(new Error('No renderer window available'))

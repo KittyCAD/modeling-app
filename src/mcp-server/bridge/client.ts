@@ -211,3 +211,13 @@ export function getBridgeClient(): McpBridgeClient {
   }
   return bridgeClient
 }
+
+/**
+ * Reset the singleton (for testing)
+ */
+export function resetBridgeClient(): void {
+  if (bridgeClient) {
+    bridgeClient.disconnect()
+    bridgeClient = null
+  }
+}
