@@ -106,7 +106,11 @@ async function handleBridgeRequest(
 
     switch (request.type) {
       case 'getArtifactGraph': {
-        const data = await queryRenderer('mcp:getArtifactGraph')
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+        const data = await queryRenderer('mcp:getArtifactGraph', {
+          waitForExecution,
+        })
         response = {
           type: request.type,
           id: request.id,
@@ -118,7 +122,11 @@ async function handleBridgeRequest(
       }
 
       case 'getFeatureTree': {
-        const data = await queryRenderer('mcp:getFeatureTree')
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+        const data = await queryRenderer('mcp:getFeatureTree', {
+          waitForExecution,
+        })
         response = {
           type: request.type,
           id: request.id,
@@ -130,7 +138,11 @@ async function handleBridgeRequest(
       }
 
       case 'getCurrentSelection': {
-        const data = await queryRenderer('mcp:getCurrentSelection')
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+        const data = await queryRenderer('mcp:getCurrentSelection', {
+          waitForExecution,
+        })
         response = {
           type: request.type,
           id: request.id,

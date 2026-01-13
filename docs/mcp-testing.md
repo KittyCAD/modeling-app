@@ -21,7 +21,7 @@ This guide explains how to test the MCP server, starting with the hello world to
    - **Type**: `stdio`
    - **Command**: `npm run mcp-server`
    - **Args**: (leave empty)
-   - **Working Directory**: `/Users/kurthutten/kittycad/app-3013` (or your project path)
+   - **Working Directory**: `/Users/kurthutten/kittycad/app-3012` (or your project path)
 
 4. Restart Cursor or reload the MCP connection
 5. In a chat, try asking: "Use the hello_world tool with name 'Test'"

@@ -109,13 +109,13 @@ export interface IElectronAPI {
   menuOn: (callback: (payload: WebContentSendPayload) => void) => any
   mcpBridge?: {
     onGetArtifactGraph: (
-      callback: (data: { requestId: string }) => void
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
     onGetFeatureTree: (
-      callback: (data: { requestId: string }) => void
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
     onGetCurrentSelection: (
-      callback: (data: { requestId: string }) => void
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
     onFilletEdge: (
       callback: (data: {

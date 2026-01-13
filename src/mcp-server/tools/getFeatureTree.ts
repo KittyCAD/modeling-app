@@ -6,6 +6,7 @@
  */
 
 import { getBridgeClient } from '../bridge/client.js'
+import { WAIT_FOR_EXECUTION_DESCRIPTION } from './descriptions.js'
 
 export const getFeatureTreeTool = {
   name: 'get_feature_tree',
@@ -13,19 +14,29 @@ export const getFeatureTreeTool = {
     'Get the current feature tree (operations list) from the modeling application. This represents all the operations/features that have been executed, such as sketches, extrusions, and other modeling operations.',
   inputSchema: {
     type: 'object',
-    properties: {},
+    properties: {
+      waitForExecution: {
+        type: 'boolean',
+        description: WAIT_FOR_EXECUTION_DESCRIPTION,
+        default: true,
+      },
+    },
   },
 } as const
 
 /**
  * Handle getFeatureTree tool call
  */
-export async function handleGetFeatureTreeTool(): Promise<{
+export async function handleGetFeatureTreeTool(args?: {
+  waitForExecution?: boolean
+}): Promise<{
   content: Array<{ type: 'text'; text: string }>
 }> {
   try {
     const client = getBridgeClient()
-    const featureTreeData = await client.request('getFeatureTree')
+    const featureTreeData = await client.request('getFeatureTree', {
+      waitForExecution: args?.waitForExecution ?? true,
+    })
 
     return {
       content: [

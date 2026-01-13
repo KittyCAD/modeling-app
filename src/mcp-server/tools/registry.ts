@@ -81,15 +81,27 @@ export async function registerTools(server: Server): Promise<void> {
 
     switch (toolName) {
       case 'get_artifact_graph': {
-        return handleGetArtifactGraphTool()
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetArtifactGraphTool(args)
       }
 
       case 'get_feature_tree': {
-        return handleGetFeatureTreeTool()
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetFeatureTreeTool(args)
       }
 
       case 'get_current_selection': {
-        return handleGetCurrentSelectionTool()
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetCurrentSelectionTool(args)
       }
 
       case 'fillet_edge': {

@@ -6,6 +6,7 @@
  */
 
 import { getBridgeClient } from '../bridge/client.js'
+import { WAIT_FOR_EXECUTION_DESCRIPTION } from './descriptions.js'
 
 export const getCurrentSelectionTool = {
   name: 'get_current_selection',
@@ -13,19 +14,29 @@ export const getCurrentSelectionTool = {
     'Get the current user selection in the modeling application. This includes both code-based selections (graphSelections) and geometry-based selections (otherSelections).',
   inputSchema: {
     type: 'object',
-    properties: {},
+    properties: {
+      waitForExecution: {
+        type: 'boolean',
+        description: WAIT_FOR_EXECUTION_DESCRIPTION,
+        default: true,
+      },
+    },
   },
 } as const
 
 /**
  * Handle getCurrentSelection tool call
  */
-export async function handleGetCurrentSelectionTool(): Promise<{
+export async function handleGetCurrentSelectionTool(args?: {
+  waitForExecution?: boolean
+}): Promise<{
   content: Array<{ type: 'text'; text: string }>
 }> {
   try {
     const client = getBridgeClient()
-    const selectionData = await client.request('getCurrentSelection')
+    const selectionData = await client.request('getCurrentSelection', {
+      waitForExecution: args?.waitForExecution ?? true,
+    })
 
     return {
       content: [

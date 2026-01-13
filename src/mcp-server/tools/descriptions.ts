@@ -28,3 +28,10 @@ export const USE_RECENT_GRAPH_NOTICE =
  */
 export const ARTIFACT_GRAPH_SNAPSHOT_DESCRIPTION =
   'This is a snapshot that may become stale after operations modify geometry. Always fetch a fresh graph before using artifact IDs.'
+
+/**
+ * Description for waitForExecution parameter
+ * Used by all get_ tools to explain when to wait for execution completion
+ */
+export const WAIT_FOR_EXECUTION_DESCRIPTION =
+  'Whether to wait for any in-progress execution to complete before returning data. Defaults to true. Set to false only if you are getting a broad overview of the project and do not plan on using the data to make further changes immediately - in that case, data from the last execution might be acceptable. It is strongly recommended to keep this as true to avoid getting stale data, especially stale IDs.'

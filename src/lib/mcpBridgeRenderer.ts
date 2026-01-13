@@ -5,6 +5,8 @@
  * This allows the MCP server (via main process) to query app state
  */
 
+import { effect } from '@preact/signals-core'
+
 import { addFillet } from '@src/lang/modifyAst/edges'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
@@ -13,6 +15,60 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
 import { createSelectionFromArtifacts } from '@src/lib/testHelpers'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+
+/**
+ * Wait for execution to complete if it's currently in progress
+ * Uses signal subscription for reactive waiting instead of polling
+ * @param waitForExecution - Whether to wait for execution (defaults to true)
+ * @param maxWaitTime - Maximum time to wait in milliseconds (defaults to 60 seconds)
+ */
+async function waitForExecutionIfNeeded(
+  waitForExecution: boolean = true,
+  maxWaitTime: number = 60000
+): Promise<void> {
+  if (!waitForExecution) {
+    return
+  }
+
+  // If not executing, return immediately
+  if (!kclManager.isExecuting) {
+    return
+  }
+
+  // Use Preact signal effect to reactively wait for execution to complete
+  return new Promise<void>((resolve) => {
+    let timeoutId: NodeJS.Timeout | null = null
+    let disposeEffect: (() => void) | null = null
+
+    // Set up timeout as a safety mechanism
+    timeoutId = setTimeout(() => {
+      if (disposeEffect) {
+        disposeEffect()
+      }
+      console.warn(
+        '[MCP Bridge Renderer] Timeout waiting for execution to complete'
+      )
+      resolve()
+    }, maxWaitTime)
+
+    // Use effect() to reactively watch the signal - callback fires whenever the value changes
+    disposeEffect = effect(() => {
+      // Access the signal value to track it
+      const isExecuting = kclManager.isExecutingSignal.value
+
+      // When execution completes (isExecuting becomes false), resolve
+      if (!isExecuting) {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        if (disposeEffect) {
+          disposeEffect()
+        }
+        resolve()
+      }
+    })
+  })
+}
 
 /**
  * Initialize MCP bridge IPC handlers in the renderer
@@ -29,8 +85,9 @@ export function initMcpBridgeHandlers(): void {
   try {
     // Handle getArtifactGraph request
     window.electron.mcpBridge.onGetArtifactGraph(
-      (data: { requestId: string }) => {
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
         try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
           // Convert Map to Array for JSON serialization
           const artifactGraphData = Array.from(
             kclManager.artifactGraph.entries()
@@ -48,8 +105,9 @@ export function initMcpBridgeHandlers(): void {
 
     // Handle getFeatureTree request
     window.electron.mcpBridge.onGetFeatureTree(
-      (data: { requestId: string }) => {
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
         try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
           const operations = kclManager.lastSuccessfulOperations || []
           window.electron?.mcpBridge?.sendResponse(data.requestId, {
             data: { operations },
@@ -64,8 +122,9 @@ export function initMcpBridgeHandlers(): void {
 
     // Handle getCurrentSelection request
     window.electron.mcpBridge.onGetCurrentSelection(
-      (data: { requestId: string }) => {
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
         try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
           const selectionRanges = kclManager.selectionRanges
           const selectionData = {
             graphSelections: selectionRanges.graphSelections,
