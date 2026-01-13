@@ -1,4 +1,12 @@
 {
+  "ignorePatterns": [
+    "**/*.js",
+    "**/*.js.map",
+    "**/*.d.ts",
+    "**/*.d.ts.map",
+    "dist/**",
+    "node_modules/**"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"

@@ -117,6 +117,15 @@ export interface IElectronAPI {
     onGetCurrentSelection: (
       callback: (data: { requestId: string }) => void
     ) => () => void
+    onFilletEdge: (
+      callback: (data: {
+        requestId: string
+        radius: string
+        tag?: string
+        useCurrentSelection?: boolean
+        edges?: string[]
+      }) => void | Promise<void>
+    ) => () => void
     sendResponse: (
       requestId: string,
       response: { error?: string; data?: unknown }

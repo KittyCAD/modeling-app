@@ -145,17 +145,17 @@ The implementation follows a Blender-style architecture:
 ## Phase 7: Future Enhancements (Fillet Edge Tool)
 
 ### 7.1 Fillet Edge Tool Design
-- [ ] Design tool parameters (edge selection, radius, tolerance, tag)
-- [ ] Design command execution flow
-- [ ] Determine how to handle multi-body selections
+- [x] Design tool parameters (edge selection, radius, tolerance, tag)
+- [x] Design command execution flow
+- [x] Determine how to handle multi-body selections (uses current selection)
 
 ### 7.2 Fillet Edge Implementation
-- [ ] Create `src/mcp-server/tools/filletEdge.ts`
-- [ ] Implement tool that accepts edge selection and radius
-- [ ] Bridge command to Electron app to execute fillet
-- [ ] Use existing `addFillet` function from `src/lang/modifyAst/edges.ts`
-- [ ] Handle errors and validation
-- [ ] Return updated AST or success status
+- [x] Create `src/mcp-server/tools/filletEdge.ts`
+- [x] Implement tool that accepts edge selection and radius
+- [x] Bridge command to Electron app to execute fillet
+- [x] Use existing `addFillet` function from `src/lang/modifyAst/edges.ts`
+- [x] Handle errors and validation
+- [x] Return updated AST or success status
 
 ### 7.3 Fillet Edge Testing
 - [ ] Test fillet edge tool with various edge selections

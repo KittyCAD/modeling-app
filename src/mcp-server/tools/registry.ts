@@ -35,6 +35,7 @@ import {
   getCurrentSelectionTool,
   handleGetCurrentSelectionTool,
 } from './getCurrentSelection.js'
+import { filletEdgeTool, handleFilletEdgeTool } from './filletEdge.js'
 
 /**
  * All available MCP tools
@@ -49,6 +50,7 @@ const tools = [
   getArtifactGraphTool,
   getFeatureTreeTool,
   getCurrentSelectionTool,
+  filletEdgeTool,
 ]
 
 /**
@@ -90,6 +92,18 @@ export async function registerTools(server: Server): Promise<void> {
         return handleGetCurrentSelectionTool()
       }
 
+      case 'fillet_edge': {
+        const args = (request.params.arguments as
+          | {
+              radius: string
+              tag?: string
+              useCurrentSelection?: boolean
+              edges?: string[]
+            }
+          | undefined) || { radius: '' }
+        return handleFilletEdgeTool(args)
+      }
+
       default: {
         // MCP protocol expects errors to be thrown for unknown tools
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -99,5 +113,5 @@ export async function registerTools(server: Server): Promise<void> {
   })
 
   // Future tools:
-  // - filletEdge (Phase 7)
+  // - Additional modeling operations can be added here
 }

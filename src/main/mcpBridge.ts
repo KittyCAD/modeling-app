@@ -141,6 +141,23 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'filletEdge': {
+        const data = await queryRenderer('mcp:filletEdge', {
+          radius: request.params?.radius,
+          tag: request.params?.tag,
+          useCurrentSelection: request.params?.useCurrentSelection,
+          edges: request.params?.edges,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

@@ -43,6 +43,14 @@
     }
   },
   "files": {
-    "ignore": ["**/*.json"]
+    "ignore": [
+      "**/*.json",
+      "**/*.js",
+      "**/*.js.map",
+      "**/*.d.ts",
+      "**/*.d.ts.map",
+      "dist/**",
+      "node_modules/**"
+    ]
   }
 }

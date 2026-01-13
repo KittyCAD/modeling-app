@@ -338,6 +338,27 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:getCurrentSelection')
       }
     },
+    onFilletEdge: (
+      callback: (data: {
+        requestId: string
+        radius: string
+        tag?: string
+        useCurrentSelection?: boolean
+        edges?: string[]
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:filletEdge', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in filletEdge handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:filletEdge')
+      }
+    },
     sendResponse: (
       requestId: string,
       response: { error?: string; data?: unknown }
