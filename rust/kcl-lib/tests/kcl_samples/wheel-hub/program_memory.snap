@@ -251,6 +251,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -258,7 +260,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -471,6 +472,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -902,6 +904,8 @@ description: Variables in memory after executing wheel-hub.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 2,
                 "origin": {
                   "x": 0.0,
                   "y": -57.15,
@@ -909,7 +913,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1046,6 +1049,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -1218,6 +1222,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 3,
                     "value": "start",
                     "xAxis": {
                       "x": 1.0,
@@ -1649,6 +1654,8 @@ description: Variables in memory after executing wheel-hub.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "Custom",
+                          "objectId": 2,
                           "origin": {
                             "x": 0.0,
                             "y": -57.15,
@@ -1656,7 +1663,6 @@ description: Variables in memory after executing wheel-hub.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "Custom",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -1817,6 +1823,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -1989,6 +1996,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 3,
                     "value": "start",
                     "xAxis": {
                       "x": 1.0,
@@ -2420,6 +2428,8 @@ description: Variables in memory after executing wheel-hub.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "Custom",
+                          "objectId": 2,
                           "origin": {
                             "x": 0.0,
                             "y": -57.15,
@@ -2427,7 +2437,6 @@ description: Variables in memory after executing wheel-hub.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "Custom",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -2588,6 +2597,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -2760,6 +2770,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 3,
                     "value": "start",
                     "xAxis": {
                       "x": 1.0,
@@ -3191,6 +3202,8 @@ description: Variables in memory after executing wheel-hub.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "Custom",
+                          "objectId": 2,
                           "origin": {
                             "x": 0.0,
                             "y": -57.15,
@@ -3198,7 +3211,6 @@ description: Variables in memory after executing wheel-hub.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "Custom",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -3359,6 +3371,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -3531,6 +3544,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 3,
                     "value": "start",
                     "xAxis": {
                       "x": 1.0,
@@ -3962,6 +3976,8 @@ description: Variables in memory after executing wheel-hub.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "Custom",
+                          "objectId": 2,
                           "origin": {
                             "x": 0.0,
                             "y": -57.15,
@@ -3969,7 +3985,6 @@ description: Variables in memory after executing wheel-hub.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "Custom",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -4130,6 +4145,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -4302,6 +4318,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 3,
                     "value": "start",
                     "xAxis": {
                       "x": 1.0,
@@ -4733,6 +4750,8 @@ description: Variables in memory after executing wheel-hub.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "Custom",
+                          "objectId": 2,
                           "origin": {
                             "x": 0.0,
                             "y": -57.15,
@@ -4740,7 +4759,6 @@ description: Variables in memory after executing wheel-hub.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "Custom",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -5286,6 +5304,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": -57.15,
@@ -5293,7 +5313,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5789,6 +5808,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": -57.15,
@@ -5796,7 +5817,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6355,6 +6375,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": -57.15,
@@ -6362,7 +6384,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6553,6 +6574,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6560,7 +6583,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6879,6 +6901,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6886,7 +6910,6 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
