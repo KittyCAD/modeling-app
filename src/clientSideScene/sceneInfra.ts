@@ -1,5 +1,5 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Intersection, Object3D, Object3DEventMap } from 'three'
+import type { Intersection, Object3D } from 'three'
 import { Group } from 'three'
 import {
   AmbientLight,
@@ -35,7 +35,7 @@ import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
-import { getAngle, getLength, throttle } from '@src/lib/utils'
+import { getAngle, getLength } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
@@ -46,45 +46,49 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
-interface intersectionData {
+interface IntersectionData {
   twoD: Vector2
   threeD: Vector3
 }
 
 export interface OnMouseEnterLeaveArgs {
-  selected: Object3D<Object3DEventMap>
+  selected: Object3D
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
-  intersectionPoint?: Partial<intersectionData>
+  intersectionPoint?: Partial<IntersectionData>
   /** Whether area select is currently active */
   isAreaSelectActive?: boolean
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
-  intersectionPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  intersectionPoint: IntersectionData
+  intersects: Intersection[]
+}
+
+interface OnDragEndCallbackArgs extends OnMouseEnterLeaveArgs {
+  intersects: Intersection[]
 }
 
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint?: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersectionPoint?: IntersectionData
+  intersects: Intersection[]
+  selected?: Object3D
   wasmInstance: ModuleType
 }
 
 export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersectionPoint: IntersectionData
+  intersects: Intersection[]
+  selected?: Object3D
 }
 
 export interface OnAreaSelectCallbackArgs {
   mouseEvent: MouseEvent
-  startPoint: intersectionData
-  currentPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  startPoint: IntersectionData
+  currentPoint: IntersectionData
+  intersects: Intersection[]
 }
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
@@ -94,7 +98,6 @@ export interface OnAreaSelectCallbackArgs {
 type Voidish = void | Promise<void>
 
 export class SceneInfra {
-  static instance: SceneInfra
   readonly scene: Scene
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
@@ -106,7 +109,7 @@ export class SceneInfra {
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
@@ -118,7 +121,7 @@ export class SceneInfra {
   onAreaSelectEndCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
-    onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
+    onDragEnd?: (arg: OnDragEndCallbackArgs) => Voidish
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
@@ -200,11 +203,9 @@ export class SceneInfra {
   }
 
   modelingSend: SendType = (() => {}) as any
-  throttledModelingSend: any = (() => {}) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
-    this.throttledModelingSend = throttle(send, 100)
   }
 
   overlayTimeout = 0
@@ -296,14 +297,14 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | Object3D<Object3DEventMap> = null
+  hoveredObject: null | Object3D = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: Object3D<Object3DEventMap>
+    object: Object3D
     hasBeenDragged: boolean
   } | null = null
   areaSelect: {
@@ -376,8 +377,6 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
-
-    SceneInfra.instance = this
   }
 
   // Called after canvas is attached to the DOM and on each resize.
@@ -430,12 +429,13 @@ export class SceneInfra {
     }
   }
 
-  dispose = () => {
-    // Dispose of scene resources, renderer, and controls
-    this.renderer.forceContextLoss()
-    this.renderer.dispose()
-    // Dispose of any other resources like geometries, materials, textures
-  }
+  // Note this was never getting called, SceneInfra is created once and never disposed.
+  // dispose = () => {
+  //   // Dispose of scene resources, renderer, and controls
+  //   this.renderer.forceContextLoss()
+  //   this.renderer.dispose()
+  //   // Dispose of any other resources like geometries, materials, textures
+  // }
 
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
@@ -450,7 +450,7 @@ export class SceneInfra {
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
-    intersection: Intersection<Object3D<Object3DEventMap>>
+    intersection: Intersection
   } | null => {
     // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
@@ -697,19 +697,11 @@ export class SceneInfra {
     }
   }
 
-  raycastRing = (
-    pixelRadius = 8,
-    rayRingCount = 32
-  ): Intersection<Object3D<Object3DEventMap>>[] => {
+  raycastRing = (pixelRadius = 8, rayRingCount = 32): Intersection[] => {
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersectionsMap = new Map<
-      Object3D,
-      Intersection<Object3D<Object3DEventMap>>
-    >()
+    const intersectionsMap = new Map<Object3D, Intersection>()
 
-    const updateIntersectionsMap = (
-      intersections: Intersection<Object3D<Object3DEventMap>>[]
-    ) => {
+    const updateIntersectionsMap = (intersections: Intersection[]) => {
       intersections.forEach((intersection) => {
         const existingIntersection = intersectionsMap.get(intersection.object)
         if (
@@ -896,15 +888,16 @@ export class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // TODO do the types properly here
         await this.onDragEndCallback({
-          intersectionPoint: {
-            twoD: planeIntersectPoint?.twoD as any,
-            threeD: planeIntersectPoint?.threeD as any,
-          },
+          intersectionPoint: planeIntersectPoint
+            ? {
+                twoD: planeIntersectPoint?.twoD,
+                threeD: planeIntersectPoint?.threeD,
+              }
+            : undefined,
           intersects,
           mouseEvent,
-          selected: this.selected as any,
+          selected: this.selected.object,
         })
         if (intersects.length) {
           this.updateMouseState({
