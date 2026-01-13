@@ -219,7 +219,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         };
     }
 
-    // Check if the annotations are different.
+    // Check if the block annotations like @settings() are different.
     if !old_ast
         .inner_attrs
         .iter()
@@ -862,6 +862,79 @@ extrude(profile001, length = 100)
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_added_outer_attribute() {
+        let old_code = r#"import "tests/inputs/cube.step"
+"#;
+        let new_code = r#"@(coords = opengl)
+import "tests/inputs/cube.step"
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: false,
+                program: new_program.ast,
+            }
+        );
+        exec_ctxt.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_different_outer_attribute() {
+        let old_code = r#"@(coords = vulkan)
+import "tests/inputs/cube.step"
+"#;
+        let new_code = r#"@(coords = opengl)
+import "tests/inputs/cube.step"
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: false,
+                program: new_program.ast,
+            }
+        );
         exec_ctxt.close().await;
     }
 }
