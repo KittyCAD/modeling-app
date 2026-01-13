@@ -5936,6 +5936,43 @@ bar = 1
     }
 
     #[test]
+    fn is_comment_boundary_right() {
+        let program_source = r#"dog = 42
+
+// nice
+"#;
+        let module_id = crate::ModuleId::default();
+        let tokens = crate::parsing::token::lex(program_source, module_id).unwrap();
+        for (i, ch) in program_source.chars().enumerate() {
+            println!("{i:2}: '{ch}'");
+        }
+        ParseContext::init();
+        let program = match program.parse(tokens.as_slice()) {
+            Ok(x) => x,
+            Err(e) => panic!("could not parse test: {e:?}"),
+        };
+        print_tokens(tokens.as_slice());
+
+        // Find the comment, i.e. `// nice`
+        let comment = program.non_code_meta.non_code_nodes.get(&0).unwrap();
+        let comment = &comment[0];
+        assert_eq!(
+            comment.inner.value,
+            NonCodeValue::NewLineBlockComment {
+                value: "nice".to_owned(),
+                style: CommentStyle::Line
+            }
+        );
+
+        // The comment should start at the first / in `// nice`,
+        // as that is where the comment actually starts.
+        let comment_start = comment.start;
+        let comment_end = comment.end;
+        let comment_starts_at = program_source.chars().nth(comment_start).unwrap();
+        assert_eq!(comment_starts_at, '/');
+    }
+
+    #[test]
     fn test_sensible_error_when_missing_else_brace() {
         let program_source = "x = if (true) { 2 } else ";
         let expected_src_start = program_source.find("else").unwrap();
