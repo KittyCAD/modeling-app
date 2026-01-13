@@ -46,6 +46,17 @@ impl<'a> StatementKind<'a> {
     }
 }
 
+fn tags_object_from_map(tags: &IndexMap<String, TagIdentifier>, source_range: SourceRange) -> KclValue {
+    KclValue::Object {
+        meta: vec![Metadata { source_range }],
+        value: tags
+            .iter()
+            .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
+            .collect(),
+        constrainable: false,
+    }
+}
+
 impl ExecutorContext {
     /// Returns true if importing the prelude should be skipped.
     async fn handle_annotations(
@@ -2016,10 +2027,18 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
-                value: Box::new(value.sketch),
+            (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => {
+                let source_range = SourceRange::from(self.clone());
+                Ok(KclValue::Object {
+                    meta: vec![Metadata { source_range }],
+                    value: HashMap::from([(
+                        "tags".to_owned(),
+                        tags_object_from_map(&value.sketch.tags, source_range),
+                    )]),
+                    constrainable: false,
+                }
+                .continue_())
             }
-            .continue_()),
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2030,18 +2049,9 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => Ok(KclValue::Object {
-                meta: vec![Metadata {
-                    source_range: SourceRange::from(self.clone()),
-                }],
-                value: sk
-                    .tags
-                    .iter()
-                    .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
-                    .collect(),
-                constrainable: false,
+            (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => {
+                Ok(tags_object_from_map(&sk.tags, SourceRange::from(self.clone())).continue_())
             }
-            .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Property `{property}` not found on {}", geometry.human_friendly_type()),

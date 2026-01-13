@@ -616,7 +616,7 @@ pub(crate) async fn do_post_extrude<'a>(
         meta: sketch.meta.clone(),
         units: sketch.units,
         sectional,
-        sketch,
+        sketch: crate::execution::SketchBase::from(sketch),
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],

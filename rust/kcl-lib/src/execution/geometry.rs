@@ -682,6 +682,102 @@ pub struct Sketch {
     pub is_closed: ProfileClosed,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct SketchBase {
+    /// The id of the sketch (this will change when the engine's reference to it changes).
+    pub id: uuid::Uuid,
+    /// The paths in the sketch.
+    /// Only paths on the "outside" i.e. the perimeter.
+    /// Does not include paths "inside" the profile (for example, edges made by subtracting a profile)
+    pub paths: Vec<Path>,
+    /// Inner paths, resulting from subtract2d to carve profiles out of the sketch.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_paths: Vec<Path>,
+    /// What the sketch is on (can be a plane or a face).
+    pub on: SketchSurface,
+    /// The starting path.
+    pub start: BasePath,
+    /// Tag identifiers that have been declared in this sketch.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub tags: IndexMap<String, TagIdentifier>,
+    /// The original id of the sketch. This stays the same even if the sketch is
+    /// is sketched on face etc.
+    pub artifact_id: ArtifactId,
+    #[ts(skip)]
+    pub original_id: uuid::Uuid,
+    /// If the sketch includes a mirror.
+    #[serde(skip)]
+    pub mirror: Option<uuid::Uuid>,
+    /// If the sketch is a clone of another sketch.
+    #[serde(skip)]
+    pub clone: Option<uuid::Uuid>,
+    pub units: UnitLength,
+    /// Metadata.
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+    /// Has the profile been closed?
+    /// If not given, defaults to yes, closed explicitly.
+    #[serde(
+        default = "ProfileClosed::explicitly",
+        skip_serializing_if = "ProfileClosed::is_explicitly"
+    )]
+    pub is_closed: ProfileClosed,
+}
+
+impl From<Sketch> for SketchBase {
+    fn from(value: Sketch) -> Self {
+        Self {
+            id: value.id,
+            paths: value.paths,
+            inner_paths: value.inner_paths,
+            on: value.on,
+            start: value.start,
+            tags: value.tags,
+            artifact_id: value.artifact_id,
+            original_id: value.original_id,
+            mirror: value.mirror,
+            clone: value.clone,
+            units: value.units,
+            meta: value.meta,
+            is_closed: value.is_closed,
+        }
+    }
+}
+
+impl From<&Sketch> for SketchBase {
+    fn from(value: &Sketch) -> Self {
+        value.clone().into()
+    }
+}
+
+impl From<SketchBase> for Sketch {
+    fn from(value: SketchBase) -> Self {
+        Self {
+            id: value.id,
+            paths: value.paths,
+            inner_paths: value.inner_paths,
+            on: value.on,
+            start: value.start,
+            tags: value.tags,
+            artifact_id: value.artifact_id,
+            original_id: value.original_id,
+            mirror: value.mirror,
+            clone: value.clone,
+            units: value.units,
+            meta: value.meta,
+            is_closed: value.is_closed,
+        }
+    }
+}
+
+impl From<&SketchBase> for Sketch {
+    fn from(value: &SketchBase) -> Self {
+        value.clone().into()
+    }
+}
+
 impl ProfileClosed {
     #[expect(dead_code, reason = "it's not actually dead, it's called by serde")]
     fn explicitly() -> Self {
@@ -881,6 +977,43 @@ impl Sketch {
     }
 }
 
+impl SketchBase {
+    pub(crate) fn add_tag(
+        &mut self,
+        tag: NodeRef<'_, TagDeclarator>,
+        current_path: &Path,
+        exec_state: &ExecState,
+        surface: Option<&ExtrudeSurface>,
+    ) {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        let base = current_path.get_base();
+        tag_identifier.info.push((
+            exec_state.stack().current_epoch(),
+            TagEngineInfo {
+                id: base.geo_meta.id,
+                sketch: self.id,
+                path: Some(current_path.clone()),
+                surface: surface.cloned(),
+            },
+        ));
+
+        self.tags.insert(tag.name.to_string(), tag_identifier);
+    }
+
+    pub(crate) fn merge_tags<'a>(&mut self, tags: impl Iterator<Item = &'a TagIdentifier>) {
+        for t in tags {
+            match self.tags.get_mut(&t.value) {
+                Some(id) => {
+                    id.merge_info(t);
+                }
+                None => {
+                    self.tags.insert(t.value.clone(), t.clone());
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -892,7 +1025,7 @@ pub struct Solid {
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.
-    pub sketch: Sketch,
+    pub sketch: SketchBase,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
