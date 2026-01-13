@@ -586,6 +586,57 @@ sketch(on = YZ) {
     }
 
     #[tokio::test]
+    async fn test_split_trim_line_trimmed_between_two_intersections() {
+        // splits line1 into two segments when trimmed between two intersections
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: 0.0, y: 2.0 }, Coords2d { x: 0.0, y: -2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
+  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+  line3 = sketch2::line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
+  sketch2::coincident([line1.end, line2])
+  sketch2::coincident([line3.start, arc1])
+}
+"#;
+
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
     async fn test_split_lines_with_point_segment_coincident_points() {
         // another edge case involving split lines and point-segment coincident points
         let base_kcl_code = r#"@settings(experimentalFeatures = allow)

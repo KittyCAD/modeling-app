@@ -1054,20 +1054,28 @@ pub async fn execute_trim_flow(
     }
     let program = program_opt.ok_or_else(|| "No AST produced".to_string())?;
 
-    // Create executor contexts - we need both:
-    // - Real context for hack_set_program (requires run_with_caching)
-    // - Mock context for SketchApi operations (they use run_mock)
-    let real_ctx = ExecutorContext::new_with_default_client()
-        .await
-        .map_err(|e| format!("Failed to create executor context: {}", e))?;
+    // Use mock context for everything - sketch mode doesn't need engine connection
+    // Note: We create a fresh ExecutorContext for each test to maintain test isolation.
+    // The WASM path reuses a shared mock_engine which benefits from memory cache,
+    // but for tests, isolation is more important than performance.
+    // If test performance becomes an issue, we could share the mock_engine across tests
+    // using a static OnceCell, but that would reduce test isolation.
     let mock_ctx = ExecutorContext::new_mock(None).await;
     let mut frontend = FrontendState::new();
 
-    // Set the program and get initial scene graph (uses real context)
-    let (mut initial_scene_graph, exec_outcome) = frontend
-        .hack_set_program(&real_ctx, program)
+    // Set the program and get initial scene graph using run_mock instead of hack_set_program
+    // This avoids the expensive engine connection
+    frontend.program = program.clone();
+
+    // Use run_mock instead of run_with_caching for sketch-only tests
+    use crate::execution::MockConfig;
+    let exec_outcome = mock_ctx
+        .run_mock(&program, &MockConfig::default())
         .await
-        .map_err(|e| format!("Failed to set program: {}", e.msg))?;
+        .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
+
+    let exec_outcome = frontend.update_state_after_exec(exec_outcome);
+    let mut initial_scene_graph = frontend.scene_graph.clone();
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
     // (this is only available when artifact-graph feature is enabled)
@@ -1217,7 +1225,7 @@ async fn execute_trim_loop_with_context(
 
                 // Execute operations
                 match execute_trim_operations_simple(
-                    strategy,
+                    strategy.clone(),
                     &current_scene_graph_delta,
                     frontend,
                     ctx,
@@ -1270,7 +1278,7 @@ async fn execute_trim_operations_simple(
     let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = None;
 
     while op_index < strategy.len() {
-        let consumed_ops = 1;
+        let mut consumed_ops = 1;
         let operation_result = match &strategy[op_index] {
             TrimOperation::SimpleTrim { segment_to_trim_id } => {
                 // Delete the segment
@@ -1288,21 +1296,143 @@ async fn execute_trim_operations_simple(
             TrimOperation::EditSegment {
                 segment_id,
                 ctor,
-                endpoint_changed: _,
+                endpoint_changed,
             } => {
-                // Parse ctor
-                let segment_ctor: SegmentCtor =
-                    serde_json::from_value(ctor.clone()).map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+                // Try to batch tail-cut sequence: EditSegment + AddCoincidentConstraint (+ DeleteConstraints)
+                // This matches the batching logic in kcl-wasm-lib/src/api.rs
+                if op_index + 1 < strategy.len() {
+                    if let TrimOperation::AddCoincidentConstraint {
+                        segment_id: coincident_seg_id,
+                        endpoint_changed: coincident_endpoint_changed,
+                        segment_or_point_to_make_coincident_to,
+                        intersecting_endpoint_point_id,
+                    } = &strategy[op_index + 1]
+                    {
+                        if segment_id == coincident_seg_id && endpoint_changed == coincident_endpoint_changed {
+                            // This is a tail-cut sequence - batch it!
+                            let mut delete_constraint_ids: Vec<ObjectId> = Vec::new();
+                            consumed_ops = 2;
 
-                let segment_to_edit = ExistingSegmentCtor {
-                    id: ObjectId(*segment_id),
-                    ctor: segment_ctor,
-                };
+                            if op_index + 2 < strategy.len() {
+                                if let TrimOperation::DeleteConstraints { constraint_ids } = &strategy[op_index + 2] {
+                                    delete_constraint_ids = constraint_ids.iter().map(|id| ObjectId(*id)).collect();
+                                    consumed_ops = 3;
+                                }
+                            }
 
-                frontend
-                    .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
-                    .await
-                    .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                            // Parse ctor
+                            let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
+                                .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+
+                            // Get endpoint point id from current scene graph (IDs stay the same after edit)
+                            let edited_segment = current_scene_graph_delta
+                                .new_graph
+                                .objects
+                                .iter()
+                                .find(|obj| obj.id.0 == *segment_id)
+                                .ok_or_else(|| format!("Failed to find segment {} for tail-cut batch", segment_id))?;
+
+                            let endpoint_point_id = match &edited_segment.kind {
+                                crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                                    crate::frontend::sketch::Segment::Line(line) => {
+                                        if endpoint_changed == "start" {
+                                            line.start.0
+                                        } else {
+                                            line.end.0
+                                        }
+                                    }
+                                    crate::frontend::sketch::Segment::Arc(arc) => {
+                                        if endpoint_changed == "start" {
+                                            arc.start.0
+                                        } else {
+                                            arc.end.0
+                                        }
+                                    }
+                                    _ => {
+                                        return Err("Unsupported segment type for tail-cut batch".to_string());
+                                    }
+                                },
+                                _ => {
+                                    return Err("Edited object is not a segment (tail-cut batch)".to_string());
+                                }
+                            };
+
+                            let coincident_segments = if let Some(point_id) = intersecting_endpoint_point_id {
+                                vec![ObjectId(endpoint_point_id), ObjectId(*point_id)]
+                            } else {
+                                vec![
+                                    ObjectId(endpoint_point_id),
+                                    ObjectId(*segment_or_point_to_make_coincident_to),
+                                ]
+                            };
+
+                            let constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
+                                segments: coincident_segments,
+                            });
+
+                            let segment_to_edit = ExistingSegmentCtor {
+                                id: ObjectId(*segment_id),
+                                ctor: segment_ctor,
+                            };
+
+                            // Batch the operations - this is the key optimization!
+                            // Note: consumed_ops is set above (2 or 3), and we'll use it after the match
+                            frontend
+                                .batch_tail_cut_operations(
+                                    ctx,
+                                    version,
+                                    sketch_id,
+                                    vec![segment_to_edit],
+                                    vec![constraint],
+                                    delete_constraint_ids,
+                                )
+                                .await
+                                .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.msg))
+                        } else {
+                            // Not same segment/endpoint - execute EditSegment normally
+                            let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
+                                .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+
+                            let segment_to_edit = ExistingSegmentCtor {
+                                id: ObjectId(*segment_id),
+                                ctor: segment_ctor,
+                            };
+
+                            frontend
+                                .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                                .await
+                                .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                        }
+                    } else {
+                        // Not followed by AddCoincidentConstraint - execute EditSegment normally
+                        let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
+                            .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+
+                        let segment_to_edit = ExistingSegmentCtor {
+                            id: ObjectId(*segment_id),
+                            ctor: segment_ctor,
+                        };
+
+                        frontend
+                            .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                            .await
+                            .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                    }
+                } else {
+                    // No following op to batch with - execute EditSegment normally
+                    let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
+                        .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+
+                    let segment_to_edit = ExistingSegmentCtor {
+                        id: ObjectId(*segment_id),
+                        ctor: segment_ctor,
+                    };
+
+                    frontend
+                        .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                        .await
+                        .map_err(|e| format!("Failed to edit segment: {}", e.msg))
+                }
             }
             TrimOperation::AddCoincidentConstraint {
                 segment_id,
