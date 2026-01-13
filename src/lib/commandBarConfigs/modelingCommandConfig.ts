@@ -752,13 +752,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-        description: `
-          Note: Only closed paths are allowed for now. Selection of open paths via segments for surface modeling is coming soon.
-        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
