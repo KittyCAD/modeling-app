@@ -153,6 +153,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       {theProject && file ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer
+            wasmInstance={wasmInstance}
             project={theProject}
             file={file}
             createFilePressed={createFilePressed}

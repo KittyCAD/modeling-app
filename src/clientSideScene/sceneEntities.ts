@@ -1,10 +1,5 @@
 import toast from 'react-hot-toast'
-import type {
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  Quaternion,
-} from 'three'
+import type { Intersection, Object3D, Quaternion } from 'three'
 
 import {
   BoxGeometry,
@@ -2852,6 +2847,8 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
+        // TODO: update the `updateCodeEditor` workflow to allow for writes to file
+        // without execution so that we can drop this stray write to disk
         await this.kclManager.writeToFile()
       },
       onDrag: async ({
@@ -2992,7 +2989,7 @@ export class SceneEntities {
 
   getSnappedDragPoint(
     pos: Vector2,
-    intersects: Intersection<Object3D>[],
+    intersects: Intersection[],
     mouseEvent: MouseEvent,
     wasmInstance: ModuleType,
     // During draft segment mouse move:
@@ -3253,7 +3250,7 @@ export class SceneEntities {
     intersection2d: _intersection2d,
   }: {
     sketchEntryNodePath: PathToNode
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersects: Intersection[]
     intersection2d: Vector2
   }) {
     const intersectsProfileStart = intersects
@@ -3281,11 +3278,11 @@ export class SceneEntities {
     mouseEvent,
     wasmInstance,
   }: {
-    object: Object3D<Object3DEventMap>
+    object: Object3D
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersects: Intersection[]
     draftInfo?: {
       truncatedAst: Node<Program>
       variableDeclarationName: string
@@ -4401,7 +4398,7 @@ function computeSelectionFromSourceRangeAndAST(
 }
 
 function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
-  return (group: Group<Object3DEventMap> | null) => {
+  return (group: Group | null) => {
     if (group?.name !== PROFILE_START) return false
     const groupExpressionIndex = Number(group.userData.pathToNode[1][0])
     const isProfileStartOfCurrentExpr =

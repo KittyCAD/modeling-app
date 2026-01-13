@@ -101,7 +101,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
             // Nothing written out yet by ourselves, or it's not the same as the current file content
             // -> this must be an external change -> re-execute.
-            kclManager.updateCodeStateEditor(code)
+            kclManager.updateCodeEditor(code)
 
             toast('Reloading file from disk')
             // If we can use emojis this looks nice:
