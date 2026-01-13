@@ -215,8 +215,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.end, arc1])
 }
 "#;
@@ -262,8 +262,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
+  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var -0mm, var -30mm])
   sketch2::coincident([arc2.start, arc1])
 }
 "#;
@@ -309,8 +309,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.start, arc2])
 }
 "#;
@@ -357,7 +357,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.end, arc2])
 }
 "#;
@@ -452,8 +452,8 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3.25mm, var 2mm])
-  line3 = sketch2::line(start = [var 3.25mm, var 2mm], end = [var 5mm, var 5mm])
+  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
+  line3 = sketch2::line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
   sketch2::coincident([line2.end, line3.start])
   arc1 = sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
   sketch2::coincident([line2.start, arc1])
