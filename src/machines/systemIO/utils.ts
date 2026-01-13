@@ -80,6 +80,7 @@ export enum SystemIOMachineEvents {
   navigateToFile = 'navigate to file',
   createProject = 'create project',
   renameProject = 'rename project',
+  done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
   done_deleteProject = donePrefix + 'delete project',
   createKCLFile = 'create kcl file',

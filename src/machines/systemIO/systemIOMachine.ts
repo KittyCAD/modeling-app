@@ -845,7 +845,15 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            SystemIOMachineActions.toastSuccess,
+            assign({
+              requestedProjectName: ({ event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_renameProject)
+                return { name: event.output.newName }
+              },
+            }),
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
