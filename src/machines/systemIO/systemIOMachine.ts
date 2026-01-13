@@ -118,6 +118,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            addToGlobalHistory?: boolean
           }
         }
       | {
@@ -533,6 +534,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            addToGlobalHistory?: boolean
           }
         }): Promise<{
           message: string
@@ -1165,6 +1167,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            addToGlobalHistory: event.data.addToGlobalHistory,
           }
         },
         onDone: {

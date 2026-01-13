@@ -4,16 +4,26 @@ import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  RequestedKCLFile,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { EditorView } from 'codemirror'
 import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
 
-type FSEffectProps = { src: string; target: string }
-const restoreFile = StateEffect.define<FSEffectProps>()
-const archiveFile = StateEffect.define<FSEffectProps>()
+type FSArchiveProps = { src: string; target: string }
+const restoreFile = StateEffect.define<FSArchiveProps>()
+const archiveFile = StateEffect.define<FSArchiveProps>()
+type FSBulkCreateDeleteProps = {
+  create: RequestedKCLFile[]
+  delete: RequestedKCLFile[]
+  projectName: string
+}
+const bulkCreateAndDeleteFiles = StateEffect.define<FSBulkCreateDeleteProps>()
+
 /** helper function that builds a transaction with a default annotation */
 const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
   effects: e,
@@ -22,9 +32,12 @@ const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
 })
 
 /** CodeMirror transaction to mark a "restore" file action */
-export const fsRestoreFile = (props: FSEffectProps) => h(restoreFile.of(props))
+export const fsRestoreFile = (props: FSArchiveProps) => h(restoreFile.of(props))
 /** CodeMirror transaction to mark an "archive" file action */
-export const fsArchiveFile = (props: FSEffectProps) => h(archiveFile.of(props))
+export const fsArchiveFile = (props: FSArchiveProps) => h(archiveFile.of(props))
+/** CodeMirror transaction to mark a file action as bulk creation and deletion */
+export const fsBulkCreateAndDelete = (props: FSBulkCreateDeleteProps) =>
+  h(bulkCreateAndDeleteFiles.of(props))
 
 /**
  * Builder function to provide necessary system dependencies for the
@@ -49,6 +62,17 @@ export function buildFSHistoryExtension(
               successMessage: e.is(restoreFile)
                 ? 'Restored successfully'
                 : 'Archived successfully',
+            },
+          })
+        } else if (e.is(bulkCreateAndDeleteFiles)) {
+          systemIOActor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: e.value.create,
+              requestedProjectName: e.value.projectName,
+              override: true,
+              // The API seems to fall back to main.kcl if we provide an empty string
+              requestedFileNameWithExtension: '',
             },
           })
         }
@@ -89,6 +113,14 @@ export function fsHistoryExtension(): Extension {
         found.push(archiveFile.of({ src: e.value.target, target: e.value.src }))
       } else if (e.is(archiveFile)) {
         found.push(restoreFile.of({ src: e.value.target, target: e.value.src }))
+      } else if (e.is(bulkCreateAndDeleteFiles)) {
+        found.push(
+          bulkCreateAndDeleteFiles.of({
+            ...e.value,
+            create: e.value.delete,
+            delete: e.value.create,
+          })
+        )
       }
     }
     return found

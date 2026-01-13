@@ -1,4 +1,5 @@
 import type { IElectronAPI } from '@root/interface'
+import { fsBulkCreateAndDelete } from '@src/editor/plugins/fs'
 import {
   createNewProjectDirectory,
   getAppSettingsFilePath,
@@ -20,6 +21,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { kclManager } from '@src/lib/singletons'
 import { isErr } from '@src/lib/trap'
 import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -53,6 +55,7 @@ const sharedBulkCreateWorkflow = async ({
   }
 }) => {
   const configuration = await readAppSettingsFile(electron, input.wasmInstance)
+  const createdFiles = []
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -104,6 +107,7 @@ const sharedBulkCreateWorkflow = async ({
       fileName,
       input.context.projectDirectoryPath
     )
+    createdFiles.push({ path: fileName, content: requestedCode })
   }
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
@@ -115,9 +119,15 @@ const sharedBulkCreateWorkflow = async ({
     fileName: '',
     projectName: '',
     subRoute: 'subRoute' in input ? input.subRoute : '',
+    /** Return the in-memory version of created files, for undo */
+    createdFiles,
   }
 }
 
+/**
+ * Given a set of files to keeps in `input.files`,
+ * Delete all other .kcl files that are in the project.
+ */
 const sharedBulkDeleteWorkflow = async ({
   electron,
   input,
@@ -149,13 +159,19 @@ const sharedBulkDeleteWorkflow = async ({
       input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
   )
 
+  const deletedFiles = []
+
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
     await electron.rm(file.absPath)
+    deletedFiles.push(file)
   }
 
-  // How many files we deleted successfully
-  return filesToDelete.length
+  // Return the deleted files in memory so we can use them for undo
+  return {
+    project,
+    deletedFiles,
+  }
 }
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
@@ -508,13 +524,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            addToGlobalHistory?: boolean
           }
         }) => {
           if (!window.electron) {
             return Promise.reject(new Error('No file system present'))
           }
           const wasmInstance = await input.context.wasmInstancePromise
-          const message = await sharedBulkCreateWorkflow({
+          const createResult = await sharedBulkCreateWorkflow({
             electron: window.electron,
             input: {
               ...input,
@@ -523,7 +540,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             },
           })
           // We won't delete until everything's created / updated first.
-          const totalDeleted = await sharedBulkDeleteWorkflow({
+          const deleteResult = await sharedBulkDeleteWorkflow({
             electron: window.electron,
             input: {
               ...input,
@@ -531,10 +548,39 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             },
           })
 
-          message.message += `, ${totalDeleted} deleted`
+          if (input.addToGlobalHistory) {
+            const created: RequestedKCLFile[] = createResult.createdFiles.map(
+              (c) => ({
+                requestedCode: c.content,
+                requestedFileName: c.path,
+                requestedProjectName: deleteResult.project.name,
+              })
+            )
+            const deleted: RequestedKCLFile[] = deleteResult.deletedFiles.map(
+              (d) => ({
+                requestedCode: d.fileContents,
+                requestedFileName: d.relPath,
+                requestedProjectName: deleteResult.project.name,
+              })
+            )
+            kclManager.addGlobalHistoryEvent(
+              fsBulkCreateAndDelete({
+                create: created,
+                delete: deleted,
+                projectName: deleteResult.project.name,
+              })
+            )
+          }
+
+          console.log({
+            createResult,
+            deleteResult,
+          })
+
+          createResult.message += `, ${deleteResult.deletedFiles.length} deleted`
 
           return {
-            ...message,
+            ...createResult,
             projectName: input.requestedProjectName,
             subRoute: input.requestedSubRoute || '',
           }

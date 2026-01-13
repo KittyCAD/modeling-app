@@ -286,6 +286,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           requestedProjectName: projectNameCurrentlyOpened,
           requestedFileNameWithExtension:
             targetFilePathRelativeToProjectDir ?? '',
+          addToGlobalHistory: true,
         },
       })
     }
