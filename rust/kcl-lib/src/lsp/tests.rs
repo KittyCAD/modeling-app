@@ -2,21 +2,21 @@ use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    LanguageServer,
     lsp_types::{
         CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
         SemanticTokenType, TextEdit, WorkspaceEdit,
     },
+    LanguageServer,
 };
 
 use crate::{
-    SourceRange,
     errors::Suggestion,
     lsp::{
-        LspSuggestion,
         test_util::{copilot_lsp_server, kcl_lsp_server},
+        LspSuggestion,
     },
     parsing::ast::types::{Node, Program},
+    SourceRange,
 };
 
 #[track_caller]
@@ -650,7 +650,7 @@ async fn test_kcl_lsp_completions() {
                 version: 1,
                 // Blank lines to check that we get completions even in an AST newline thing.
                 text: r#"
-                
+
 thing= 1
 st"#
                 .to_string(),
@@ -770,6 +770,38 @@ async fn test_arg_label_completions() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_ast_positions() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"dog = 42
+
+// this is a comment"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    let request = tower_lsp::lsp_types::CompletionParams {
+        text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+        },
+        context: None,
+        partial_result_params: Default::default(),
+        work_done_progress_params: Default::default(),
+    };
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions_tags() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -874,6 +906,102 @@ async fn test_kcl_lsp_completions_const_raw() {
     } else {
         panic!("Expected array of completions");
     }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_current_code_simple() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"dog = 42"#.to_string(),
+            },
+        })
+        .await;
+
+    let params = tower_lsp::lsp_types::CompletionParams {
+        text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+        },
+        context: None,
+        partial_result_params: Default::default(),
+        work_done_progress_params: Default::default(),
+    };
+
+    let Some(current_code) = server
+        .code_map
+        .get(params.text_document_position.text_document.uri.as_ref())
+    else {
+        panic!("No current code")
+    };
+
+    let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        panic!("No current code from utf8")
+    };
+
+    // Make sure you get the code back
+    assert_eq!(current_code, "dog = 42");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_current_code_complex() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"dog = 42
+
+// nice
+"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    let params = tower_lsp::lsp_types::CompletionParams {
+        text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+        },
+        context: None,
+        partial_result_params: Default::default(),
+        work_done_progress_params: Default::default(),
+    };
+
+    let Some(current_code) = server
+        .code_map
+        .get(params.text_document_position.text_document.uri.as_ref())
+    else {
+        panic!("No current code")
+    };
+
+    let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        panic!("No current code from utf8")
+    };
+
+    // Make sure you get the code back
+    assert_eq!(
+        current_code,
+        "dog = 42
+
+// nice
+"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1783,7 +1911,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5"#
@@ -2010,7 +2138,7 @@ async fn test_kcl_lsp_formatting_extra_parens() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
@@ -2530,7 +2658,7 @@ async fn test_copilot_lsp_completions() {
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  
+
   |> close()
   |> extrude(length = 10)
 "#
