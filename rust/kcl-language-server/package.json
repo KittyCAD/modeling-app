@@ -23,7 +23,7 @@
     "type": "git"
   },
   "engines": {
-    "vscode": "^1.97.0"
+    "vscode": "^1.107.0"
   },
   "enabledApiProposals": [],
   "activationEvents": ["onLanguage:kcl"],
