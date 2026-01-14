@@ -58,10 +58,16 @@ type GlobalHistoryDispatchOptions = {
  */
 export class HistoryView {
   private editorView: EditorView
+  historyCompartment = new Compartment()
 
   constructor(extensions: Extension[]) {
     this.editorView = new EditorView({
-      extensions: [history(), globalHistory.of([]), ...extensions],
+      extensions: [
+        // Placing this in a compartment allows us to clear history at runtime
+        this.historyCompartment.of([history()]),
+        globalHistory.of([]),
+        ...extensions,
+      ],
     })
   }
 

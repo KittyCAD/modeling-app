@@ -1518,6 +1518,24 @@ export class KclManager extends EventTarget {
       annotations: [editorCodeUpdateEvent],
     })
   }
+  clearGlobalHistory() {
+    this._globalHistoryView.dispatch(
+      {
+        effects: [this._globalHistoryView.historyCompartment.reconfigure([])],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+
+    // Add history back
+    this._globalHistoryView.dispatch(
+      {
+        effects: [
+          this._globalHistoryView.historyCompartment.reconfigure([history()]),
+        ],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+  }
 
   // Invoked by codeMirror during undo/redo.
   // Call with incorrect "this" so it needs to be an arrow function.
