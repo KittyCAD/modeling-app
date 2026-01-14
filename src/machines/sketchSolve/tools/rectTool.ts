@@ -42,8 +42,6 @@ type CenterRectToolContext = {
   rectOriginMode: RectOriginMode
 }
 
-//type ToolActionArgs = ActionArgs<ToolContext, ToolEvents, ToolEvents>
-
 type CenterRectToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   CenterRectToolContext,
   CenterRectToolEvent,
@@ -151,7 +149,8 @@ export const machine = setup({
         self._parent?.send({
           type: 'set draft entities',
           data: {
-            segmentIds: output.draft.segmentIds,
+            // Only setting line ids instead of segmentIds
+            segmentIds: output.draft.lineIds,
             constraintIds: output.draft.constraintIds,
           },
         })
@@ -161,13 +160,10 @@ export const machine = setup({
         }
       }
     ),
-    'show draft geometry': () => {
-      console.log('show draft geometry')
-      // Add your action code here
-      // ...
+    'delete draft entities':  ({ self }) => {
+      self._parent?.send({ type: 'delete draft entities' })
     },
     'remove point listener': ({ context }) => {
-      console.log('remove point listener')
       context.sceneInfra.setCallbacks({
         onClick: () => {},
         onMove: () => {},
@@ -246,7 +242,6 @@ export const machine = setup({
           }),
           target: 'adding first point',
         },
-        // TODO escape
       },
     },
     'adding first point': {
@@ -286,9 +281,24 @@ export const machine = setup({
           ],
           target: 'awaiting first point',
         },
+        escape: {
+          target: 'delete draft entities'
+        }
       },
       entry: 'add second point listener',
       exit: 'remove point listener',
+    },
+    'delete draft entities': {
+      entry: ({ self }) => {
+        self._parent?.send({ type: 'delete draft entities' })
+      },
+      always: {
+        target: 'awaiting first point',
+        actions: assign({
+          origin: [0, 0],
+          draft: undefined,
+        }),
+      },
     },
     // 'Confirming dimensions': {
     //   invoke: {

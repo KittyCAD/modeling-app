@@ -69,10 +69,6 @@ function getConstraintFromDelta(
   return constraintId
 }
 
-function uniqueNumbers(values: number[]): number[] {
-  return Array.from(new Set(values))
-}
-
 export async function createDraftRectangle({
   origin,
   rustContext,
@@ -149,12 +145,6 @@ export async function createDraftRectangle({
   const start4 = line4.startPointId
   const end4 = line4.endPointId
 
-  const lineIds: number[] = [
-    line1.lineId,
-    line2.lineId,
-    line3.lineId,
-    line4.lineId,
-  ]
   const constraintIds: number[] = []
 
   // Connect corners (close loop): line1 -> line2 -> line3 -> line4 -> line1
@@ -234,8 +224,11 @@ export async function createDraftRectangle({
     topHorizontal.constraintId
   )
 
-  const segmentIds = uniqueNumbers([
-    ...lineIds,
+  const segmentIds = [
+    line1.lineId,
+    line2.lineId,
+    line3.lineId,
+    line4.lineId,
     start1,
     end1,
     start2,
@@ -244,7 +237,7 @@ export async function createDraftRectangle({
     end3,
     start4,
     end4,
-  ])
+  ]
 
   const lastOperation = topHorizontal
 
@@ -253,7 +246,7 @@ export async function createDraftRectangle({
     kclSource: lastOperation.kclSource,
     sceneGraphDelta: lastOperation.sceneGraphDelta,
     draft: {
-      lineIds: [lineIds[0], lineIds[1], lineIds[2], lineIds[3]],
+      lineIds: [line1.lineId, line2.lineId, line3.lineId, line4.lineId],
       segmentIds,
       constraintIds,
     },
