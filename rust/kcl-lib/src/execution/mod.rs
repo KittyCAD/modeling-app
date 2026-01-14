@@ -755,7 +755,19 @@ impl ExecutorContext {
                     #[cfg(feature = "artifact-graph")]
                     {
                         let len = exec_state.mod_local.artifacts.object_id_generator.peek_id();
-                        exec_state.mod_local.artifacts.scene_objects = mem.scene_objects[0..len].to_vec();
+                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+                            exec_state.mod_local.artifacts.scene_objects = scene_objects.to_vec();
+                        } else {
+                            let message = format!(
+                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                                mem.scene_objects.len(),
+                                len
+                            );
+                            debug_assert!(false, "{message}");
+                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+                            )));
+                        }
                     }
                 }
                 None => self.prepare_mem(&mut exec_state).await?,
