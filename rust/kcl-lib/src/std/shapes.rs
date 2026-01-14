@@ -95,8 +95,15 @@ async fn inner_rectangle(
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
 
     // Start the sketch then draw the 4 lines.
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, corner_t, None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        corner_t,
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
     let sketch_id = sketch.id;
     let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
     let ids = [
@@ -197,7 +204,8 @@ async fn inner_circle(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -296,8 +304,15 @@ async fn inner_circle_three_point(
     let sketch_surface = sketch_surface_or_group.into_sketch_surface();
 
     let from = [TyF64::new(center[0] + radius, ty), TyF64::new(center[1], ty)];
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        from.clone(),
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -449,7 +464,8 @@ async fn inner_polygon(
         point_to_typed(vertices[0], units),
         None,
         exec_state,
-        args.clone(),
+        &args.ctx,
+        args.source_range,
     )
     .await?;
 
@@ -603,7 +619,8 @@ async fn inner_ellipse(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();

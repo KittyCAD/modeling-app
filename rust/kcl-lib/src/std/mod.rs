@@ -26,6 +26,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub(crate) mod sketch2;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
