@@ -979,10 +979,10 @@ impl Node<PipeExpression> {
                             .trim_end_matches('\n')
                             .to_string()
                     };
-                    if let NonCodeValue::BlockComment { .. } = val.value {
-                        if !buf.ends_with('\n') {
-                            buf.push('\n');
-                        }
+                    if let NonCodeValue::BlockComment { .. } = val.value
+                        && !buf.ends_with('\n')
+                    {
+                        buf.push('\n');
                     }
                     buf.push_str(&formatted);
                 }

@@ -1913,6 +1913,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     }
 
     impl<T> CommentStart for Node<T> {
+        #[allow(clippy::misnamed_getters)]
         fn comment_start(&self) -> usize {
             self.start
         }
