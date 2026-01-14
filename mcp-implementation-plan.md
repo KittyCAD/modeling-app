@@ -103,6 +103,17 @@ The implementation follows a Blender-style architecture:
 - [x] Add tool description and parameter documentation
 - [x] Register tool in server
 
+### 4.4 Get Status Tool
+- [x] Create `src/mcp-server/tools/getStatus.ts`
+- [x] Implement tool that reports application status
+- [x] Include execution state (`isExecuting`)
+- [x] Include CodeMirror diagnostics (parse/execution errors)
+- [x] Include project name (current project folder)
+- [x] Include home screen status (optional field when true)
+- [x] Add custom `waitForExecution` description (defaults to false for quick status)
+- [x] Add tool description explaining MCP is most useful when project is loaded
+- [x] Register tool in server
+
 ## Phase 5: Testing & Validation
 
 ### 5.1 Unit Tests
@@ -162,6 +173,167 @@ The implementation follows a Blender-style architecture:
 - [ ] Test error cases (invalid selection, invalid radius)
 - [ ] Test with different geometry configurations
 
+## Phase 8: Additional Context Tools for LLMs
+
+The goal of these tools is to provide LLMs with rich context about the 3D scene and KCL codebase that they can't get from just reading code. This helps LLMs write better KCL even without training on it.
+
+### 8.1 Screenshot Tool
+**Purpose**: Provide visual context of the 3D scene to help LLMs understand what the model actually looks like. Making multiple calls to view the part from different angles is useful for understanding the 3D geometry.
+
+**Design Decisions**:
+- Use existing `screenshot()` function from `src/lib/screenshot.ts`
+- Accept `view` parameter with union type: `'Top view' | 'Bottom view' | 'Rear view' | 'Front view' | 'Right view' | 'Left view' | 'Isometric view' | 'Current view'`
+- Default to `'Isometric view'` for consistent standard views
+- When view is not `'Current view'`, must:
+  1. Save current camera state
+  2. Set camera to requested view (using `sceneInfra.camControls.updateCameraToAxis()` or `engineViewIsometric()`)
+  3. Wait for camera animation to complete
+  4. Take screenshot
+  5. Restore original camera state
+- Return image as base64 data URL (MCP standard for image resources)
+- Use MCP image resource format if available, otherwise base64 in JSON
+
+**Implementation**:
+- [ ] Create `src/mcp-server/tools/getScreenshot.ts`
+- [ ] Add bridge message type `getScreenshot`
+- [ ] Implement renderer handler that:
+  - Accepts `view` parameter (defaults to `'Isometric view'`)
+  - Saves current camera state via `sceneInfra.camControls.getCameraView()` or similar
+  - Maps view names to camera axis commands (using `AxisNames` enum):
+    - `'Top view'` → `updateCameraToAxis(AxisNames.Z)` (Z axis)
+    - `'Bottom view'` → `updateCameraToAxis(AxisNames.NEG_Z)` (-Z axis)
+    - `'Front view'` → `updateCameraToAxis(AxisNames.NEG_Y)` (-Y axis)
+    - `'Rear view'` → `updateCameraToAxis(AxisNames.Y)` (Y axis)
+    - `'Right view'` → `updateCameraToAxis(AxisNames.X)` (X axis)
+    - `'Left view'` → `updateCameraToAxis(AxisNames.NEG_X)` (-X axis)
+    - `'Isometric view'` → `engineViewIsometric()` (standard isometric view)
+    - `'Current view'` → skip camera change
+  - Waits for camera animation (may need delay or wait for engine response)
+  - Calls `screenshot()` function
+  - Restores original camera state
+  - Returns base64 image data
+- [ ] Add tool description emphasizing value of multiple angle views
+- [ ] Handle errors gracefully (restore camera even on error)
+
+**Considerations**:
+- Screenshots can be large - consider compression or size limits
+- Camera restoration must be reliable (use try/finally pattern)
+- May want to wait for execution to complete before screenshot (optional `waitForExecution` parameter)
+- Camera animation timing - may need to wait for engine response or add delay
+
+### 8.2 KCL Samples Access
+**Purpose**: Give LLMs access to example KCL code to learn patterns and best practices.
+
+**Design Decisions**:
+- Samples are in `public/kcl-samples/` directory (100+ examples)
+- Each sample has a folder with `main.kcl` and optional screenshot
+- Options considered:
+  1. **List samples** - Get directory listing with names/descriptions
+  2. **Search samples** - Search by name or category
+  3. **Fetch sample** - Get full KCL code for a specific sample
+  4. **Point to GitHub** - Just tell LLM to browse GitHub repo
+
+**Recommendation**: Implement list + fetch approach:
+- `list_kcl_samples`: Returns array of sample names with metadata (description from README, categories, screenshot paths)
+- `get_kcl_sample`: Fetches the actual KCL code for a specific sample by name
+- This gives LLMs structured access without requiring web browsing
+- Can reference GitHub URL in tool description for manual browsing
+
+**Implementation**:
+- [ ] Create `src/mcp-server/tools/listKclSamples.ts`
+  - Parse `public/kcl-samples/README.md` for sample metadata
+  - Return structured list with names, descriptions, categories
+- [ ] Create `src/mcp-server/tools/getKclSample.ts`
+  - Accept sample name parameter
+  - Read and return `main.kcl` file content from sample directory
+  - Handle errors for invalid sample names
+- [ ] Add bridge message types (if needed - samples are in public folder, might be accessible directly)
+- [ ] Consider: Should samples be accessible via bridge or directly from filesystem?
+
+**Decision**: Access samples via bridge for cloud compatibility (even though they're in `public/` folder, bridge approach works better for future web/cloud deployment)
+
+### 8.3 Project File Management
+**Purpose**: Help LLMs understand project structure and switch between files for better performance.
+
+**Design Decisions**:
+- Projects can have multiple KCL files organized in folders
+- Entry file is the currently active/selected file
+- LLMs might want to:
+  - See all files in project
+  - Switch to a smaller file for faster iteration
+  - Understand file dependencies/imports
+
+**Tools**:
+1. **`get_kcl_file_names`**: List all KCL files in current project
+   - Returns array of file paths (relative to project root)
+   - Includes current entry file indicator
+   - Optionally include file metadata (size, last modified)
+   
+2. **`get_current_kcl_file`**: Get the currently active file path
+   - Returns the entry file path
+   - Useful for understanding what file LLM is editing
+
+3. **`set_current_kcl_file`**: Change the active/entry file
+   - Accepts relative file path
+   - Switches editor to that file (sets it as the entry file)
+   - Useful for performance: switching to smaller files without dependencies speeds up feedback loop
+   - This is a setter but provides value for LLM workflow optimization
+
+**Implementation**:
+- [ ] Create `src/mcp-server/tools/getKclFileNames.ts`
+  - Access project structure from `settingsActor.getSnapshot().context.currentProject`
+  - Recursively list all `.kcl` files
+  - Return structured list with paths and metadata
+- [ ] Create `src/mcp-server/tools/getCurrentKclFile.ts`
+  - Get `kclManager.currentFilePath`
+  - Return current file path relative to project root
+- [ ] Create `src/mcp-server/tools/setCurrentKclFile.ts` (if we include setters)
+  - Accept file path parameter
+  - Navigate to file using router/route loader
+  - Validate file exists in project
+- [ ] Add bridge message types for file operations
+- [ ] Implement renderer handlers
+
+**Considerations**:
+- File paths should be relative to project root for portability
+- Need to handle browser vs desktop differences
+- Should validate file exists before switching
+
+### 8.4 Additional Context Tools (Future Considerations)
+
+**Variables/Constants Context**:
+- `get_variables`: Get all variables from execution state
+  - Access from `kclManager.lastSuccessfulVariables` or `execState.variables`
+  - Helpful for understanding what values are available
+  - Could include variable types and current values
+
+**Import Dependencies**:
+- `get_imports`: Get list of imported files/modules
+  - From `execState.filenames` or AST analysis
+  - Help LLMs understand file dependencies
+  - Could show import graph
+
+**Execution Logs**:
+- `get_execution_logs`: Get recent execution logs
+  - From `kclManager.logs`
+  - Help debug execution issues
+  - Might be noisy, so optional or filtered
+
+**Camera/View State** (Lower Priority):
+- `get_camera_state`: Get current camera position/view
+  - From `sceneInfra.camControls` or engine
+  - Less critical but could help understand user's perspective
+  - Might be overkill for most use cases
+
+**Geometry Metadata** (Future):
+- `get_geometry_bounds`: Get bounding box of current geometry
+- `get_geometry_stats`: Get statistics (face count, edge count, etc.)
+- Could help LLMs understand model complexity
+
+### 8.5 Stub: get artifact graph as mermaid diagram
+
+### 8.6 Stub: get and set tag for an artifact
+
 ## Technical Considerations
 
 ### Communication Mechanism Options
@@ -200,7 +372,14 @@ src/
 │   │   ├── getArtifactGraph.ts  # Get current ArtifactGraph
 │   │   ├── getFeatureTree.ts    # Get current feature tree
 │   │   ├── getCurrentSelection.ts # Get current selection
-│   │   └── filletEdge.ts        # Fillet edge tool (future)
+│   │   ├── getStatus.ts          # Get application status
+│   │   ├── filletEdge.ts        # Fillet edge tool
+│   │   ├── getScreenshot.ts     # Get 3D scene screenshot (Phase 8)
+│   │   ├── listKclSamples.ts    # List available KCL samples (Phase 8)
+│   │   ├── getKclSample.ts      # Get specific KCL sample code (Phase 8)
+│   │   ├── getKclFileNames.ts   # List KCL files in project (Phase 8)
+│   │   ├── getCurrentKclFile.ts # Get current active file (Phase 8)
+│   │   └── setCurrentKclFile.ts # Set active file (Phase 8, optional)
 │   └── bridge/
 │       ├── client.ts            # Bridge client (talks to Electron)
 │       └── protocol.ts           # Communication protocol types
