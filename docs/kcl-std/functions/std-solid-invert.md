@@ -8,7 +8,7 @@ layout: manual
 Inverts the orientation of a surface, swapping which side is the front and which is the reverse.
 
 ```kcl
-invert(@surface: Solid)
+invert(@surface: Solid): Solid
 ```
 
 
@@ -18,6 +18,10 @@ invert(@surface: Solid)
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `surface` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The surface to flip (swap its back and front sides) | Yes |
+
+### Returns
+
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
 
 ### Examples

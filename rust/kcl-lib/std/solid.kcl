@@ -1366,4 +1366,4 @@ export fn invert(
 export fn imprint(
   /// The bodies to imprint together.
   @bodies: [Solid; 2+],
-): Solid {}
+): [Solid; 1+] {}
