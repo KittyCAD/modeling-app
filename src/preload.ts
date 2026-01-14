@@ -10,6 +10,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { join } from 'node:path'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -123,14 +124,51 @@ const stat = (path: string) => {
  * creating any folders necessary to do so,
  * and falling back to copy-and-delete if rename fails.
  */
-export async function move(source: string | URL, destination: string | URL) {
-  const isDir = (await fs.lstat(source)).isDirectory()
+export async function move(
+  source: string | URL,
+  destination: string | URL
+): Promise<undefined | Error> {
+  const sourceIsDir = (await fs.stat(source)).isDirectory()
+
+  if (sourceIsDir) {
+    const destinationStat = await fs.stat(destination).catch((e) => {
+      console.error(e)
+      return e
+    })
+    const destinationIsDir =
+      'isDirectory' in destinationStat && destinationStat.isDirectory
+    const destinationIsNotEmpty =
+      (await fs.readdir(destination).catch((e) => e)).length !== 0
+
+    if (destinationIsDir && destinationIsNotEmpty) {
+      const sourceContents = await fs.readdir(source)
+      const bundledContentsResults = await Promise.all(
+        sourceContents.map((relPath) =>
+          move(
+            join(source.toString(), relPath),
+            join(destination.toString(), relPath)
+          )
+        )
+      )
+      const bundledContentsErrors = bundledContentsResults.filter(
+        (r) => r !== undefined
+      )
+      if (bundledContentsErrors.length) {
+        return new Error(
+          `Several errors occurred while attempting move: ${bundledContentsErrors.map((e) => e.message).join(', ')}`
+        )
+      }
+      await fs.rm(source, { recursive: true })
+      return undefined
+    }
+  }
+
   return fs
     .rename(source, destination)
     .catch(async (e) => {
       if (e.code === 'ENOENT') {
         // We need to make the directories in the destination
-        const dirToMake = isDir
+        const dirToMake = sourceIsDir
           ? destination
           : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
         await fs.mkdir(dirToMake, { recursive: true })

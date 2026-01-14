@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const fsPromisesMock = vi.hoisted(() => ({
   rename: vi.fn(),
-  lstat: vi.fn(),
+  stat: vi.fn(),
   mkdir: vi.fn(),
   cp: vi.fn(),
   rm: vi.fn(),
@@ -11,7 +11,6 @@ const fsPromisesMock = vi.hoisted(() => ({
   readFile: vi.fn(),
   writeFile: vi.fn(),
   readdir: vi.fn(),
-  stat: vi.fn(),
   constants: { R_OK: 4, W_OK: 2 },
 }))
 
@@ -40,11 +39,12 @@ vi.mock('chokidar', () => ({
 }))
 
 import { move } from '@src/preload'
+import { fromPromise } from 'xstate'
 
 describe('move', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    fsPromisesMock.lstat.mockResolvedValue({
+    fsPromisesMock.stat.mockResolvedValue({
       isDirectory: () => false,
     })
     fsPromisesMock.rename.mockResolvedValue(undefined)
@@ -102,10 +102,15 @@ describe('move', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const error = { code: 'EACCES' }
     fsPromisesMock.rename.mockRejectedValueOnce(error)
+    fsPromisesMock.readdir.mockResolvedValueOnce([])
+    fsPromisesMock.stat.mockResolvedValue({
+      isDirectory: () => false,
+    })
 
     const result = await move('source.txt', 'dest.txt')
 
     expect(result).toBe(error)
+    expect(fsPromisesMock.readdir).not.toHaveBeenCalled()
     expect(fsPromisesMock.cp).not.toHaveBeenCalled()
     expect(fsPromisesMock.rm).not.toHaveBeenCalled()
     consoleSpy.mockRestore()
