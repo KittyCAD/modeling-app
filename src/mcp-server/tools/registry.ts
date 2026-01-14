@@ -42,6 +42,11 @@ import {
   handleGetScreenshotTool,
   type ScreenshotView,
 } from './getScreenshot.js'
+import {
+  listKclSamplesTool,
+  handleListKclSamplesTool,
+} from './listKclSamples.js'
+import { getKclSampleTool, handleGetKclSampleTool } from './getKclSample.js'
 
 /**
  * All available MCP tools
@@ -59,6 +64,8 @@ const tools = [
   filletEdgeTool,
   getStatusTool,
   getScreenshotTool,
+  listKclSamplesTool,
+  getKclSampleTool,
 ]
 
 /**
@@ -141,6 +148,18 @@ export async function registerTools(server: Server): Promise<void> {
               }
             | undefined) || {}
         return handleGetScreenshotTool(args)
+      }
+
+      case 'list_kcl_samples': {
+        return handleListKclSamplesTool()
+      }
+
+      case 'get_kcl_sample': {
+        const args =
+          (request.params.arguments as
+            | { sampleName?: string; fileName?: string }
+            | undefined) || {}
+        return handleGetKclSampleTool(args)
       }
 
       default: {

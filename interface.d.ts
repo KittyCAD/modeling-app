@@ -53,6 +53,7 @@ export interface IElectronAPI {
   // This is synchronous.
   exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
+  getAppPath: () => Promise<string>
   rm: typeof fs.rm
   stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
@@ -134,6 +135,16 @@ export interface IElectronAPI {
         tag?: string
         useCurrentSelection?: boolean
         edges?: string[]
+      }) => void | Promise<void>
+    ) => () => void
+    onListKclSamples: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => () => void
+    onGetKclSample: (
+      callback: (data: {
+        requestId: string
+        sampleName: string
+        fileName?: string
       }) => void | Promise<void>
     ) => () => void
     sendResponse: (

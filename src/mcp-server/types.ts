@@ -12,6 +12,8 @@ export type BridgeMessageType =
   | 'filletEdge'
   | 'getStatus'
   | 'getScreenshot'
+  | 'listKclSamples'
+  | 'getKclSample'
 
 /**
  * Base bridge message structure

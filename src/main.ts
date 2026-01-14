@@ -358,6 +358,10 @@ ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
 
+ipcMain.handle('app.getAppPath', () => {
+  return app.getAppPath()
+})
+
 ipcMain.handle('dialog.showOpenDialog', (event, data) => {
   return dialog.showOpenDialog(data)
 })

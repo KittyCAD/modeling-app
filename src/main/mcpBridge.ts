@@ -205,6 +205,44 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'listKclSamples': {
+        const data = await queryRenderer('mcp:listKclSamples', {})
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
+      case 'getKclSample': {
+        const sampleName = request.params?.sampleName as string | undefined
+        if (!sampleName) {
+          sendErrorResponse(
+            socket,
+            request.id,
+            'sampleName parameter is required'
+          )
+          return
+        }
+        const fileName =
+          (request.params?.fileName as string | undefined) || 'main.kcl'
+        const data = await queryRenderer('mcp:getKclSample', {
+          sampleName,
+          fileName,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

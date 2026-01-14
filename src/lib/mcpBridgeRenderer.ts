@@ -28,6 +28,7 @@ import { engineViewIsometric, engineStreamZoomToFit } from '@src/lib/utils'
 import type { CameraViewState } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import kclSamplesManifest from '@public/kcl-samples/manifest.json'
 
 /**
  * Wait for execution to complete if it's currently in progress
@@ -455,6 +456,163 @@ export function initMcpBridgeHandlers(): void {
               success: true,
               pathToNode: filletResult.pathToNode,
               message: 'Fillet operation completed successfully',
+            },
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle listKclSamples request
+    window.electron.mcpBridge.onListKclSamples(
+      async (data: { requestId: string }) => {
+        try {
+          // Return the manifest data with structured information
+          const samples = kclSamplesManifest.map((sample) => ({
+            name: sample.pathFromProjectDirectoryToFirstFile.replace(
+              '/main.kcl',
+              ''
+            ),
+            title: sample.title,
+            description: sample.description,
+            categories: sample.categories,
+            pathFromProjectDirectoryToFirstFile:
+              sample.pathFromProjectDirectoryToFirstFile,
+            multipleFiles: sample.multipleFiles,
+            files: sample.files,
+          }))
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: samples,
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle getKclSample request
+    window.electron.mcpBridge.onGetKclSample(
+      async (data: {
+        requestId: string
+        sampleName: string
+        fileName?: string
+      }) => {
+        try {
+          // TypeScript guard: we know window.electron exists from outer check
+          const electron = window.electron
+          if (!electron) {
+            return
+          }
+
+          // Find the sample in the manifest
+          const sample = kclSamplesManifest.find(
+            (s) =>
+              s.pathFromProjectDirectoryToFirstFile.replace('/main.kcl', '') ===
+              data.sampleName
+          )
+
+          if (!sample) {
+            electron.mcpBridge?.sendResponse(data.requestId, {
+              error: `Sample "${data.sampleName}" not found. Use list_kcl_samples to see available samples.`,
+            })
+            return
+          }
+
+          // Determine which file to read (default to main.kcl)
+          const fileName = data.fileName || 'main.kcl'
+
+          // Validate that the file exists in the sample's files list
+          if (!sample.files.includes(fileName)) {
+            electron.mcpBridge?.sendResponse(data.requestId, {
+              error: `File "${fileName}" not found in sample "${data.sampleName}". Available files: ${sample.files.join(', ')}`,
+            })
+            return
+          }
+
+          // Construct the path to the requested file
+          // The sample path is relative to kcl-samples/ directory
+          const sampleDir = sample.pathFromProjectDirectoryToFirstFile.replace(
+            '/main.kcl',
+            ''
+          )
+          const filePath = `kcl-samples/${sampleDir}/${fileName}`
+
+          // Try to read the file from different possible locations
+          // In development: files are at project root/public/kcl-samples
+          // In production: files are bundled, need to find the right path
+          let fileContent: string
+          try {
+            // Get the app path to construct the full path
+            const appPath = await electron.getAppPath()
+
+            // Try different possible paths
+            const possiblePaths = [
+              // Development: project root/public/kcl-samples/...
+              electron.path.join(
+                appPath,
+                '..',
+                '..',
+                'public',
+                filePath
+              ),
+              // Development: alternative structure
+              electron.path.join(appPath, '..', 'public', filePath),
+              // Production: packaged app
+              electron.path.join(appPath, 'public', filePath),
+              // Production: resources folder (Electron packaging)
+              electron.path.join(
+                appPath,
+                '..',
+                'resources',
+                'public',
+                filePath
+              ),
+            ]
+
+            let fullFilePath: string | null = null
+            for (const path of possiblePaths) {
+              if (electron.exists(path)) {
+                fullFilePath = path
+                break
+              }
+            }
+
+            if (!fullFilePath) {
+              electron.mcpBridge?.sendResponse(data.requestId, {
+                error: `Could not find sample file "${filePath}" at any expected location. Sample: ${data.sampleName}, File: ${fileName}`,
+              })
+              return
+            }
+
+            // Read file with utf-8 encoding to get string directly
+            fileContent = await electron.readFile(fullFilePath, {
+              encoding: 'utf-8',
+            })
+          } catch (fileError) {
+            electron.mcpBridge?.sendResponse(data.requestId, {
+              error:
+                fileError instanceof Error
+                  ? fileError.message
+                  : 'Failed to read sample file',
+            })
+            return
+          }
+
+          electron.mcpBridge?.sendResponse(data.requestId, {
+            data: {
+              name: data.sampleName,
+              fileName: fileName,
+              title: sample.title,
+              description: sample.description,
+              categories: sample.categories,
+              content: fileContent,
+              path: `${sampleDir}/${fileName}`,
+              availableFiles: sample.files,
             },
           })
         } catch (error) {

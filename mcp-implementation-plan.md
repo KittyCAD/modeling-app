@@ -241,17 +241,24 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 - Can reference GitHub URL in tool description for manual browsing
 
 **Implementation**:
-- [ ] Create `src/mcp-server/tools/listKclSamples.ts`
-  - Parse `public/kcl-samples/README.md` for sample metadata
+- [x] Create `src/mcp-server/tools/listKclSamples.ts`
+  - Use `public/kcl-samples/manifest.json` for sample metadata (already structured)
   - Return structured list with names, descriptions, categories
-- [ ] Create `src/mcp-server/tools/getKclSample.ts`
+- [x] Create `src/mcp-server/tools/getKclSample.ts`
   - Accept sample name parameter
   - Read and return `main.kcl` file content from sample directory
   - Handle errors for invalid sample names
-- [ ] Add bridge message types (if needed - samples are in public folder, might be accessible directly)
-- [ ] Consider: Should samples be accessible via bridge or directly from filesystem?
+- [x] Add bridge message types (`listKclSamples` and `getKclSample`)
+- [x] Add handlers in main process bridge
+- [x] Add renderer handlers to read files from filesystem
+- [x] Register tools in registry
 
 **Decision**: Access samples via bridge for cloud compatibility (even though they're in `public/` folder, bridge approach works better for future web/cloud deployment)
+
+**Implementation Notes**:
+- Uses existing `manifest.json` for sample metadata (no need to parse README.md)
+- File path resolution tries multiple locations to handle both dev and production builds
+- Sample names are derived from directory names (e.g., "bracket", "ball-bearing")
 
 ### 8.3 Project File Management
 **Purpose**: Help LLMs understand project structure and switch between files for better performance.

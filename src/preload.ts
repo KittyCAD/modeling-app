@@ -133,6 +133,7 @@ async function statIsDirectory(path: string): Promise<boolean> {
 }
 
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
+const getAppPath = async () => ipcRenderer.invoke('app.getAppPath')
 
 const canReadWriteDirectory = async (
   path: string
@@ -268,6 +269,7 @@ contextBridge.exposeInMainWorld('electron', {
   openInNewWindow,
   showInFolder,
   getPath,
+  getAppPath,
   packageJson,
   arch: process.arch,
   platform: process.platform,
@@ -394,6 +396,43 @@ contextBridge.exposeInMainWorld('electron', {
       })
       return () => {
         ipcRenderer.removeAllListeners('mcp:filletEdge')
+      }
+    },
+    onListKclSamples: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:listKclSamples', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error(
+              '[MCP Bridge] Error in listKclSamples handler:',
+              error
+            )
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:listKclSamples')
+      }
+    },
+    onGetKclSample: (
+      callback: (data: {
+        requestId: string
+        sampleName: string
+        fileName?: string
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getKclSample', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in getKclSample handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getKclSample')
       }
     },
     sendResponse: (
