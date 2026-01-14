@@ -13,22 +13,8 @@ import type { Coords2d } from '@src/lang/util'
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
 
-export type RectPointIds = {
-  /**
-   * Each corner is represented by 2 point IDs because `chainSegment` creates
-   * a new start point and makes it coincident with the previous end point.
-   * If we only edit one of the two, the solver can compromise and the cursor
-   * appears to "lag" (e.g. move halfway).
-   */
-  p0: [number, number]
-  p1: [number, number]
-  p2: [number, number]
-  p3: [number, number]
-}
-
 export type RectDraftIds = {
   lineIds: [number, number, number, number]
-  pointIds: RectPointIds
   segmentIds: number[]
   constraintIds: number[]
 }
@@ -260,7 +246,7 @@ export async function createDraftRectangle({
     end4,
   ])
 
-  const lastOperation = line4
+  const lastOperation = topHorizontal
 
   return {
     // Return the latest delta so the caller has all new ids
@@ -268,14 +254,8 @@ export async function createDraftRectangle({
     sceneGraphDelta: lastOperation.sceneGraphDelta,
     draft: {
       lineIds: [lineIds[0], lineIds[1], lineIds[2], lineIds[3]],
-      pointIds: {
-        p0: [end4, start1],
-        p1: [end1, start2],
-        p2: [end2, start3],
-        p3: [end3, start4],
-      },
       segmentIds,
-      constraintIds: [],
+      constraintIds,
     },
   }
 }
@@ -305,27 +285,6 @@ export async function updateDraftRectanglePoints({
   const settings = await jsAppSettings(rustContext.settingsActor)
 
   const [line1Id, line2Id, line3Id, line4Id] = draft.lineIds
-
-  // Update the line segment ctors directly (instead of editing point segments).
-  // Previously (doesn't work)
-  // const edits = [
-  //   ...draft.pointIds.p0.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p0[0], points.p0[1], units),
-  //   })),
-  //   ...draft.pointIds.p1.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p1[0], points.p1[1], units),
-  //   })),
-  //   ...draft.pointIds.p2.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p2[0], points.p2[1], units),
-  //   })),
-  //   ...draft.pointIds.p3.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p3[0], points.p3[1], units),
-  //   })),
-  // ]
 
   const start1: Coords2d = [rect.min[0], rect.min[1]]
   const start2: Coords2d = [rect.max[0], rect.min[1]]
@@ -361,20 +320,6 @@ function makeVarExpr(value: number, units: NumericSuffix) {
     type: 'Var' as const,
     value: roundOff(value),
     units,
-  }
-}
-
-function _makePointSegmentCtor(
-  x: number,
-  y: number,
-  units: NumericSuffix
-): SegmentCtor {
-  return {
-    type: 'Point',
-    position: {
-      x: makeVarExpr(x, units),
-      y: makeVarExpr(y, units),
-    },
   }
 }
 
