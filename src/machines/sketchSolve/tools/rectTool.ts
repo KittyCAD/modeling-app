@@ -12,7 +12,7 @@ import type {
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
   createDraftRectangle,
-  updateDraftRectanglePoints,
+  updateDraftRectangle,
 } from '@src/machines/sketchSolve/tools/rectUtils'
 import type { Coords2d } from '@src/lang/util'
 
@@ -107,7 +107,7 @@ export const machine = setup({
                 max[1] = min[1] + size[1] * 2
               }
 
-              const result = await updateDraftRectanglePoints({
+              const result = await updateDraftRectangle({
                 rustContext: context.rustContext,
                 kclManager: context.kclManager,
                 sketchId: context.sketchId,
@@ -183,11 +183,10 @@ export const machine = setup({
           origin: [number, number]
         }
       }) => {
-        const { rustContext, kclManager, sketchId, origin } = input
+        const { rustContext, kclManager, sketchId } = input
 
         try {
           const result = await createDraftRectangle({
-            origin,
             rustContext,
             kclManager,
             sketchId,

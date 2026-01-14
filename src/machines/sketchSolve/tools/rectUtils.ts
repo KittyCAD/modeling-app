@@ -15,7 +15,7 @@ type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
 
 export type RectDraftIds = {
   lineIds: [number, number, number, number]
-  segmentIds: number[]
+  segmentIds: number[] // all segments, including points, lines
   constraintIds: number[]
 }
 
@@ -70,12 +70,10 @@ function getConstraintFromDelta(
 }
 
 export async function createDraftRectangle({
-  origin,
   rustContext,
   kclManager,
   sketchId,
 }: {
-  origin: Coords2d
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
@@ -88,35 +86,26 @@ export async function createDraftRectangle({
     kclManager.fileSettings.defaultLengthUnit
   )
   const settings = await jsAppSettings(rustContext.settingsActor)
-  const [x, y] = origin
 
   const line1 = await makeDraftLine({
-    x,
-    y,
     units,
     rustContext,
     sketchId,
     settings,
   })
   const line2 = await makeDraftLine({
-    x,
-    y,
     units,
     rustContext,
     sketchId,
     settings,
   })
   const line3 = await makeDraftLine({
-    x,
-    y,
     units,
     rustContext,
     sketchId,
     settings,
   })
   const line4 = await makeDraftLine({
-    x,
-    y,
     units,
     rustContext,
     sketchId,
@@ -253,7 +242,7 @@ export async function createDraftRectangle({
   }
 }
 
-export async function updateDraftRectanglePoints({
+export async function updateDraftRectangle({
   rustContext,
   kclManager,
   sketchId,
@@ -335,15 +324,11 @@ function makeLineSegmentCtor(
 }
 
 async function makeDraftLine({
-  x,
-  y,
   units,
   rustContext,
   sketchId,
   settings,
 }: {
-  x: number
-  y: number
   units: NumericSuffix
   rustContext: RustContext
   sketchId: number
@@ -357,19 +342,24 @@ async function makeDraftLine({
 }> {
   const ctor: SegmentCtor = {
     type: 'Line',
+    // These are dummy values as they will be overridden by updateDraftRectangle immediately
+    // If needed they can be sent as a param
     start: { x: makeVarExpr(0, units), y: makeVarExpr(0, units) },
-    end: { x: makeVarExpr(11, units), y: makeVarExpr(11, units) },
+    end: { x: makeVarExpr(10, units), y: makeVarExpr(0, units) },
   }
   const result = await rustContext.addSegment(
     0,
     sketchId,
     ctor,
-    undefined, //'rectangle-segment',
+    'rectangle-segment',
     settings
   )
   const line = getLineFromDelta(result.sceneGraphDelta)
   if (line instanceof Error) return Promise.reject(line)
-  return { ...line, ...result }
+  return {
+    ...line,
+    ...result,
+  }
 }
 
 async function addCoincidentConstraint({
