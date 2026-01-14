@@ -11,7 +11,11 @@ import type { ActorRefFrom } from 'xstate'
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
 
-type FSEffectProps = { src: string; target: string }
+type FSEffectProps = {
+  src: string
+  target: string
+  requestedProjectName: string
+}
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
 /** helper function that builds a transaction with a default annotation */
@@ -43,7 +47,7 @@ export function buildFSHistoryExtension(
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile)) {
           systemIOActor.send({
-            type: SystemIOMachineEvents.moveRecursive,
+            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
             data: {
               ...e.value,
               successMessage: e.is(restoreFile)
@@ -86,9 +90,21 @@ export function fsHistoryExtension(): Extension {
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
       if (e.is(restoreFile)) {
-        found.push(archiveFile.of({ src: e.value.target, target: e.value.src }))
+        found.push(
+          archiveFile.of({
+            ...e.value,
+            src: e.value.target,
+            target: e.value.src,
+          })
+        )
       } else if (e.is(archiveFile)) {
-        found.push(restoreFile.of({ src: e.value.target, target: e.value.src }))
+        found.push(
+          restoreFile.of({
+            ...e.value,
+            src: e.value.target,
+            target: e.value.src,
+          })
+        )
       }
     }
     return found

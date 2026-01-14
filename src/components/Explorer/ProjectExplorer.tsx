@@ -567,7 +567,11 @@ export const ProjectExplorer = ({
                     },
                   })
                   kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({ src, target })
+                    fsArchiveFile({
+                      src,
+                      target,
+                      requestedProjectName: project.name,
+                    })
                   )
                 })
                 .catch((e) => {
@@ -589,7 +593,11 @@ export const ProjectExplorer = ({
                     },
                   })
                   kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({ src, target })
+                    fsArchiveFile({
+                      src,
+                      target,
+                      requestedProjectName: project.name,
+                    })
                   )
                 })
                 .catch((e) => {
