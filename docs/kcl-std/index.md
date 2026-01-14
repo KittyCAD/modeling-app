@@ -119,6 +119,7 @@ layout: manual
   * [`chamfer`](/docs/kcl-std/functions/std-solid-chamfer)
   * [`fillet`](/docs/kcl-std/functions/std-solid-fillet)
   * [`hollow`](/docs/kcl-std/functions/std-solid-hollow)
+  * [`imprint`](/docs/kcl-std/functions/std-solid-imprint)
   * [`intersect`](/docs/kcl-std/functions/std-solid-intersect)
   * [`invert`](/docs/kcl-std/functions/std-solid-invert)
   * [`patternCircular3d`](/docs/kcl-std/functions/std-solid-patternCircular3d)

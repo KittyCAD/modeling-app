@@ -1323,7 +1323,7 @@ export fn appearance(
 export fn invert(
   /// The surface to flip (swap its back and front sides)
   @surface: Solid,
-) {}
+): Solid {}
 
 /// Imprint multiple bodies into one.
 /// From the outside, the result looks visually similar to a union, but where the two solids overlap,
@@ -1366,4 +1366,4 @@ export fn invert(
 export fn imprint(
   /// The bodies to imprint together.
   @bodies: [Solid; 2+],
-) {}
+): Solid {}
