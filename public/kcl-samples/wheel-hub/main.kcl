@@ -1,0 +1,68 @@
+// Hub
+// A wheel hub is the part that connects the wheel to the suspension
+// Categories: Automotive
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define Parameters
+hubSpacing = 3in
+hubBore = 2.5in
+rotorBore = 3
+lugCount = 5
+lugSpacing = 114.3mm
+lugDiameter = 24mm
+lugThreadDiameter = lugDiameter / 1.75
+lugLength = 5 / 8
+
+// Sketch the base of the hub with a bolting pattern to the upright
+baseSketch = startSketchOn(XZ)
+  |> startProfile(at = [lugSpacing / 1.6, 0])
+  |> arc(
+       angleStart = 0,
+       angleEnd = 60,
+       radius = lugSpacing / 7,
+       tag = $seg01,
+     )
+  |> angledLine(angle = tangentToEnd(seg01), length = profileStartX() * 1.35)
+  |> tangentialArc(angle = 120deg, radius = lugSpacing / 7)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
+  |> close()
+  |> subtract2d(tool =   circle(center = [lugSpacing / 2, 0], diameter = lugThreadDiameter)
+    |> patternCircular2d(instances = 3, center = [0, 0]))
+  |> subtract2d(tool = circle(diameter = hubBore))
+  |> extrude(length = hubSpacing * 5 / 4)
+
+// Trim a revolved profile around the hub base sketch
+revolveTrim = startSketchOn(XY)
+  |> startProfile(at = [rotorBore / 2, -hubSpacing / 4])
+  |> angledLine(angle = 10deg, length = lugSpacing / 3, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 100deg, length = hubSpacing * 1.5)
+  |> xLine(endAbsolute = profileStartX())
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y)
+solid001 = subtract(baseSketch, tools = revolveTrim)
+
+// Create the mounting flange for the wheel
+mountingFlange = startSketchOn(offsetPlane(XZ, offset = hubSpacing * 3 / 4))
+  |> circle(radius = lugSpacing / 1.5, tag = $seg02)
+  |> subtract2d(tool =   circle(center = [lugSpacing / 2, 0], diameter = lugThreadDiameter)
+    |> patternCircular2d(instances = lugCount * 2, center = [0, 0]))
+  |> subtract2d(tool = circle(diameter = rotorBore))
+  |> extrude(length = hubSpacing / 4, tagStart = $capStart001, tagEnd = $capEnd001)
+
+// Chamfer the edges of the mounting flange
+chamfer001 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capStart001]), length = lugSpacing / 30)
+chamfer002 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capEnd001]), length = lugSpacing / 20)
+
+// Model welded bolts to secure the wheel components to the hub
+boltHead = startSketchOn(mountingFlange, face = START)
+  |> polygon(radius = lugThreadDiameter / 1.25, numSides = 6, center = [-lugSpacing / 2, 0])
+  |> extrude(length = hubSpacing / 8, method = NEW)
+  |> appearance(color = "#121212")
+boltStem = startSketchOn(boltHead, face = START)
+  |> circle(center = [lugSpacing / 2, 0], diameter = lugThreadDiameter)
+  |> extrude(length = hubSpacing / 4 + lugLength)
+  |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])
