@@ -78,6 +78,12 @@ pub struct SourceDelta {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
+impl ObjectId {
+    pub fn predecessor(self) -> Option<Self> {
+        self.0.checked_sub(1).map(ObjectId)
+    }
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
@@ -130,6 +136,7 @@ pub enum ObjectKind {
     /// A placeholder for an object that will be solved and replaced later.
     Nil,
     Plane(Plane),
+    Face(Face),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -147,6 +154,13 @@ pub enum ObjectKind {
 pub enum Plane {
     Object(ObjectId),
     Default(PlaneName),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    pub id: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

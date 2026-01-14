@@ -3460,6 +3460,17 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
             ));
         }
+        let on_arg = arguments
+            .iter()
+            .find(|arg| arg.label.as_ref().map(|l| l.name == "on").unwrap_or(false));
+        if let Some(on_arg) = on_arg
+            && !matches!(&on_arg.arg, Expr::Name(_))
+        {
+            ParseContext::err(CompilationError::err(
+                SourceRange::from(&on_arg.arg),
+                "The `on` argument to a sketch block must be a variable name or identifier. If you need a more complex expression, assign it to a variable first.",
+            ));
+        }
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
             end,

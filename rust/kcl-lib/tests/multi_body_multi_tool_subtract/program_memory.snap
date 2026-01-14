@@ -147,6 +147,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -154,7 +156,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -285,6 +286,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "start",
           "xAxis": {
             "x": 0.0,
@@ -422,6 +424,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "YZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -429,7 +433,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "YZ",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -635,6 +638,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -725,6 +729,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 1,
                 "value": "start",
                 "xAxis": {
                   "x": 0.0,
@@ -862,6 +867,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "YZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -869,7 +876,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "YZ",
                       "xAxis": {
                         "x": 0.0,
                         "y": 1.0,
@@ -1108,6 +1114,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -1246,6 +1253,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
@@ -1336,6 +1344,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "start",
                       "xAxis": {
                         "x": 0.0,
@@ -1473,6 +1482,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "YZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -1480,7 +1491,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "YZ",
                             "xAxis": {
                               "x": 0.0,
                               "y": 1.0,
@@ -1704,6 +1714,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -1842,6 +1853,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 3,
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
@@ -1980,6 +1992,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 2,
                       "value": "end",
                       "xAxis": {
                         "x": 0.0,
@@ -2070,6 +2083,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 1,
                             "value": "start",
                             "xAxis": {
                               "x": 0.0,
@@ -2207,6 +2221,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "on": {
                                   "artifactId": "[uuid]",
                                   "id": "[uuid]",
+                                  "kind": "YZ",
+                                  "objectId": 0,
                                   "origin": {
                                     "x": 0.0,
                                     "y": 0.0,
@@ -2214,7 +2230,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "units": "mm"
                                   },
                                   "type": "plane",
-                                  "value": "YZ",
                                   "xAxis": {
                                     "x": 0.0,
                                     "y": 1.0,
@@ -2436,6 +2451,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 5,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -2573,6 +2589,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2580,7 +2598,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2706,6 +2723,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 5,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -2843,6 +2861,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2850,7 +2870,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2976,6 +2995,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 5,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -3113,6 +3133,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3120,7 +3142,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -3246,6 +3267,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 5,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -3383,6 +3405,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3390,7 +3414,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -3583,6 +3606,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3590,7 +3615,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3671,6 +3695,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "start",
         "xAxis": {
           "x": 0.0,
@@ -3808,6 +3833,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3815,7 +3842,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3948,6 +3974,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "start",
         "xAxis": {
           "x": 0.0,
@@ -4085,6 +4112,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4092,7 +4121,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4252,6 +4280,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -4342,6 +4371,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "start",
               "xAxis": {
                 "x": 0.0,
@@ -4479,6 +4509,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4486,7 +4518,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -4679,6 +4710,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -4817,6 +4849,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -4907,6 +4940,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 1,
                     "value": "start",
                     "xAxis": {
                       "x": 0.0,
@@ -5044,6 +5078,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "YZ",
+                          "objectId": 0,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -5051,7 +5087,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "YZ",
                           "xAxis": {
                             "x": 0.0,
                             "y": 1.0,
@@ -5225,6 +5260,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 4,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -5363,6 +5399,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -5501,6 +5538,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 2,
                     "value": "end",
                     "xAxis": {
                       "x": 0.0,
@@ -5591,6 +5629,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "type": "face",
                           "id": "[uuid]",
                           "artifactId": "[uuid]",
+                          "objectId": 1,
                           "value": "start",
                           "xAxis": {
                             "x": 0.0,
@@ -5728,6 +5767,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "on": {
                                 "artifactId": "[uuid]",
                                 "id": "[uuid]",
+                                "kind": "YZ",
+                                "objectId": 0,
                                 "origin": {
                                   "x": 0.0,
                                   "y": 0.0,
@@ -5735,7 +5776,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "units": "mm"
                                 },
                                 "type": "plane",
-                                "value": "YZ",
                                 "xAxis": {
                                   "x": 0.0,
                                   "y": 1.0,
@@ -5961,6 +6001,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 4,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -6099,6 +6140,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -6237,6 +6279,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 2,
                     "value": "end",
                     "xAxis": {
                       "x": 0.0,
@@ -6327,6 +6370,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "type": "face",
                           "id": "[uuid]",
                           "artifactId": "[uuid]",
+                          "objectId": 1,
                           "value": "start",
                           "xAxis": {
                             "x": 0.0,
@@ -6464,6 +6508,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "on": {
                                 "artifactId": "[uuid]",
                                 "id": "[uuid]",
+                                "kind": "YZ",
+                                "objectId": 0,
                                 "origin": {
                                   "x": 0.0,
                                   "y": 0.0,
@@ -6471,7 +6517,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "units": "mm"
                                 },
                                 "type": "plane",
-                                "value": "YZ",
                                 "xAxis": {
                                   "x": 0.0,
                                   "y": 1.0,
@@ -6672,6 +6717,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -6809,6 +6855,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6816,7 +6864,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6924,6 +6971,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -7061,6 +7109,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7068,7 +7118,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7176,6 +7225,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -7313,6 +7363,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7320,7 +7372,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7428,6 +7479,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "end",
         "xAxis": {
           "x": 0.0,
@@ -7565,6 +7617,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7572,7 +7626,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7693,13 +7746,14 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -7725,6 +7779,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "start",
       "xAxis": {
         "x": 0.0,
@@ -7862,6 +7917,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "YZ",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -7869,7 +7926,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "units": "mm"
             },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7928,6 +7984,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 2,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -8018,6 +8075,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "start",
             "xAxis": {
               "x": 0.0,
@@ -8155,6 +8213,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "YZ",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8162,7 +8222,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -8248,6 +8307,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 3,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -8386,6 +8446,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 2,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -8476,6 +8537,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "objectId": 1,
                   "value": "start",
                   "xAxis": {
                     "x": 0.0,
@@ -8613,6 +8675,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "on": {
                         "artifactId": "[uuid]",
                         "id": "[uuid]",
+                        "kind": "YZ",
+                        "objectId": 0,
                         "origin": {
                           "x": 0.0,
                           "y": 0.0,
@@ -8620,7 +8684,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "units": "mm"
                         },
                         "type": "plane",
-                        "value": "YZ",
                         "xAxis": {
                           "x": 0.0,
                           "y": 1.0,
@@ -8739,6 +8802,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 4,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -8877,6 +8941,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 3,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -9015,6 +9080,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "objectId": 2,
                   "value": "end",
                   "xAxis": {
                     "x": 0.0,
@@ -9105,6 +9171,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "type": "face",
                         "id": "[uuid]",
                         "artifactId": "[uuid]",
+                        "objectId": 1,
                         "value": "start",
                         "xAxis": {
                           "x": 0.0,
@@ -9242,6 +9309,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "on": {
                               "artifactId": "[uuid]",
                               "id": "[uuid]",
+                              "kind": "YZ",
+                              "objectId": 0,
                               "origin": {
                                 "x": 0.0,
                                 "y": 0.0,
@@ -9249,7 +9318,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "units": "mm"
                               },
                               "type": "plane",
-                              "value": "YZ",
                               "xAxis": {
                                 "x": 0.0,
                                 "y": 1.0,
@@ -9401,6 +9469,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 5,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -9538,6 +9607,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "YZ",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9545,7 +9616,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "units": "mm"
             },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
