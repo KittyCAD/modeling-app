@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { Object3D, Object3DEventMap } from 'three'
+import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -153,7 +153,7 @@ export async function getEventForSelectWithPoint(
 }
 
 export function getEventForSegmentSelection(
-  obj: Object3D<Object3DEventMap>,
+  obj: Object3D,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType

@@ -3,51 +3,43 @@
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-// Car wheel
+// Lugs
 export lugCount = 5
 export lugSpacing = 114.3mm
-export offset = -35mm
-export backSpacing = 6.38
-export wheelWidth = 9.5
-export wheelDiameter = 19
-export spokeCount = 6
-export spokeGap = 0.2
-export spokeAngle = 0.02
-export spokeThickness = 0.95
-
-// Lug Nut
 export lugDiameter = 24mm
-export lugHeadLength = lugDiameter * .5
-export lugThreadDiameter = lugDiameter / 2 * .85
-export lugLength = 30mm
-export lugThreadDepth = lugLength - 12.7mm
+export lugThreadDiameter = lugDiameter / 1.75
+export lugLength = 5 / 8
 
-// Car rotor
-export rotorDiameter = 12
-export rotorInnerDiameter = 6
-export rotorSinglePlateThickness = 0.25
-export rotorInnerDiameterThickness = 0.5
-export lugHolePatternDia = 3
-export rotorTotalThickness = 1
-export spacerPatternDiameter = 11
-export spacerDiameter = 0.25
-export spacerLength = rotorTotalThickness - (2 * rotorSinglePlateThickness)
-export spacerCount = 16
-export yAxisOffset = 0.5
-export drillAndSlotCount = 5
-
-// Car tire
-export tireInnerDiameter = 19
-export tireOuterDiameter = 24
-export tireDepth = 11.02
-export bendRadius = 1.6
-export tireTreadWidth = 0.39
-export tireTreadDepth = 0.39
-export tireTreadOffset = 3.15
+// Car wheel
+export spokeCount = 5
+export offset = -10mm
+export wheelWidth = 9.5
+export rimDiameter = 18
 
 // Brake caliper
-export caliperTolerance = 0.050
-export caliperPadLength = 1.6
-export caliperThickness = 0.39
-export caliperOuterEdgeRadius = 0.39
-export caliperInnerEdgeRadius = 0.12
+export caliperThickness = 2.5
+
+// Brake rotor
+export rotorDiameter = 12
+export rotorBore = 3
+export hFrictionSurface = 2.36
+export tDiscHalf = 3 / 8
+export tVent = 3 / 8
+export wVent = 1 / 4
+export rVentFillet = 1 / 10
+export nVentBosses = 36
+export dDrillDia = 1 / 4
+export aBase = 90deg
+export aSweep = 30deg
+export nArcs = 12
+export tBell = 0.2
+export hBellAboveDiscFace = 1.5
+export wUndercut = 0.2
+export rDraftAngle = 83deg
+
+// Car tire
+export tireWidth = 255mm
+export aspectRatio = 30
+export overallDiameter = rimDiameter + tireWidth * aspectRatio * 0.02
+export sidewallThickness = 6mm
+export treadDepth = 3mm

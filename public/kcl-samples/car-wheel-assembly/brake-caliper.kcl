@@ -5,56 +5,155 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
-import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "parameters.kcl"
+import * from "parameters.kcl"
 
-// Sketch the brake caliper profile
-brakeCaliperSketch = startSketchOn(XY)
-  |> startProfile(at = [
-       rotorDiameter / 2 + caliperTolerance,
-       0
-     ])
-  |> line(end = [
-       0,
-       rotorTotalThickness + caliperTolerance - caliperInnerEdgeRadius
-     ])
-  |> tangentialArc(angle = 90deg, radius = caliperInnerEdgeRadius)
-  |> line(end = [
-       -caliperPadLength + 2 * caliperInnerEdgeRadius,
-       0
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperInnerEdgeRadius)
-  |> line(end = [
-       0,
-       caliperThickness - (caliperInnerEdgeRadius * 2)
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperInnerEdgeRadius)
-  |> line(end = [
-       caliperPadLength + caliperThickness - caliperOuterEdgeRadius - caliperInnerEdgeRadius,
-       0
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperOuterEdgeRadius)
-  |> line(end = [
-       0,
-       -2 * caliperTolerance - (2 * caliperThickness) - rotorTotalThickness + 2 * caliperOuterEdgeRadius
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperOuterEdgeRadius)
-  |> line(end = [
-       -caliperPadLength - caliperThickness + caliperOuterEdgeRadius + caliperInnerEdgeRadius,
-       0
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperInnerEdgeRadius)
-  |> line(end = [
-       0,
-       caliperThickness - (2 * caliperInnerEdgeRadius)
-     ])
-  |> tangentialArc(angle = -90deg, radius = caliperInnerEdgeRadius)
-  |> line(end = [
-       caliperPadLength - (2 * caliperInnerEdgeRadius),
-       0
-     ])
-  |> tangentialArc(angle = 90deg, radius = caliperInnerEdgeRadius)
+// Define a start plane though the center of the brake rotor discs
+caliperPlane = offsetPlane(XZ, offset = tBell - hBellAboveDiscFace - tDiscHalf - (tVent / 2))
+
+// Create a cutout of the brake rotor shape
+sketch003 = startSketchOn(caliperPlane)
+  |> circle(diameter = rotorDiameter + 0.2)
+  |> extrude(length = 2 * tDiscHalf + tVent + 0.2, symmetric = true)
+
+// Sketch a brake caliper profile using the rotor diameter as a guide
+baseSketch = startSketchOn(caliperPlane)
+  |> startProfile(at = [-rotorDiameter / 2.8, 0])
+  |> yLine(length = rotorDiameter / 20)
+  |> angledLine(angle = 135deg, length = rotorDiameter / 40)
+  |> yLine(length = rotorDiameter / 40, tag = $seg02)
+  |> arc(angleStart = -90, angleEnd = 90, radius = rotorDiameter / 60)
+  |> angledLine(angle = 60deg, length = rotorDiameter / 15)
+  |> yLine(length = rotorDiameter / 9)
+  |> angledLine(angle = 120deg, length = rotorDiameter / 14)
+  |> tangentialArc(angle = 105deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = 25deg, diameter = rotorDiameter)
+  |> yLine(length = -rotorDiameter / 40)
+  |> tangentialArc(angle = -90deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = 180deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = -120deg, radius = rotorDiameter / 60)
+  |> angledLine(angle = -127deg, length = rotorDiameter / 30)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
   |> close()
+  |> extrude(length = caliperThickness * 5 / 6, symmetric = true)
 
-// Revolve the brake caliper sketch
-revolve(brakeCaliperSketch, axis = Y, angle = -70)
-  |> appearance(color = "#c82d2d", metalness = 90, roughness = 90)
+  // Cut the rotor opening from the caliper
+  |> subtract(tools = sketch003)
+
+  // Add a bright appearance to the caliper
+  |> appearance(color = "#ce0909")
+
+// Draw a profile for the outer piece on the brake caliper
+outerSketch = startSketchOn(baseSketch, face = END)
+  |> startProfile(at = [-rotorDiameter / 2.8, 0])
+  |> yLine(length = rotorDiameter / 20)
+  |> angledLine(angle = 135deg, length = rotorDiameter / 40)
+  |> yLine(length = rotorDiameter / 40)
+  |> arc(angleStart = -90, angleEnd = 90, radius = rotorDiameter / 60)
+  |> angledLine(angle = 60deg, length = rotorDiameter / 25)
+  |> tangentialArc(angle = 60deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = -20deg, radius = rotorDiameter / 20, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = rotorDiameter / 15)
+  |> xLine(length = -rotorDiameter / 20)
+  |> angledLine(angle = -120deg, length = rotorDiameter / 20)
+  |> angledLine(angle = -100deg, length = rotorDiameter / 10)
+  |> tangentialArc(angle = -45deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = 90deg, radius = rotorDiameter / 60)
+  |> tangentialArc(angle = -35deg, radius = rotorDiameter / 60)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
+  |> close()
+  |> extrude(length = caliperThickness / 6)
+
+// Create two nubs on the caliper outer face
+nubSketch = startSketchOn(outerSketch, face = END)
+nub01 = circle(
+  nubSketch,
+  center = [
+    segEndX(seg02),
+    segEndY(seg02) + rotorDiameter / 60
+  ],
+  radius = rotorDiameter / 100,
+)
+nub02 = circle(
+  nubSketch,
+  center = [
+    segEndX(seg02),
+    -segEndY(seg02) - (rotorDiameter / 60)
+  ],
+  radius = rotorDiameter / 100,
+)
+nubs = extrude([nub01, nub02], length = -0.05)
+
+// Draw a ZOO logo on the caliper outer
+// Define a function to draw the ZOO "Z"
+fn zLogo(surface, origin, fontSize, depth) {
+  zSketch = surface
+    |> startProfile(at = [0 + origin[0], 0.15 + origin[1]])
+    |> yLine(length = -0.15)
+    |> xLine(length = 0.15)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.3 + origin[0], tag = $seg1)
+    |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
+    |> xLine(length = 0.63)
+    |> yLine(length = 0.225)
+    |> xLine(length = -0.57)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.93 + origin[0])
+    |> yLine(length = 0.15)
+    |> xLine(length = -0.15)
+    |> angledLine(angle = 47.15, length = -segLen(seg1), tag = $seg2)
+    |> yLine(length = segLen(seg3))
+    |> xLine(endAbsolute = 0 + origin[0])
+    |> yLine(length = -0.225)
+    |> angledLineThatIntersects(angle = 0, intersectTag = seg2, offset = 0)
+    |> close()
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+
+  return zSketch
+}
+
+// Define a function to draw the ZOO "O"
+fn oLogo(surface, origin, fontSize, depth) {
+  otagSketch = surface
+    |> startProfile(at = [.788 + origin[0], .921 + origin[1]])
+    |> arc(angleStart = 47.15 + 6, angleEnd = 47.15 - 6 + 180, radius = .525)
+    |> angledLine(angle = 47.15, length = .24)
+    |> arc(angleStart = 47.15 - 11 + 180, angleEnd = 47.15 + 11, radius = .288)
+    |> close(%)
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+
+  oouterSketch = surface
+    |> startProfile(at = [.16 + origin[0], .079 + origin[1]])
+    |> arc(angleStart = 47.15 + 6 - 180, angleEnd = 47.15 - 6, radius = .525)
+    |> angledLine(angle = 47.15, length = -.24)
+    |> arc(angleStart = 47.15 - 11, angleEnd = 47.15 + 11 - 180, radius = .288)
+    |> close(%)
+    |> rotate(pitch = -90)
+    |> scale(x = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+  return [otagSketch, oouterSketch]
+}
+
+// Create each letter using the letter functions
+z = zLogo(
+  surface =   startSketchOn(outerSketch, face = END),
+  origin = [-1.57, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
+
+o = oLogo(
+  surface =   startSketchOn(outerSketch, face = END),
+  origin = [-0.545, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
+oo = oLogo(
+  surface =   startSketchOn(outerSketch, face = END),
+  origin = [0.585, rotorDiameter * 0.8],
+  fontSize = 36,
+  depth = -0.025,
+)
