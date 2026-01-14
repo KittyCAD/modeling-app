@@ -76,7 +76,6 @@ describe('Tool Registry Integration', () => {
         'get_kcl_file_names',
         'get_current_kcl_file',
         'set_current_kcl_file',
-        'set_current_kcl_file',
       ])
     }
   })
