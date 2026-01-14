@@ -1745,7 +1745,6 @@ dependencies = [
  "hyper 1.6.0",
  "hyper-util",
  "rustls",
- "rustls-native-certs",
  "rustls-pki-types",
  "tokio",
  "tokio-rustls",
@@ -2394,9 +2393,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b9cb704f63de8e6852d9f0984a1ee3cde9823ab934aab968f3abeea79a99bb3"
+checksum = "065ce8bfc1e08899d1247d3f4bcbcf566749394edf11b6ded9c04a1e0937d29b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2410,7 +2409,7 @@ dependencies = [
  "futures",
  "getrandom 0.3.4",
  "http 1.4.0",
- "itertools 0.13.0",
+ "itertools 0.14.0",
  "log",
  "mime_guess",
  "parse-display",
@@ -3884,7 +3883,6 @@ dependencies = [
  "pin-project-lite",
  "quinn",
  "rustls",
- "rustls-native-certs",
  "rustls-pki-types",
  "serde",
  "serde_json",

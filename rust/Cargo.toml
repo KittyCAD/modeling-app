@@ -24,7 +24,7 @@ dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.12.1"
 kcl-ezpz = "0.2.15"
-kittycad = { version = "0.4.2", default-features = false, features = [
+kittycad = { version = "0.4.6", default-features = false, features = [
   "js",
   "requests",
 ] }
