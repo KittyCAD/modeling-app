@@ -237,7 +237,7 @@ pub(crate) async fn inner_subtract(
 /// their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all
 /// the faces of shape A, you'd still be left with all the faces of shape B.
 pub async fn imprint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let bodies: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let bodies: Vec<Solid> = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
 
     if bodies.len() < 2 {
