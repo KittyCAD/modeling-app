@@ -3455,7 +3455,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var -0mm, var -0mm], end = [var 4.145mm, var 5.32mm])
+  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 4.145mm, var 5.32mm])
   line2 = sketch2::line(start = [var 4.145mm, var 5.32mm], end = [var 9mm, var 10mm])
 line1.start.at[0] == 0
 line1.start.at[1] == 0

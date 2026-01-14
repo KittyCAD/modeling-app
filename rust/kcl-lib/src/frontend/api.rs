@@ -199,8 +199,10 @@ impl Number {
     pub fn round(&self, digits: u8) -> Self {
         let factor = 10f64.powi(digits as i32);
         let rounded_value = (self.value * factor).round() / factor;
+        // Don't return negative zero.
+        let value = if rounded_value == -0.0 { 0.0 } else { rounded_value };
         Number {
-            value: rounded_value,
+            value,
             units: self.units,
         }
     }
