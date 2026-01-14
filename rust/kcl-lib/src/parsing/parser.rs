@@ -1905,18 +1905,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     let mut end = 0;
     let mut start = leading_whitespace_start;
 
-    trait CommentAnchor {
-        fn comment_anchor_start(&self) -> usize;
+    trait CommentStart {
+        fn comment_start(&self) -> usize;
     }
 
-    impl CommentAnchor for BodyItem {
-        fn comment_anchor_start(&self) -> usize {
+    impl CommentStart for BodyItem {
+        fn comment_start(&self) -> usize {
             self.start()
         }
     }
 
-    impl<T> CommentAnchor for Node<T> {
-        fn comment_anchor_start(&self) -> usize {
+    impl<T> CommentStart for Node<T> {
+        fn comment_start(&self) -> usize {
             self.start
         }
     }
@@ -1949,7 +1949,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                         }
                     }
                 }
-                let start = comment_start.unwrap_or_else(|| $node.comment_anchor_start());
+                let start = comment_start.unwrap_or_else(|| $node.comment_start());
                 $node.set_comments(comments, start);
                 pending_non_code = Vec::new();
             }
@@ -6051,9 +6051,24 @@ bar = 1
 
         // The comment should start at the first / in `// nice`,
         // as that is where the comment actually starts.
-        let comment_start = comment.start;
-        let comment_starts_at = program_source.as_bytes()[comment_start] as char;
+        let comment_starts_at = program_source.as_bytes()[comment.start] as char;
+        let comment_ends_at = program_source.as_bytes()[comment.end] as char;
         assert_eq!(comment_starts_at, '/');
+        assert_eq!(comment_ends_at, '\n');
+    }
+
+    #[test]
+    fn test_if_is_in_comment() {
+        let code = r#"x = 4
+
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is just char 6, '\n'.
+        // It is not a comment. It is a newline.
+        assert!(!ast.in_comment(6));
+        // The following line should be a comment.
+        assert!(ast.in_comment(7));
     }
 
     #[test]
