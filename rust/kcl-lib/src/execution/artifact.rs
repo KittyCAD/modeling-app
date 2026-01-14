@@ -85,6 +85,8 @@ impl CodeRef {
 #[serde(rename_all = "camelCase")]
 pub struct CompositeSolid {
     pub id: ArtifactId,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
     pub sub_type: CompositeSolidSubType,
     /// Constituent solids of the composite solid.
     pub solid_ids: Vec<ArtifactId>,
@@ -1578,6 +1580,7 @@ fn artifacts_to_update(
                 // Create the composite solid
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
+                    consumed: false,
                     sub_type,
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
@@ -1592,6 +1595,7 @@ fn artifacts_to_update(
                             Artifact::CompositeSolid(comp) => {
                                 let mut new_comp = comp.clone();
                                 new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
                             }
                             Artifact::Path(path) => {
@@ -1611,6 +1615,7 @@ fn artifacts_to_update(
                             Artifact::CompositeSolid(comp) => {
                                 let mut new_comp = comp.clone();
                                 new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
                             }
                             Artifact::Path(path) => {
