@@ -17,7 +17,7 @@ import type {
   SceneGraph,
   SceneGraphDelta,
   SegmentCtor,
-  SketchArgs,
+  SketchCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -348,7 +348,7 @@ export default class RustContext {
     project: ApiProjectId,
     file: ApiFileId,
     version: ApiVersion,
-    sketchArgs: SketchArgs,
+    sketchArgs: SketchCtor,
     settings: DeepPartial<Configuration>
   ): Promise<{
     kclSource: SourceDelta

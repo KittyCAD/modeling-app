@@ -116,7 +116,7 @@ pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
-        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
         annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
@@ -158,13 +158,13 @@ pub mod front {
     pub use crate::frontend::{
         FrontendState,
         api::{
-            Error, Expr, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId, Result,
-            SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
+            Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
+            Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
         },
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment,
-            SegmentCtor, Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
+            SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
         },
     };
 

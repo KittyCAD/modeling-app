@@ -12,7 +12,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 3,
+                "objectId": 4,
                 "kind": {
                   "line": {
                     "start": [
@@ -77,8 +77,8 @@ description: Variables in memory after executing sketch_block_coincident_constra
                         }
                       }
                     },
-                    "start_object_id": 1,
-                    "end_object_id": 2,
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
@@ -94,7 +94,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 6,
+                "objectId": 7,
                 "kind": {
                   "line": {
                     "start": [
@@ -159,8 +159,8 @@ description: Variables in memory after executing sketch_block_coincident_constra
                         }
                       }
                     },
-                    "start_object_id": 4,
-                    "end_object_id": 5,
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Free",
                     "end_freedom": "Fixed"
                   }
