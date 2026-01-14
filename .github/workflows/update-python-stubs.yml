@@ -6,7 +6,7 @@ on:
       - "rust/kcl-python-bindings/**" # run only when Rust/Python code changes
       - ".github/workflows/update-python-stubs.yml"
 permissions:
-  contents: write # allow committing back to the PR branch
+  contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
