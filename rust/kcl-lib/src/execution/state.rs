@@ -162,14 +162,7 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
-            mod_local: ModuleState::new(
-                ModulePath::Main,
-                ProgramMemory::new(),
-                Default::default(),
-                0,
-                false,
-                true,
-            ),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
 
@@ -184,10 +177,6 @@ impl ExecState {
                 ModulePath::Main,
                 ProgramMemory::new(),
                 Default::default(),
-                mock_config
-                    .sketch_block_id
-                    .map(|object_id| object_id.0)
-                    .unwrap_or_default(),
                 mock_config.sketch_block_id.is_some(),
                 mock_config.freedom_analysis,
             ),
@@ -203,7 +192,6 @@ impl ExecState {
                 self.mod_local.path.clone(),
                 ProgramMemory::new(),
                 Default::default(),
-                0,
                 false,
                 true,
             ),
@@ -779,12 +767,9 @@ impl ModuleState {
         path: ModulePath,
         memory: Arc<ProgramMemory>,
         module_id: Option<ModuleId>,
-        next_object_id: usize,
         sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = next_object_id;
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
@@ -799,13 +784,7 @@ impl ModuleState {
             settings: Default::default(),
             sketch_mode,
             freedom_analysis,
-            #[cfg(not(feature = "artifact-graph"))]
             artifacts: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifacts: ModuleArtifactState {
-                object_id_generator: IncIdGenerator::new(next_object_id),
-                ..Default::default()
-            },
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,

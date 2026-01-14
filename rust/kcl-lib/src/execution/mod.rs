@@ -754,9 +754,12 @@ impl ExecutorContext {
                     exec_state.global.module_infos = mem.module_infos;
                     #[cfg(feature = "artifact-graph")]
                     {
-                        let len = exec_state.mod_local.artifacts.object_id_generator.peek_id();
+                        let len = mock_config
+                            .sketch_block_id
+                            .map(|sketch_block_id| sketch_block_id.0)
+                            .unwrap_or(0);
                         if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state.mod_local.artifacts.scene_objects = scene_objects.to_vec();
+                            exec_state.global.root_module_artifacts.scene_objects = scene_objects.to_vec();
                         } else {
                             let message = format!(
                                 "Cached scene objects length {} is less than expected length from cached object ID generator {}",

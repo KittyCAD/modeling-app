@@ -155,15 +155,10 @@ impl ExecutorContext {
         // differently, so we need to clone them from a different place. Then
         // make sure the object ID generator matches the number of existing
         // scene objects.
-        #[cfg(not(feature = "artifact-graph"))]
-        let next_object_id = 0;
-        #[cfg(feature = "artifact-graph")]
-        let next_object_id = exec_state.mod_local.artifacts.object_id_generator.peek_id();
         let mut local_state = ModuleState::new(
             path.clone(),
             exec_state.stack().memory.clone(),
             Some(module_id),
-            next_object_id,
             exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
@@ -171,16 +166,14 @@ impl ExecutorContext {
             PreserveMem::Always => {
                 #[cfg(feature = "artifact-graph")]
                 {
-                    if !self.is_mock() {
-                        use crate::id::IncIdGenerator;
-                        exec_state
-                            .mod_local
-                            .artifacts
-                            .scene_objects
-                            .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
-                        exec_state.mod_local.artifacts.object_id_generator =
-                            IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
-                    }
+                    use crate::id::IncIdGenerator;
+                    exec_state
+                        .mod_local
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
+                    exec_state.mod_local.artifacts.object_id_generator =
+                        IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
                 }
             }
             PreserveMem::Normal => {
