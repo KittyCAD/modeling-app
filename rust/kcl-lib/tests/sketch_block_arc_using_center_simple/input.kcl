@@ -1,6 +1,6 @@
 @settings(experimentalFeatures = allow)
 
-s = sketch() {
+s = sketch(on = XY) {
   arc1 = sketch2::arc(start = [var 1mm, var 0], end = [var 0, var 2mm], center = [var 0, var 0])
   arc1.start.at[0] == 1mm
   arc1.start.at[1] == 0mm

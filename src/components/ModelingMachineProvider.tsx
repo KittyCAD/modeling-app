@@ -120,9 +120,8 @@ import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SketchCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -597,16 +596,16 @@ export const ModelingMachineProvider = ({
               if (!project) {
                 console.warn('No project available for newSketch call')
               } else {
-                // Construct SketchArgs based on the result
-                let sketchArgs: SketchArgs
+                // Construct SketchCtor based on the result
+                let sketchArgs: SketchCtor
 
                 // Determine the plane type from the result
                 if (result.type === 'defaultPlane') {
                   sketchArgs = {
-                    on: { default: toPlaneName(result.plane) },
+                    on: result.plane,
                   }
                 } else {
-                  sketchArgs = { on: { default: 'xy' } }
+                  sketchArgs = { on: 'XY' }
                 }
 
                 await rustContext.hackSetProgram(

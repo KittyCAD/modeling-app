@@ -411,7 +411,7 @@ function isPointInBox(
  * Pure function: Checks if a line segment intersects with a 2D axis-aligned box
  * Uses Liang-Barsky algorithm for efficient line-box intersection
  */
-function doesLineSegmentIntersectBox(
+export function doesLineSegmentIntersectBox(
   p0: Vector2,
   p1: Vector2,
   boxMin: Vector2,

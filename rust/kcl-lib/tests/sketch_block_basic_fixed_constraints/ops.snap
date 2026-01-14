@@ -35,7 +35,7 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
     },
     {
       "type": "SketchSolve",
-      "sketchId": 0,
+      "sketchId": 1,
       "nodePath": {
         "steps": [
           {

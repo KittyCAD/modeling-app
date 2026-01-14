@@ -375,10 +375,6 @@ describe('createOnDragEndCallback', () => {
     })
 
     void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -400,10 +396,6 @@ describe('createOnDragEndCallback', () => {
     })
 
     void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -429,10 +421,6 @@ describe('createOnDragEndCallback', () => {
 
     // Should not throw when inner circle is missing
     void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -465,10 +453,6 @@ describe('createOnDragEndCallback', () => {
     })
 
     void callback({
-      intersectionPoint: {
-        twoD: new Vector2(0, 0),
-        threeD: new Vector3(0, 0, 0),
-      },
       selected: undefined,
       mouseEvent: createTestMouseEvent(),
       intersects: [],
@@ -1214,7 +1198,8 @@ describe('createOnDragCallback', () => {
       id: 5,
       kind: {
         type: 'Sketch',
-        args: { on: { default: 'xy' } },
+        args: { on: 'XY' },
+        plane: 0,
         segments: [],
         constraints: [],
       },

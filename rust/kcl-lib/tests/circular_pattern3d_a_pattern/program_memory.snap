@@ -115,6 +115,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -122,7 +124,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -283,6 +284,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -290,7 +293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -448,6 +450,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -455,7 +459,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -613,6 +616,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -620,7 +625,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -778,6 +782,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -785,7 +791,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -943,6 +948,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -950,7 +957,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1108,6 +1114,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1115,7 +1123,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1273,6 +1280,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1280,7 +1289,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1443,6 +1451,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1450,7 +1460,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1608,6 +1617,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1615,7 +1626,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1773,6 +1783,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1780,7 +1792,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1938,6 +1949,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1945,7 +1958,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2103,6 +2115,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2110,7 +2124,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2268,6 +2281,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2275,7 +2290,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2433,6 +2447,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2440,7 +2456,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2598,6 +2613,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2605,7 +2622,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2763,6 +2779,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2770,7 +2788,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2928,6 +2945,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2935,7 +2954,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3093,6 +3111,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3100,7 +3120,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3258,6 +3277,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3265,7 +3286,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3423,6 +3443,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3430,7 +3452,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3588,6 +3609,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3595,7 +3618,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3753,6 +3775,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3760,7 +3784,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3918,6 +3941,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3925,7 +3950,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4083,6 +4107,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4090,7 +4116,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4248,6 +4273,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4255,7 +4282,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4413,6 +4439,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4420,7 +4448,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4578,6 +4605,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4585,7 +4614,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4743,6 +4771,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4750,7 +4780,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4908,6 +4937,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4915,7 +4946,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5073,6 +5103,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5080,7 +5112,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5238,6 +5269,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5245,7 +5278,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5403,6 +5435,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5410,7 +5444,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5568,6 +5601,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5575,7 +5610,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5733,6 +5767,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5740,7 +5776,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5898,6 +5933,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5905,7 +5942,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6063,6 +6099,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6070,7 +6108,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6228,6 +6265,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6235,7 +6274,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6393,6 +6431,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6400,7 +6440,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6558,6 +6597,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6565,7 +6606,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6723,6 +6763,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6730,7 +6772,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6888,6 +6929,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6895,7 +6938,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7053,6 +7095,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7060,7 +7104,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7218,6 +7261,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7225,7 +7270,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7383,6 +7427,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7390,7 +7436,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7548,6 +7593,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7555,7 +7602,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7713,6 +7759,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7720,7 +7768,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7878,6 +7925,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7885,7 +7934,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8043,6 +8091,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8050,7 +8100,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8208,6 +8257,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8215,7 +8266,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8373,6 +8423,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8380,7 +8432,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8538,6 +8589,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8545,7 +8598,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8703,6 +8755,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8710,7 +8764,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8868,6 +8921,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8875,7 +8930,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9033,6 +9087,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9040,7 +9096,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9198,6 +9253,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9205,7 +9262,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9363,6 +9419,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9370,7 +9428,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9528,6 +9585,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9535,7 +9594,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9693,6 +9751,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9700,7 +9760,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9858,6 +9917,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9865,7 +9926,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10023,6 +10083,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10030,7 +10092,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10188,6 +10249,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10195,7 +10258,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10353,6 +10415,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10360,7 +10424,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10518,6 +10581,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10525,7 +10590,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10683,6 +10747,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10690,7 +10756,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10848,6 +10913,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10855,7 +10922,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11013,6 +11079,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11020,7 +11088,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11178,6 +11245,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11185,7 +11254,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11343,6 +11411,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11350,7 +11420,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11508,6 +11577,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11515,7 +11586,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11673,6 +11743,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11680,7 +11752,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11838,6 +11909,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11845,7 +11918,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12003,6 +12075,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12010,7 +12084,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12168,6 +12241,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12175,7 +12250,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12333,6 +12407,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12340,7 +12416,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12498,6 +12573,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12505,7 +12582,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12663,6 +12739,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12670,7 +12748,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12828,6 +12905,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -12835,7 +12914,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12993,6 +13071,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13000,7 +13080,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13158,6 +13237,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13165,7 +13246,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13323,6 +13403,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13330,7 +13412,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13488,6 +13569,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13495,7 +13578,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13653,6 +13735,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13660,7 +13744,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13818,6 +13901,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13825,7 +13910,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13983,6 +14067,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13990,7 +14076,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14148,6 +14233,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14155,7 +14242,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14313,6 +14399,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14320,7 +14408,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14478,6 +14565,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14485,7 +14574,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14643,6 +14731,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14650,7 +14740,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14808,6 +14897,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14815,7 +14906,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14973,6 +15063,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -14980,7 +15072,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15138,6 +15229,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15145,7 +15238,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15303,6 +15395,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15310,7 +15404,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15468,6 +15561,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15475,7 +15570,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15633,6 +15727,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15640,7 +15736,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15798,6 +15893,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15805,7 +15902,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15963,6 +16059,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15970,7 +16068,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16128,6 +16225,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16135,7 +16234,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16293,6 +16391,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16300,7 +16400,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16458,6 +16557,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16465,7 +16566,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16623,6 +16723,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16630,7 +16732,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16788,6 +16889,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16795,7 +16898,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16953,6 +17055,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -16960,7 +17064,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17118,6 +17221,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17125,7 +17230,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17283,6 +17387,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17290,7 +17396,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17448,6 +17553,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17455,7 +17562,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17613,6 +17719,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17620,7 +17728,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17778,6 +17885,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17785,7 +17894,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17943,6 +18051,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -17950,7 +18060,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18108,6 +18217,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18115,7 +18226,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18273,6 +18383,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18280,7 +18392,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18438,6 +18549,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18445,7 +18558,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18603,6 +18715,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18610,7 +18724,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18768,6 +18881,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18775,7 +18890,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18933,6 +19047,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -18940,7 +19056,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19098,6 +19213,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19105,7 +19222,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19263,6 +19379,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19270,7 +19388,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19428,6 +19545,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19435,7 +19554,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19593,6 +19711,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19600,7 +19720,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19758,6 +19877,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19765,7 +19886,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19923,6 +20043,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19930,7 +20052,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20088,6 +20209,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20095,7 +20218,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20253,6 +20375,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20260,7 +20384,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20418,6 +20541,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20425,7 +20550,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20583,6 +20707,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20590,7 +20716,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20748,6 +20873,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20755,7 +20882,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20913,6 +21039,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20920,7 +21048,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21078,6 +21205,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21085,7 +21214,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21243,6 +21371,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21250,7 +21380,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21408,6 +21537,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21415,7 +21546,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21573,6 +21703,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21580,7 +21712,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21738,6 +21869,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21745,7 +21878,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21903,6 +22035,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21910,7 +22044,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22068,6 +22201,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22075,7 +22210,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22233,6 +22367,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22240,7 +22376,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22398,6 +22533,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22405,7 +22542,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22563,6 +22699,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22570,7 +22708,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22728,6 +22865,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22735,7 +22874,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22893,6 +23031,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -22900,7 +23040,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23058,6 +23197,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23065,7 +23206,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23223,6 +23363,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23230,7 +23372,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23388,6 +23529,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23395,7 +23538,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23553,6 +23695,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23560,7 +23704,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23718,6 +23861,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23725,7 +23870,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23883,6 +24027,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -23890,7 +24036,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24048,6 +24193,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24055,7 +24202,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24213,6 +24359,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24220,7 +24368,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24378,6 +24525,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24385,7 +24534,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24543,6 +24691,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24550,7 +24700,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24708,6 +24857,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24715,7 +24866,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24873,6 +25023,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -24880,7 +25032,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25038,6 +25189,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25045,7 +25198,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25203,6 +25355,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25210,7 +25364,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25368,6 +25521,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25375,7 +25530,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25533,6 +25687,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25540,7 +25696,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25698,6 +25853,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25705,7 +25862,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25863,6 +26019,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -25870,7 +26028,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26028,6 +26185,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26035,7 +26194,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26193,6 +26351,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26200,7 +26360,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26358,6 +26517,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26365,7 +26526,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26523,6 +26683,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26530,7 +26692,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26688,6 +26849,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26695,7 +26858,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26853,6 +27015,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -26860,7 +27024,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27018,6 +27181,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27025,7 +27190,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27183,6 +27347,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27190,7 +27356,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27348,6 +27513,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27355,7 +27522,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27513,6 +27679,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27520,7 +27688,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27678,6 +27845,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27685,7 +27854,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27843,6 +28011,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -27850,7 +28020,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28008,6 +28177,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28015,7 +28186,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28173,6 +28343,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28180,7 +28352,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28338,6 +28509,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28345,7 +28518,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28503,6 +28675,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28510,7 +28684,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28668,6 +28841,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28675,7 +28850,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28833,6 +29007,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -28840,7 +29016,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28998,6 +29173,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29005,7 +29182,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29163,6 +29339,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29170,7 +29348,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29328,6 +29505,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29335,7 +29514,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29493,6 +29671,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29500,7 +29680,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29658,6 +29837,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29665,7 +29846,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29823,6 +30003,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29830,7 +30012,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29988,6 +30169,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -29995,7 +30178,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30153,6 +30335,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30160,7 +30344,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30318,6 +30501,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30325,7 +30510,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30483,6 +30667,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30490,7 +30676,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30648,6 +30833,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30655,7 +30842,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30813,6 +30999,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30820,7 +31008,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30978,6 +31165,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -30985,7 +31174,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31143,6 +31331,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31150,7 +31340,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31308,6 +31497,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31315,7 +31506,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31473,6 +31663,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31480,7 +31672,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31638,6 +31829,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31645,7 +31838,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31803,6 +31995,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31810,7 +32004,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31968,6 +32161,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -31975,7 +32170,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32133,6 +32327,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32140,7 +32336,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32298,6 +32493,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32305,7 +32502,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32463,6 +32659,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32470,7 +32668,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32628,6 +32825,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32635,7 +32834,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32793,6 +32991,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32800,7 +33000,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32958,6 +33157,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -32965,7 +33166,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33123,6 +33323,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33130,7 +33332,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33288,6 +33489,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33295,7 +33498,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33453,6 +33655,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33460,7 +33664,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33618,6 +33821,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33625,7 +33830,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33783,6 +33987,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33790,7 +33996,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33948,6 +34153,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -33955,7 +34162,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34113,6 +34319,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34120,7 +34328,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34278,6 +34485,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34285,7 +34494,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34443,6 +34651,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34450,7 +34660,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34608,6 +34817,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34615,7 +34826,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34773,6 +34983,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34780,7 +34992,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34938,6 +35149,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -34945,7 +35158,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35103,6 +35315,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35110,7 +35324,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35268,6 +35481,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35275,7 +35490,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35433,6 +35647,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35440,7 +35656,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35598,6 +35813,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35605,7 +35822,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35763,6 +35979,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35770,7 +35988,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35928,6 +36145,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35935,7 +36154,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36093,6 +36311,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36100,7 +36320,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36258,6 +36477,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36265,7 +36486,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36423,6 +36643,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36430,7 +36652,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36588,6 +36809,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36595,7 +36818,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36753,6 +36975,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36760,7 +36984,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36918,6 +37141,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -36925,7 +37150,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37083,6 +37307,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37090,7 +37316,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37248,6 +37473,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37255,7 +37482,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37413,6 +37639,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37420,7 +37648,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37578,6 +37805,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37585,7 +37814,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37743,6 +37971,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37750,7 +37980,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37908,6 +38137,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -37915,7 +38146,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38073,6 +38303,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38080,7 +38312,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38238,6 +38469,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38245,7 +38478,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38403,6 +38635,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38410,7 +38644,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38568,6 +38801,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38575,7 +38810,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38733,6 +38967,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38740,7 +38976,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38898,6 +39133,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -38905,7 +39142,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39063,6 +39299,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39070,7 +39308,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39228,6 +39465,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39235,7 +39474,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39393,6 +39631,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39400,7 +39640,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39558,6 +39797,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39565,7 +39806,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39723,6 +39963,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39730,7 +39972,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39888,6 +40129,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -39895,7 +40138,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40053,6 +40295,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40060,7 +40304,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40218,6 +40461,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40225,7 +40470,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40383,6 +40627,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40390,7 +40636,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40548,6 +40793,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40555,7 +40802,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40713,6 +40959,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40720,7 +40968,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40878,6 +41125,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -40885,7 +41134,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41043,6 +41291,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41050,7 +41300,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41208,6 +41457,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41215,7 +41466,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41373,6 +41623,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41380,7 +41632,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41538,6 +41789,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41545,7 +41798,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41703,6 +41955,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41710,7 +41964,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41868,6 +42121,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -41875,7 +42130,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42033,6 +42287,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42040,7 +42296,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42198,6 +42453,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42205,7 +42462,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42363,6 +42619,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42370,7 +42628,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42528,6 +42785,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42535,7 +42794,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42693,6 +42951,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42700,7 +42960,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42858,6 +43117,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -42865,7 +43126,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43023,6 +43283,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43030,7 +43292,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43188,6 +43449,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43195,7 +43458,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43353,6 +43615,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43360,7 +43624,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43518,6 +43781,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43525,7 +43790,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43683,6 +43947,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43690,7 +43956,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43848,6 +44113,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -43855,7 +44122,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44013,6 +44279,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44020,7 +44288,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44178,6 +44445,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44185,7 +44454,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44343,6 +44611,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44350,7 +44620,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44508,6 +44777,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44515,7 +44786,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44673,6 +44943,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44680,7 +44952,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44838,6 +45109,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -44845,7 +45118,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45003,6 +45275,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45010,7 +45284,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45168,6 +45441,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45175,7 +45450,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45333,6 +45607,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45340,7 +45616,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45498,6 +45773,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45505,7 +45782,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45663,6 +45939,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45670,7 +45948,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45828,6 +46105,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -45835,7 +46114,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45993,6 +46271,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46000,7 +46280,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46158,6 +46437,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46165,7 +46446,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46323,6 +46603,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46330,7 +46612,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46488,6 +46769,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46495,7 +46778,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46653,6 +46935,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46660,7 +46944,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46818,6 +47101,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46825,7 +47110,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46983,6 +47267,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -46990,7 +47276,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47148,6 +47433,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47155,7 +47442,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47313,6 +47599,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47320,7 +47608,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47478,6 +47765,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47485,7 +47774,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47643,6 +47931,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47650,7 +47940,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47808,6 +48097,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47815,7 +48106,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47973,6 +48263,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -47980,7 +48272,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48138,6 +48429,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -48145,7 +48438,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48303,6 +48595,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -48310,7 +48604,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48468,6 +48761,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -48475,7 +48770,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48633,6 +48927,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -48640,7 +48936,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
