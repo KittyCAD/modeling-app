@@ -12,19 +12,21 @@ use crate::{
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn invert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    inner_invert(solid, exec_state, args)
+    let surface = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
+    inner_invert(surface, exec_state, args)
         .await
-        .map(|solid| KclValue::Solid { value: Box::new(solid) })
+        .map(|surface| KclValue::Solid {
+            value: Box::new(surface),
+        })
 }
 
-async fn inner_invert(solid: Solid, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+async fn inner_invert(surface: Solid, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dFlip::builder().object_id(solid.id).build()),
+            ModelingCmd::from(mcmd::Solid3dFlip::builder().object_id(surface.id).build()),
         )
         .await?;
 
-    Ok(solid)
+    Ok(surface)
 }
