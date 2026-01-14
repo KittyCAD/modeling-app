@@ -160,7 +160,7 @@ export const machine = setup({
         }
       }
     ),
-    'delete draft entities':  ({ self }) => {
+    'delete draft entities': ({ self }) => {
       self._parent?.send({ type: 'delete draft entities' })
     },
     'remove point listener': ({ context }) => {
@@ -282,8 +282,8 @@ export const machine = setup({
           target: 'awaiting first point',
         },
         escape: {
-          target: 'delete draft entities'
-        }
+          target: 'delete draft entities',
+        },
       },
       entry: 'add second point listener',
       exit: 'remove point listener',
