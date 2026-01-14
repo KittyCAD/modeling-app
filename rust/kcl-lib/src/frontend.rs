@@ -124,6 +124,11 @@ impl FrontendState {
             point_freedom_cache: HashMap::new(),
         }
     }
+
+    /// Get a reference to the scene graph
+    pub fn scene_graph(&self) -> &SceneGraph {
+        &self.scene_graph
+    }
 }
 
 impl SketchApi for FrontendState {

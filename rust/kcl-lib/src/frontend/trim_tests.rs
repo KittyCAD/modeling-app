@@ -215,8 +215,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.end, arc1])
 }
 "#;
@@ -262,8 +262,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var -0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.start, arc1])
 }
 "#;
@@ -309,8 +309,8 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.start, arc2])
 }
 "#;
@@ -357,7 +357,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.end, arc2])
 }
 "#;
@@ -560,7 +560,7 @@ sketch(on = YZ) {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
+  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
   sketch2::coincident([arc1.start, line1.end])
 }
@@ -1317,7 +1317,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arcToSplit = sketch2::arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
-  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var -0mm])
+  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
   line2 = sketch2::line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
   lineCoincidentWithArcCen = sketch2::line(start = [var 0.75mm, var -8.72mm], end = [var 11.5mm, var -7.5mm])
   line4 = sketch2::line(start = [var 11.03mm, var 1.02mm], end = [var 13.3mm, var 6.85mm])

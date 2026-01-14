@@ -500,9 +500,24 @@ impl Context {
             TrimTerminations as TrimTerminationsCore,
         };
 
+        // Find the actual sketch object ID from the scene graph
+        // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch
+        let actual_sketch_id = if let Some(sketch_mode) = guard.scene_graph().sketch_mode {
+            sketch_mode
+        } else {
+            // Try to find a sketch object in the scene graph
+            guard
+                .scene_graph()
+                .objects
+                .iter()
+                .find(|obj| matches!(obj.kind, kcl_lib::front::ObjectKind::Sketch { .. }))
+                .map(|obj| obj.id)
+                .unwrap_or(sketch) // Fall back to provided sketch
+        };
+
         // Get current scene graph by executing mock first
         let (_, initial_scene_graph_delta) = guard
-            .execute_mock(&ctx, version, sketch)
+            .execute_mock(&ctx, version, actual_sketch_id)
             .await
             .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
 
@@ -629,7 +644,7 @@ impl Context {
                                     .delete_objects(
                                         &ctx,
                                         version,
-                                        sketch,
+                                        actual_sketch_id,
                                         Vec::new(),                                          // constraint_ids
                                         vec![kcl_lib::front::ObjectId(*segment_to_trim_id)], // segment_ids
                                     )
@@ -757,7 +772,7 @@ impl Context {
                                                 .batch_tail_cut_operations(
                                                     &ctx,
                                                     version,
-                                                    sketch,
+                                                    actual_sketch_id,
                                                     vec![segment_to_edit],
                                                     vec![constraint],
                                                     delete_constraint_ids,
@@ -783,8 +798,9 @@ impl Context {
                                                 ctor: segment_ctor,
                                             };
 
-                                            let result =
-                                                guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                            let result = guard
+                                                .edit_segments(&ctx, version, actual_sketch_id, vec![segment_to_edit])
+                                                .await;
                                             result
                                         }
                                     } else {
@@ -804,8 +820,9 @@ impl Context {
                                             ctor: segment_ctor,
                                         };
 
-                                        let result =
-                                            guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                        let result = guard
+                                            .edit_segments(&ctx, version, actual_sketch_id, vec![segment_to_edit])
+                                            .await;
                                         result
                                     }
                                 } else {
@@ -825,8 +842,9 @@ impl Context {
                                         ctor: segment_ctor,
                                     };
 
-                                    let result =
-                                        guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                    let result = guard
+                                        .edit_segments(&ctx, version, actual_sketch_id, vec![segment_to_edit])
+                                        .await;
                                     result
                                 }
                             }
@@ -895,7 +913,7 @@ impl Context {
                                     segments: coincident_segments,
                                 });
 
-                                guard.add_constraint(&ctx, version, sketch, constraint).await
+                                guard.add_constraint(&ctx, version, actual_sketch_id, constraint).await
                             }
                             crate::trim::TrimOperation::DeleteConstraints { constraint_ids } => {
                                 // Delete constraints
@@ -906,7 +924,7 @@ impl Context {
                                     .delete_objects(
                                         &ctx,
                                         version,
-                                        sketch,
+                                        actual_sketch_id,
                                         constraint_object_ids,
                                         Vec::new(), // segment_ids
                                     )
@@ -1063,7 +1081,9 @@ impl Context {
                                     }
                                 };
 
-                                let add_result = guard.add_segment(&ctx, version, sketch, new_segment_ctor, None).await;
+                                let add_result = guard
+                                    .add_segment(&ctx, version, actual_sketch_id, new_segment_ctor, None)
+                                    .await;
 
                                 let (_, mut add_scene_graph_delta) = match add_result {
                                     Ok(result) => {
@@ -1153,7 +1173,7 @@ impl Context {
                                     .edit_segments(
                                         &ctx,
                                         version,
-                                        sketch,
+                                        actual_sketch_id,
                                         vec![kcl_lib::front::ExistingSegmentCtor {
                                             id: kcl_lib::front::ObjectId(*segment_id),
                                             ctor: edited_ctor,
@@ -1624,7 +1644,7 @@ impl Context {
                                     .batch_split_segment_operations(
                                         &ctx,
                                         version,
-                                        sketch,
+                                        actual_sketch_id,
                                         Vec::new(), // edit_segments already done
                                         batch_constraints,
                                         constraint_object_ids,
@@ -1711,7 +1731,7 @@ impl Context {
             (sd, sgd)
         } else {
             guard
-                .execute_mock(&ctx, version, sketch)
+                .execute_mock(&ctx, version, actual_sketch_id)
                 .await
                 .map_err(|e| format!("Failed to execute mock: {:?}", e))?
         };

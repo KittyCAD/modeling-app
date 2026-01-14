@@ -366,7 +366,7 @@ impl<'de> Deserialize<'de> for TrimTermination {
                         let trim_termination_coords =
                             trim_termination_coords.ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         Ok(TrimTermination::SegEndPoint {
-                        trim_termination_coords,
+                            trim_termination_coords,
                         })
                     }
                     "intersection" => {
@@ -744,8 +744,8 @@ impl<'de> Deserialize<'de> for TrimOperation {
                         }
                         "constraintIds" => {
                             constraint_ids = Some(map.next_value()?);
-        }
-        _ => {
+                        }
+                        _ => {
                             let _ = map.next_value::<de::IgnoredAny>()?;
                         }
                     }
@@ -806,8 +806,8 @@ impl<'de> Deserialize<'de> for TrimOperation {
                             left_trim_coords,
                             right_trim_coords,
                             original_end_coords,
-            left_side,
-            right_side,
+                            left_side,
+                            right_side,
                             left_side_coincident_data,
                             right_side_coincident_data,
                             constraints_to_migrate,
