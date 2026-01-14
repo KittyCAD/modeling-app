@@ -248,9 +248,9 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::appearance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::appearance"),
         ),
-        ("solid", "flipSurface") => (
-            |e, a| Box::pin(crate::std::surfaces::flip(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::solid::flipSurface"),
+        ("solid", "invert") => (
+            |e, a| Box::pin(crate::std::surfaces::invert(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::invert"),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
