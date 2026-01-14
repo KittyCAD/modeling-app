@@ -5,7 +5,7 @@ use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
-    output::{BooleanIntersection, BooleanSubtract, BooleanUnion},
+    output::{self as mout, BooleanIntersection, BooleanSubtract, BooleanUnion},
     websocket::OkWebSocketResponseData,
 };
 
@@ -225,6 +225,82 @@ pub(crate) async fn inner_subtract(
             continue;
         }
         let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
+    }
+
+    Ok(new_solids)
+}
+
+/// Imprint multiple bodies into one.
+/// From the outside, the result looks visually similar to a union, but where the two solids overlap,
+/// their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all
+/// the faces of shape A, you'd still be left with all the faces of shape B.
+pub async fn imprint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let bodies: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+
+    if bodies.len() < 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "At least two bodies are required for an Imprint operation.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let body = inner_imprint(bodies, tolerance, exec_state, args).await?;
+    Ok(body.into())
+}
+
+pub(crate) async fn inner_imprint(
+    bodies: Vec<Solid>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    let body_out_id = exec_state.next_uuid();
+
+    let mut body = bodies[0].clone();
+    body.set_id(body_out_id);
+    let mut new_solids = vec![body.clone()];
+
+    if args.ctx.no_engine_commands().await {
+        return Ok(new_solids);
+    }
+
+    // Flush the fillets for the solids.
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &bodies)
+        .await?;
+
+    let body_ids = bodies.iter().map(|body| body.id).collect();
+    let result = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
+            ModelingCmd::from(
+                mcmd::BooleanImprint::builder()
+                    .body_ids(body_ids)
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BooleanImprint(mout::BooleanImprint { extra_solid_ids }),
+    } = result
+    else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "Failed to get the result of the Imprint operation.".to_string(),
+            vec![args.source_range],
+        )));
+    };
+
+    // If we have more solids, set those as well.
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == body_out_id {
+            continue;
+        }
+        let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
         new_solids.push(new_solid);
     }
