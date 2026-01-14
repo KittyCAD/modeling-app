@@ -39,7 +39,6 @@ vi.mock('chokidar', () => ({
 }))
 
 import { move } from '@src/preload'
-import { fromPromise } from 'xstate'
 
 describe('move', () => {
   beforeEach(() => {
