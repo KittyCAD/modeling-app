@@ -1074,7 +1074,7 @@ pub async fn execute_trim_flow(
         .await
         .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
 
-    let exec_outcome = frontend.update_state_after_exec(exec_outcome);
+    let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
     let mut initial_scene_graph = frontend.scene_graph.clone();
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
