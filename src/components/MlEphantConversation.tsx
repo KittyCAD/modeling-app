@@ -14,6 +14,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { kclManager } from '@src/lib/singletons'
+import Tooltip from '@src/components/Tooltip'
 
 const noop = () => {}
 
@@ -244,6 +245,9 @@ export const MlEphantConversationInput = (
                 className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
               >
                 <CustomIcon name="arrowShortUp" className="w-5 h-5" />
+                <Tooltip position="top" hoverOnly={true}>
+                  <span>Send</span>
+                </Tooltip>
               </button>
             ) : (
               <button
@@ -252,6 +256,9 @@ export const MlEphantConversationInput = (
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
+                <Tooltip position="top" hoverOnly={true}>
+                  <span>Cancel</span>
+                </Tooltip>
               </button>
             )}
           </div>
