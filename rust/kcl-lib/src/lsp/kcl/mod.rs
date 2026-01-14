@@ -1784,7 +1784,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     }
 
     let end_of_file = if code.len() == 0 { 0 } else { code.len() - 1};
-    std::cmp::min(char_position, end_of_file);
+    std::cmp::min(char_position, end_of_file)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
