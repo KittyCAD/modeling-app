@@ -158,6 +158,8 @@ description: Variables in memory after executing ssi_pattern.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -165,7 +167,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -329,6 +330,8 @@ description: Variables in memory after executing ssi_pattern.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -336,7 +339,6 @@ description: Variables in memory after executing ssi_pattern.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -433,6 +435,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -599,6 +602,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -606,7 +611,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -732,6 +736,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -898,6 +903,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -905,7 +912,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1031,6 +1037,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1197,6 +1204,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1204,7 +1213,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1330,6 +1338,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1496,6 +1505,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1503,7 +1514,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1629,6 +1639,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1795,6 +1806,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1802,7 +1815,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1928,6 +1940,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2094,6 +2107,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2101,7 +2116,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2227,6 +2241,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2393,6 +2408,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2400,7 +2417,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2526,6 +2542,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2692,6 +2709,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2699,7 +2718,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2825,6 +2843,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2991,6 +3010,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2998,7 +3019,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3124,6 +3144,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3290,6 +3311,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3297,7 +3320,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3423,6 +3445,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3589,6 +3612,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3596,7 +3621,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3722,6 +3746,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3888,6 +3913,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3895,7 +3922,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4021,6 +4047,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4187,6 +4214,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4194,7 +4223,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4320,6 +4348,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4486,6 +4515,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4493,7 +4524,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4619,6 +4649,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4785,6 +4816,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4792,7 +4825,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4918,6 +4950,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5084,6 +5117,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5091,7 +5126,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5217,6 +5251,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5383,6 +5418,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5390,7 +5427,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5516,6 +5552,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5682,6 +5719,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5689,7 +5728,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5815,6 +5853,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5981,6 +6020,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5988,7 +6029,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6114,6 +6154,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -6280,6 +6321,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6287,7 +6330,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6413,6 +6455,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -6579,6 +6622,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6586,7 +6631,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6712,6 +6756,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -6878,6 +6923,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6885,7 +6932,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7011,6 +7057,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -7177,6 +7224,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7184,7 +7233,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7310,6 +7358,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -7476,6 +7525,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7483,7 +7534,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7609,6 +7659,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -7775,6 +7826,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7782,7 +7835,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7908,6 +7960,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8074,6 +8127,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8081,7 +8136,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8207,6 +8261,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8373,6 +8428,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8380,7 +8437,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8506,6 +8562,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8672,6 +8729,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8679,7 +8738,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8805,6 +8863,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8971,6 +9030,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8978,7 +9039,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -9104,6 +9164,7 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -9270,6 +9331,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9277,7 +9340,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
