@@ -68,7 +68,7 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
+  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
   sketch2::coincident([arc1.start, line1.end])
 }
@@ -194,12 +194,12 @@ sketch(on = YZ) {
       expect(result.leftSide).toEqual({
         type: 'intersection',
         trimTerminationCoords: [-2.3530729879512666, 2.4834844847315396],
-        intersectingSegId: 6,
+        intersectingSegId: 7,
       })
       expect(result.rightSide).toEqual({
         type: 'intersection',
         trimTerminationCoords: [1.8273063333627224, 2.7443175958421935],
-        intersectingSegId: 10,
+        intersectingSegId: 11,
       })
     })
     it('finds "segEndPoint" terminations when other segments ends have coincident constraints with our trim segments endpoints', async () => {
@@ -285,14 +285,14 @@ sketch(on = YZ) {
       expect(result.leftSide).toEqual({
         type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
         trimTerminationCoords: [-2.380259288059525, 2.5040925592307945],
-        intersectingSegId: 6,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 4,
+        intersectingSegId: 7,
+        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 5,
       })
       expect(result.rightSide).toEqual({
         type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
         trimTerminationCoords: [1.6587744607636377, 2.784726710328238],
-        intersectingSegId: 10,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 8,
+        intersectingSegId: 11,
+        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 9,
       })
     })
     it("finds 'segEndPoint' terminations when there's other segments who have ends on our segment line, but there not actually a coincident constraint", async () => {
@@ -370,12 +370,12 @@ sketch(on = YZ) {
       expect(result.leftSide).toEqual({
         type: 'intersection',
         trimTerminationCoords: [-0.44459011806535265, 2.8295671172502757],
-        intersectingSegId: 8,
+        intersectingSegId: 9,
       })
       expect(result.rightSide).toEqual({
         type: 'intersection',
         trimTerminationCoords: [-4.728585883881671, 2.3133661338085765],
-        intersectingSegId: 11,
+        intersectingSegId: 12,
       })
     })
     it('finds "segEndPoint" terminations when other segments ends have coincident constraints with our trim segments endpoints', async () => {
@@ -461,14 +461,14 @@ sketch(on = YZ) {
       expect(result.leftSide).toEqual({
         type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
         trimTerminationCoords: [-0.36700307305406205, 2.966675365647721],
-        intersectingSegId: 8,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 5,
+        intersectingSegId: 9,
+        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 6,
       })
       expect(result.rightSide).toEqual({
         type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
         trimTerminationCoords: [-4.178878101257838, 2.447749604872991],
-        intersectingSegId: 11,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 10,
+        intersectingSegId: 12,
+        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 11,
       })
     })
     it('finds "segEndPoint" terminations when there\'s other segments who have ends on our segment line, but there not actually a coincident constraint', async () => {
@@ -732,8 +732,8 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.end, arc1])
 }
 `
@@ -761,8 +761,8 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var -0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.start, arc1])
 }
 `
@@ -790,8 +790,8 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.start, arc2])
 }
 `
@@ -820,7 +820,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.end, arc2])
 }
 `
@@ -1586,7 +1586,7 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   arcToSplit = sketch2::arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
-  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var -0mm])
+  line1 = sketch2::line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
   line2 = sketch2::line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
   lineCoincidentWithArcCen = sketch2::line(start = [var 0.75mm, var -8.72mm], end = [var 11.5mm, var -7.5mm])
   line4 = sketch2::line(start = [var 11.03mm, var 1.02mm], end = [var 13.3mm, var 6.85mm])
