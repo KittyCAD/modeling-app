@@ -1483,3 +1483,87 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await expect(toast2).toBeVisible()
   })
 })
+
+test('Undo/redo recovers deleted files interleaved with code edits', async ({
+  context,
+  page,
+  homePage,
+  toolbar,
+  editor,
+}) => {
+  await context.folderSetupFn(async (dir) => {
+    const projectDir = join(dir, 'History Project')
+    await fsp.mkdir(projectDir, { recursive: true })
+    await fsp.copyFile(
+      executorInputPath('cylinder.kcl'),
+      join(projectDir, 'main.kcl')
+    )
+    await fsp.copyFile(
+      executorInputPath('basic_fillet_cube_end.kcl'),
+      join(projectDir, 'fileToDelete.kcl')
+    )
+  })
+
+  const u = await getUtils(page)
+  const fileToDelete = u.locatorFile('fileToDelete.kcl')
+  const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+  const deleteConfirmation = page.getByTestId('delete-confirmation')
+  const archivedToast = page.getByText('archived successfully')
+  const restoredToast = page.getByText('restored successfully')
+  const undoButton = page.getByRole('button', { name: 'arrow turn left' })
+  const redoButton = page.getByRole('button', { name: 'arrow turn right' })
+
+  await test.step('Open project and edit main.kcl', async () => {
+    await homePage.openProject('History Project')
+    await editor.openPane()
+    await editor.expectEditor.toContain('extrude')
+    await editor.codeContent.focus()
+    await page.keyboard.type('\ninterleaveA = 1')
+  })
+
+  await test.step('Delete another file without navigating away', async () => {
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await expect(fileToDelete).toBeVisible()
+    await fileToDelete.click({ button: 'right' })
+    await deleteMenuItem.click()
+    await deleteConfirmation.click()
+    await expect(fileToDelete).not.toBeAttached()
+    await expect(archivedToast).toBeVisible()
+  })
+
+  await test.step('Edit code again, then undo back through the delete', async () => {
+    await editor.codeContent.focus()
+    await page.keyboard.type('\ninterleaveB = 2')
+
+    await undoButton.click()
+    await expect(u.codeLocator).not.toContainText('interleaveB = 2')
+    await expect(u.codeLocator).toContainText('interleaveA = 1')
+
+    do {
+      await undoButton.click()
+      await page.waitForTimeout(100)
+    } while (
+      !(await fileToDelete.isVisible()) &&
+      !(await undoButton.isDisabled())
+    )
+
+    await expect(restoredToast).toBeVisible()
+
+    await undoButton.click()
+    await expect(u.codeLocator).not.toContainText('interleaveA = 1')
+  })
+
+  await test.step('Navigate to file and verify it is not empty', async () => {
+    await toolbar.openFile('fileToDelete.kcl')
+    await expect(editor.codeContent).toContainText('fillet')
+    await toolbar.openFile('main.kcl')
+    await expect(editor.codeContent).not.toContainText('fillet')
+  })
+
+  await test.step('Redo re-applies the delete', async () => {
+    await page.waitForTimeout(1_000)
+    await redoButton.click()
+
+    await expect(fileToDelete).not.toBeAttached()
+  })
+})
