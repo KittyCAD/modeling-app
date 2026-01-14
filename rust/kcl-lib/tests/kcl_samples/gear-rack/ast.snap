@@ -700,25 +700,6 @@ description: Result of parsing gear-rack.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "6": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create a function for sketch of a single tooth",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -731,8 +712,6 @@ description: Result of parsing gear-rack.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the body of the rack"
         ],
         "start": 0,
@@ -1662,6 +1641,9 @@ description: Result of parsing gear-rack.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Create a function for sketch of a single tooth"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1848,25 +1830,6 @@ description: Result of parsing gear-rack.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Sketch and extrude the first end cap. This is a partial tooth",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1879,8 +1842,6 @@ description: Result of parsing gear-rack.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Pattern the single tooth over the length of the rack body"
         ],
         "start": 0,
@@ -2429,25 +2390,6 @@ description: Result of parsing gear-rack.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "6": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Sketch and extrude the second end cap. This is a partial tooth",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2459,6 +2401,9 @@ description: Result of parsing gear-rack.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch and extrude the first end cap. This is a partial tooth"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3016,6 +2961,9 @@ description: Result of parsing gear-rack.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch and extrude the second end cap. This is a partial tooth"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3113,7 +3061,68 @@ description: Result of parsing gear-rack.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

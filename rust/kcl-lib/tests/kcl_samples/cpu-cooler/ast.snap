@@ -188,8 +188,6 @@ description: Result of parsing cpu-cooler.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Produce the model for each imported part"
         ],
         "start": 0,
@@ -1445,6 +1443,18 @@ description: Result of parsing cpu-cooler.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "7": [
           {
             "commentStart": 0,

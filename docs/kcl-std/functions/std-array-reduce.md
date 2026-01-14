@@ -125,8 +125,8 @@ fn decagon(@radius) {
   startOfDecagonSketch = startSketchOn(XY)
     |> startProfile(at = [cos(0) * radius, sin(0) * radius])
 
-    // Use a `reduce` to draw the remaining decagon sides.
-    // For each number in the array 1..10, run the given function,
+  // Use a `reduce` to draw the remaining decagon sides.
+  // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
   fullDecagon = reduce(
     [1..10],

@@ -11,24 +11,24 @@ flowchart LR
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   end
   subgraph path7 [Path]
-    7["Path<br>[1240, 1290, 0]"]
+    7["Path<br>[1241, 1291, 0]"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    8["Segment<br>[1240, 1290, 0]"]
+    8["Segment<br>[1241, 1291, 0]"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     9[Solid2d]
   end
   subgraph path17 [Path]
-    17["Path<br>[1583, 1633, 0]"]
+    17["Path<br>[1584, 1634, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    18["Segment<br>[1583, 1633, 0]"]
+    18["Segment<br>[1584, 1634, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     19[Solid2d]
   end
   1["Plane<br>[937, 954, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  6["Plane<br>[1217, 1234, 0]"]
+  6["Plane<br>[1218, 1235, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  10["Sweep Sweep<br>[1305, 1340, 0]"]
+  10["Sweep Sweep<br>[1306, 1341, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   11[Wall]
     %% face_code_ref=Missing NodePath
@@ -38,9 +38,9 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   14["SweepEdge Opposite"]
   15["SweepEdge Adjacent"]
-  16["Plane<br>[1535, 1577, 0]"]
+  16["Plane<br>[1536, 1578, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  20["Sweep Extrusion<br>[1648, 1690, 0]"]
+  20["Sweep Extrusion<br>[1649, 1691, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21[Wall]
     %% face_code_ref=Missing NodePath

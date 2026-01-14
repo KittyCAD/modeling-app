@@ -36,8 +36,6 @@ description: Result of parsing car-wheel-assembly.kcl
           "filename": "brake-caliper.kcl"
         },
         "preComments": [
-          "",
-          "",
           "// Import parts"
         ],
         "selector": {
@@ -394,7 +392,20 @@ description: Result of parsing car-wheel-assembly.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

@@ -1542,9 +1542,29 @@ description: Result of parsing subtract_regression09.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "|> arc(",
                       "style": "line"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
                     }
                   },
                   {
@@ -1566,6 +1586,16 @@ description: Result of parsing subtract_regression09.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "angleEnd = 193.829733,",
                       "style": "line"
@@ -1578,9 +1608,29 @@ description: Result of parsing subtract_regression09.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "radius = 8.272375,",
                       "style": "line"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
                     }
                   },
                   {
