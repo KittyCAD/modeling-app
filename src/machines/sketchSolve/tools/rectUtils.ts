@@ -8,6 +8,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
+import type { Coords2d } from '@src/lang/util'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -92,7 +93,7 @@ export async function createDraftRectangle({
   kclManager,
   sketchId,
 }: {
-  origin: [number, number]
+  origin: Coords2d
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
@@ -284,17 +285,15 @@ export async function updateDraftRectanglePoints({
   kclManager,
   sketchId,
   draft,
-  points,
+  rect,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   draft: RectDraftIds
-  points: {
-    p0: [number, number]
-    p1: [number, number]
-    p2: [number, number]
-    p3: [number, number]
+  rect: {
+    min: Coords2d
+    max: Coords2d
   }
 }): Promise<{
   kclSource: SourceDelta
@@ -328,22 +327,27 @@ export async function updateDraftRectanglePoints({
   //   })),
   // ]
 
+  const start1: Coords2d = [rect.min[0], rect.min[1]]
+  const start2: Coords2d = [rect.max[0], rect.min[1]]
+  const start3: Coords2d = [rect.max[0], rect.max[1]]
+  const start4: Coords2d = [rect.min[0], rect.max[1]]
+
   const edits = [
     {
       id: line1Id,
-      ctor: makeLineSegmentCtor(points.p0, points.p1, units),
+      ctor: makeLineSegmentCtor(start1, start2, units),
     },
     {
       id: line2Id,
-      ctor: makeLineSegmentCtor(points.p1, points.p2, units),
+      ctor: makeLineSegmentCtor(start2, start3, units),
     },
     {
       id: line3Id,
-      ctor: makeLineSegmentCtor(points.p2, points.p3, units),
+      ctor: makeLineSegmentCtor(start3, start4, units),
     },
     {
       id: line4Id,
-      ctor: makeLineSegmentCtor(points.p3, points.p0, units),
+      ctor: makeLineSegmentCtor(start4, start1, units),
     },
   ]
 
@@ -375,8 +379,8 @@ function _makePointSegmentCtor(
 }
 
 function makeLineSegmentCtor(
-  start: [number, number],
-  end: [number, number],
+  start: Coords2d,
+  end: Coords2d,
   units: NumericSuffix
 ): SegmentCtor {
   return {

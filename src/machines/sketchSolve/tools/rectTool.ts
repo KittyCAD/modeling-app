@@ -14,9 +14,11 @@ import {
   createDraftRectangle,
   updateDraftRectanglePoints,
 } from '@src/machines/sketchSolve/tools/rectUtils'
+import { Coords2d } from '@src/lang/util'
 
 export const TOOL_ID = 'Center Rectangle tool'
 export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.adding first point`
+export type RectOriginMode = 'corner' | 'center'
 export type CenterRectToolEvent =
   | BaseToolEvent
   | { type: 'finalize' }
@@ -36,7 +38,8 @@ type CenterRectToolContext = {
   sketchId: number
   firstPointId?: number
   draft?: RectDraftIds
-  origin: [number, number]
+  origin: Coords2d
+  rectOriginMode: RectOriginMode
 }
 
 //type ToolActionArgs = ActionArgs<ToolContext, ToolEvents, ToolEvents>
@@ -57,6 +60,7 @@ export const machine = setup({
       rustContext: RustContext
       kclManager: KclManager
       sketchId: number
+      rectOriginMode?: RectOriginMode
     },
   },
   actions: {
@@ -85,21 +89,32 @@ export const machine = setup({
             try {
               isEditInProgress = true
 
-              const [x0, y0] = context.origin
-              const x2 = twoD.x
-              const y2 = twoD.y
+              const start = context.origin
+              const end = [twoD.x, twoD.y]
 
-              const p0: [number, number] = [x0, y0]
-              const p1: [number, number] = [x2, y0]
-              const p2: [number, number] = [x2, y2]
-              const p3: [number, number] = [x0, y2]
+              const min: Coords2d = [
+                Math.min(start[0], end[0]),
+                Math.min(start[1], end[1]),
+              ]
+              const max: Coords2d = [
+                Math.max(start[0], end[0]),
+                Math.max(start[1], end[1]),
+              ]
+
+              if (context.rectOriginMode === 'center') {
+                const size = [max[0] - min[0], max[1] - min[1]]
+                min[0] = start[0] - size[0]
+                min[1] = start[1] - size[1]
+                max[0] = min[0] + size[0] * 2
+                max[1] = min[1] + size[1] * 2
+              }
 
               const result = await updateDraftRectanglePoints({
                 rustContext: context.rustContext,
                 kclManager: context.kclManager,
                 sketchId: context.sketchId,
                 draft: context.draft,
-                points: { p0, p1, p2, p3 },
+                rect: { min, max },
               })
 
               self._parent?.send({
@@ -205,6 +220,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     origin: [0, 0],
+    rectOriginMode: input.rectOriginMode ?? 'corner',
   }),
   id: 'Center Rectangle tool',
   initial: 'awaiting first point',
@@ -220,7 +236,7 @@ export const machine = setup({
     },
   },
   description:
-    'Creates a rectangle based on two points from the user: the center point followed by a corner point.',
+    'Creates a rectangle based on two points from the user. Can be configured to interpret the first point as either a corner or the center.',
   states: {
     'awaiting first point': {
       entry: 'add first point listener',

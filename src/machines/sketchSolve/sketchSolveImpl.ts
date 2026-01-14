@@ -23,7 +23,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 
-import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
@@ -64,6 +64,7 @@ export type SpawnToolActor = <K extends EquipTool>(
       rustContext: RustContext
       kclManager: KclManager
       sketchId: number
+      rectOriginMode: 'corner' | 'center'
     }
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
@@ -116,7 +117,7 @@ export type SketchSolveMachineEvent =
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof centerArcTool>
@@ -144,8 +145,9 @@ export type SketchSolveContext = {
   kclManager: KclManager
 }
 export const equipTools = Object.freeze({
-  centerRectTool,
-  cornerRectTool: centerRectTool,
+  // both use the same tool, opened with a different flag
+  centerRectTool: rectTool,
+  cornerRectTool: rectTool,
   dimensionTool,
   pointTool,
   lineTool,
@@ -903,6 +905,8 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      rectOriginMode:
+        nameOfToolToSpawn === 'centerRectTool' ? 'center' : 'corner',
     },
   })
 
