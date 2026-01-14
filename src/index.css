@@ -470,6 +470,26 @@ code,
     @apply bg-chalkboard-100 dark:bg-chalkboard-10;
   }
 
+  .border-bg-2 {
+    @apply border-chalkboard-20 dark:border-chalkboard-90;
+  }
+
+  .border-bg-3 {
+    @apply border-chalkboard-30 dark:border-chalkboard-70;
+  }
+
+  .border-bg-4 {
+    @apply border-chalkboard-70 dark:border-chalkboard-30;
+  }
+
+  .border-bg-5 {
+    @apply border-chalkboard-90 dark:border-chalkboard-20;
+  }
+
+  .border-bg-6 {
+    @apply border-chalkboard-100 dark:border-chalkboard-10;
+  }
+
   /*
     This is where your own custom Tailwind utility classes can go,
     which lets you use them with @apply in your CSS, and get
