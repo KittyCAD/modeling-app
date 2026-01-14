@@ -136,7 +136,7 @@ export async function move(
       return e
     })
     const destinationIsDir =
-      'isDirectory' in destinationStat && destinationStat.isDirectory
+      'isDirectory' in destinationStat && destinationStat.isDirectory()
     const destinationIsNotEmpty =
       (await fs.readdir(destination).catch((e) => e)).length !== 0
 
