@@ -36,6 +36,7 @@ import {
   handleGetCurrentSelectionTool,
 } from './getCurrentSelection.js'
 import { filletEdgeTool, handleFilletEdgeTool } from './filletEdge.js'
+import { getStatusTool, handleGetStatusTool } from './getStatus.js'
 
 /**
  * All available MCP tools
@@ -51,6 +52,7 @@ const tools = [
   getFeatureTreeTool,
   getCurrentSelectionTool,
   filletEdgeTool,
+  getStatusTool,
 ]
 
 /**
@@ -114,6 +116,14 @@ export async function registerTools(server: Server): Promise<void> {
             }
           | undefined) || { radius: '' }
         return handleFilletEdgeTool(args)
+      }
+
+      case 'get_status': {
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetStatusTool(args)
       }
 
       default: {

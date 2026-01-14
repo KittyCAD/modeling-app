@@ -170,6 +170,22 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'getStatus': {
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? false
+        const data = await queryRenderer('mcp:getStatus', {
+          waitForExecution,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

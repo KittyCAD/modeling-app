@@ -117,6 +117,9 @@ export interface IElectronAPI {
     onGetCurrentSelection: (
       callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
+    onGetStatus: (
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
+    ) => () => void
     onFilletEdge: (
       callback: (data: {
         requestId: string

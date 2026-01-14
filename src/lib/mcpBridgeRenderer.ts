@@ -10,11 +10,13 @@ import { effect } from '@preact/signals-core'
 import { addFillet } from '@src/lang/modifyAst/edges'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { kclManager, rustContext, settingsActor } from '@src/lib/singletons'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
 import { createSelectionFromArtifacts } from '@src/lib/testHelpers'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { PATHS } from '@src/lib/paths'
+import type { StatusData } from '@src/mcp-server/types'
 
 /**
  * Wait for execution to complete if it's currently in progress
@@ -132,6 +134,48 @@ export function initMcpBridgeHandlers(): void {
           }
           window.electron?.mcpBridge?.sendResponse(data.requestId, {
             data: selectionData,
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle getStatus request
+    window.electron.mcpBridge.onGetStatus(
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
+        try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? false)
+          const diagnostics = kclManager.diagnostics.map((d) => ({
+            from: d.from,
+            to: d.to,
+            message: d.message,
+            severity: d.severity,
+          }))
+
+          // Get project name from settings
+          const currentProject =
+            settingsActor.getSnapshot().context.currentProject
+          const projectName = currentProject?.name || null
+
+          // Check if on home screen
+          // In Electron (desktop), routing uses hash: window.location.hash (e.g., "#/home")
+          // In browser, routing uses pathname: window.location.pathname (e.g., "/home")
+          const hash = window.location.hash || ''
+          const pathname = window.location.pathname || ''
+          const isOnHomeScreen =
+            hash.startsWith(`#${PATHS.HOME}`) || pathname === PATHS.HOME
+
+          const statusData: StatusData = {
+            isExecuting: kclManager.isExecuting,
+            diagnostics,
+            projectName,
+            ...(isOnHomeScreen && { isOnHomeScreen: true }),
+          }
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: statusData,
           })
         } catch (error) {
           window.electron?.mcpBridge?.sendResponse(data.requestId, {

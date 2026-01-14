@@ -338,6 +338,24 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:getCurrentSelection')
       }
     },
+    onGetStatus: (
+      callback: (data: {
+        requestId: string
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getStatus', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in getStatus handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getStatus')
+      }
+    },
     onFilletEdge: (
       callback: (data: {
         requestId: string

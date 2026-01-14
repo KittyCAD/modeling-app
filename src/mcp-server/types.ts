@@ -10,6 +10,7 @@ export type BridgeMessageType =
   | 'getFeatureTree'
   | 'getCurrentSelection'
   | 'filletEdge'
+  | 'getStatus'
 
 /**
  * Base bridge message structure
@@ -54,4 +55,24 @@ export interface FeatureTreeData {
 export interface SelectionData {
   graphSelections: unknown[]
   otherSelections: unknown[]
+}
+
+/**
+ * Diagnostic data structure (serialized from CodeMirror Diagnostic)
+ */
+export interface DiagnosticData {
+  from: number
+  to: number
+  message: string
+  severity: 'error' | 'warning' | 'info' | 'hint'
+}
+
+/**
+ * Status data structure
+ */
+export interface StatusData {
+  isExecuting: boolean
+  diagnostics: DiagnosticData[]
+  projectName: string | null
+  isOnHomeScreen?: true
 }

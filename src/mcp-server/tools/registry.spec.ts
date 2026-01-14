@@ -63,11 +63,13 @@ describe('Tool Registry Integration', () => {
         params: {},
       } as Parameters<typeof handler>[0])
 
-      expect(response.tools).toHaveLength(3)
+      expect(response.tools).toHaveLength(5)
       expect(response.tools.map((t: { name: string }) => t.name)).toEqual([
         'get_artifact_graph',
         'get_feature_tree',
         'get_current_selection',
+        'fillet_edge',
+        'get_status',
       ])
     }
   })
@@ -142,6 +144,170 @@ describe('Tool Registry Integration', () => {
       // Verify the response contains the actual data from the bridge
       const parsed = JSON.parse(response.content[0].text)
       expect(parsed.artifactGraph).toBeDefined()
+    }
+  })
+
+  it('should handle waitForExecution parameter for get_artifact_graph', async () => {
+    testServer.setHandler(
+      async (request: BridgeRequest): Promise<BridgeResponse> => {
+        if (request.type === 'getArtifactGraph') {
+          // Verify waitForExecution parameter is passed through
+          expect(request.params?.waitForExecution).toBe(true)
+          return {
+            type: request.type,
+            id: request.id,
+            timestamp: Date.now(),
+            success: true,
+            data: [],
+          }
+        }
+        return {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: false,
+          error: 'Unknown request type',
+        }
+      }
+    )
+
+    await registerTools(server)
+
+    const handler = server['_requestHandlers'].get('tools/call')
+    expect(handler).toBeDefined()
+
+    if (handler) {
+      // Test with default (should be true)
+      const response1 = await handler({
+        method: 'tools/call',
+        params: {
+          name: 'get_artifact_graph',
+          arguments: {},
+        },
+      } as Parameters<typeof handler>[0])
+      expect(response1).toHaveProperty('content')
+
+      // Test with explicit true
+      const response2 = await handler({
+        method: 'tools/call',
+        params: {
+          name: 'get_artifact_graph',
+          arguments: { waitForExecution: true },
+        },
+      } as Parameters<typeof handler>[0])
+      expect(response2).toHaveProperty('content')
+
+      // Test with explicit false
+      testServer.setHandler(
+        async (request: BridgeRequest): Promise<BridgeResponse> => {
+          if (request.type === 'getArtifactGraph') {
+            expect(request.params?.waitForExecution).toBe(false)
+            return {
+              type: request.type,
+              id: request.id,
+              timestamp: Date.now(),
+              success: true,
+              data: [],
+            }
+          }
+          return {
+            type: request.type,
+            id: request.id,
+            timestamp: Date.now(),
+            success: false,
+            error: 'Unknown request type',
+          }
+        }
+      )
+
+      const response3 = await handler({
+        method: 'tools/call',
+        params: {
+          name: 'get_artifact_graph',
+          arguments: { waitForExecution: false },
+        },
+      } as Parameters<typeof handler>[0])
+      expect(response3).toHaveProperty('content')
+    }
+  })
+
+  it('should handle waitForExecution parameter for get_feature_tree', async () => {
+    testServer.setHandler(
+      async (request: BridgeRequest): Promise<BridgeResponse> => {
+        if (request.type === 'getFeatureTree') {
+          expect(request.params?.waitForExecution).toBe(true)
+          return {
+            type: request.type,
+            id: request.id,
+            timestamp: Date.now(),
+            success: true,
+            data: { operations: [] },
+          }
+        }
+        return {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: false,
+          error: 'Unknown request type',
+        }
+      }
+    )
+
+    await registerTools(server)
+
+    const handler = server['_requestHandlers'].get('tools/call')
+    expect(handler).toBeDefined()
+
+    if (handler) {
+      const response = await handler({
+        method: 'tools/call',
+        params: {
+          name: 'get_feature_tree',
+          arguments: { waitForExecution: true },
+        },
+      } as Parameters<typeof handler>[0])
+      expect(response).toHaveProperty('content')
+    }
+  })
+
+  it('should handle waitForExecution parameter for get_current_selection', async () => {
+    testServer.setHandler(
+      async (request: BridgeRequest): Promise<BridgeResponse> => {
+        if (request.type === 'getCurrentSelection') {
+          expect(request.params?.waitForExecution).toBe(false)
+          return {
+            type: request.type,
+            id: request.id,
+            timestamp: Date.now(),
+            success: true,
+            data: { graphSelections: [], otherSelections: [] },
+          }
+        }
+        return {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: false,
+          error: 'Unknown request type',
+        }
+      }
+    )
+
+    await registerTools(server)
+
+    const handler = server['_requestHandlers'].get('tools/call')
+    expect(handler).toBeDefined()
+
+    if (handler) {
+      const response = await handler({
+        method: 'tools/call',
+        params: {
+          name: 'get_current_selection',
+          arguments: { waitForExecution: false },
+        },
+      } as Parameters<typeof handler>[0])
+      expect(response).toHaveProperty('content')
     }
   })
 
