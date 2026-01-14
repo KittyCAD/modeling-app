@@ -22,7 +22,7 @@ export interface MlEphantConversationProps {
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   onProcess: (request: string, mode: MlCopilotMode) => void
-  onInterrupt: () => void
+  onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
@@ -160,7 +160,7 @@ interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
-  onInterrupt: MlEphantConversationProps['onInterrupt']
+  onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
@@ -248,7 +248,7 @@ export const MlEphantConversationInput = (
             ) : (
               <button
                 data-testid="ml-ephant-conversation-input-button"
-                onClick={props.onInterrupt}
+                onClick={props.onCancel}
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
@@ -352,7 +352,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
               onReconnect={props.onReconnect}
-              onInterrupt={props.onInterrupt}
+              onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
