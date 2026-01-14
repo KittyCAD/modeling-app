@@ -325,8 +325,6 @@ description: Result of parsing round-table.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Tabletop"
         ],
         "start": 0,
@@ -718,8 +716,6 @@ description: Result of parsing round-table.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Base"
         ],
         "start": 0,
@@ -1062,8 +1058,6 @@ description: Result of parsing round-table.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Leg"
         ],
         "start": 0,
@@ -1538,6 +1532,42 @@ description: Result of parsing round-table.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
           {
             "commentStart": 0,
             "end": 0,
