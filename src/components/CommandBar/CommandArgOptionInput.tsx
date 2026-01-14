@@ -50,6 +50,7 @@ function CommandArgOptionInput({
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
+  const hasAutoSubmitted = useRef(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
@@ -71,8 +72,26 @@ function CommandArgOptionInput({
   useEffect(() => {
     setQuery(initialQuery)
     setSelectedOption(currentOption || resolvedOptions[0])
+    hasAutoSubmitted.current = false
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [argName])
+
+  // Auto-submit if the value is already prefilled and valid
+  useEffect(() => {
+    if (!hasAutoSubmitted.current && currentOption) {
+      const prefilledValue = commandBarState.context.argumentsToSubmit[argName]
+      // If currentOption exists, it means the prefilled value is valid
+      if (
+        prefilledValue !== undefined &&
+        currentOption.value === prefilledValue
+      ) {
+        hasAutoSubmitted.current = true
+        // Auto-submit the prefilled value to advance to the next step
+        onSubmit(prefilledValue)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [argName, currentOption, resolvedOptions])
 
   // Auto focus and select the input when the component mounts
   useEffect(() => {

@@ -597,8 +597,7 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       name: 'rename project',
     })
     const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `untitled`
-    // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+    const projectRenamedName = `my_project_after_rename_from_project`
     const commandContinueButton = page.getByRole('button', {
       name: 'Continue',
     })
@@ -617,6 +616,11 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       await commandOption.click()
       await projectNameOption.click()
 
+      // Fill in the new project name
+      const newNameInput = page.getByTestId('cmd-bar-arg-value')
+      await expect(newNameInput).toBeVisible()
+      await newNameInput.fill(projectRenamedName)
+
       await expect(commandContinueButton).toBeVisible()
       await commandContinueButton.click()
 
@@ -625,12 +629,18 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       await expect(toastMessage).toBeVisible()
     })
 
-    // TODO: in future I'd like the behavior to be to
-    // navigate to the new project's page directly,
-    // see ProjectContextProvider.tsx:158
-    await test.step(`Check the project was renamed and we navigated home`, async () => {
-      await expect(projectHomeLink.first()).toBeVisible()
-      await expect(projectHomeLink.first()).toContainText(projectRenamedName)
+    await test.step(`Check the project was renamed`, async () => {
+      await scene.settled(cmdBar)
+
+      // Verify we're still on the project page (not home)
+      await expect(projectHomeLink).not.toBeVisible()
+
+      // Verify the project name in the sidebar reflects the new name
+      const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
+      if (await projectSidebarToggle.isVisible()) {
+        await projectSidebarToggle.click()
+      }
+      await expect(page.getByText(projectRenamedName).first()).toBeVisible()
     })
   })
 
@@ -708,7 +718,7 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       name: 'rename project',
     })
     const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `untitled`
+    const projectRenamedName = `my_project_after_rename_from_home`
     const commandContinueButton = page.getByRole('button', {
       name: 'Continue',
     })
@@ -725,6 +735,11 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       await commandButton.click()
       await commandOption.click()
       await projectNameOption.click()
+
+      // Fill in the new project name
+      const newNameInput = page.getByTestId('cmd-bar-arg-value')
+      await expect(newNameInput).toBeVisible()
+      await newNameInput.fill(projectRenamedName)
 
       await expect(commandContinueButton).toBeVisible()
       await commandContinueButton.click()

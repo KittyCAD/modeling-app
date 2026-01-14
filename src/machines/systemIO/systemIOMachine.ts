@@ -717,6 +717,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    pendingRenamedProjectName: undefined,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -838,7 +839,21 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.idle,
           actions: [
             SystemIOMachineActions.setFolders,
-            assign({ hasListedProjects: true }),
+            assign({
+              hasListedProjects: true,
+              requestedProjectName: ({ context }) => {
+                // If we just finished renaming, navigate to the renamed project
+                if (context.pendingRenamedProjectName) {
+                  const newName = context.pendingRenamedProjectName
+                  return { name: newName }
+                }
+                return context.requestedProjectName
+              },
+              pendingRenamedProjectName: ({ context }) => {
+                // Clear the pending rename after using it
+                return undefined
+              },
+            }),
           ],
         },
         onError: {
@@ -888,7 +903,12 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              pendingRenamedProjectName: ({ event }) => event.output.newName,
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

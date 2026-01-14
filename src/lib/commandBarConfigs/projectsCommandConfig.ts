@@ -3,7 +3,8 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
@@ -171,7 +172,13 @@ export function createProjectCommands({
       newName: {
         inputType: 'string',
         required: true,
-        defaultValue: defaultProjectFolderNameSnapshot,
+        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
+          // Prefill with the old project name if it's already selected
+          const oldName = context.argumentsToSubmit.oldName as
+            | string
+            | undefined
+          return oldName || defaultProjectFolderNameSnapshot()
+        },
       },
     },
   }
