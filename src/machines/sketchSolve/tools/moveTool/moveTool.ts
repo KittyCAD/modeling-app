@@ -714,7 +714,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
             <div
               ${{ key: 'id', value: 'selection-box' }}
-              class = "border-black/20 dark:border-white/70 bg-black/5 dark:bg-white/10"
+              class = "border-bg-3 bg-black/5 dark:bg-white/10"
               style="
                 position: absolute;
                 pointer-events: none;
@@ -726,7 +726,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             >
               <div
                 ${{ key: 'id', value: 'vertical-line' }}
-                class="bg-black/20 dark:bg-white/70"
+                class="bg-3"
                 style="
                   position: absolute;
                   pointer-events: none;
@@ -735,7 +735,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               ></div>
               <div
                 ${{ key: 'id', value: 'horizontal-line' }}
-                class="bg-black/20 dark:bg-white/70"
+                class="bg-3"
                 style="
                   position: absolute;
                   pointer-events: none;
@@ -755,7 +755,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               >
                 <div
                   ${{ key: 'id', value: 'intersects-label' }}
-                  class="text-black/20 dark:text-white/70"
+                  class="text-3 dark:text-3"
                   style="
                     font-size: 11px;
                     user-select: none;
@@ -767,7 +767,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 >Intersects</div>
                 <div
                   ${{ key: 'id', value: 'contains-label' }}
-                  class="text-black/20 dark:text-white/70"
+                  class="text-3 dark:text-3"
                   style="
                     font-size: 11px;
                     user-select: none;
