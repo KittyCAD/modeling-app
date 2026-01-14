@@ -73,6 +73,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
           "type": "extrudeArc"
         },
         {
@@ -157,6 +164,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "type": "TagDeclarator",
             "value": "seg05"
           },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
           "type": "extrudePlane"
         },
         {
@@ -940,6 +954,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
                 "type": "extrudeArc"
               },
               {
@@ -1024,6 +1045,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
                 "type": "extrudePlane"
               },
               {
@@ -1709,8 +1737,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -1909,6 +1937,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -1993,6 +2028,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -2803,6 +2845,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -2887,6 +2936,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -3738,6 +3794,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -3822,6 +3885,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -4632,6 +4702,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -4716,6 +4793,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -5575,6 +5659,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -5659,6 +5750,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -6469,6 +6567,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -6553,6 +6658,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -7363,6 +7475,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -7447,6 +7566,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
@@ -8257,6 +8383,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -8341,6 +8474,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {
