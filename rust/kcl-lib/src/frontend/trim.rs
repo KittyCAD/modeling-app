@@ -1022,6 +1022,13 @@ where
     last_result.ok_or_else(|| "No trim operations were executed".to_string())
 }
 
+/// Result of executing trim flow
+#[derive(Debug, Clone)]
+pub struct TrimFlowResult {
+    pub kcl_code: String,
+    pub invalidates_ids: bool,
+}
+
 /// Execute a complete trim flow from KCL code to KCL code.
 /// This is a high-level function that sets up the frontend state and executes the trim loop.
 ///
@@ -1042,7 +1049,7 @@ pub async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
-) -> Result<String, String> {
+) -> Result<TrimFlowResult, String> {
     use crate::frontend::{FrontendState, api::Version};
     use crate::{ExecutorContext, Program};
 
@@ -1112,7 +1119,7 @@ pub async fn execute_trim_flow(
     // We need to use a different approach since we can't easily capture mutable references in closures
     // Instead, we'll use a helper that takes the necessary parameters
     // Use mock_ctx for operations (SketchApi methods require mock context)
-    let (source_delta, _) = execute_trim_loop_with_context(
+    let (source_delta, scene_graph_delta) = execute_trim_loop_with_context(
         trim_points,
         initial_scene_graph_delta,
         &mut frontend,
@@ -1127,7 +1134,10 @@ pub async fn execute_trim_flow(
     if source_delta.text.is_empty() {
         return Err("No trim operations were executed - source delta is empty".to_string());
     }
-    Ok(source_delta.text)
+    Ok(TrimFlowResult {
+        kcl_code: source_delta.text,
+        invalidates_ids: scene_graph_delta.invalidates_ids,
+    })
 }
 
 /// Execute the trim loop with a context struct that provides access to FrontendState.
@@ -1148,6 +1158,7 @@ async fn execute_trim_loop_with_context(
         crate::frontend::api::SourceDelta { text: String::new() },
         initial_scene_graph_delta.clone(),
     ));
+    let mut invalidates_ids = false;
     let mut start_index = 0;
     let max_iterations = 1000;
     let mut iteration_count = 0;
@@ -1235,6 +1246,7 @@ async fn execute_trim_loop_with_context(
                 .await
                 {
                     Ok((source_delta, scene_graph_delta)) => {
+                        invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         current_scene_graph_delta = scene_graph_delta;
                     }
@@ -1257,7 +1269,11 @@ async fn execute_trim_loop_with_context(
         return Err(format!("Reached max iterations ({})", max_iterations));
     }
 
-    last_result.ok_or_else(|| "No trim operations were executed".to_string())
+    let (source_delta, mut scene_graph_delta) =
+        last_result.ok_or_else(|| "No trim operations were executed".to_string())?;
+    // Set invalidates_ids if any operation invalidated IDs
+    scene_graph_delta.invalidates_ids = invalidates_ids;
+    Ok((source_delta, scene_graph_delta))
 }
 
 /// Execute trim operations using SketchApi.
@@ -1276,6 +1292,7 @@ async fn execute_trim_operations_simple(
 
     let mut op_index = 0;
     let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = None;
+    let mut invalidates_ids = false;
 
     while op_index < strategy.len() {
         let mut consumed_ops = 1;
@@ -1710,6 +1727,8 @@ async fn execute_trim_operations_simple(
                     )
                     .await
                     .map_err(|e| format!("Failed to edit segment: {}", e.msg))?;
+                // Track invalidates_ids from edit_segments call
+                invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
 
                 // Get left endpoint ID from edited segment
                 let edited_segment = edit_scene_graph_delta
@@ -2095,7 +2114,7 @@ async fn execute_trim_operations_simple(
                 let constraint_object_ids: Vec<ObjectId> =
                     constraints_to_delete.iter().map(|id| ObjectId(*id)).collect();
 
-                frontend
+                let batch_result = frontend
                     .batch_split_segment_operations(
                         ctx,
                         version,
@@ -2109,7 +2128,12 @@ async fn execute_trim_operations_simple(
                         new_segment_center_point_id.map(ObjectId),
                     )
                     .await
-                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg))
+                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg));
+                // Track invalidates_ids from batch_split_segment_operations call
+                if let Ok((_, ref batch_delta)) = batch_result {
+                    invalidates_ids = invalidates_ids || batch_delta.invalidates_ids;
+                }
+                batch_result
             }
         };
 
@@ -2126,7 +2150,11 @@ async fn execute_trim_operations_simple(
         op_index += consumed_ops;
     }
 
-    last_result.ok_or_else(|| "No operations were executed successfully".to_string())
+    let (source_delta, mut scene_graph_delta) =
+        last_result.ok_or_else(|| "No operations were executed successfully".to_string())?;
+    // Set invalidates_ids if any operation invalidated IDs
+    scene_graph_delta.invalidates_ids = invalidates_ids;
+    Ok((source_delta, scene_graph_delta))
 }
 
 /// Determine the trim strategy based on terminations
@@ -4594,7 +4622,7 @@ mod tests {
         kcl_code: &str,
         trim_points: &[Coords2d],
         sketch_id: ObjectId,
-    ) -> Result<String, String> {
+    ) -> Result<super::TrimFlowResult, String> {
         // Use the public execute_trim_flow function
         super::execute_trim_flow(kcl_code, trim_points, sketch_id).await
     }

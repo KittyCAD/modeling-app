@@ -22,7 +22,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -33,7 +33,7 @@ sketch(on = YZ) {
 "#;
 
                 // Normalize both strings for comparison (trim whitespace)
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -70,7 +70,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -80,7 +80,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -117,7 +117,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -127,7 +127,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -164,7 +164,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -174,7 +174,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -211,7 +211,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -221,7 +221,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -258,7 +258,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -268,7 +268,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -305,7 +305,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -315,7 +315,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -352,7 +352,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -362,7 +362,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -399,14 +399,14 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -447,7 +447,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -460,7 +460,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -503,7 +503,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -518,7 +518,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -556,7 +556,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -566,7 +566,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -604,7 +604,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -617,7 +617,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -658,7 +658,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -673,7 +673,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -731,8 +731,8 @@ sketch(on = YZ) {
             let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
 
             match result {
-                Ok(kcl_code) => {
-                    let result_normalized = kcl_code.trim();
+                Ok(result) => {
+                    let result_normalized = result.kcl_code.trim();
                     let expected_normalized = expected_code.trim();
 
                     if result_normalized != expected_normalized {
@@ -776,7 +776,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -790,7 +790,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -848,7 +848,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -887,7 +887,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -987,7 +987,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1034,7 +1034,7 @@ sketch2::distance([
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1078,7 +1078,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1098,7 +1098,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1137,7 +1137,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1152,7 +1152,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1191,7 +1191,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1206,7 +1206,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1246,7 +1246,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1262,7 +1262,7 @@ sketch(on = YZ) {
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1312,7 +1312,7 @@ sketch(on = YZ) {
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1343,7 +1343,7 @@ sketch2::distance([arc1.center, line4.end]) == 20mm
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1391,7 +1391,7 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1408,7 +1408,7 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
 }
 "#;
 
-                let result_normalized = kcl_code.trim();
+                let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
                 if result_normalized != expected_normalized {
@@ -1737,9 +1737,12 @@ sketch(on = YZ) {
         let duration = start.elapsed();
 
         match result {
-            Ok(kcl_code) => {
+            Ok(result) => {
                 // Just assert that it doesn't error - the output code can be whatever the solver produces
-                assert!(!kcl_code.trim().is_empty(), "Trim should produce non-empty KCL code");
+                assert!(
+                    !result.kcl_code.trim().is_empty(),
+                    "Trim should produce non-empty KCL code"
+                );
 
                 // Assert that the test completes within a reasonable time (60 seconds)
                 // Note: Rust implementation may have different performance characteristics
@@ -1753,6 +1756,54 @@ sketch(on = YZ) {
                     "[Stress Test] Execution time: {:.2}s ({}ms)",
                     duration.as_secs_f64(),
                     duration.as_millis()
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_trim_through_segment_invalidates_ids() {
+        // Test that trimming through a segment (which causes deletion) sets invalidates_ids to true
+        // This is a regression test for the bug where segments disappear but points remain
+        // due to ID mismatches when invalidates_ids is not properly propagated
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc3 = sketch2::arc(start = [var 1.67mm, var 5.51mm], end = [var 5.77mm, var 1.36mm], center = [var 5.3mm, var 4.99mm])
+  sketch2::arc(start = [var 2.35mm, var 4.27mm], end = [var 0.44mm, var 4.55mm], center = [var 1.19mm, var 3.04mm])
+  arc2 = sketch2::arc(start = [var 6.49mm, var 5.09mm], end = [var 5.77mm, var 1.36mm], center = [var 7.56mm, var 2.95mm])
+  sketch2::coincident([arc2.end, arc3.end])
+  line4 = sketch2::line(start = [var 0.95mm, var 2.01mm], end = [var 6.62mm, var 4.2mm])
+  line5 = sketch2::line(start = [var 6.62mm, var 4.29mm], end = [var 2.02mm, var 0.37mm])
+  sketch2::coincident([line4.end, line5.start])
+  line6 = sketch2::line(start = [var 4.36mm, var 2.37mm], end = [var 2.9mm, var 5.83mm])
+  sketch2::coincident([line6.start, line5])
+}
+"#;
+
+        // Trim line that goes through segments (points from the user's example)
+        let trim_points = vec![Coords2d { x: 2.57, y: 1.83 }, Coords2d { x: 3.42, y: 2.49 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(result) => {
+                // The key assertion: invalidates_ids should be true when trimming through segments
+                // This happens because trimming through a segment causes deletion, which invalidates IDs
+                assert!(
+                    result.invalidates_ids,
+                    "invalidates_ids should be true when trimming through segments that get deleted"
+                );
+
+                // Also verify that we got some KCL code back
+                assert!(
+                    !result.kcl_code.trim().is_empty(),
+                    "Trim should produce non-empty KCL code"
                 );
             }
             Err(e) => {

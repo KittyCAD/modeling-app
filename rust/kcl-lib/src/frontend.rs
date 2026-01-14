@@ -652,13 +652,25 @@ impl SketchApi for FrontendState {
         // Find constraints that reference segments to be deleted, and add those to the set to be deleted.
         self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
 
+        let has_constraint_deletions = !constraint_ids_set.is_empty();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
 
         // Step 4: Execute once at the end
-        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
-            .await
+        // Always use Edit (not DeleteNonSketch) because we're editing the sketch block, not deleting it
+        // But we'll manually set invalidates_ids: true if we deleted constraints
+        let (source_delta, mut scene_graph_delta) = self
+            .execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .await?;
+
+        // If we deleted constraints, set invalidates_ids: true
+        // This is because constraint deletion invalidates IDs, even though we're not deleting the sketch block
+        if has_constraint_deletions {
+            scene_graph_delta.invalidates_ids = true;
+        }
+
+        Ok((source_delta, scene_graph_delta))
     }
 
     async fn batch_tail_cut_operations(
@@ -707,13 +719,25 @@ impl SketchApi for FrontendState {
         let segment_ids_set = AhashIndexSet::default();
         self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
 
+        let has_constraint_deletions = !constraint_ids_set.is_empty();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
 
         // Step 4: Single execute_after_edit
-        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
-            .await
+        // Always use Edit (not DeleteNonSketch) because we're editing the sketch block, not deleting it
+        // But we'll manually set invalidates_ids: true if we deleted constraints
+        let (source_delta, mut scene_graph_delta) = self
+            .execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .await?;
+
+        // If we deleted constraints, set invalidates_ids: true
+        // This is because constraint deletion invalidates IDs, even though we're not deleting the sketch block
+        if has_constraint_deletions {
+            scene_graph_delta.invalidates_ids = true;
+        }
+
+        Ok((source_delta, scene_graph_delta))
     }
 }
 
