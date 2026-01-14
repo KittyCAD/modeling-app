@@ -965,6 +965,10 @@ impl Node<PipeExpression> {
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
+                    if let NonCodeValue::NewLine = val.value {
+                        buf.push('\n');
+                        continue;
+                    }
                     // TODO: Remove allocation here by switching val.recast to accept buf.
                     let formatted = if val.end == self.end {
                         val.recast(options, indentation_level)
@@ -976,7 +980,9 @@ impl Node<PipeExpression> {
                             .to_string()
                     };
                     if let NonCodeValue::BlockComment { .. } = val.value {
-                        buf.push('\n');
+                        if !buf.ends_with('\n') {
+                            buf.push('\n');
+                        }
                     }
                     buf.push_str(&formatted);
                 }

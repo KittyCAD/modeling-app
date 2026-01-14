@@ -1692,40 +1692,37 @@ fn noncode_just_after_pipe_code(i: &mut TokenSlice) -> ModalResult<Vec<Node<NonC
     let mut nodes = Vec::new();
     loop {
         let ws = opt(whitespace).parse_next(i)?;
-        let (has_newline, has_empty_line, ws_start, ws_end, ws_module_id) = if let Some(ref ws) = ws {
-            let has_newline = ws.iter().any(|token| token.value.contains('\n'));
-            let has_empty_line = ws.iter().any(|token| count_in('\n', &token.value) >= 2);
+        let (newline_count, ws_start, ws_end, ws_module_id) = if let Some(ref ws) = ws {
+            let newline_count = ws.iter().map(|token| count_in('\n', &token.value)).sum::<usize>();
             let ws_start = ws.first();
             let ws_end = ws.last();
             (
-                has_newline,
-                has_empty_line,
+                newline_count,
                 ws_start.map(|tok| tok.start),
                 ws_end.map(|tok| tok.end),
                 ws_start.map(|tok| tok.module_id),
             )
         } else {
-            (false, false, None, None, None)
+            (0, None, None, None)
         };
-
-        if has_empty_line {
-            if let (Some(start), Some(end), Some(module_id)) = (ws_start, ws_end, ws_module_id) {
-                nodes.push(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    start,
-                    end,
-                    module_id,
-                ));
-            }
-        }
 
         match non_code_node_no_leading_whitespace.parse_next(i) {
             Ok(nc) => {
+                for _ in 0..newline_count {
+                    if let (Some(start), Some(end), Some(module_id)) = (ws_start, ws_end, ws_module_id) {
+                        nodes.push(Node::new(
+                            NonCodeNode {
+                                value: NonCodeValue::NewLine,
+                                digest: None,
+                            },
+                            start,
+                            end,
+                            module_id,
+                        ));
+                    }
+                }
                 let value = match nc.inner.value {
-                    NonCodeValue::BlockComment { value, style } if !has_newline => {
+                    NonCodeValue::BlockComment { value, style } if newline_count == 0 => {
                         NonCodeValue::InlineComment { value, style }
                     }
                     x => x,
