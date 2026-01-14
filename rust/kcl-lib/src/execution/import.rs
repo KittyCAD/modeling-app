@@ -275,7 +275,7 @@ pub async fn send_to_engine(
 
     exec_state
         .async_modeling_cmd(
-            ModelingCmdMeta::with_id(ctxt, pre.source_range, pre.id),
+            ModelingCmdMeta::with_id(exec_state, ctxt, pre.source_range, pre.id),
             &ModelingCmd::from(pre.command.clone()),
         )
         .await?;

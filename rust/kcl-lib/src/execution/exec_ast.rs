@@ -34,7 +34,9 @@ use crate::{
         MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
         Type, UnaryExpression, UnaryOperator,
     },
-    std::{args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine},
+    std::{
+        args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine, sketch2::create_segments_in_engine,
+    },
 };
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
@@ -640,7 +642,7 @@ impl ExecutorContext {
             // Flush the batch queue.
             exec_state
                 .flush_batch(
-                    ModelingCmdMeta::new(self, block.to_source_range()),
+                    ModelingCmdMeta::new(exec_state, self, block.to_source_range()),
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
@@ -1385,6 +1387,7 @@ impl Node<SketchBlock> {
                 solve_analysis.as_ref(),
             )?);
         }
+        let solved_segments = solved_segments; // Remove mutability
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
@@ -1442,7 +1445,10 @@ impl Node<SketchBlock> {
             });
         }
 
-        // TODO: sketch-api: send everything to the engine.
+        // If not in sketch mode, send everything to the engine.
+        if !exec_state.sketch_mode() {
+            create_segments_in_engine(&sketch_surface, &solved_segments, ctx, exec_state, range).await?;
+        }
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),
