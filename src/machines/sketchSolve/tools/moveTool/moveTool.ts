@@ -714,18 +714,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
             <div
               ${{ key: 'id', value: 'selection-box' }}
-              class="border-black/50 dark:border-white/50 bg-black/10 dark:bg-white/10"
+              class = "border-black/20 dark:border-white/70 bg-black/5 dark:bg-white/10"
               style="
                 position: absolute;
                 pointer-events: none;
-                border: ${borderWidthPx} ${borderStyle};
+                border-width: ${borderWidthPx};
+                border-style: ${borderStyle};
                 transform: translate(-50%, -50%);
                 box-sizing: border-box;
               "
             >
               <div
                 ${{ key: 'id', value: 'vertical-line' }}
-                class="bg-black/50 dark:bg-white/50"
+                class="bg-black/20 dark:bg-white/70"
                 style="
                   position: absolute;
                   pointer-events: none;
@@ -734,7 +735,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               ></div>
               <div
                 ${{ key: 'id', value: 'horizontal-line' }}
-                class="bg-black/50 dark:bg-white/50"
+                class="bg-black/20 dark:bg-white/70"
                 style="
                   position: absolute;
                   pointer-events: none;
@@ -754,7 +755,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               >
                 <div
                   ${{ key: 'id', value: 'intersects-label' }}
-                  class="text-black/70 dark:text-white/70"
+                  class="text-black/20 dark:text-white/70"
                   style="
                     font-size: 11px;
                     user-select: none;
@@ -766,7 +767,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 >Intersects</div>
                 <div
                   ${{ key: 'id', value: 'contains-label' }}
-                  class="text-black/70 dark:text-white/70"
+                  class="text-black/20 dark:text-white/70"
                   style="
                     font-size: 11px;
                     user-select: none;
@@ -810,7 +811,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   ): void {
     boxDiv.style.width = `${widthPx}px`
     boxDiv.style.height = `${heightPx}px`
-    boxDiv.style.border = `${AREA_SELECT_BORDER_WIDTH}px ${borderStyle}`
+    boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
+    boxDiv.style.borderStyle = borderStyle
   }
 
   /**
