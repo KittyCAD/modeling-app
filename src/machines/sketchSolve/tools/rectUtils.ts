@@ -172,81 +172,81 @@ export async function createDraftRectangle({
   const constraintIds: number[] = []
 
   // Connect corners (close loop): line1 -> line2 -> line3 -> line4 -> line1
-  const c1 = await addCoincidentConstraint({
-    a: end1,
-    b: start2,
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const c2 = await addCoincidentConstraint({
-    a: end2,
-    b: start3,
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const c3 = await addCoincidentConstraint({
-    a: end3,
-    b: start4,
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const c0 = await addCoincidentConstraint({
-    a: end4,
-    b: start1,
-    rustContext,
-    sketchId,
-    settings,
-  })
+  // const c1 = await addCoincidentConstraint({
+  //   a: end1,
+  //   b: start2,
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const c2 = await addCoincidentConstraint({
+  //   a: end2,
+  //   b: start3,
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const c3 = await addCoincidentConstraint({
+  //   a: end3,
+  //   b: start4,
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const c0 = await addCoincidentConstraint({
+  //   a: end4,
+  //   b: start1,
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
 
-  constraintIds.push(
-    c1.constraintId,
-    c2.constraintId,
-    c3.constraintId,
-    c0.constraintId
-  )
+  // constraintIds.push(
+  //   c1.constraintId,
+  //   c2.constraintId,
+  //   c3.constraintId,
+  //   c0.constraintId
+  // )
 
   // Line constraints:
   // - Sides (line2/right, line4/left) are parallel
   // - Top/bottom (line3/top, line1/bottom) are parallel
   // - Bottom (line1) is perpendicular to right (line2)
   // - Top (line3) is horizontal (fixes overall orientation)
-  const parallelSides = await addTwoLineConstraint({
-    type: 'Parallel',
-    lines: [line2.lineId, line4.lineId],
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const parallelTopBottom = await addTwoLineConstraint({
-    type: 'Parallel',
-    lines: [line3.lineId, line1.lineId],
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const perpendicularBottomRight = await addTwoLineConstraint({
-    type: 'Perpendicular',
-    lines: [line1.lineId, line2.lineId],
-    rustContext,
-    sketchId,
-    settings,
-  })
-  const topHorizontal = await addSingleLineConstraint({
-    type: 'Horizontal',
-    line: line3.lineId,
-    rustContext,
-    sketchId,
-    settings,
-  })
-  constraintIds.push(
-    parallelSides.constraintId,
-    parallelTopBottom.constraintId,
-    perpendicularBottomRight.constraintId,
-    topHorizontal.constraintId
-  )
+  // const parallelSides = await addTwoLineConstraint({
+  //   type: 'Parallel',
+  //   lines: [line2.lineId, line4.lineId],
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const parallelTopBottom = await addTwoLineConstraint({
+  //   type: 'Parallel',
+  //   lines: [line3.lineId, line1.lineId],
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const perpendicularBottomRight = await addTwoLineConstraint({
+  //   type: 'Perpendicular',
+  //   lines: [line1.lineId, line2.lineId],
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // const topHorizontal = await addSingleLineConstraint({
+  //   type: 'Horizontal',
+  //   line: line3.lineId,
+  //   rustContext,
+  //   sketchId,
+  //   settings,
+  // })
+  // constraintIds.push(
+  //   parallelSides.constraintId,
+  //   parallelTopBottom.constraintId,
+  //   perpendicularBottomRight.constraintId,
+  //   topHorizontal.constraintId
+  // )
 
   const segmentIds = uniqueNumbers([
     ...lineIds,
@@ -275,7 +275,7 @@ export async function createDraftRectangle({
         p3: [end3, start4],
       },
       segmentIds,
-      constraintIds: [],
+      constraintIds,
     },
   }
 }
@@ -306,49 +306,48 @@ export async function updateDraftRectanglePoints({
 
   const [line1Id, line2Id, line3Id, line4Id] = draft.lineIds
 
-  // Update the line segment ctors directly (instead of editing point segments).
-  // Previously (doesn't work)
-  // const edits = [
-  //   ...draft.pointIds.p0.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p0[0], points.p0[1], units),
-  //   })),
-  //   ...draft.pointIds.p1.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p1[0], points.p1[1], units),
-  //   })),
-  //   ...draft.pointIds.p2.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p2[0], points.p2[1], units),
-  //   })),
-  //   ...draft.pointIds.p3.map((id) => ({
-  //     id,
-  //     ctor: _makePointSegmentCtor(points.p3[0], points.p3[1], units),
-  //   })),
-  // ]
-
   const start1: Coords2d = [rect.min[0], rect.min[1]]
   const start2: Coords2d = [rect.max[0], rect.min[1]]
   const start3: Coords2d = [rect.max[0], rect.max[1]]
   const start4: Coords2d = [rect.min[0], rect.max[1]]
 
+  // const edits = [
+  //   {
+  //     id: line1Id,
+  //     ctor: makeLineSegmentCtor(start1, start2, units),
+  //   },
+  //   {
+  //     id: line2Id,
+  //     ctor: makeLineSegmentCtor(start2, start3, units),
+  //   },
+  //   {
+  //     id: line3Id,
+  //     ctor: makeLineSegmentCtor(start3, start4, units),
+  //   },
+  //   {
+  //     id: line4Id,
+  //     ctor: makeLineSegmentCtor(start4, start1, units),
+  //   },
+  // ]
+
+  //Update the line segment ctors directly (instead of editing point segments).
   const edits = [
-    {
-      id: line1Id,
-      ctor: makeLineSegmentCtor(start1, start2, units),
-    },
-    {
-      id: line2Id,
-      ctor: makeLineSegmentCtor(start2, start3, units),
-    },
-    {
-      id: line3Id,
-      ctor: makeLineSegmentCtor(start3, start4, units),
-    },
-    {
-      id: line4Id,
-      ctor: makeLineSegmentCtor(start4, start1, units),
-    },
+    ...draft.pointIds.p0.map((id) => ({
+      id,
+      ctor: _makePointSegmentCtor(start1[0], start1[1], units),
+    })),
+    ...draft.pointIds.p1.map((id) => ({
+      id,
+      ctor: _makePointSegmentCtor(start2[0], start2[1], units),
+    })),
+    ...draft.pointIds.p2.map((id) => ({
+      id,
+      ctor: _makePointSegmentCtor(start3[0], start3[1], units),
+    })),
+    ...draft.pointIds.p3.map((id) => ({
+      id,
+      ctor: _makePointSegmentCtor(start4[0], start4[1], units),
+    })),
   ]
 
   const result = await rustContext.editSegments(0, sketchId, edits, settings)
