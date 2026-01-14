@@ -8,6 +8,7 @@ import {
   type FileExplorerDropData,
   isRowFake,
   shouldDroppedEntryBeMoved,
+  isExternalFileDrag,
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
@@ -65,15 +66,25 @@ export const FileExplorer = ({
   contextMenuRow,
   isRenaming,
   isCopying,
+  isExternalDragOver,
+  highlightedEntry,
+  onExternalDragOverRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
   isCopying: boolean
+  isExternalDragOver?: boolean
+  highlightedEntry?: FileExplorerEntry | null
+  onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   return (
-    <div data-testid="file-explorer" role="presentation" className="relative">
+    <div
+      data-testid="file-explorer"
+      role="presentation"
+      className="relative h-full"
+    >
       {rowsToRender.map((row, index, original) => {
         const key = row.key
         const renderRow: FileExplorerRender = {
@@ -81,6 +92,8 @@ export const FileExplorer = ({
           domIndex: index,
           domLength: original.length,
         }
+        const isHighlighted =
+          isExternalDragOver && highlightedEntry?.key === row.key
         return (
           <FileExplorerRowElement
             key={key}
@@ -89,7 +102,10 @@ export const FileExplorer = ({
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
             isCopying={isCopying}
-          ></FileExplorerRowElement>
+            isExternalDragHighlighted={isHighlighted}
+            isExternalDragOver={isExternalDragOver}
+            onExternalDragOverRow={onExternalDragOverRow}
+          />
         )
       })}
     </div>
@@ -237,12 +253,18 @@ export const FileExplorerRowElement = ({
   contextMenuRow,
   isRenaming,
   isCopying,
+  isExternalDragHighlighted,
+  isExternalDragOver,
+  onExternalDragOverRow,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
   isCopying: boolean
+  isExternalDragHighlighted?: boolean
+  isExternalDragOver?: boolean
+  onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   const dragPreviewId = `drag-preview-${row.name}`
   // Adds a preview element that is a pill-shaped element with the row's name
@@ -310,6 +332,12 @@ export const FileExplorerRowElement = ({
     isIndexActive && !isMyRowRenaming
       ? 'outline outline-1 outline-primary'
       : 'outline-0 outline-none'
+
+  // External drag highlight styling
+  const externalHighlightCSS = isExternalDragHighlighted
+    ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/10'
+    : ''
+
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
   return (
@@ -317,7 +345,7 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
+      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
@@ -333,14 +361,31 @@ export const FileExplorerRowElement = ({
       draggable="true"
       onDragOver={(event) => {
         event.preventDefault()
-        if (!row.isOpen && row.isFolder && !delayRef.current) {
-          delayedRowOpen(400)
+
+        if (isExternalFileDrag(event)) {
+          // Handle dropping external files
+          event.dataTransfer.dropEffect = 'copy'
+          // Notify parent about which row we're hovering over
+          if (onExternalDragOverRow) {
+            onExternalDragOverRow(row)
+          }
+        } else {
+          // Handle internal drag (reordering files)
+          if (!row.isOpen && row.isFolder && !delayRef.current) {
+            delayedRowOpen(400)
+          }
+          event.dataTransfer.dropEffect = 'move'
+          event.currentTarget.classList.add('bg-primary/10')
         }
-        event.dataTransfer.dropEffect = 'move'
-        event.currentTarget.classList.add('bg-primary/10')
       }}
       onDragLeave={(event) => {
         event.preventDefault()
+
+        if (isExternalFileDrag(event)) {
+          return
+        }
+
+        // Handle internal drag (existing behavior)
         event.currentTarget.classList.remove('bg-primary/10')
         if (delayRef.current) {
           clearTimeout(delayRef.current)
@@ -368,6 +413,13 @@ export const FileExplorerRowElement = ({
       }}
       onDrop={(event) => {
         event.preventDefault()
+
+        if (isExternalFileDrag(event)) {
+          // External file drops will be handled by ProjectExplorer
+          return
+        }
+
+        // Handle internal drag (existing behavior)
         let droppedData: FileExplorerDropData
         try {
           droppedData = JSON.parse(event.dataTransfer.getData('json'))

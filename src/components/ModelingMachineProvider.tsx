@@ -120,9 +120,8 @@ import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SketchCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -523,7 +522,9 @@ export const ModelingMachineProvider = ({
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               const didReParse = await kclManager.executeAstMock(newAst)
               if (err(didReParse)) return reject(didReParse)
-              await kclManager.updateEditorWithAstAndWriteToFile(newAst)
+              await kclManager.updateEditorWithAstAndWriteToFile(newAst, {
+                shouldAddToHistory: false,
+              })
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
@@ -596,16 +597,16 @@ export const ModelingMachineProvider = ({
               if (!project) {
                 console.warn('No project available for newSketch call')
               } else {
-                // Construct SketchArgs based on the result
-                let sketchArgs: SketchArgs
+                // Construct SketchCtor based on the result
+                let sketchArgs: SketchCtor
 
                 // Determine the plane type from the result
                 if (result.type === 'defaultPlane') {
                   sketchArgs = {
-                    on: { default: toPlaneName(result.plane) },
+                    on: result.plane,
                   }
                 } else {
-                  sketchArgs = { on: { default: 'xy' } }
+                  sketchArgs = { on: 'XY' }
                 }
 
                 await rustContext.hackSetProgram(
@@ -619,7 +620,9 @@ export const ModelingMachineProvider = ({
                   sketchArgs,
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
-                kclManager.updateCodeEditor(newSketchResult.kclSource.text)
+                kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
+                  shouldAddToHistory: false,
+                })
                 sketchId = newSketchResult.sketchId
               }
             } catch (error) {
@@ -762,8 +765,9 @@ export const ModelingMachineProvider = ({
             const didReParse = await kclManager.executeAstMock(modifiedAst)
             if (err(didReParse)) {
               // there was a problem, restore the original code
-              kclManager.code = originalCode
-              await kclManager.executeCode()
+              kclManager.updateCodeEditor(originalCode, {
+                shouldAddToHistory: false,
+              })
               return reject(didReParse)
             }
 
@@ -1288,7 +1292,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1309,7 +1315,9 @@ export const ModelingMachineProvider = ({
                 data.p2
               )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1328,7 +1336,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1346,7 +1356,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1364,7 +1376,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1382,7 +1396,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }

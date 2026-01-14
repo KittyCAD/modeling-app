@@ -122,8 +122,8 @@ part001 = cube(center = [0, 0], size = 10)
 part002 = cube(center = [7, 3], size = 5)
   |> translate(z = 1)
 
-  // This is the equivalent of: union([part001, part002])
-  // Programmers will understand `|` as a union operation, but mechanical engineers
+// This is the equivalent of: union([part001, part002])
+// Programmers will understand `|` as a union operation, but mechanical engineers
 // will understand `+`, we made both work.
 unionedPart = part001 | part002
 

@@ -315,8 +315,6 @@ description: Result of parsing color-cube.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create planes for 6 sides of a cube"
         ],
         "start": 0,
@@ -1822,8 +1820,6 @@ description: Result of parsing color-cube.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch a rectangle centered at the origin of the profile"
         ],
         "start": 0,
@@ -1913,8 +1909,6 @@ description: Result of parsing color-cube.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch each side of the cube"
         ],
         "start": 0,
@@ -2444,7 +2438,44 @@ description: Result of parsing color-cube.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

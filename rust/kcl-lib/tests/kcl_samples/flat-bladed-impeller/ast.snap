@@ -769,8 +769,6 @@ description: Result of parsing flat-bladed-impeller.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// blade profile (positioned mid-height)"
         ],
         "start": 0,
@@ -1452,8 +1450,6 @@ description: Result of parsing flat-bladed-impeller.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// pattern blades around center"
         ],
         "start": 0,
@@ -1612,8 +1608,6 @@ description: Result of parsing flat-bladed-impeller.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// back plate (base disk)"
         ],
         "start": 0,
@@ -1958,8 +1952,6 @@ description: Result of parsing flat-bladed-impeller.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// hub cylinder"
         ],
         "start": 0,
@@ -2326,8 +2318,6 @@ description: Result of parsing flat-bladed-impeller.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// bore cutout"
         ],
         "start": 0,
@@ -2846,6 +2836,66 @@ description: Result of parsing flat-bladed-impeller.kcl
               "style": "line"
             }
           },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
           {
             "commentStart": 0,
             "end": 0,

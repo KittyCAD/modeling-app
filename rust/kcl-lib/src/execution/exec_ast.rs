@@ -11,8 +11,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneType, PreserveMem,
-        Segment, SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
+        SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedSegment,
         UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue,
@@ -34,7 +34,7 @@ use crate::{
         MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
         Type, UnaryExpression, UnaryOperator,
     },
-    std::args::TyF64,
+    std::{args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine},
 };
 
 impl<'a> StatementKind<'a> {
@@ -146,19 +146,46 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
-        #[cfg(not(feature = "artifact-graph"))]
-        let next_object_id = 0;
-        #[cfg(feature = "artifact-graph")]
-        let next_object_id = exec_state.global.root_module_artifacts.scene_objects.len();
+
+        // When executing only the new statements in incremental execution or
+        // mock executing for sketch mode, we need the scene objects that were
+        // created during the last execution, which are in the execution cache.
+        // The cache is read to create the initial module state. Depending on
+        // whether it's mock execution or engine execution, it's rehydrated
+        // differently, so we need to clone them from a different place. Then
+        // make sure the object ID generator matches the number of existing
+        // scene objects.
         let mut local_state = ModuleState::new(
             path.clone(),
             exec_state.stack().memory.clone(),
             Some(module_id),
-            next_object_id,
+            exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
-        if preserve_mem.normal() {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        match preserve_mem {
+            PreserveMem::Always => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    use crate::id::IncIdGenerator;
+                    exec_state
+                        .mod_local
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
+                    exec_state.mod_local.artifacts.object_id_generator =
+                        IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
+                }
+            }
+            PreserveMem::Normal => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    local_state
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+                }
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+            }
         }
 
         let no_prelude = self
@@ -214,6 +241,9 @@ impl ExecutorContext {
         for statement in block.body() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
                     if !matches!(body_type, BodyType::Root) {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Imports are only supported at the top-level of a file.".to_owned(),
@@ -373,6 +403,10 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(expression_statement);
                     let value = self
                         .execute_expr(
@@ -392,6 +426,10 @@ impl ExecutorContext {
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
+                        continue;
+                    }
+
                     let var_name = variable_declaration.declaration.id.name.to_string();
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
@@ -469,6 +507,10 @@ impl ExecutorContext {
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
                 BodyItem::TypeDeclaration(ty) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
@@ -549,6 +591,10 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&return_statement.argument) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(return_statement);
 
                     if matches!(body_type, BodyType::Root) {
@@ -946,6 +992,15 @@ impl ExecutorContext {
     }
 }
 
+/// When executing in sketch mode, whether we should skip executing this
+/// expression.
+fn sketch_mode_should_skip(expr: &Expr) -> bool {
+    match expr {
+        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
+        _ => true,
+    }
+}
+
 /// If the error is about an undefined name, and that name matches the name being defined,
 /// make the error message more specific.
 fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError {
@@ -1029,33 +1084,107 @@ impl Node<SketchBlock> {
         let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
         args.labeled = labeled;
 
+        // Create the sketch block scene object. This needs to happen before
+        // scene objects created inside the sketch block so that its ID is
+        // stable across sketch block edits. In order to create the sketch block
+        // scene object, we need to make sure the plane scene object is created.
+        let arg_on: SketchOrSurface = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+        let mut sketch_surface = arg_on.into_sketch_surface();
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        if exec_state.sketch_mode() {
+            if sketch_surface.object_id().is_none() {
+                #[cfg(not(feature = "artifact-graph"))]
+                {
+                    // Without artifact graph, we just create a new object ID.
+                    // It will never be used for anything meaningful.
+                    sketch_surface.set_object_id(exec_state.next_object_id());
+                }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Look up the last object. Since this is where we would have
+                    // created it in real execution, it will be the last object.
+                    let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            "In sketch mode, the `on` plane argument must refer to an existing plane object."
+                                .to_owned(),
+                            vec![range],
+                        )));
+                    };
+                    sketch_surface.set_object_id(last_object.id);
+                }
+            }
+        } else {
+            match &mut sketch_surface {
+                SketchSurface::Plane(plane) => {
+                    // Ensure that it's been created in the engine.
+                    ensure_sketch_plane_in_engine(plane, exec_state, &args).await?;
+                }
+                SketchSurface::Face(_) => {
+                    // All faces should already be created in the engine.
+                }
+            }
+        }
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+        };
+        let arg_on_expr_name = self
+            .arguments
+            .iter()
+            .find_map(|labeled_arg| {
+                if let Some(label) = &labeled_arg.label
+                    && label.name == "on"
+                {
+                    // Being a simple identifier only is required by the parser.
+                    if let Some(name) = labeled_arg.arg.ident_name() {
+                        Some(Ok(name))
+                    } else {
+                        let message = "A sketch block's `on` parameter must be a variable or identifier, not an arbitrary expression. The parser should have enforced this."
+                                .to_owned();
+                        debug_assert!(false, "{message}");
+                        Some(Err(KclError::new_internal(KclErrorDetails::new(
+                            message,
+                            vec![SourceRange::from(&labeled_arg.arg)],
+                        ))))
+                    }
+                } else {
+                    None
+                }
+            })
+            .unwrap_or_else(|| {
+                Err(KclError::new_invalid_expression(KclErrorDetails::new(
+                    "sketch block requires an `on` parameter".to_owned(),
+                    vec![SourceRange::from(self)],
+                )))
+            })?
+            // Convert to owned so that we can do an exclusive borrow later.
+            .to_owned();
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = on_object_id;
+            drop(arg_on_expr_name);
+        }
         #[cfg(feature = "artifact-graph")]
         let sketch_id = {
-            // Create the sketch block scene object. This needs to happen before
-            // scene objects created inside the sketch block so that its ID is
-            // stable across sketch block edits.
+            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
 
-            use crate::{
-                engine::PlaneName,
-                execution::{Artifact, ArtifactId, CodeRef, SketchBlock},
-            };
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
+
             let sketch_id = exec_state.next_object_id();
-            let arg_on: Option<crate::execution::Plane> =
-                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
-            let on_object = arg_on.as_ref().and_then(|plane| plane.object_id);
-
-            // Get the plane artifact ID if the plane is an object plane
-            let plane_artifact_id = arg_on.as_ref().map(|plane| plane.artifact_id);
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             let sketch_scene_object = Object {
                 id: sketch_id,
                 kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchArgs {
-                        on: on_object
-                            .map(crate::front::Plane::Object)
-                            .unwrap_or(crate::front::Plane::Default(PlaneName::Xy)),
-                    },
+                    args: crate::front::SketchCtor { on: arg_on_expr_name },
+                    plane: on_object_id,
                     segments: Default::default(),
                     constraints: Default::default(),
                 }),
@@ -1084,7 +1213,13 @@ impl Node<SketchBlock> {
             // Track that we're executing a sketch block.
             let original_value = exec_state.mod_local.sketch_block.replace(SketchBlockState::default());
 
+            // When executing the body of the sketch block, we no longer want to
+            // skip any code.
+            let original_sketch_mode = std::mem::replace(&mut exec_state.mod_local.sketch_mode, false);
+
             let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+
+            exec_state.mod_local.sketch_mode = original_sketch_mode;
 
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
@@ -1162,13 +1297,27 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config)
-                .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
+            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
+                let freedom_analysis = FreedomAnalysis::from(outcome.analysis);
+                (outcome.outcome, Some(freedom_analysis))
+            })
         } else {
             kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
+        // Build a combined list of all constraints (regular + optional) for conflict detection
+        let num_required_constraints = sketch_block_state.solver_constraints.len();
+        let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .chain(sketch_block_state.solver_optional_constraints.iter().cloned())
+            .collect();
+
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok((solved, freedom)) => (Solved::from(solved), freedom),
+            Ok((solved, freedom)) => (
+                Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints),
+                freedom,
+            ),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
@@ -1188,8 +1337,8 @@ impl Node<SketchBlock> {
                                 final_values,
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
-                                unsatisfied: Default::default(),
                                 priority_solved: Default::default(),
+                                variables_in_conflicts: Default::default(),
                             },
                             None,
                         )
@@ -1267,7 +1416,7 @@ impl Node<SketchBlock> {
                 exec_state.set_scene_object(scene_object);
             }
             // Update the sketch scene object with the segments.
-            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_objects.get_mut(sketch_id.0) else {
+            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_object_by_id_mut(sketch_id) else {
                 let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
                 debug_assert!(false, "{}", &message);
                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
@@ -1277,7 +1426,11 @@ impl Node<SketchBlock> {
                     "Expected Sketch object after it was just created to be a sketch kind; id={:?}, actual={:?}",
                     sketch_id, sketch_object
                 );
-                debug_assert!(false, "{}", &message);
+                debug_assert!(
+                    false,
+                    "{}; scene_objects={:#?}",
+                    &message, &exec_state.mod_local.artifacts.scene_objects
+                );
                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
             };
             sketch.segments.extend(segment_object_ids);
@@ -2515,8 +2668,8 @@ impl Node<UnaryExpression> {
                             plane.info.x_axis.z *= -1.0;
                         }
 
-                        plane.value = PlaneType::Uninit;
                         plane.id = exec_state.next_uuid();
+                        plane.object_id = None;
                         Ok(KclValue::Plane { value: plane }.continue_())
                     }
                     KclValue::Object {
