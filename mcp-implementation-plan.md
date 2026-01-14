@@ -335,6 +335,8 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 
 ### 8.6 Stub: get and set tag for an artifact
 
+### 8.7 Highlight entity in scene
+
 ## Technical Considerations
 
 ### Communication Mechanism Options
