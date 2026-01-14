@@ -63,7 +63,7 @@ describe('Tool Registry Integration', () => {
         params: {},
       } as Parameters<typeof handler>[0])
 
-      expect(response.tools).toHaveLength(11)
+      expect(response.tools).toHaveLength(12)
       expect(response.tools.map((t: { name: string }) => t.name)).toEqual([
         'get_artifact_graph',
         'get_feature_tree',
@@ -76,6 +76,7 @@ describe('Tool Registry Integration', () => {
         'get_kcl_file_names',
         'get_current_kcl_file',
         'set_current_kcl_file',
+        'set_entity_highlight',
       ])
     }
   })

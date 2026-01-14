@@ -434,6 +434,27 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:setCurrentKclFile')
       }
     },
+    onSetEntityHighlight: (
+      callback: (data: {
+        requestId: string
+        entityIds: string[]
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:setEntityHighlight', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error(
+              '[MCP Bridge] Error in setEntityHighlight handler:',
+              error
+            )
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:setEntityHighlight')
+      }
+    },
     onFilletEdge: (
       callback: (data: {
         requestId: string

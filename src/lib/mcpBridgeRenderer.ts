@@ -807,6 +807,41 @@ export function initMcpBridgeHandlers(): void {
         }
       }
     )
+
+    // Handle setEntityHighlight request
+    window.electron.mcpBridge.onSetEntityHighlight(
+      async (data: { requestId: string; entityIds: string[] }) => {
+        try {
+          if (!data.entityIds || data.entityIds.length === 0) {
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error: 'At least one entity ID is required',
+            })
+            return
+          }
+
+          // Send select_add command to engine to highlight entities
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'select_add',
+              entities: data.entityIds,
+            },
+            cmd_id: uuidv4(),
+          })
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: {
+              success: true,
+              highlightedCount: data.entityIds.length,
+            },
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
   } catch (error) {
     console.error('[MCP Bridge Renderer] Error initializing handlers:', error)
     // Don't throw - allow app to continue even if MCP bridge fails

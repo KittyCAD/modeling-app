@@ -59,6 +59,10 @@ import {
   setCurrentKclFileTool,
   handleSetCurrentKclFileTool,
 } from './setCurrentKclFile.js'
+import {
+  setEntityHighlightTool,
+  handleSetEntityHighlightTool,
+} from './setEntityHighlight.js'
 
 /**
  * All available MCP tools
@@ -81,6 +85,7 @@ const tools = [
   getKclFileNamesTool,
   getCurrentKclFileTool,
   setCurrentKclFileTool,
+  setEntityHighlightTool,
 ]
 
 /**
@@ -189,6 +194,31 @@ export async function registerTools(server: Server): Promise<void> {
         const args =
           (request.params.arguments as { filePath?: string } | undefined) || {}
         return handleSetCurrentKclFileTool(args)
+      }
+
+      case 'set_entity_highlight': {
+        const args =
+          (request.params.arguments as { entityIds?: string[] } | undefined) ||
+          {}
+        if (!args.entityIds || args.entityIds.length === 0) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(
+                  {
+                    error: 'Entity IDs are required',
+                    message:
+                      'Please provide at least one entity ID to highlight.',
+                  },
+                  null,
+                  2
+                ),
+              },
+            ],
+          }
+        }
+        return handleSetEntityHighlightTool({ entityIds: args.entityIds })
       }
 
       default: {

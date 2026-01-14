@@ -288,6 +288,29 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'setEntityHighlight': {
+        const entityIds = request.params?.entityIds as string[] | undefined
+        if (!entityIds || entityIds.length === 0) {
+          sendErrorResponse(
+            socket,
+            request.id,
+            'entityIds parameter is required and must be a non-empty array'
+          )
+          return
+        }
+        const data = await queryRenderer('mcp:setEntityHighlight', {
+          entityIds,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

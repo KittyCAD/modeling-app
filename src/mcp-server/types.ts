@@ -17,6 +17,7 @@ export type BridgeMessageType =
   | 'getKclFileNames'
   | 'getCurrentKclFile'
   | 'setCurrentKclFile'
+  | 'setEntityHighlight'
 
 /**
  * Base bridge message structure

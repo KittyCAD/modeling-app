@@ -342,7 +342,32 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 
 ### 8.6 Stub: get and set tag for an artifact
 
-### 8.7 Highlight entity in scene
+### 8.7 Highlight entity in scene `set_entity_highlight`
+**Purpose**: Highlight entities in the 3D scene by their artifact IDs. Entities will be highlighted in yellow. This is most useful when paired with the `get_screenshot` tool to identify where entities are located in the scene.
+
+**Design Decisions**:
+- Accepts array of entity IDs from artifact graph
+- Sends `select_add` command to engine to highlight entities in yellow
+- Typical workflow: `get_artifact_graph` → `set_entity_highlight` → `get_screenshot` (gets IDs, highlights them, then visualizes them)
+
+**Implementation**:
+- [x] Create `src/mcp-server/tools/setEntityHighlight.ts`
+  - Accepts `entityIds` array parameter (required)
+  - Validates that at least one entity ID is provided
+  - Returns success response with highlighted count
+- [x] Add bridge message type `setEntityHighlight` to `types.ts`
+- [x] Implement renderer-side handler in `mcpBridgeRenderer.ts`
+  - Sends `select_add` command to engine via `engineCommandManager.sendSceneCommand()`
+  - Command format: `{ type: 'modeling_cmd_req', cmd: { type: 'select_add', entities: entityIds }, cmd_id: uuidv4() }`
+- [x] Add IPC handler in `preload.ts` for `mcp:setEntityHighlight`
+- [x] Add main process handler in `mcpBridge.ts`
+- [x] Register tool in `registry.ts`
+- [x] Add tool description emphasizing pairing with `get_screenshot` and typical workflow
+
+**Considerations**:
+- Entities must be valid IDs from a recently fetched artifact graph
+- Highlighting persists until cleared or new selection is made
+- Useful for debugging and understanding which code corresponds to which geometry
 
 ## Technical Considerations
 

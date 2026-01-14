@@ -137,6 +137,9 @@ export interface IElectronAPI {
     onSetCurrentKclFile: (
       callback: (data: { requestId: string; filePath: string }) => void | Promise<void>
     ) => () => void
+    onSetEntityHighlight: (
+      callback: (data: { requestId: string; entityIds: string[] }) => void | Promise<void>
+    ) => () => void
     onFilletEdge: (
       callback: (data: {
         requestId: string
