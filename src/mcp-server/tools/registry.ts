@@ -37,6 +37,11 @@ import {
 } from './getCurrentSelection.js'
 import { filletEdgeTool, handleFilletEdgeTool } from './filletEdge.js'
 import { getStatusTool, handleGetStatusTool } from './getStatus.js'
+import {
+  getScreenshotTool,
+  handleGetScreenshotTool,
+  type ScreenshotView,
+} from './getScreenshot.js'
 
 /**
  * All available MCP tools
@@ -53,6 +58,7 @@ const tools = [
   getCurrentSelectionTool,
   filletEdgeTool,
   getStatusTool,
+  getScreenshotTool,
 ]
 
 /**
@@ -124,6 +130,17 @@ export async function registerTools(server: Server): Promise<void> {
             | { waitForExecution?: boolean }
             | undefined) || {}
         return handleGetStatusTool(args)
+      }
+
+      case 'get_screenshot': {
+        const args =
+          (request.params.arguments as
+            | {
+                view?: ScreenshotView
+                waitForExecution?: boolean
+              }
+            | undefined) || {}
+        return handleGetScreenshotTool(args)
       }
 
       default: {

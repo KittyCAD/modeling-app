@@ -120,6 +120,13 @@ export interface IElectronAPI {
     onGetStatus: (
       callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
+    onGetScreenshot: (
+      callback: (data: {
+        requestId: string
+        view?: string
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => () => void
     onFilletEdge: (
       callback: (data: {
         requestId: string

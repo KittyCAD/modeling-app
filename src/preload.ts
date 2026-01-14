@@ -356,6 +356,25 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:getStatus')
       }
     },
+    onGetScreenshot: (
+      callback: (data: {
+        requestId: string
+        view?: string
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getScreenshot', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in getScreenshot handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getScreenshot')
+      }
+    },
     onFilletEdge: (
       callback: (data: {
         requestId: string

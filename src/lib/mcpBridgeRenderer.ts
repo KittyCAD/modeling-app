@@ -10,13 +10,24 @@ import { effect } from '@preact/signals-core'
 import { addFillet } from '@src/lang/modifyAst/edges'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
-import { kclManager, rustContext, settingsActor } from '@src/lib/singletons'
+import {
+  kclManager,
+  rustContext,
+  settingsActor,
+  sceneInfra,
+  engineCommandManager,
+} from '@src/lib/singletons'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
 import { createSelectionFromArtifacts } from '@src/lib/testHelpers'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { PATHS } from '@src/lib/paths'
 import type { StatusData } from '@src/mcp-server/types'
+import screenshot from '@src/lib/screenshot'
+import { engineViewIsometric, engineStreamZoomToFit } from '@src/lib/utils'
+import type { CameraViewState } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 /**
  * Wait for execution to complete if it's currently in progress
@@ -135,6 +146,153 @@ export function initMcpBridgeHandlers(): void {
           window.electron?.mcpBridge?.sendResponse(data.requestId, {
             data: selectionData,
           })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle getScreenshot request
+    window.electron.mcpBridge.onGetScreenshot(
+      async (data: {
+        requestId: string
+        view?: string
+        waitForExecution?: boolean
+      }) => {
+        try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
+
+          const view =
+            (data.view as
+              | 'Top view'
+              | 'Bottom view'
+              | 'Rear view'
+              | 'Front view'
+              | 'Right view'
+              | 'Left view'
+              | 'Isometric view'
+              | 'Current view') || 'Isometric view'
+
+          // Save current camera state if we need to change view
+          let savedCameraState: CameraViewState | null = null
+          if (view !== 'Current view') {
+            const response = await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'default_camera_get_view' },
+            })
+            const singleResponse = isArray(response) ? response[0] : response
+            if (
+              singleResponse &&
+              isModelingResponse(singleResponse) &&
+              'modeling_response' in singleResponse.resp.data
+            ) {
+              const modelingResponse =
+                singleResponse.resp.data.modeling_response
+              if (
+                'data' in modelingResponse &&
+                modelingResponse.type === 'default_camera_get_view'
+              ) {
+                savedCameraState = modelingResponse.data.view
+              }
+            }
+          }
+
+          try {
+            // Change camera to requested view
+            if (view !== 'Current view') {
+              if (view === 'Isometric view') {
+                await engineViewIsometric({
+                  engineCommandManager,
+                  padding: 0.1,
+                })
+              } else {
+                // Map view names to axis names
+                const axisMap: Record<
+                  | 'Top view'
+                  | 'Bottom view'
+                  | 'Rear view'
+                  | 'Front view'
+                  | 'Right view'
+                  | 'Left view',
+                  'x' | 'y' | 'z' | '-x' | '-y' | '-z'
+                > = {
+                  'Top view': 'z',
+                  'Bottom view': '-z',
+                  'Front view': '-y',
+                  'Rear view': 'y',
+                  'Right view': 'x',
+                  'Left view': '-x',
+                }
+                const axis = axisMap[view]
+                await sceneInfra.camControls.updateCameraToAxis(axis)
+                // Zoom to fit after changing view direction
+                await engineStreamZoomToFit({
+                  engineCommandManager,
+                  padding: 0.1,
+                })
+              }
+
+              // Wait for camera animation to complete
+              // Camera animations typically take ~500ms, wait a bit longer to be safe
+              await new Promise((resolve) => setTimeout(resolve, 800))
+            }
+
+            // Take screenshot
+            const screenshotDataUrl = await screenshot()
+
+            // Restore camera state if we changed it
+            if (savedCameraState && view !== 'Current view') {
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_set_view',
+                  view: savedCameraState,
+                },
+              })
+              // Trigger camera sync
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_get_settings',
+                },
+              })
+            }
+
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              data: screenshotDataUrl,
+            })
+          } catch (screenshotError) {
+            // Always try to restore camera even if screenshot fails
+            if (savedCameraState && view !== 'Current view') {
+              try {
+                await engineCommandManager.sendSceneCommand({
+                  type: 'modeling_cmd_req',
+                  cmd_id: uuidv4(),
+                  cmd: {
+                    type: 'default_camera_set_view',
+                    view: savedCameraState,
+                  },
+                })
+              } catch (restoreError) {
+                console.error(
+                  '[MCP Bridge Renderer] Failed to restore camera after screenshot error:',
+                  restoreError
+                )
+              }
+            }
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error:
+                screenshotError instanceof Error
+                  ? screenshotError.message
+                  : 'Unknown error',
+            })
+            return
+          }
         } catch (error) {
           window.electron?.mcpBridge?.sendResponse(data.requestId, {
             error: error instanceof Error ? error.message : 'Unknown error',

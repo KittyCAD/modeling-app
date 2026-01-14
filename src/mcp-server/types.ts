@@ -11,6 +11,7 @@ export type BridgeMessageType =
   | 'getCurrentSelection'
   | 'filletEdge'
   | 'getStatus'
+  | 'getScreenshot'
 
 /**
  * Base bridge message structure

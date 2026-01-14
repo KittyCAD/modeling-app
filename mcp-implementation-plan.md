@@ -194,26 +194,27 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 - Use MCP image resource format if available, otherwise base64 in JSON
 
 **Implementation**:
-- [ ] Create `src/mcp-server/tools/getScreenshot.ts`
-- [ ] Add bridge message type `getScreenshot`
-- [ ] Implement renderer handler that:
+- [x] Create `src/mcp-server/tools/getScreenshot.ts`
+- [x] Add bridge message type `getScreenshot`
+- [x] Implement renderer handler that:
   - Accepts `view` parameter (defaults to `'Isometric view'`)
-  - Saves current camera state via `sceneInfra.camControls.getCameraView()` or similar
-  - Maps view names to camera axis commands (using `AxisNames` enum):
-    - `'Top view'` → `updateCameraToAxis(AxisNames.Z)` (Z axis)
-    - `'Bottom view'` → `updateCameraToAxis(AxisNames.NEG_Z)` (-Z axis)
-    - `'Front view'` → `updateCameraToAxis(AxisNames.NEG_Y)` (-Y axis)
-    - `'Rear view'` → `updateCameraToAxis(AxisNames.Y)` (Y axis)
-    - `'Right view'` → `updateCameraToAxis(AxisNames.X)` (X axis)
-    - `'Left view'` → `updateCameraToAxis(AxisNames.NEG_X)` (-X axis)
+  - Saves current camera state via engine command `default_camera_get_view`
+  - Maps view names to camera axis commands:
+    - `'Top view'` → `updateCameraToAxis('z')` (Z axis)
+    - `'Bottom view'` → `updateCameraToAxis('-z')` (-Z axis)
+    - `'Front view'` → `updateCameraToAxis('-y')` (-Y axis)
+    - `'Rear view'` → `updateCameraToAxis('y')` (Y axis)
+    - `'Right view'` → `updateCameraToAxis('x')` (X axis)
+    - `'Left view'` → `updateCameraToAxis('-x')` (-X axis)
     - `'Isometric view'` → `engineViewIsometric()` (standard isometric view)
     - `'Current view'` → skip camera change
-  - Waits for camera animation (may need delay or wait for engine response)
+  - Waits 800ms for camera animation to complete
   - Calls `screenshot()` function
-  - Restores original camera state
-  - Returns base64 image data
-- [ ] Add tool description emphasizing value of multiple angle views
-- [ ] Handle errors gracefully (restore camera even on error)
+  - Restores original camera state using `default_camera_set_view`
+  - Returns image in MCP image content format (`type: 'image'`, `data`, `mimeType`)
+- [x] Add tool description emphasizing value of multiple angle views
+- [x] Handle errors gracefully (restore camera even on error)
+- [x] Return image in proper MCP format (image content block, not JSON text)
 
 **Considerations**:
 - Screenshots can be large - consider compression or size limits

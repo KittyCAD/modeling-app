@@ -186,6 +186,25 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'getScreenshot': {
+        const view =
+          (request.params?.view as string | undefined) ?? 'Isometric view'
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+        const data = await queryRenderer('mcp:getScreenshot', {
+          view,
+          waitForExecution,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,
