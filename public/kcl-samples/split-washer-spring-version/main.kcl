@@ -70,12 +70,14 @@ washerSectionProfile = startProfile(washerSectionSketch, at = [washerHoleRadius,
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-  // ──────────────────────────────
-  // STEP 3: SWEEP TO FORM THE BODY
-  // ──────────────────────────────
+// ──────────────────────────────
+// STEP 3: SWEEP TO FORM THE BODY
+// ──────────────────────────────
 
-  // Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.
-  // This creates a ring that’s slightly twisted — like a slice of a spring.
+
+// Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.
+// This creates a ring that’s slightly twisted — like a slice of a spring.
 // The result is a true spring lock washer in 3D.
+
 
 splitWasherBody = sweep(washerSectionProfile, path = helixGuide)

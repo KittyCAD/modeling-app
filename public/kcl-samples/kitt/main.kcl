@@ -71,8 +71,8 @@ kitFace = startSketchOn(kitHead, face = END)
   |> close()
   |> extrude(length = -kitFaceDepth)
 
-  // Kitty Face Features:
-  // 3.1 Kitty Eyes
+// Kitty Face Features:
+// 3.1 Kitty Eyes
 
 // 3.1.1 Kitty Left Eye
 kitEyeDepth = 0.5

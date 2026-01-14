@@ -799,25 +799,6 @@ description: Result of parsing scale_after_fillet.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "3": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Define the sketch of the hex pattern on the screw head",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1581,6 +1562,9 @@ description: Result of parsing scale_after_fillet.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Define the sketch of the hex pattern on the screw head"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2134,6 +2118,18 @@ description: Result of parsing scale_after_fillet.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "1": [
                     {
                       "commentStart": 0,
@@ -2327,25 +2323,6 @@ description: Result of parsing scale_after_fillet.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "1": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "https://www.mcmaster.com/91251a404/",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -2382,6 +2359,30 @@ description: Result of parsing scale_after_fillet.kcl
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "https://www.mcmaster.com/91251a404/",
+              "style": "line"
             }
           }
         ]

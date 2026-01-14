@@ -586,8 +586,6 @@ description: Result of parsing bad_units_in_annotation.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the oxygen atom at the origin"
         ],
         "start": 0,
@@ -734,8 +732,6 @@ description: Result of parsing bad_units_in_annotation.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Calculate the positions of the hydrogen atoms"
         ],
         "start": 0,
@@ -1020,8 +1016,6 @@ description: Result of parsing bad_units_in_annotation.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the hydrogen atoms"
         ],
         "start": 0,
@@ -1288,6 +1282,42 @@ description: Result of parsing bad_units_in_annotation.kcl
               "style": "line"
             }
           },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
           {
             "commentStart": 0,
             "end": 0,
