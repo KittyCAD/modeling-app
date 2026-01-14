@@ -24569,6 +24569,16 @@ description: Result of parsing kittycad_svg.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "StopAbsolute",
                       "style": "line"

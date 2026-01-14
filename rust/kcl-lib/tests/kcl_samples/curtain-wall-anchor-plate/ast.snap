@@ -1619,8 +1619,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Generate L-shaped anchor profile with base and hook flange",
           "// Includes fillets at internal and external corners for strength and safety"
         ],
@@ -2391,8 +2389,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a hexagonal shape used for bolt and nut heads"
         ],
         "start": 0,
@@ -3155,8 +3151,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build a bolt with a hexagonal head and cylindrical shaft"
         ],
         "start": 0,
@@ -4695,8 +4689,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Construct a bolt assembly with base plate and hex nut",
           "// Assembles all parts for realistic anchor simulation"
         ],
@@ -4869,8 +4861,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Generate the plate geometry with a vertical hook for slab attachment"
         ],
         "start": 0,
@@ -4911,8 +4901,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define oblong holes for bolts, allowing positional adjustment"
         ],
         "start": 0,
@@ -5058,8 +5046,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Two slots mirrored across the plate width"
         ],
         "start": 0,
@@ -6264,25 +6250,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Cut the holes into the anchor plate body",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -6412,6 +6379,9 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Cut the holes into the anchor plate body"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -7150,8 +7120,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Add two bolt assemblies into the oblong slots",
           "// Properly rotated and spaced to match anchor hole layout"
         ],
@@ -7252,7 +7220,116 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

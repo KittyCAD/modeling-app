@@ -577,25 +577,6 @@ description: Result of parsing tube-manifold.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create the main body of the manifold and revolve",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -608,8 +589,6 @@ description: Result of parsing tube-manifold.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model the interior hole of the manifold ports"
         ],
         "start": 0,
@@ -1825,7 +1804,27 @@ description: Result of parsing tube-manifold.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
                       "value": "Add an SAE J1231 type 2 bead to seal a clamped tube connection",
                       "style": "line"
                     }
@@ -1839,13 +1838,9 @@ description: Result of parsing tube-manifold.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "subtract an instance of the hollow port feature at each port location",
-                      "style": "line"
+                      "type": "newLine"
                     }
-                  }
-                ],
-                "12": [
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -1853,8 +1848,18 @@ description: Result of parsing tube-manifold.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Trim the bottom of the ports so that they fit against the curved main body",
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "subtract an instance of the hollow port feature at each port location",
                       "style": "line"
                     }
                   }
@@ -1873,6 +1878,9 @@ description: Result of parsing tube-manifold.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create the main body of the manifold and revolve"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2161,25 +2169,6 @@ description: Result of parsing tube-manifold.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model a revolved port at each location. Each should have a single beaded connection",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2191,6 +2180,9 @@ description: Result of parsing tube-manifold.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Trim the bottom of the ports so that they fit against the curved main body"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3145,6 +3137,9 @@ description: Result of parsing tube-manifold.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model a revolved port at each location. Each should have a single beaded connection"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3214,7 +3209,56 @@ description: Result of parsing tube-manifold.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

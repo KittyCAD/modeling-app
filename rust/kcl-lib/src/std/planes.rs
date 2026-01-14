@@ -11,7 +11,7 @@ use super::{
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneType, types::RuntimeType},
+    execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneInfo, PlaneKind, types::RuntimeType},
     std::Args,
 };
 
@@ -34,25 +34,6 @@ pub(crate) async fn inner_plane_of(
 ) -> Result<Plane, KclError> {
     let plane_id = exec_state.id_generator().next_uuid();
 
-    #[cfg(not(feature = "artifact-graph"))]
-    let plane_object_id = None;
-    #[cfg(feature = "artifact-graph")]
-    let plane_object_id = {
-        use crate::execution::ArtifactId;
-
-        let plane_object_id = exec_state.next_object_id();
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane_id),
-            source: args.source_range.into(),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-        Some(plane_object_id)
-    };
-
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
@@ -66,9 +47,10 @@ pub(crate) async fn inner_plane_of(
         return Ok(Plane {
             artifact_id: plane_id.into(),
             id: plane_id,
-            object_id: plane_object_id,
-            // Engine doesn't know about the ID we created, so set this to Uninit.
-            value: PlaneType::Uninit,
+            // Engine doesn't know about the ID we created, so set this to
+            // uninitialized.
+            object_id: None,
+            kind: PlaneKind::Custom,
             info: crate::execution::PlaneInfo {
                 origin: crate::execution::Point3d {
                     x: 0.0,
@@ -173,11 +155,27 @@ pub(crate) async fn inner_plane_of(
     };
     let plane_info = plane_info.make_right_handed();
 
+    let plane_object_id = exec_state.next_object_id();
+    #[cfg(feature = "artifact-graph")]
+    {
+        use crate::execution::ArtifactId;
+
+        let plane_object = crate::front::Object {
+            id: plane_object_id,
+            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::new(plane_id),
+            source: args.source_range.into(),
+        };
+        exec_state.add_scene_object(plane_object, args.source_range);
+    }
+
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
-        object_id: plane_object_id,
-        value: PlaneType::Custom,
+        object_id: Some(plane_object_id),
+        kind: PlaneKind::Custom,
         info: plane_info,
         meta: vec![Metadata {
             source_range: args.source_range,
@@ -199,14 +197,23 @@ async fn inner_offset_plane(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
-    let mut plane = Plane::from_plane_data(plane, exec_state)?;
-    // Though offset planes might be derived from standard planes, they are not
-    // standard planes themselves.
-    plane.value = PlaneType::Custom;
+    let mut info = PlaneInfo::try_from(plane)?;
 
-    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-    plane.info.origin += normal * offset.to_length_units(plane.info.origin.units.unwrap_or(UnitLength::Millimeters));
-    make_offset_plane_in_engine(&plane, exec_state, args).await?;
+    let normal = info.x_axis.axes_cross_product(&info.y_axis);
+    info.origin += normal * offset.to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
+
+    let id = exec_state.next_uuid();
+    let mut plane = Plane {
+        id,
+        artifact_id: id.into(),
+        object_id: None,
+        kind: PlaneKind::Custom,
+        info,
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    };
+    make_offset_plane_in_engine(&mut plane, exec_state, args).await?;
 
     Ok(plane)
 }
@@ -214,7 +221,25 @@ async fn inner_offset_plane(
 // Engine-side effectful creation of an actual plane object.
 // offset planes are shown by default, and hidden by default if they
 // are used as a sketch plane. That hiding command is sent within inner_start_profile_at
-async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, args: &Args) -> Result<(), KclError> {
+async fn make_offset_plane_in_engine(
+    plane: &mut Plane,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(), KclError> {
+    let plane_object_id = exec_state.next_object_id();
+    #[cfg(feature = "artifact-graph")]
+    {
+        let plane_object = crate::front::Object {
+            id: plane_object_id,
+            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: plane.artifact_id,
+            source: args.source_range.into(),
+        };
+        exec_state.add_scene_object(plane_object, args.source_range);
+    }
+
     // Create new default planes.
     let default_size = 100.0;
     let color = Color {
@@ -248,6 +273,11 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
             ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane.id).build()),
         )
         .await?;
+
+    // Though offset planes might be derived from standard planes, they are
+    // not standard planes themselves.
+    plane.kind = PlaneKind::Custom;
+    plane.object_id = Some(plane_object_id);
 
     Ok(())
 }

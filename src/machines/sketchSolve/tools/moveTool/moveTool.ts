@@ -16,6 +16,8 @@ import {
 } from '@src/machines/sketchSolve/segments'
 import {
   type Object3D,
+  type OrthographicCamera,
+  type PerspectiveCamera,
   Box3,
   ExtrudeGeometry,
   Group,
@@ -51,12 +53,14 @@ import {
   calculateLabelPositioning,
   calculateLabelStyles,
   calculateSelectionBoxProperties,
+  doesLineSegmentIntersectBox,
   doesSegmentIntersectSelectionBox,
   extractTrianglesFromMesh,
   isIntersectionSelectionMode,
   project3DToScreen,
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -244,7 +248,7 @@ export function createOnDragEndCallback({
   setDraggingPointElement: (element: HTMLElement | null) => void
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
 }): (arg: {
-  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
   selected?: Object3D
   mouseEvent: MouseEvent
   intersects: Array<any>
@@ -1273,6 +1277,26 @@ export function setUpOnDragAndSelectionClickCallbacks({
       )
 
       if (segmentMesh && segmentMesh instanceof Mesh) {
+        // If this is a `Line2` (screen-space line), intersect using its
+        // polyline segments instead of mesh triangles.
+        if (segmentMesh instanceof Line2) {
+          if (
+            doesLine2IntersectSelectionBox({
+              line: segmentMesh,
+              camera,
+              viewportSize,
+              selectionMinPx: boxMinPx,
+              selectionMaxPx: boxMaxPx,
+            })
+          ) {
+            intersectingIds.push(segmentId)
+          }
+          return
+        }
+
+        // This part is probably not running at the moment since we're only using Line2
+        // but it's kept here in case we start using other types of Meshes
+
         // Handle line or arc segment (same logic for both)
         // For line segments, check geometry type
         if (segmentMesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
@@ -1562,4 +1586,60 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }
     },
   })
+}
+
+function doesLine2IntersectSelectionBox({
+  line,
+  camera,
+  viewportSize,
+  selectionMinPx,
+  selectionMaxPx,
+}: {
+  line: Line2
+  camera: OrthographicCamera | PerspectiveCamera
+  viewportSize: Vector2
+  selectionMinPx: Vector2
+  selectionMaxPx: Vector2
+}): boolean {
+  const instanceStart = line.geometry.getAttribute?.('instanceStart')
+  const instanceEnd = line.geometry.getAttribute?.('instanceEnd')
+  if (!instanceStart || !instanceEnd) {
+    return false
+  }
+
+  const segmentCount = Math.min(instanceStart.count, instanceEnd.count)
+  if (segmentCount <= 0) {
+    return false
+  }
+
+  // Small padding to roughly match the old extruded-mesh hit area.
+  const paddingPx = 1
+  const min = new Vector2(
+    selectionMinPx.x - paddingPx,
+    selectionMinPx.y - paddingPx
+  )
+  const max = new Vector2(
+    selectionMaxPx.x + paddingPx,
+    selectionMaxPx.y + paddingPx
+  )
+
+  const v0 = new Vector3()
+  const v1 = new Vector3()
+
+  for (let i = 0; i < segmentCount; i++) {
+    v0.set(instanceStart.getX(i), instanceStart.getY(i), instanceStart.getZ(i))
+    v1.set(instanceEnd.getX(i), instanceEnd.getY(i), instanceEnd.getZ(i))
+
+    v0.applyMatrix4(line.matrixWorld)
+    v1.applyMatrix4(line.matrixWorld)
+
+    const p0 = project3DToScreen(v0, camera, viewportSize)
+    const p1 = project3DToScreen(v1, camera, viewportSize)
+
+    if (doesLineSegmentIntersectBox(p0, p1, min, max)) {
+      return true
+    }
+  }
+
+  return false
 }

@@ -1,3 +1,4 @@
+@(coords = opengl)
 import "../inputs/cube.step" as cube
 import "othercube.kcl" as othercube
 import "anothercube.kcl" as anothercube

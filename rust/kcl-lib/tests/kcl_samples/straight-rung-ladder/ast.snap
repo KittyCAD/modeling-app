@@ -1165,8 +1165,6 @@ description: Result of parsing straight-rung-ladder.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Side Rails ---"
         ],
         "start": 0,
@@ -1415,8 +1413,6 @@ description: Result of parsing straight-rung-ladder.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Rung Geometry ---",
           "// Rungs are centered within the side rail depth using an offset plane"
         ],
@@ -2130,25 +2126,6 @@ description: Result of parsing straight-rung-ladder.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "lift to first rung position",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2161,8 +2138,6 @@ description: Result of parsing straight-rung-ladder.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Rung Pattern ---",
           "// Evenly distributes the rungs up the ladder"
         ],
@@ -2399,6 +2374,56 @@ description: Result of parsing straight-rung-ladder.kcl
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "lift to first rung position",
+              "style": "line"
             }
           }
         ]

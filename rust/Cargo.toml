@@ -18,7 +18,7 @@ members = [
 ahash = "0.8.11"
 anyhow = { version = "1" }
 async-trait = "0.1.89"
-clap = { version = "4.5.53", features = ["derive"] }
+clap = { version = "4.5.54", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
