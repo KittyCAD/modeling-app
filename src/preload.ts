@@ -377,6 +377,63 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:getScreenshot')
       }
     },
+    onGetKclFileNames: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getKclFileNames', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error(
+              '[MCP Bridge] Error in getKclFileNames handler:',
+              error
+            )
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getKclFileNames')
+      }
+    },
+    onGetCurrentKclFile: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getCurrentKclFile', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error(
+              '[MCP Bridge] Error in getCurrentKclFile handler:',
+              error
+            )
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getCurrentKclFile')
+      }
+    },
+    onSetCurrentKclFile: (
+      callback: (data: {
+        requestId: string
+        filePath: string
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:setCurrentKclFile', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error(
+              '[MCP Bridge] Error in setCurrentKclFile handler:',
+              error
+            )
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:setCurrentKclFile')
+      }
+    },
     onFilletEdge: (
       callback: (data: {
         requestId: string

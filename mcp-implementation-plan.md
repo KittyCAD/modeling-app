@@ -288,19 +288,19 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
    - This is a setter but provides value for LLM workflow optimization
 
 **Implementation**:
-- [ ] Create `src/mcp-server/tools/getKclFileNames.ts`
+- [x] Create `src/mcp-server/tools/getKclFileNames.ts`
   - Access project structure from `settingsActor.getSnapshot().context.currentProject`
-  - Recursively list all `.kcl` files
-  - Return structured list with paths and metadata
-- [ ] Create `src/mcp-server/tools/getCurrentKclFile.ts`
+  - Recursively list all `.kcl` files using helper function
+  - Return structured list with paths (relative to project root), names, and `isEntryFile` flag
+- [x] Create `src/mcp-server/tools/getCurrentKclFile.ts`
   - Get `kclManager.currentFilePath`
-  - Return current file path relative to project root
-- [ ] Create `src/mcp-server/tools/setCurrentKclFile.ts` (if we include setters)
-  - Accept file path parameter
-  - Navigate to file using router/route loader
-  - Validate file exists in project
-- [ ] Add bridge message types for file operations
-- [ ] Implement renderer handlers
+  - Return current file path relative to project root using `getFilePathRelativeToProject`
+- [x] Create `src/mcp-server/tools/setCurrentKclFile.ts`
+  - Accept file path parameter (relative to project root)
+  - Validate file exists using `window.electron.stat`
+  - Navigate to file using `systemIOActor.send` with `SystemIOMachineEvents.navigateToFile`
+- [x] Add bridge message types for file operations (`getKclFileNames`, `getCurrentKclFile`, `setCurrentKclFile`)
+- [x] Implement renderer handlers with recursive file collection and navigation
 
 **Considerations**:
 - File paths should be relative to project root for portability

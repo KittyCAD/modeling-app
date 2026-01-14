@@ -243,6 +243,51 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'getKclFileNames': {
+        const data = await queryRenderer('mcp:getKclFileNames', {})
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
+      case 'getCurrentKclFile': {
+        const data = await queryRenderer('mcp:getCurrentKclFile', {})
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
+      case 'setCurrentKclFile': {
+        const filePath = request.params?.filePath as string | undefined
+        if (!filePath) {
+          sendErrorResponse(
+            socket,
+            request.id,
+            'filePath parameter is required'
+          )
+          return
+        }
+        const data = await queryRenderer('mcp:setCurrentKclFile', { filePath })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

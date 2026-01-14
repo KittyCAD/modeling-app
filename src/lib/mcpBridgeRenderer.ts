@@ -21,7 +21,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
 import { createSelectionFromArtifacts } from '@src/lib/testHelpers'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, getFilePathRelativeToProject } from '@src/lib/paths'
 import type { StatusData } from '@src/mcp-server/types'
 import screenshot from '@src/lib/screenshot'
 import { engineViewIsometric, engineStreamZoomToFit } from '@src/lib/utils'
@@ -29,6 +29,9 @@ import type { CameraViewState } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import kclSamplesManifest from '@public/kcl-samples/manifest.json'
+import type { FileEntry } from '@src/lib/project'
+import { systemIOActor } from '@src/lib/singletons'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 /**
  * Wait for execution to complete if it's currently in progress
@@ -302,6 +305,194 @@ export function initMcpBridgeHandlers(): void {
       }
     )
 
+    // Helper function to recursively collect all KCL files from FileEntry tree
+    const collectKclFiles = (
+      entry: FileEntry,
+      projectPath: string,
+      projectName: string,
+      currentFilePath: string | null
+    ): Array<{
+      path: string
+      name: string
+      isEntryFile: boolean
+      size?: number
+      modified?: number
+    }> => {
+      const files: Array<{
+        path: string
+        name: string
+        isEntryFile: boolean
+        size?: number
+        modified?: number
+      }> = []
+
+      // If this is a file (children is null) and it's a .kcl file
+      if (entry.children === null && entry.name.endsWith('.kcl')) {
+        const relativePath = getFilePathRelativeToProject(
+          entry.path,
+          projectName,
+          window.electron?.sep
+        )
+        files.push({
+          path: relativePath,
+          name: entry.name,
+          isEntryFile: entry.path === currentFilePath,
+        })
+      } else if (entry.children) {
+        // If this is a directory, recurse into children
+        for (const child of entry.children) {
+          files.push(
+            ...collectKclFiles(child, projectPath, projectName, currentFilePath)
+          )
+        }
+      }
+
+      return files
+    }
+
+    // Handle getKclFileNames request
+    window.electron.mcpBridge.onGetKclFileNames(
+      async (data: { requestId: string }) => {
+        try {
+          const currentProjectFromSettings =
+            settingsActor.getSnapshot().context.currentProject
+          const currentFilePath = kclManager.currentFilePath
+
+          if (!currentProjectFromSettings) {
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error: 'No project is currently loaded',
+            })
+            return
+          }
+
+          // Get the full project with children from systemIO actor's folders
+          // The settings actor's currentProject might not have children populated
+          const systemIOSnapshot = systemIOActor.getSnapshot()
+          const folders = systemIOSnapshot.context.folders
+          const fullProject = folders.find(
+            (p) => p.name === currentProjectFromSettings.name
+          )
+
+          // Use the full project if available, otherwise fall back to settings project
+          const currentProject = fullProject || currentProjectFromSettings
+
+          // Collect files from all children of the project
+          const files: Array<{
+            path: string
+            name: string
+            isEntryFile: boolean
+            size?: number
+            modified?: number
+          }> = []
+
+          if (currentProject.children && currentProject.children.length > 0) {
+            for (const child of currentProject.children) {
+              files.push(
+                ...collectKclFiles(
+                  child,
+                  currentProject.path,
+                  currentProject.name,
+                  currentFilePath
+                )
+              )
+            }
+          }
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: files,
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle getCurrentKclFile request
+    window.electron.mcpBridge.onGetCurrentKclFile(
+      async (data: { requestId: string }) => {
+        try {
+          const currentProject =
+            settingsActor.getSnapshot().context.currentProject
+          const currentFilePath = kclManager.currentFilePath
+
+          if (!currentProject || !currentFilePath) {
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              data: null,
+            })
+            return
+          }
+
+          const relativePath = getFilePathRelativeToProject(
+            currentFilePath,
+            currentProject.name,
+            window.electron?.sep
+          )
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: relativePath,
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle setCurrentKclFile request
+    window.electron.mcpBridge.onSetCurrentKclFile(
+      async (data: { requestId: string; filePath: string }) => {
+        try {
+          const currentProject =
+            settingsActor.getSnapshot().context.currentProject
+
+          if (!currentProject) {
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error: 'No project is currently loaded',
+            })
+            return
+          }
+
+          // Convert relative path to absolute path
+          const sep = window.electron?.sep || '/'
+          const absolutePath = data.filePath.startsWith(sep)
+            ? data.filePath
+            : `${currentProject.path}${sep}${data.filePath}`
+
+          // Validate file exists (if electron is available)
+          if (window.electron) {
+            try {
+              await window.electron.stat(absolutePath)
+            } catch {
+              window.electron?.mcpBridge?.sendResponse(data.requestId, {
+                error: `File not found: ${data.filePath}`,
+              })
+              return
+            }
+          }
+
+          // Navigate to the file using systemIOActor
+          systemIOActor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: currentProject.name,
+              requestedFileName: data.filePath,
+            },
+          })
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: { success: true, filePath: data.filePath },
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
     // Handle getStatus request
     window.electron.mcpBridge.onGetStatus(
       async (data: { requestId: string; waitForExecution?: boolean }) => {
@@ -553,13 +744,7 @@ export function initMcpBridgeHandlers(): void {
             // Try different possible paths
             const possiblePaths = [
               // Development: project root/public/kcl-samples/...
-              electron.path.join(
-                appPath,
-                '..',
-                '..',
-                'public',
-                filePath
-              ),
+              electron.path.join(appPath, '..', '..', 'public', filePath),
               // Development: alternative structure
               electron.path.join(appPath, '..', 'public', filePath),
               // Production: packaged app

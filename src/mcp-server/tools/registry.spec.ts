@@ -63,7 +63,7 @@ describe('Tool Registry Integration', () => {
         params: {},
       } as Parameters<typeof handler>[0])
 
-      expect(response.tools).toHaveLength(6)
+      expect(response.tools).toHaveLength(11)
       expect(response.tools.map((t: { name: string }) => t.name)).toEqual([
         'get_artifact_graph',
         'get_feature_tree',
@@ -71,6 +71,12 @@ describe('Tool Registry Integration', () => {
         'fillet_edge',
         'get_status',
         'get_screenshot',
+        'list_kcl_samples',
+        'get_kcl_sample',
+        'get_kcl_file_names',
+        'get_current_kcl_file',
+        'set_current_kcl_file',
+        'set_current_kcl_file',
       ])
     }
   })

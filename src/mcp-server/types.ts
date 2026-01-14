@@ -14,6 +14,9 @@ export type BridgeMessageType =
   | 'getScreenshot'
   | 'listKclSamples'
   | 'getKclSample'
+  | 'getKclFileNames'
+  | 'getCurrentKclFile'
+  | 'setCurrentKclFile'
 
 /**
  * Base bridge message structure

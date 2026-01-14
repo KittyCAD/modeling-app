@@ -47,6 +47,18 @@ import {
   handleListKclSamplesTool,
 } from './listKclSamples.js'
 import { getKclSampleTool, handleGetKclSampleTool } from './getKclSample.js'
+import {
+  getKclFileNamesTool,
+  handleGetKclFileNamesTool,
+} from './getKclFileNames.js'
+import {
+  getCurrentKclFileTool,
+  handleGetCurrentKclFileTool,
+} from './getCurrentKclFile.js'
+import {
+  setCurrentKclFileTool,
+  handleSetCurrentKclFileTool,
+} from './setCurrentKclFile.js'
 
 /**
  * All available MCP tools
@@ -66,6 +78,9 @@ const tools = [
   getScreenshotTool,
   listKclSamplesTool,
   getKclSampleTool,
+  getKclFileNamesTool,
+  getCurrentKclFileTool,
+  setCurrentKclFileTool,
 ]
 
 /**
@@ -160,6 +175,20 @@ export async function registerTools(server: Server): Promise<void> {
             | { sampleName?: string; fileName?: string }
             | undefined) || {}
         return handleGetKclSampleTool(args)
+      }
+
+      case 'get_kcl_file_names': {
+        return handleGetKclFileNamesTool()
+      }
+
+      case 'get_current_kcl_file': {
+        return handleGetCurrentKclFileTool()
+      }
+
+      case 'set_current_kcl_file': {
+        const args =
+          (request.params.arguments as { filePath?: string } | undefined) || {}
+        return handleSetCurrentKclFileTool(args)
       }
 
       default: {

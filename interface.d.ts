@@ -128,6 +128,15 @@ export interface IElectronAPI {
         waitForExecution?: boolean
       }) => void | Promise<void>
     ) => () => void
+    onGetKclFileNames: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => () => void
+    onGetCurrentKclFile: (
+      callback: (data: { requestId: string }) => void | Promise<void>
+    ) => () => void
+    onSetCurrentKclFile: (
+      callback: (data: { requestId: string; filePath: string }) => void | Promise<void>
+    ) => () => void
     onFilletEdge: (
       callback: (data: {
         requestId: string
