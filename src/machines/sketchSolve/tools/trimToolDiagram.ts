@@ -163,13 +163,16 @@ export const machine = setup({
     unequip: {
       target: '#Trim tool.unequipping',
     },
-    escape: {
-      target: '#Trim tool.unequipping',
-    },
   },
   states: {
     active: {
       entry: 'add area select listener',
+      on: {
+        escape: {
+          target: '#Trim tool.unequipping',
+          description: 'ESC unequips the tool',
+        },
+      },
     },
     unequipping: {
       type: 'final',
