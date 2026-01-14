@@ -58,7 +58,7 @@ export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
-  Interrupt = 'interrupt',
+  Cancel = 'cancel',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
@@ -103,7 +103,7 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.ConversationClose
     }
   | {
-      type: MlEphantManagerTransitions.Interrupt
+      type: MlEphantManagerTransitions.Cancel
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
@@ -567,8 +567,8 @@ export const mlEphantManagerMachine = setup({
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
-    [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
-      args: XSInput<MlEphantManagerTransitions.Interrupt>
+    [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Cancel>
     ): Promise<Partial<MlEphantManagerContext>> {
       const { context } = args.input
       if (!isPresent<WebSocket>(context.ws))
@@ -578,7 +578,7 @@ export const mlEphantManagerMachine = setup({
 
       const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
         type: 'system',
-        command: 'interrupt',
+        command: 'cancel',
       }
       context.ws.send(JSON.stringify(request))
 
@@ -781,7 +781,7 @@ export const mlEphantManagerMachine = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
-                MlEphantManagerTransitions.Interrupt,
+                MlEphantManagerTransitions.Cancel,
                 MlEphantManagerTransitions.ConversationClose,
                 MlEphantManagerTransitions.AbruptClose,
               ]),
@@ -811,18 +811,16 @@ export const mlEphantManagerMachine = setup({
                 onError: { target: S.Await, actions: ['toastError'] },
               },
             },
-            [MlEphantManagerTransitions.Interrupt]: {
+            [MlEphantManagerTransitions.Cancel]: {
               invoke: {
                 input: (args) => {
-                  assertEvent(args.event, [
-                    MlEphantManagerTransitions.Interrupt,
-                  ])
+                  assertEvent(args.event, [MlEphantManagerTransitions.Cancel])
                   return {
                     event: args.event,
                     context: args.context,
                   }
                 },
-                src: MlEphantManagerTransitions.Interrupt,
+                src: MlEphantManagerTransitions.Cancel,
                 onDone: {
                   target: S.Await,
                   actions: [],
