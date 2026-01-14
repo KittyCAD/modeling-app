@@ -14,16 +14,16 @@ import {
   createDraftRectangle,
   updateDraftRectanglePoints,
 } from '@src/machines/sketchSolve/tools/rectUtils'
-import { Coords2d } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 
-export const TOOL_ID = 'Center Rectangle tool'
-export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.adding first point`
+export const RECTANGLE_TOOL_ID = 'Rectangle tool'
+export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
 export type RectOriginMode = 'corner' | 'center'
 export type CenterRectToolEvent =
   | BaseToolEvent
   | { type: 'finalize' }
   | {
-      type: typeof ADDING_POINT
+      type: typeof ADDING_FIRST_POINT
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
@@ -142,10 +142,7 @@ export const machine = setup({
     },
     'send result to parent': assign(
       ({ event, self }: CenterRectToolAssignArgs) => {
-        if (
-          event.type !==
-          'xstate.done.actor.0.Center Rectangle tool.adding first point'
-        ) {
+        if (event.type !== ADDING_FIRST_POINT) {
           return {}
         }
 
@@ -222,16 +219,16 @@ export const machine = setup({
     origin: [0, 0],
     rectOriginMode: input.rectOriginMode ?? 'corner',
   }),
-  id: 'Center Rectangle tool',
+  id: RECTANGLE_TOOL_ID,
   initial: 'awaiting first point',
   on: {
     unequip: {
-      target: '#Center Rectangle tool.unequipping',
+      target: `#${RECTANGLE_TOOL_ID}.unequipping`,
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
     },
     escape: {
-      target: '#Center Rectangle tool.unequipping',
+      target: `#${RECTANGLE_TOOL_ID}.unequipping`,
       description: 'ESC unequips the tool',
     },
   },
@@ -283,7 +280,7 @@ export const machine = setup({
               self._parent?.send({ type: 'clear draft entities' })
             },
             assign({
-              origin: undefined,
+              origin: [0, 0],
               draft: undefined,
             }),
           ],
