@@ -83,6 +83,7 @@ pub struct ConstraintToMigrate {
 
 /// Trim operation types - these match the TypeScript TrimOperation union
 #[derive(Debug, Clone)]
+#[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
     SimpleTrim {
         segment_to_trim_id: usize,
@@ -4102,13 +4103,6 @@ fn find_termination_in_direction(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        ExecutorContext, Program,
-        frontend::{
-            FrontendState, SketchApi,
-            api::{FileId, ProjectId, Version},
-        },
-    };
 
     #[test]
     fn test_is_point_on_line_segment_exactly_on_segment() {

@@ -112,6 +112,7 @@ pub trait SketchApi {
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
     /// new_segment_info contains the IDs from the segment added in a previous step.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_split_segment_operations(
         &mut self,
         ctx: &ExecutorContext,
