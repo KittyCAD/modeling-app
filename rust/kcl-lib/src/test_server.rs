@@ -81,6 +81,7 @@ pub async fn execute_and_snapshot_ast(
         EnvironmentRef,
         image::DynamicImage,
         Option<Vec<u8>>,
+        Option<Vec<u8>>,
     ),
     ExecErrorWithState,
 > {
@@ -110,8 +111,25 @@ pub async fn execute_and_snapshot_ast(
 
         step = files.into_iter().next().map(|f| f.contents);
     }
+    let gltf = if export.contains(&ExportAction::Gltf) {
+        let files = match ctx.export_gltf().await {
+            Ok(f) => f,
+            Err(err) => {
+                // Close the context to avoid any resource leaks.
+                ctx.close().await;
+                return Err(ExecErrorWithState::new(
+                    ExecError::BadExport(format!("Export failed: {err:?}")),
+                    exec_state.clone(),
+                ));
+            }
+        };
+
+        files.into_iter().next().map(|f| f.contents)
+    } else {
+        None
+    };
     ctx.close().await;
-    Ok((exec_state, ctx, env, img, step))
+    Ok((exec_state, ctx, env, img, step, gltf))
 }
 
 pub async fn execute_and_snapshot_no_auth(

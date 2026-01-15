@@ -259,7 +259,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export: Vec<ExportAction
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), &export).await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, png, step)) => {
+        Ok((exec_state, ctx, env_ref, png, step, gltf)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(
@@ -279,6 +279,17 @@ async fn execute_test(test: &Test, render_to_png: bool, export: Vec<ExportAction
                 if step_contents.is_empty() {
                     panic!("Step data was empty");
                 }
+            }
+            // Ensure the step has data.
+            if export.contains(&ExportAction::Gltf) {
+                let Some(gltf_contents) = gltf else {
+                    panic!("Gltf data was not generated");
+                };
+                if gltf_contents.is_empty() {
+                    panic!("Gltf data was empty");
+                }
+                let gltf_path = Path::new("..").join(&test.output_dir).join("model.gltf");
+                std::fs::write(gltf_path, gltf_contents).expect("Writing to FS should succeed");
             }
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {

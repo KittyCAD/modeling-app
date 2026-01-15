@@ -74,7 +74,7 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true, vec![ExportAction::Step]).await;
+    super::execute_test(&t, true, vec![ExportAction::Step, ExportAction::Gltf]).await;
 }
 
 #[test]
