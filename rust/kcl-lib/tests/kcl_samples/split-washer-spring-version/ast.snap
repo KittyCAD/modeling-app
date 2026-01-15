@@ -148,8 +148,6 @@ description: Result of parsing split-washer-spring-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Outer diameter of the washer — must be bigger than the hole"
         ],
         "start": 0,
@@ -254,8 +252,6 @@ description: Result of parsing split-washer-spring-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Thickness of the washer — this defines how tall the cross-section is"
         ],
         "start": 0,
@@ -296,8 +292,6 @@ description: Result of parsing split-washer-spring-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Vertical rise from one end of the washer to the other — defines the “spring” effect"
         ],
         "start": 0,
@@ -578,8 +572,6 @@ description: Result of parsing split-washer-spring-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────────────────────────────────────",
           "// STEP 2: DRAW THE WASHER’S CROSS SECTION",
           "// ───────────────────────────────────────",
@@ -658,8 +650,6 @@ description: Result of parsing split-washer-spring-version.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The sweep profile needs to sit on the XZ plane, because the helix starts at Y = 0."
         ],
         "start": 0,
@@ -1149,80 +1139,6 @@ description: Result of parsing split-washer-spring-version.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "──────────────────────────────",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "STEP 3: SWEEP TO FORM THE BODY",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "──────────────────────────────",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "This creates a ring that’s slightly twisted — like a slice of a spring.",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "The result is a true spring lock washer in 3D.",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -1398,6 +1314,42 @@ description: Result of parsing split-washer-spring-version.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "5": [
           {
             "commentStart": 0,
@@ -1406,7 +1358,17 @@ description: Result of parsing split-washer-spring-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "──────────────────────────────",
               "style": "line"
             }
@@ -1562,6 +1524,30 @@ description: Result of parsing split-washer-spring-version.kcl
             }
           }
         ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "8": [
           {
             "commentStart": 0,
@@ -1570,7 +1556,17 @@ description: Result of parsing split-washer-spring-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "We position the start of the rectangle at the washerHoleRadius, so it aligns with the helix guide.",
               "style": "line"
             }
@@ -1587,6 +1583,98 @@ description: Result of parsing split-washer-spring-version.kcl
           }
         ],
         "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "──────────────────────────────",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "STEP 3: SWEEP TO FORM THE BODY",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "──────────────────────────────",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "This creates a ring that’s slightly twisted — like a slice of a spring.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "The result is a true spring lock washer in 3D.",
+              "style": "line"
+            }
+          },
           {
             "commentStart": 0,
             "end": 0,

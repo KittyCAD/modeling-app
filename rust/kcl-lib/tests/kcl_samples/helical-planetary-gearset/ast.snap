@@ -419,8 +419,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define the constants of the keyway and the bore hole"
                   ],
                   "start": 0,
@@ -1452,25 +1450,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "7": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Define a function to create a rotated gear sketch on an offset plane",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1483,8 +1462,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Sketch the keyway and center hole"
                   ],
                   "start": 0,
@@ -3125,7 +3102,27 @@ description: Result of parsing helical-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Position the end line of the sketch at the start of the next tooth",
                                           "style": "line"
                                         }
@@ -3139,7 +3136,27 @@ description: Result of parsing helical-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
                                           "style": "line"
                                         }
@@ -3160,8 +3177,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                             "kind": "const",
                             "moduleId": 0,
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -3198,6 +3213,23 @@ description: Result of parsing helical-planetary-gearset.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
+                        "nonCodeMeta": {
+                          "nonCodeNodes": {
+                            "0": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ]
+                          },
+                          "startNodes": []
+                        },
                         "start": 0
                       },
                       "commentStart": 0,
@@ -3235,6 +3267,9 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "end": 0,
                   "kind": "fn",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Define a function to create a rotated gear sketch on an offset plane"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -3312,8 +3347,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch on the base plane"
                   ],
                   "start": 0,
@@ -3420,8 +3453,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a rotated gear sketch on a middle interstitial plane"
                   ],
                   "start": 0,
@@ -3506,8 +3537,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a rotated gear sketch at the gear height offset plane"
                   ],
                   "start": 0,
@@ -3625,8 +3654,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Loft each rotated gear sketch together to form a helical gear"
                   ],
                   "start": 0,
@@ -3665,6 +3692,90 @@ description: Result of parsing helical-planetary-gearset.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "9": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "10": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "11": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "12": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "13": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "14": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "15": [
                     {
                       "commentStart": 0,
@@ -5725,7 +5836,27 @@ description: Result of parsing helical-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Position the end line of the sketch at the start of the next tooth",
                                           "style": "line"
                                         }
@@ -5739,13 +5870,9 @@ description: Result of parsing helical-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
-                                          "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
-                                          "style": "line"
+                                          "type": "newLine"
                                         }
-                                      }
-                                    ],
-                                    "7": [
+                                      },
                                       {
                                         "commentStart": 0,
                                         "end": 0,
@@ -5753,8 +5880,18 @@ description: Result of parsing helical-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
-                                          "value": "Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
+                                          "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
                                           "style": "line"
                                         }
                                       }
@@ -5774,8 +5911,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                             "kind": "const",
                             "moduleId": 0,
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -6095,6 +6230,9 @@ description: Result of parsing helical-planetary-gearset.kcl
                             "end": 0,
                             "kind": "const",
                             "moduleId": 0,
+                            "preComments": [
+                              "// Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body"
+                            ],
                             "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
@@ -6129,6 +6267,35 @@ description: Result of parsing helical-planetary-gearset.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
+                        "nonCodeMeta": {
+                          "nonCodeNodes": {
+                            "0": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ],
+                            "1": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ]
+                          },
+                          "startNodes": []
+                        },
                         "start": 0
                       },
                       "commentStart": 0,
@@ -6167,8 +6334,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "fn",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define a function to create a rotated gear sketch on an offset plane"
                   ],
                   "start": 0,
@@ -6248,8 +6413,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch on the base plane"
                   ],
                   "start": 0,
@@ -6356,8 +6519,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a rotated gear sketch on a middle interstitial plane"
                   ],
                   "start": 0,
@@ -6442,8 +6603,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a rotated gear sketch at the gear height offset plane"
                   ],
                   "start": 0,
@@ -6561,8 +6720,6 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Loft each rotated gear sketch together to form a ring gear"
                   ],
                   "start": 0,
@@ -6601,6 +6758,66 @@ description: Result of parsing helical-planetary-gearset.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "5": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "6": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "7": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "8": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "9": [
                     {
                       "commentStart": 0,
@@ -6698,8 +6915,6 @@ description: Result of parsing helical-planetary-gearset.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function to create a ring gear"
         ],
         "start": 0,
@@ -6868,8 +7083,6 @@ description: Result of parsing helical-planetary-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the outer ring gear for the planetary gearset"
         ],
         "start": 0,
@@ -7029,8 +7242,6 @@ description: Result of parsing helical-planetary-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a central sun gear using a small helical gear"
         ],
         "start": 0,
@@ -7071,8 +7282,6 @@ description: Result of parsing helical-planetary-gearset.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the helical planet gears"
         ],
         "start": 0,
@@ -7681,7 +7890,56 @@ description: Result of parsing helical-planetary-gearset.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

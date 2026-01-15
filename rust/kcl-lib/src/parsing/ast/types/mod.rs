@@ -1654,18 +1654,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
@@ -1717,19 +1715,13 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesn't have a new line above it.
-    /// If it did it would be a `NewLineBlockComment`.
+    /// This is always the case.
     BlockComment {
         value: String,
         style: CommentStyle,
     },
-    /// A block comment that has a new line above it.
-    /// The user explicitly added a new line above the block comment.
-    NewLineBlockComment {
-        value: String,
-        style: CommentStyle,
-    },
     // A new line like `\n\n` NOT a new line like `\n`.
+    // i.e. an empty line, not just the ending of a non-empty line.
     // This is also not a comment.
     NewLine,
 }

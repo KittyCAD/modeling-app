@@ -60,7 +60,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import { history, redo, redoDepth, undo, undoDepth } from '@codemirror/commands'
+import { history, redoDepth, undoDepth } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
@@ -114,6 +114,11 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import {
+  HistoryView,
+  type TransactionSpecNoChanges,
+} from '@src/editor/HistoryView'
+import { fsHistoryExtension } from '@src/editor/plugins/fs'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -210,7 +215,8 @@ export class KclManager extends EventTarget {
 
   // CORE STATE
 
-  private _editorView: EditorView
+  private readonly _editorView: EditorView
+  private readonly _globalHistoryView: HistoryView
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -262,8 +268,10 @@ export class KclManager extends EventTarget {
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
-    this.undoDepth.value = undoDepth(vu.state)
-    this.redoDepth.value = redoDepth(vu.state)
+    this.undoDepth.value =
+      undoDepth(vu.state) + undoDepth(this._globalHistoryView.state)
+    this.redoDepth.value =
+      redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
   /**
    * A client-side representation of the commands that have been sent,
@@ -637,8 +645,9 @@ export class KclManager extends EventTarget {
     this._wasmInstancePromise = wasmInstance
     this.singletons = singletons
 
-    /** Merged code from EditorManager and CodeManager classes */
+    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView()
+    this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     if (isDesktop()) {
       this._code.value = ''
@@ -1246,6 +1255,9 @@ export class KclManager extends EventTarget {
   get state() {
     return this.editorState
   }
+  get globalHistoryView() {
+    return this._globalHistoryView
+  }
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
   }
@@ -1484,11 +1496,14 @@ export class KclManager extends EventTarget {
       ],
     })
   }
+  addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
+    this._globalHistoryView.dispatch(spec)
+  }
   undo() {
-    undo(this._editorView)
+    this._globalHistoryView.undo(this._editorView)
   }
   redo() {
-    redo(this._editorView)
+    this._globalHistoryView.redo(this._editorView)
   }
   clearLocalHistory() {
     // Clear history
@@ -1502,6 +1517,24 @@ export class KclManager extends EventTarget {
       effects: [historyCompartment.reconfigure([history()])],
       annotations: [editorCodeUpdateEvent],
     })
+  }
+  clearGlobalHistory() {
+    this._globalHistoryView.dispatch(
+      {
+        effects: [this._globalHistoryView.historyCompartment.reconfigure([])],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+
+    // Add history back
+    this._globalHistoryView.dispatch(
+      {
+        effects: [
+          this._globalHistoryView.historyCompartment.reconfigure([history()]),
+        ],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
   }
 
   // Invoked by codeMirror during undo/redo.
