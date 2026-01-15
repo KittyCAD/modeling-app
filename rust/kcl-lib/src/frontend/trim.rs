@@ -1092,15 +1092,14 @@ pub async fn execute_trim_flow(
         .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
 
     let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
+    #[allow(unused_mut)] // mut is needed when artifact-graph feature is enabled
     let mut initial_scene_graph = frontend.scene_graph.clone();
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
     // (this is only available when artifact-graph feature is enabled)
     #[cfg(feature = "artifact-graph")]
-    {
-        if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
-            initial_scene_graph.objects = exec_outcome.scene_objects.clone();
-        }
+    if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
+        initial_scene_graph.objects = exec_outcome.scene_objects.clone();
     }
 
     // Get the sketch ID from the scene graph
