@@ -1237,6 +1237,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tools: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
+        clearSelectionFirst: true,
         multiple: true,
         required: true,
       },
