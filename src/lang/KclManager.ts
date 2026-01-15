@@ -1767,7 +1767,7 @@ export class KclManager extends EventTarget {
             !resolvedOptions.shouldClearHistory
         ),
         !resolvedOptions.shouldExecute && resolvedOptions.shouldWriteToDisk
-          ? // Separate annotation for only skipping annotation, so that we can write without executing
+          ? // Separate annotation for only skipping execution, so that we can write without executing
             KclManager.requestSkipExecution.of(true)
           : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
         KclManager.requestSkipWriteToFile.of(
