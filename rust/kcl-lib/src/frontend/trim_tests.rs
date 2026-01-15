@@ -1831,6 +1831,7 @@ sketch(on = YZ) {
             .await
             .expect("Failed to execute program");
 
+        #[allow(unused_variables)]
         let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
         #[allow(unused_mut)]
         let mut scene_graph = frontend.scene_graph.clone();
