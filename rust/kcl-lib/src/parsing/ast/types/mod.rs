@@ -1771,6 +1771,36 @@ impl NonCodeMeta {
         })
     }
 
+    /// The source range of a comment node should start at a '/', because both
+    /// styles of comments (// line comments and /* block comments */) start
+    /// with a /.
+    /// If a comment does NOT start with a /, that likely indicates an off-by-one
+    /// error, or some other kindof inaccurate source range. This is bad, because the
+    /// LSP won't offer suggestions if it thinks the user is in a comment.
+    /// So inaccurate comment start/ends could cause disabling autocompletion.
+    pub fn comment_start_is_accurate(&self, str: &[u8]) -> bool {
+        for nodes in self.non_code_nodes.values() {
+            for node in nodes {
+                match node.inner.value {
+                    NonCodeValue::InlineComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::BlockComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::NewLine => {}
+                }
+            }
+        }
+        true
+    }
+
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
     ///
     /// Returns an empty slice if there is no non-code metadata associated with the node.

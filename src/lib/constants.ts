@@ -311,14 +311,14 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 
 // Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = {
   a: 1.0,
   b: 0.05,
   g: 0.05,
-  r: 0.05,
+  r: 0.95,
 }
 
 /**
@@ -340,3 +340,5 @@ export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
 ]
+
+export const ARCHIVE_DIR = 'archive'
