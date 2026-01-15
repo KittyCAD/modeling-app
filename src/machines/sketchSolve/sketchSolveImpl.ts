@@ -915,7 +915,7 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
-  toolVariant?: string | undefined // eg. 'corner' | 'center' for rectTool
+  toolVariant?: string // eg. 'corner' | 'center' for rectTool
 }
 
 const toolVariants: Record<string, string> = {
