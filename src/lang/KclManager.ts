@@ -548,7 +548,9 @@ export class KclManager extends EventTarget {
 
       // We don't want to block on writing to file
       if (shouldWriteToFile) {
-        void this.deferredWriteToFile(newCode)
+        // Need to close over `this._currentFilePath`'s value before deferrment,
+        // otherwise the deferred write could have a changed value after rapid navigation
+        void this.deferredWriteToFile({ newCode, path: this._currentFilePath })
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
@@ -617,7 +619,8 @@ export class KclManager extends EventTarget {
   )
 
   private deferredWriteToFile = deferredCallback(
-    (newCode: string) => this.writeToFile(newCode),
+    ({ newCode, path }: { newCode: string; path: string | null }) =>
+      this.writeToFile(newCode, path),
     1_000
   )
 
@@ -1779,8 +1782,11 @@ export class KclManager extends EventTarget {
       ],
     })
   }
-  async writeToFile(newCode = this.codeSignal.value) {
-    if (this.isBufferMode) return
+  async writeToFile(
+    newCode = this.codeSignal.value,
+    path = this._currentFilePath
+  ) {
+    if (this.isBufferMode || path === null) return
     if (window.electron) {
       const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
@@ -1799,7 +1805,7 @@ export class KclManager extends EventTarget {
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
-            .writeFile(this._currentFilePath, newCode)
+            .writeFile(path, newCode)
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1818,9 +1824,9 @@ export class KclManager extends EventTarget {
     options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
   ) {
     const resolvedOptions: NonNullable<typeof options> = Object.assign(
-      {},
+      { shouldExecute: false },
       options ?? {},
-      { shouldWriteToDisk: true, shouldExecute: false }
+      { shouldWriteToDisk: true }
     )
     const wasmInstance = await this.wasmInstancePromise
 

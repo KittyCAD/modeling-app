@@ -4,7 +4,7 @@ import { createContext, use, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData, useLocation } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -122,6 +122,8 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import type { SketchCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { send } from 'vite'
+import { PATHS } from '@src/lib/paths'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -163,6 +165,7 @@ export const ModelingMachineProvider = ({
   } = useSettings()
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData<IndexLoaderData>()
+  const location = useLocation()
   const projects = useFolders()
   const { project, file } = loaderData
   const theProject = useRef<Project | undefined>(project)
