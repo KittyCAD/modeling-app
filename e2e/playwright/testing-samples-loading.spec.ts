@@ -82,16 +82,16 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
    */
   test('Desktop: should create new file by default, creates a second file with automatic unique name', async ({
     editor,
-    context,
     page,
     scene,
     cmdBar,
     toolbar,
+    folderSetupFn,
   }) => {
     if (runningOnWindows()) {
     }
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {

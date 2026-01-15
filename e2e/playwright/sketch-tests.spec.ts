@@ -2050,11 +2050,11 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
 
   // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
   test('Feature tree shows correct sketch count per file', async ({
-    context,
     homePage,
     scene,
     toolbar,
     page,
+    folderSetupFn,
   }) => {
     const u = await getUtils(page)
 
@@ -2078,7 +2078,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
   |> line(end = [85.33, 234.01])
   |> line(enfd = [-137.23, -54.55])`
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([

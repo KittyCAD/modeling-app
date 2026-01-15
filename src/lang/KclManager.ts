@@ -652,30 +652,7 @@ export class KclManager extends EventTarget {
     this._editorView = this.createEditorView()
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
-    if (isDesktop()) {
-      this._code.value = ''
-      return
-    }
-
-    this.code = ''
-
-    const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
-    // TODO #819 remove zustand persistence logic in a few months
-    // short term migration, shouldn't make a difference for desktop app users
-    // anyway since that's filesystem based.
-    const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
-    if (storedCode === null && zustandStore?.state?.code) {
-      this._code.value = zustandStore.state.code
-      zustandStore.state._code.value = ''
-      safeLSSetItem('store', JSON.stringify(zustandStore))
-    } else if (storedCode === null) {
-      this.updateCodeEditor(bracket, { shouldClearHistory: true })
-    } else {
-      this._code.value = storedCode || ''
-      this.updateCodeEditor(storedCode || '', {
-        shouldClearHistory: true,
-      })
-    }
+    this._code.value = ''
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1809,7 +1786,7 @@ export class KclManager extends EventTarget {
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           fsZds
-            .writeFile(path, newCode)
+            .writeFile(path, new TextEncoder().encode(newCode))
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1819,38 +1796,7 @@ export class KclManager extends EventTarget {
             })
         }, 1000)
       })
-    } else {
-      safeLSSetItem(PERSIST_CODE_KEY, newCode)
     }
-    // Only write our buffer contents to file once per second. Any faster
-    // and file-system watchers which read, will receive empty data during
-    // writes.
-    clearTimeout(this.timeoutWriter)
-    return new Promise((resolve, reject) => {
-      this.timeoutWriter = setTimeout(() => {
-        if (!this._currentFilePath)
-          return reject(new Error('currentFilePath not set'))
-        // Wait one event loop to give a chance for params to be set
-        // Save the file to disk
-        this.lastWrite = {
-          code: this.code ?? '',
-          time: Date.now(),
-        }
-        this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-        fsZds
-          .writeFile(
-            this._currentFilePath,
-            new TextEncoder().encode(this.code ?? '')
-          )
-          .then(resolve)
-          .catch((err: Error) => {
-            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-            console.error('error saving file', err)
-            toast.error('Error saving file, please check file permissions')
-            reject(err)
-          })
-      }, 1000)
-    })
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
@@ -1893,9 +1839,4 @@ export class KclManager extends EventTarget {
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
-}
-
-function safeLSSetItem(key: string, value: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.setItem(key, value)
 }

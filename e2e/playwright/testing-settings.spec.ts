@@ -249,13 +249,11 @@ test.describe(
     })
 
     test('project settings reload on external change', async ({
-      context,
       page,
       toolbar,
+      folderSetupFn,
     }) => {
-      const { dir: projectDirName } = await context.folderSetupFn(
-        async () => {}
-      )
+      const { dir: projectDirName } = await folderSetupFn(async () => {})
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -301,10 +299,10 @@ test.describe(
     })
 
     test(`Closing settings modal should go back to the original file being viewed`, async ({
-      context,
       page,
+      folderSetupFn,
     }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'project-000')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
@@ -731,8 +729,8 @@ test.describe(
     test(`Change inline units setting`, async ({
       page,
       homePage,
-      context,
       editor,
+      folderSetupFn,
     }) => {
       const initialInlineUnits = 'yd'
       const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
@@ -742,7 +740,7 @@ test.describe(
       const unitsChangeButton = (name: string) =>
         page.getByRole('button', { name, exact: true })
 
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'project-000')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(

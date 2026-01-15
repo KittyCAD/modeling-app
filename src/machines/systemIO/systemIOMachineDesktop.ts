@@ -23,7 +23,6 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { isErr } from '@src/lib/trap'
 import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -118,10 +117,8 @@ const sharedBulkCreateWorkflow = async ({
 }
 
 const sharedBulkDeleteWorkflow = async ({
-  electron,
   input,
 }: {
-  electron: IElectronAPI
   input: {
     requestedProjectName: string
     context: SystemIOContext
@@ -150,7 +147,7 @@ const sharedBulkDeleteWorkflow = async ({
 
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
-    await electron.rm(file.absPath)
+    await fsZds.rm(file.absPath)
   }
 
   // How many files we deleted successfully
@@ -469,12 +466,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             requestedSubRoute?: string
           }
         }) => {
-          if (!window.electron) {
-            return Promise.reject(new Error('No file system present'))
-          }
           const wasmInstance = await input.context.wasmInstancePromise
           const message = await sharedBulkCreateWorkflow({
-            electron: window.electron,
             input: {
               ...input,
               wasmInstance,
@@ -483,7 +476,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           })
           // We won't delete until everything's created / updated first.
           const totalDeleted = await sharedBulkDeleteWorkflow({
-            electron: window.electron,
             input: {
               ...input,
               wasmInstance,
@@ -774,35 +766,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName?: string
         }
       }) => {
-        if (window.electron) {
-          const result = await window.electron.move(input.src, input.target)
-          if (
-            isErr(result) &&
-            // Where did the error code go? It's available in preload.ts
-            result.message.includes('ENOTEMPTY') &&
-            window.electron
-          ) {
-            // TODO: this force deletion behavior assumes this move is only
-            // really used in our archive/restore workflow. We should make
-            // dedicated archive/restore code paths for that if we need cases
-            // where we want to check with the user before going through with forcing.
-            await window.electron.rm(input.target, {
-              recursive: true,
-              force: true,
-            })
-            await window.electron.move(input.src, input.target)
-          }
-          return {
-            message: input.successMessage || 'Moved successfully',
-            requestedAbsolutePath: '',
-            requestedProjectName: input.requestedProjectName || '',
-          }
-        } else {
-          return {
-            message: 'no file system found',
-            requestedAbsolutePath: '',
-            requestedProjectName: input.requestedProjectName || '',
-          }
+        try {
+          // TODO: this force deletion behavior assumes this move is only
+          // really used in our archive/restore workflow. We should make
+          // dedicated archive/restore code paths for that if we need cases
+          // where we want to check with the user before going through with forcing.
+          await fsZds.rename(input.src, input.target)
+        } catch (e: unknown) {
+          console.log(e)
+        }
+        return {
+          message: input.successMessage || 'Moved successfully',
+          requestedAbsolutePath: '',
+          requestedProjectName: input.requestedProjectName || '',
         }
       }
     ),

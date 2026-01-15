@@ -95,7 +95,6 @@ export interface IElectronAPI {
     callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
-  getPathUserData: () => Promise<string>
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any

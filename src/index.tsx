@@ -18,7 +18,7 @@ if (window.electron) {
 // This is purely for Playwright to use the fs abstraction through
 // page.evaluate.
 if (typeof window !== 'undefined' && isPlaywright()) {
-  moduleFsViaWindow({
+  void moduleFsViaWindow({
     type: window.electron ? StorageName.ElectronFS : StorageName.OPFS,
     options: {},
   })
@@ -36,7 +36,6 @@ import '@src/index.css'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
-import env from '@src/env'
 import { markOnce } from '@src/lib/performance'
 import {
   appActor,

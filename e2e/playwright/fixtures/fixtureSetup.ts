@@ -71,7 +71,10 @@ export interface Fixtures {
   homePage: HomePageFixture
   signInPage: SignInPageFixture
   copilot: CopilotFixture
-  fs: FsFixture
+  fs: ReturnType<typeof FsFixture>
+  folderSetupFn: (
+    cb: (dir: string) => Promise<void>
+  ) => Promise<{ dir: string }>
 }
 
 export class ElectronZoo {
@@ -422,9 +425,13 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(FsFixture(page))
   },
   folderSetupFn: async (
-    { page, fs, tronApp }: { fs: FsFixture },
+    {
+      page,
+      fs,
+      tronApp,
+    }: { page: Page; fs: ReturnType<typeof FsFixture>; tronApp?: ElectronZoo },
     use: FnUse,
-    testInfo
+    testInfo: TestInfo
   ) => {
     // Different behavior based on if electron on web.
     // This is necessary because folder setup needs to run at a particular point.
@@ -435,7 +442,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
       const projects = await fs.getPath('documents')
       const projectDirPath = path.resolve(projects, PROJECT_FOLDER)
-      ret = async function (fn) {
+      ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirPath)
           .then(() => page.reload())
           .then(() => ({
@@ -444,7 +451,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       }
     } else {
       const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-      ret = async function (fn) {
+      ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirName)
           .then(() => page.reload())
           .then(() => ({

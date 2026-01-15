@@ -10,11 +10,6 @@ import {
 export { expect } from '@playwright/test'
 
 declare module '@playwright/test' {
-  interface BrowserContext {
-    folderSetupFn: (
-      cb: (dir: string) => Promise<void>
-    ) => Promise<{ dir: string }>
-  }
   interface Page {
     dir: string
     setBodyDimensions: (dims: {

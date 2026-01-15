@@ -729,6 +729,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -1129,7 +1130,7 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation:
-                SystemIOMachineStates.bulkCreateKCLFilesAndNavigateToProject,
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,

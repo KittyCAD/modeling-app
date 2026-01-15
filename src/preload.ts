@@ -115,7 +115,6 @@ const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
 
-<<<<<<< HEAD
 /**
  * Recursively move a file or folder to a destination
  * using the native Node `.rename` function,
@@ -195,19 +194,6 @@ export async function move(
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-async function statIsDirectory(path: string): Promise<boolean> {
-  try {
-    const res = await stat(path)
-    return res.isDirectory()
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-      return false
-    }
-    return false // either way we don't know if it is a directory
-  }
-}
-
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
@@ -273,10 +259,6 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
-// Get the user data folder according to Electron
-const getPathUserData = async (): Promise<string> =>
-  ipcRenderer.invoke('get-path-userdata')
-
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
  * when passing it over the IPC layer it will not map to the same function.
@@ -314,6 +296,7 @@ contextBridge.exposeInMainWorld('electron', {
   rm: fs.rm,
   stat,
   mkdir: fs.mkdir,
+  move,
   // opens a dialog
   open,
   save,

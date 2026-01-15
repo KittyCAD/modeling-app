@@ -7,12 +7,15 @@ export const FsFixture = (page: Page): IZooDesignStudioFS => {
     {},
     {
       get(_target, propertyName, _receiver) {
-        return async (...args) =>
+        return async (...args: any[]) =>
           page.evaluate(
             async (args) => {
-              console.log(JSON.stringify(Object.keys(window.fsZds)))
-              console.log('----', args)
-              return window.fsZds[args[0]](...args.slice(1))
+              // I'm sorry but Proxy typing is a pain in my butt not worth the effort right now
+              const f =
+                window.fsZds !== undefined &&
+                // @ts-expect-error
+                (window.fsZds[args[0].toString()] || (() => {}))
+              return f(...args.slice(1))
             },
             [propertyName, ...args]
           )

@@ -1,6 +1,7 @@
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
+import nodeFsSync from 'fs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
@@ -30,7 +31,7 @@ test(
       await fs.mkdir(myDir, { recursive: true })
       await fs.writeFile(
         path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-        'meaningless nonsense here'
+        new TextEncoder().encode('meaningless nonsense here')
       )
     })
 
@@ -76,8 +77,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
 
       await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
@@ -119,15 +119,13 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       let testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
       const errorDir = path.join(dir, 'broken-code')
       await fs.mkdir(errorDir, { recursive: true })
       testFileData = await nodeFs.readFile(
-        executorInputPath('broken-code-test.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('broken-code-test.kcl')
       )
       await fs.writeFile(path.join(errorDir, 'main.kcl'), testFileData)
     })
@@ -184,13 +182,12 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
       const emptyDir = path.join(dir, 'empty')
       await fs.mkdir(emptyDir, { recursive: true })
-      await fs.writeFile(path.join(emptyDir, 'main.kcl'), '')
+      await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
     })
 
     const u = await getUtils(page)
@@ -234,12 +231,10 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
-
-      await fs.writeFile(path.join(bracketDir, 'empty.kcl'), '')
+      await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
     const u = await getUtils(page)
@@ -284,14 +279,12 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
 
       const brokenFileData = await nodeFs.readFile(
-        executorInputPath('broken-code-test.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('broken-code-test.kcl')
       )
       await fs.writeFile(
         path.join(bracketDir, 'broken-code-test.kcl'),
@@ -343,13 +336,10 @@ test(
     { context, page, editor, fs, folderSetupFn, homePage, scene, cmdBar },
     testInfo
   ) => {
-    const u = await getUtils(page)
-
     await folderSetupFn(async (dir) => {
       await fs.mkdir(path.join(dir, 'broken-code'), { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('broken-code-test.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('broken-code-test.kcl')
       )
       await fs.writeFile(
         path.join(dir, 'broken-code', 'main.kcl'),
@@ -385,22 +375,18 @@ test(
     await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
       let testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('router-template-slate.kcl')
       )
       await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
 
       await fs.mkdir(`${dir}/bracket`, { recursive: true })
       testFileData = await nodeFs.readFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
       await fs.writeFile(`${dir}/bracket/main.kcl`, testFileData)
 
       await fs.mkdir(`${dir}/lego`, { recursive: true })
-      testFileData = await nodeFs.readFile(executorInputPath('lego.kcl'), {
-        encoding: 'utf-8',
-      })
+      testFileData = await nodeFs.readFile(executorInputPath('lego.kcl'), {})
       await fs.writeFile(`${dir}/lego/main.kcl`, testFileData)
     })
 
@@ -596,8 +582,7 @@ test(
     await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('router-template-slate.kcl')
       )
       await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
     })
@@ -635,7 +620,8 @@ test.describe(
       await folderSetupFn(async (dir) => {
         await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+        )
         await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       })
 
@@ -698,8 +684,7 @@ test.describe(
       await folderSetupFn(async (dir) => {
         await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          { encoding: 'utf-8' }
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
         )
         await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       })
@@ -751,7 +736,8 @@ test.describe(
       await folderSetupFn(async (dir) => {
         await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+        )
         await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       })
 
@@ -812,8 +798,7 @@ test.describe(
       await folderSetupFn(async (dir) => {
         await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          { encoding: 'utf-8' }
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
         )
         await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       })
@@ -865,8 +850,7 @@ test.describe(
           const projectDir = path.join(dir, projectName)
           await fs.mkdir(projectDir, { recursive: true })
           const testFileData = await nodeFs.readFile(
-            executorInputPath('router-template-slate.kcl'),
-            { encoding: 'utf-8' }
+            executorInputPath('router-template-slate.kcl')
           )
           await fs.writeFile(path.join(projectDir, 'main.kcl'), testFileData)
         })
@@ -954,19 +938,8 @@ test(
   'project title case sensitive duplication',
   { tag: ['@web', '@desktop'] },
   async ({ homePage, page, scene, cmdBar, toolbar, folderSetupFn }) => {
-    const u = await getUtils(page)
-
     await test.step('Create project "test" and add KCL', async () => {
       await homePage.createAndGoToProject('test')
-      await scene.settled(cmdBar)
-
-      const kcl = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> circle(center = [0, 0], radius = 5)
-`
-
-      // await page.waitForTimeout(3000)
-      // await u.pasteCodeInEditor(kcl)
       await scene.settled(cmdBar)
     })
 
@@ -1002,13 +975,11 @@ test(
     await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('router-template-slate.kcl')
       )
       await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       const testFileData2 = await nodeFs.readFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
       await fs.writeFile(
         `${dir}/${projectName}/otherThingToClickOn.kcl`,
@@ -1049,8 +1020,7 @@ test(
         recursive: true,
       })
       const testFileData2 = await nodeFs.readFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl'),
@@ -1058,8 +1028,7 @@ test(
       )
 
       const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('router-template-slate.kcl')
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'slate.kcl'),
@@ -1089,13 +1058,13 @@ test(
     expect(testDir).toBeDefined()
     if (testDir !== undefined) {
       await expect(
-        await fs.access(path.join(testDir, 'router-template-slate', 'main.kcl'))
-      ).toBe(undefined)
+        await fs.stat(path.join(testDir, 'router-template-slate', 'main.kcl'))
+      ).rejects.toThrow()
       await expect(
-        await fs.access(
+        await fs.stat(
           path.join(testDir, 'router-template-slate', 'nested', 'main.kcl')
         )
-      ).toBe(undefined)
+      ).rejects.toThrow()
     }
   }
 )
@@ -1116,9 +1085,7 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {
-          encoding: 'utf-8',
-        })
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
         await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
@@ -1197,8 +1164,7 @@ test(
       const fileWithCRLF = testFileData.replace(/\r?\n/g, '\r\n')
       await fs.writeFile(
         path.join(routerTemplateDir, 'main.kcl'),
-        fileWithCRLF,
-        'utf-8'
+        new TextEncoder().encode(fileWithCRLF)
       )
     })
     const u = await getUtils(page)
@@ -1229,9 +1195,7 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {
-          encoding: 'utf-8',
-        })
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
         await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
 
         // Wait 1s between each project to ensure the order is correct
@@ -1329,10 +1293,10 @@ test(
   {
     tag: '@desktop',
   },
-  async ({ context, page, tronApp, homePage }, testInfo) => {
+  async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       await Promise.all([
         nodeFs.mkdir(`${dir}/router-template-slate`, { recursive: true }),
         nodeFs.mkdir(`${dir}/bracket`, { recursive: true }),
@@ -1355,7 +1319,7 @@ test(
     const newProjectDirName = testInfo.outputPath(
       'electron-test-projects-dir-2'
     )
-    if (fs.existsSync(newProjectDirName)) {
+    if (nodeFsSync.existsSync(newProjectDirName)) {
       await nodeFs.rm(newProjectDirName, { recursive: true })
     }
 
@@ -1448,9 +1412,7 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {
-          encoding: 'utf-8',
-        })
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
         await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
       }
     })
@@ -1558,10 +1520,7 @@ test(
         'tangential_arc.kcl',
       ]
       for (const fileName of fileNames) {
-        const testFileData = await nodeFs.readFile(
-          executorInputPath(fileName),
-          { encoding: 'utf-8' }
-        )
+        const testFileData = await nodeFs.readFile(executorInputPath(fileName))
         await fs.writeFile(path.join(testDir, fileName), testFileData)
       }
     })
@@ -1606,8 +1565,7 @@ test(
       const testDir = path.join(dir, name)
       await fs.mkdir(testDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
-        executorInputPath(`${name}.kcl`),
-        { encoding: 'utf-8' }
+        executorInputPath(`${name}.kcl`)
       )
       await fs.writeFile(path.join(testDir, 'main.kcl'), testFileData)
     })
@@ -1742,8 +1700,7 @@ test(
       await fs.mkdir(bracketDir, { recursive: true })
       console.log('READDIR', await fs.readdir(dir))
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       const finalPath = path.join(bracketDir, 'main.kcl')
       await fs.writeFile(finalPath, testFileData)
@@ -1777,8 +1734,7 @@ test(
       await fs.mkdir(nestedDir, { recursive: true })
 
       const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl'),
-        { encoding: 'utf-8' }
+        executorInputPath('cylinder-inches.kcl')
       )
       await fs.writeFile(path.join(nestedDir, 'main.kcl'), testFileData)
 
@@ -1822,12 +1778,12 @@ test(
       await fs.mkdir(projectDir, { recursive: true })
       await fs.writeFile(
         path.join(projectDir, 'main.kcl'),
-        `sketch001 = startSketchOn(XZ)
+        new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [0, 6])
   |> line(end = [10, 0])
   |> line(end = [-8, -5])
-`
+`)
       )
     })
     const u = await getUtils(page)

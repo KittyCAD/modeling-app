@@ -1,3 +1,4 @@
+import fs from '@src/lib/fs-zds'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
@@ -305,14 +306,8 @@ export function getFilePathRelativeToProject(
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }
 
-/** TODO: This is not used by the web yet. */
 async function getArchiveBasePath() {
-  return window.electron
-    ? desktopSafePathJoin([
-        await window.electron.getPathUserData(),
-        ARCHIVE_DIR,
-      ])
-    : webSafeJoin(['/', ARCHIVE_DIR])
+  return desktopSafePathJoin([await fs.getPath('userData'), ARCHIVE_DIR])
 }
 
 /** Convert any given path to an archived one.
@@ -323,12 +318,8 @@ async function getArchiveBasePath() {
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
 
-  if (window.electron) {
-    // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
-    // Make that make sense, right? So our archive paths need to replace that character.
-    const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
-    return window.electron.join(basePath, absolutePathWithSafeDriveName)
-  }
-
-  return webSafeJoin([basePath, absolutePath])
+  // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
+  // Make that make sense, right? So our archive paths need to replace that character.
+  const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
+  return path.join(basePath, absolutePathWithSafeDriveName)
 }

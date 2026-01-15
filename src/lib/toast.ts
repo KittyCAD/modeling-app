@@ -1,18 +1,24 @@
 export const waitForToastAnimationEnd = async (
   elementId: string,
   cb: () => void
-) => {
-  return new Promise(async (resolve) => {
+): Promise<void> => {
+  return new Promise<void>((resolve) => {
     const toaster = document.querySelector(`[data-rht-toaster]`)
 
-    if (!toaster) resolve()
+    if (!toaster) return resolve()
 
     const toastEl = document.getElementById(elementId)
-    const styledEl = toastEl.parentNode.parentNode
+    if (toastEl === null) return resolve()
+    const toastElParent = toastEl.parentNode
+    if (toastElParent === null) return resolve()
+    const styledEl = toastElParent.parentNode
+    if (styledEl === null) return resolve()
 
-    await styledEl.getAnimations().finished
-
-    cb()
-    resolve()
+    // For some reason this is so new TS doesn't know about it.
+    // @ts-expect-error
+    styledEl.getAnimations().finished.then(() => {
+      cb()
+      resolve()
+    })
   })
 }

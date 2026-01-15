@@ -119,8 +119,9 @@ export function OpenedProject() {
         SystemIOMachineStates.renamingProject,
       ].includes(lastOperation) === false
     ) {
-      navigate(PATHS.HOME)
+      void navigate(PATHS.HOME)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects, lastOperation])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
@@ -233,9 +234,12 @@ export function OpenedProject() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     settings.app.onboardingStatus.current,
     settings.app.theme.current,
+    // No idea why it's an error. It's there!
+    // @ts-expect-error
     location.href,
     navigate,
     searchParams.size,

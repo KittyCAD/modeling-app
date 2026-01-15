@@ -1450,7 +1450,7 @@ export async function pinchFromCenter(
   await locator.dispatchEvent('touchend')
 }
 
-export const closeOnboardingModalIfPresent = async (page) => {
+export const closeOnboardingModalIfPresent = async (page: Page) => {
   const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
   await expect(page.getByTestId('stream')).toBeVisible()
   if (await onboardingNotRightNow.isVisible()) {

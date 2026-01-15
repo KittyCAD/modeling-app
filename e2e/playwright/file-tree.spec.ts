@@ -14,13 +14,13 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('integrations tests', { tag: '@desktop' }, () => {
   test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({
     page,
-    context,
+    folderSetupFn,
     homePage,
     scene,
     toolbar,
     cmdBar,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -117,7 +117,7 @@ test.describe('when using the file tree to', { tag: '@desktop' }, () => {
   })
 
   test('create a new file with the same name as an existing file cancels the operation', async ({
-    context,
+    folderSetupFn,
     page,
     homePage,
     scene,
@@ -133,7 +133,7 @@ test.describe('when using the file tree to', { tag: '@desktop' }, () => {
       'utf-8'
     )
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const cubeDir = join(dir, projectName)
       await fsp.mkdir(cubeDir, { recursive: true })
       await fsp.copyFile(executorInputPath('cube.kcl'), join(cubeDir, mainFile))
@@ -281,8 +281,8 @@ test.describe('when using the file tree to', { tag: '@desktop' }, () => {
 })
 
 test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
-  test('A file you have open', async ({ context, page }, testInfo) => {
-    const { dir } = await context.folderSetupFn(async (dir) => {
+  test('A file you have open', async ({ folderSetupFn, page }, testInfo) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
@@ -361,8 +361,11 @@ test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
     })
   })
 
-  test('A file you do not have open', async ({ context, page }, testInfo) => {
-    const { dir } = await context.folderSetupFn(async (dir) => {
+  test('A file you do not have open', async ({
+    folderSetupFn,
+    page,
+  }, testInfo) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
@@ -437,8 +440,11 @@ test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
     })
   })
 
-  test(`A folder you're not inside`, async ({ context, page }, testInfo) => {
-    const { dir } = await context.folderSetupFn(async (dir) => {
+  test(`A folder you're not inside`, async ({
+    folderSetupFn,
+    page,
+  }, testInfo) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.mkdir(join(dir, 'Test Project', 'folderToRename'), {
         recursive: true,
@@ -513,8 +519,8 @@ test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
     })
   })
 
-  test(`A folder you are inside`, async ({ page, context }, testInfo) => {
-    const { dir } = await context.folderSetupFn(async (dir) => {
+  test(`A folder you are inside`, async ({ page, folderSetupFn }, testInfo) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.mkdir(join(dir, 'Test Project', 'folderToRename'), {
         recursive: true,
@@ -611,8 +617,8 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   test(
     `delete file when main.kcl exists, navigate to main.kcl`,
     { tag: '@windows' },
-    async ({ page, context }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
+    async ({ page, folderSetupFn }, testInfo) => {
+      await folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
         await fsp.copyFile(
@@ -667,10 +673,10 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   )
 
   test(`Delete folder we are not in, don't navigate`, async ({
-    context,
+    folderSetupFn,
     page,
   }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.mkdir(join(dir, 'Test Project', 'folderToDelete'), {
         recursive: true,
@@ -718,10 +724,10 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   })
 
   test(`Delete folder we are in, navigate to main.kcl`, async ({
-    context,
+    folderSetupFn,
     page,
   }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
       await fsp.mkdir(join(dir, 'Test Project', 'folderToDelete'), {
         recursive: true,
@@ -777,26 +783,24 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
 
   // Copied from tests above.
   test(`external deletion of project navigates back home`, async ({
-    context,
+    folderSetupFn,
     page,
   }, testInfo) => {
     const TEST_PROJECT_NAME = 'Test Project'
-    const { dir: projectsDirName } = await context.folderSetupFn(
-      async (dir) => {
-        await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
-        await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
-          recursive: true,
-        })
-        await fsp.copyFile(
-          executorInputPath('basic_fillet_cube_end.kcl'),
-          join(dir, TEST_PROJECT_NAME, 'main.kcl')
-        )
-        await fsp.copyFile(
-          executorInputPath('cylinder.kcl'),
-          join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
-        )
-      }
-    )
+    const { dir: projectsDirName } = await folderSetupFn(async (dir) => {
+      await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
+      await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+        recursive: true,
+      })
+      await fsp.copyFile(
+        executorInputPath('basic_fillet_cube_end.kcl'),
+        join(dir, TEST_PROJECT_NAME, 'main.kcl')
+      )
+      await fsp.copyFile(
+        executorInputPath('cylinder.kcl'),
+        join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
+      )
+    })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -837,13 +841,13 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
 
 test.describe('Drag and drop moves are undoable', { tag: '@desktop' }, () => {
   test('dragging a file moves it and undo restores it', async ({
-    context,
+    folderSetupFn,
     page,
     homePage,
     toolbar,
     editor,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = join(dir, 'Drag File Project')
       await fsp.mkdir(join(projectDir, 'target'), { recursive: true })
       await fsp.copyFile(
@@ -888,13 +892,13 @@ test.describe('Drag and drop moves are undoable', { tag: '@desktop' }, () => {
   })
 
   test('dragging a folder moves it and undo restores it', async ({
-    context,
+    folderSetupFn,
     page,
     homePage,
     toolbar,
     editor,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = join(dir, 'Drag Folder Project')
       await fsp.mkdir(join(projectDir, 'folderToMove'), { recursive: true })
       await fsp.mkdir(join(projectDir, 'targetFolder'), { recursive: true })
@@ -950,10 +954,10 @@ test.describe(
   { tag: '@desktop' },
   () => {
     test(`open a file, change something, open a different file, hitting undo should do nothing`, async ({
-      context,
+      folderSetupFn,
       page,
     }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
         await fsp.copyFile(
@@ -1014,10 +1018,10 @@ test.describe(
     })
 
     test(`open a file, change something, undo it, open a different file, hitting redo should do nothing`, async ({
-      context,
+      folderSetupFn,
       page,
     }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
         await fsp.copyFile(

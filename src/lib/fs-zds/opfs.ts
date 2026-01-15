@@ -19,9 +19,6 @@ const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
   )
 }
 
-const noopAsync = async (..._args: any[]) =>
-  Promise.reject(new Error('unimplemented'))
-
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
 
@@ -84,24 +81,34 @@ const scan = async (
   targetPath: string,
   onVisit?: (
     cwd: string,
-    handle: FileSystemDirectoryHandle | FileSystemFileHandle
+    handle: [string, FileSystemDirectoryHandle | FileSystemFileHandle]
   ) => Promise<void>
-): Promise<(FileSystemDirectoryHandle | FileSystemFileHandle)[]> => {
+): Promise<[string, string][]> => {
   console.log('scan', targetPath)
   const startingPoint = await walk(targetPath)
+
   console.log(startingPoint)
   if (startingPoint === undefined) return Promise.reject('ENOENT')
+  if (!(startingPoint instanceof FileSystemDirectoryHandle))
+    return Promise.reject('ENOTDIR')
 
-  let visited = []
-  const asyncIters = [[targetPath, await startingPoint.entries()]]
+  let visited: [string, string][] = []
+  const asyncIters: [
+    string,
+    AsyncIterableIterator<
+      [string, FileSystemDirectoryHandle | FileSystemFileHandle]
+    >,
+  ][] = [[targetPath, await startingPoint.entries()]]
 
   console.log('looping entries')
 
   while (asyncIters.length > 0) {
-    const [cwd, handles] = asyncIters.pop()
+    const asyncIter = asyncIters.pop()
+    if (asyncIter === undefined) break
+    const [cwd, handles] = asyncIter
     for await (const current of handles) {
       await onVisit?.(cwd, current)
-      visited.push([cwd, ...current])
+      visited.push([cwd, current[0]])
       if (current[1] instanceof FileSystemDirectoryHandle) {
         asyncIters.push([
           path.resolve(cwd, current[0]),
@@ -111,7 +118,6 @@ const scan = async (
     }
   }
 
-  debugger
   return visited
 }
 
@@ -156,6 +162,7 @@ const stat = async (targetPath: string): Promise<IStat> => {
     json = await readFile(metaFilePath, { encoding: 'utf-8' })
   } catch (e: unknown) {
     if (typeof e !== 'string') {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
       throw e
     }
 
@@ -177,6 +184,7 @@ const stat = async (targetPath: string): Promise<IStat> => {
 
   const obj = JSON.parse(json)
   if (!isMetaFileDirectoryData(obj))
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error(`Corrupt ${META_FILE} file`)
 
   return {
@@ -263,12 +271,11 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
 }
 
 const rm = async (targetPath: string, options?: { recursive: boolean }) => {
-  console.log('rm', targetPath)
   const dirName = path.dirname(targetPath)
   const baseName = path.basename(targetPath)
   const handle = await walk(dirName)
-  console.log(handle)
   if (handle === undefined) return Promise.reject('ENOENT')
+  if (handle instanceof FileSystemFileHandle) return
   let isFile = false
   try {
     await handle.getFileHandle(baseName)
@@ -276,7 +283,6 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
   } catch (e: unknown) {
     console.log(e)
   }
-  console.log(baseName)
   return handle.removeEntry(baseName, {
     recursive: (options?.recursive ?? false) && !isFile,
   })
@@ -345,7 +351,7 @@ const rename = async (
   } else {
     console.log('about to rename directory')
     await mkdir(targetPath)
-    await cp(sourcePath, targetPath, { recursive: true })
+    await cp(sourcePath, targetPath)
     await rm(sourcePath, { recursive: true })
   }
   console.log('done')
@@ -366,11 +372,13 @@ const cp = async (
   if (handleTarget === undefined) return Promise.reject('ENOENT')
 
   if (handleSource instanceof FileSystemFileHandle) {
-    console.log('copying file')
     const data = await readFile(sourcePath)
-    await writeFile(targetPath, data)
+    if (typeof data === 'string') {
+      await writeFile(targetPath, new TextEncoder().encode(data))
+    } else {
+      await writeFile(targetPath, Uint8Array.from(data))
+    }
   } else {
-    console.log('copying dir recurse', sourcePath)
     await scan(sourcePath, async (cwd, handle) => {
       const relativePathToSourcePath = path.basename(cwd, sourcePath)
       const absolutePath = path.resolve(
@@ -381,10 +389,9 @@ const cp = async (
       if (handle[1] instanceof FileSystemDirectoryHandle) {
         await mkdir(absolutePath)
       } else {
-        console.log(absolutePath, handle)
         const sourceFile = await handle[1].getFile()
         const data = await sourceFile.arrayBuffer()
-        await writeFile(absolutePath, data)
+        await writeFile(absolutePath, new Uint8Array(data))
       }
     })
   }

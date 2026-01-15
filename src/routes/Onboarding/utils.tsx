@@ -13,14 +13,12 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
-import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   type OnboardingPath,
@@ -47,7 +45,6 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -319,13 +316,6 @@ export async function resetCodeAndAdvanceOnboarding({
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
-  )
-}
-
-function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
-  return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
-    kclManager.codeSignal.value === browserAxialFan
   )
 }
 
