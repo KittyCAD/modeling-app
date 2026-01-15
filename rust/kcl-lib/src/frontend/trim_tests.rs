@@ -1,7 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use crate::frontend::api::ObjectId;
-    use crate::frontend::trim::{Coords2d, execute_trim_flow};
+    use crate::frontend::{
+        api::ObjectId,
+        trim::{Coords2d, execute_trim_flow},
+    };
 
     #[tokio::test]
     async fn test_trim_line2_left_side() {
@@ -1744,17 +1746,11 @@ sketch(on = YZ) {
                     "Trim should produce non-empty KCL code"
                 );
 
-                // Assert that the test completes within a reasonable time (60 seconds)
+                // Assert that the test completes within a reasonable time
                 // Note: Rust implementation may have different performance characteristics
                 assert!(
-                    duration.as_millis() < 60_000,
-                    "Stress test should complete within 60 seconds, took {}ms",
-                    duration.as_millis()
-                );
-
-                eprintln!(
-                    "[Stress Test] Execution time: {:.2}s ({}ms)",
-                    duration.as_secs_f64(),
+                    duration.as_millis() < 20_000,
+                    "Stress test should complete within 20 seconds, took {}ms",
                     duration.as_millis()
                 );
             }

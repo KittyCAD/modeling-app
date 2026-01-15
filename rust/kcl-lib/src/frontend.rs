@@ -3,9 +3,9 @@ use std::{
     collections::{HashMap, HashSet},
     ops::ControlFlow,
 };
-use web_time::Instant;
 
 use kcl_error::SourceRange;
+use web_time::Instant;
 
 use crate::{
     ExecOutcome, ExecutorContext, Program,
@@ -594,10 +594,7 @@ impl SketchApi for FrontendState {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
-        _new_segment_id: ObjectId,
-        _new_segment_start_point_id: ObjectId,
-        _new_segment_end_point_id: ObjectId,
-        _new_segment_center_point_id: Option<ObjectId>,
+        _new_segment_info: sketch::NewSegmentInfo,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();

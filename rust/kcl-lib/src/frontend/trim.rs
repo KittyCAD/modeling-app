@@ -5,9 +5,13 @@
 //! the trim operations that need to be executed.
 
 // Use native Rust types from kcl_lib frontend for better performance
-use crate::frontend::api::{Object, ObjectId, ObjectKind};
-use crate::frontend::sketch::{Constraint, Segment, SegmentCtor};
-use crate::pretty::NumericSuffix;
+use crate::{
+    frontend::{
+        api::{Object, ObjectId, ObjectKind},
+        sketch::{Constraint, Segment, SegmentCtor},
+    },
+    pretty::NumericSuffix,
+};
 
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL: f64 = 1e-10;
@@ -91,10 +95,10 @@ pub enum TrimOperation {
         left_trim_coords: Coords2d,
         right_trim_coords: Coords2d,
         original_end_coords: Coords2d,
-        left_side: TrimTermination,
-        right_side: TrimTermination,
-        left_side_coincident_data: serde_json::Value, // Complex nested structure
-        right_side_coincident_data: serde_json::Value,
+        left_side: Box<TrimTermination>,
+        right_side: Box<TrimTermination>,
+        left_side_coincident_data: Box<serde_json::Value>, // Complex nested structure
+        right_side_coincident_data: Box<serde_json::Value>,
         constraints_to_migrate: Vec<ConstraintToMigrate>,
         constraints_to_delete: Vec<usize>,
     },
@@ -861,9 +865,11 @@ pub fn get_trim_spawn_terminations(
         intersection_t,
         "left",
         objects,
-        segment_start,
-        segment_end,
-        segment_center,
+        SegmentGeometry {
+            start: segment_start,
+            end: segment_end,
+            center: segment_center,
+        },
     )?;
 
     let right_termination = find_termination_in_direction(
@@ -872,9 +878,11 @@ pub fn get_trim_spawn_terminations(
         intersection_t,
         "right",
         objects,
-        segment_start,
-        segment_end,
-        segment_center,
+        SegmentGeometry {
+            start: segment_start,
+            end: segment_end,
+            center: segment_center,
+        },
     )?;
 
     Ok(TrimTerminations {
@@ -1050,8 +1058,10 @@ pub async fn execute_trim_flow(
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
 ) -> Result<TrimFlowResult, String> {
-    use crate::frontend::{FrontendState, api::Version};
-    use crate::{ExecutorContext, Program};
+    use crate::{
+        ExecutorContext, Program,
+        frontend::{FrontendState, api::Version},
+    };
 
     // Parse KCL code
     let parse_result = Program::parse(kcl_code).map_err(|e| format!("Failed to parse KCL: {}", e))?;
@@ -1287,8 +1297,10 @@ async fn execute_trim_operations_simple(
     version: crate::frontend::api::Version,
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
-    use crate::frontend::SketchApi;
-    use crate::frontend::sketch::{Constraint, ExistingSegmentCtor, SegmentCtor};
+    use crate::frontend::{
+        SketchApi,
+        sketch::{Constraint, ExistingSegmentCtor, SegmentCtor},
+    };
 
     let mut op_index = 0;
     let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = None;
@@ -1330,11 +1342,11 @@ async fn execute_trim_operations_simple(
                             let mut delete_constraint_ids: Vec<ObjectId> = Vec::new();
                             consumed_ops = 2;
 
-                            if op_index + 2 < strategy.len() {
-                                if let TrimOperation::DeleteConstraints { constraint_ids } = &strategy[op_index + 2] {
-                                    delete_constraint_ids = constraint_ids.iter().map(|id| ObjectId(*id)).collect();
-                                    consumed_ops = 3;
-                                }
+                            if op_index + 2 < strategy.len()
+                                && let TrimOperation::DeleteConstraints { constraint_ids } = &strategy[op_index + 2]
+                            {
+                                delete_constraint_ids = constraint_ids.iter().map(|id| ObjectId(*id)).collect();
+                                consumed_ops = 3;
                             }
 
                             // Parse ctor
@@ -1571,17 +1583,17 @@ async fn execute_trim_operations_simple(
                         };
 
                         // Find coincident constraints that reference the original center point
-                        if let Constraint::Coincident(coincident) = constraint {
-                            if coincident.segments.iter().any(|seg_id| seg_id.0 == original_center_id) {
-                                center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
-                            }
+                        if let Constraint::Coincident(coincident) = constraint
+                            && coincident.segments.iter().any(|seg_id| seg_id.0 == original_center_id)
+                        {
+                            center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
 
                         // Find distance constraints that reference the original center point
-                        if let Constraint::Distance(distance) = constraint {
-                            if distance.points.iter().any(|pt| pt.0 == original_center_id) {
-                                center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
-                            }
+                        if let Constraint::Distance(distance) = constraint
+                            && distance.points.iter().any(|pt| pt.0 == original_center_id)
+                        {
+                            center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
                     }
                 }
@@ -1755,18 +1767,18 @@ async fn execute_trim_operations_simple(
                 let mut batch_constraints = Vec::new();
 
                 // Left constraint
-                let left_intersecting_seg_id = match left_side {
+                let left_intersecting_seg_id = match &**left_side {
                     TrimTermination::Intersection {
                         intersecting_seg_id, ..
                     }
                     | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                         intersecting_seg_id, ..
-                    } => intersecting_seg_id,
+                    } => *intersecting_seg_id,
                     _ => {
                         return Err("Left side is not an intersection or coincident".to_string());
                     }
                 };
-                let left_coincident_segments = match left_side {
+                let left_coincident_segments = match &**left_side {
                     TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                         trim_spawn_segment_coincident_with_another_segment_point_id,
                         ..
@@ -1779,7 +1791,7 @@ async fn execute_trim_operations_simple(
                     _ => {
                         vec![
                             ObjectId(left_side_endpoint_point_id),
-                            ObjectId(*left_intersecting_seg_id),
+                            ObjectId(left_intersecting_seg_id),
                         ]
                     }
                 };
@@ -1788,25 +1800,25 @@ async fn execute_trim_operations_simple(
                 }));
 
                 // Right constraint - need to check if intersection is at endpoint
-                let right_intersecting_seg_id = match right_side {
+                let right_intersecting_seg_id = match &**right_side {
                     TrimTermination::Intersection {
                         intersecting_seg_id, ..
                     }
                     | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                         intersecting_seg_id, ..
-                    } => intersecting_seg_id,
+                    } => *intersecting_seg_id,
                     _ => {
                         return Err("Right side is not an intersection or coincident".to_string());
                     }
                 };
 
                 let mut intersection_point_id: Option<usize> = None;
-                if matches!(right_side, TrimTermination::Intersection { .. }) {
+                if matches!(&**right_side, TrimTermination::Intersection { .. }) {
                     let intersecting_seg = edit_scene_graph_delta
                         .new_graph
                         .objects
                         .iter()
-                        .find(|obj| obj.id.0 == *right_intersecting_seg_id);
+                        .find(|obj| obj.id.0 == right_intersecting_seg_id);
 
                     if let Some(seg) = intersecting_seg {
                         let endpoint_epsilon = 1e-3; // 0.001mm
@@ -1842,10 +1854,10 @@ async fn execute_trim_operations_simple(
                                                 + (right_trim_coords_value.y - end_coords.y)
                                                     * (right_trim_coords_value.y - end_coords.y))
                                                 .sqrt();
-                                            if dist_to_end < endpoint_epsilon {
-                                                if let crate::frontend::sketch::Segment::Line(line) = segment {
-                                                    intersection_point_id = Some(line.end.0);
-                                                }
+                                            if dist_to_end < endpoint_epsilon
+                                                && let crate::frontend::sketch::Segment::Line(line) = segment
+                                            {
+                                                intersection_point_id = Some(line.end.0);
                                             }
                                         }
                                     }
@@ -1878,10 +1890,10 @@ async fn execute_trim_operations_simple(
                                                 + (right_trim_coords_value.y - end_coords.y)
                                                     * (right_trim_coords_value.y - end_coords.y))
                                                 .sqrt();
-                                            if dist_to_end < endpoint_epsilon {
-                                                if let crate::frontend::sketch::Segment::Arc(arc) = segment {
-                                                    intersection_point_id = Some(arc.end.0);
-                                                }
+                                            if dist_to_end < endpoint_epsilon
+                                                && let crate::frontend::sketch::Segment::Arc(arc) = segment
+                                            {
+                                                intersection_point_id = Some(arc.end.0);
                                             }
                                         }
                                     }
@@ -1897,7 +1909,7 @@ async fn execute_trim_operations_simple(
                 } else if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                     trim_spawn_segment_coincident_with_another_segment_point_id,
                     ..
-                } = right_side
+                } = &**right_side
                 {
                     vec![
                         ObjectId(new_segment_start_point_id),
@@ -1906,7 +1918,7 @@ async fn execute_trim_operations_simple(
                 } else {
                     vec![
                         ObjectId(new_segment_start_point_id),
-                        ObjectId(*right_intersecting_seg_id),
+                        ObjectId(right_intersecting_seg_id),
                     ]
                 };
                 batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
@@ -1920,7 +1932,7 @@ async fn execute_trim_operations_simple(
                 if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                     trim_spawn_segment_coincident_with_another_segment_point_id,
                     ..
-                } = right_side
+                } = &**right_side
                 {
                     points_constrained_to_new_segment_start
                         .insert(trim_spawn_segment_coincident_with_another_segment_point_id);
@@ -1934,12 +1946,11 @@ async fn execute_trim_operations_simple(
 
                 for constraint_to_migrate in constraints_to_migrate.iter() {
                     // Skip migrating point-segment constraints if the point is already constrained
-                    if constraint_to_migrate.attach_to_endpoint == "segment" {
-                        if points_constrained_to_new_segment_start.contains(&constraint_to_migrate.other_entity_id)
-                            || points_constrained_to_new_segment_end.contains(&constraint_to_migrate.other_entity_id)
-                        {
-                            continue; // Skip redundant constraint
-                        }
+                    if constraint_to_migrate.attach_to_endpoint == "segment"
+                        && (points_constrained_to_new_segment_start.contains(&constraint_to_migrate.other_entity_id)
+                            || points_constrained_to_new_segment_end.contains(&constraint_to_migrate.other_entity_id))
+                    {
+                        continue; // Skip redundant constraint
                     }
 
                     let constraint_segments = if constraint_to_migrate.attach_to_endpoint == "segment" {
@@ -2122,10 +2133,12 @@ async fn execute_trim_operations_simple(
                         Vec::new(), // edit_segments already done
                         batch_constraints,
                         constraint_object_ids,
-                        ObjectId(new_segment_id),
-                        ObjectId(new_segment_start_point_id),
-                        ObjectId(new_segment_end_point_id),
-                        new_segment_center_point_id.map(ObjectId),
+                        crate::frontend::sketch::NewSegmentInfo {
+                            segment_id: ObjectId(new_segment_id),
+                            start_point_id: ObjectId(new_segment_start_point_id),
+                            end_point_id: ObjectId(new_segment_end_point_id),
+                            center_point_id: new_segment_center_point_id.map(ObjectId),
+                        },
                     )
                     .await
                     .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg));
@@ -2938,15 +2951,14 @@ pub fn trim_strategy(
                         // Use post-solve coordinates for original end point if available, otherwise use the coordinates we have
                         let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
                             if let Some(end_point_obj) = objects.get(end_id) {
-                                if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                    if let Segment::Point(end_point) = segment {
-                                        Some(Coords2d {
-                                            x: end_point.position.x.value,
-                                            y: end_point.position.y.value,
-                                        })
-                                    } else {
-                                        None
-                                    }
+                                if let ObjectKind::Segment {
+                                    segment: Segment::Point(end_point),
+                                } = &end_point_obj.kind
+                                {
+                                    Some(Coords2d {
+                                        x: end_point.position.x.value,
+                                        y: end_point.position.y.value,
+                                    })
                                 } else {
                                     None
                                 }
@@ -2970,12 +2982,11 @@ pub fn trim_strategy(
                                 .iter()
                                 .any(|&constraint_id| {
                                     if let Some(constraint_obj) = objects.get(constraint_id) {
-                                        if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                            if let Constraint::Coincident(coincident) = constraint {
-                                                coincident.segments.iter().any(|id| id.0 == other_id)
-                                            } else {
-                                                false
-                                            }
+                                        if let ObjectKind::Constraint {
+                                            constraint: Constraint::Coincident(coincident),
+                                        } = &constraint_obj.kind
+                                        {
+                                            coincident.segments.iter().any(|id| id.0 == other_id)
                                         } else {
                                             false
                                         }
@@ -3098,15 +3109,14 @@ pub fn trim_strategy(
                             // Use post-solve coordinates for original end point if available
                             let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
                                 if let Some(end_point_obj) = objects.get(end_id) {
-                                    if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                        if let Segment::Point(end_point) = segment {
-                                            Some(Coords2d {
-                                                x: end_point.position.x.value,
-                                                y: end_point.position.y.value,
-                                            })
-                                        } else {
-                                            None
-                                        }
+                                    if let ObjectKind::Segment {
+                                        segment: Segment::Point(end_point),
+                                    } = &end_point_obj.kind
+                                    {
+                                        Some(Coords2d {
+                                            x: end_point.position.x.value,
+                                            y: end_point.position.y.value,
+                                        })
                                     } else {
                                         None
                                     }
@@ -3132,12 +3142,11 @@ pub fn trim_strategy(
                                         .iter()
                                         .any(|&constraint_id| {
                                             if let Some(constraint_obj) = objects.get(constraint_id) {
-                                                if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                                    if let Constraint::Coincident(coincident) = constraint {
-                                                        coincident.segments.iter().any(|id| id.0 == other_id)
-                                                    } else {
-                                                        false
-                                                    }
+                                                if let ObjectKind::Constraint {
+                                                    constraint: Constraint::Coincident(coincident),
+                                                } = &constraint_obj.kind
+                                                {
+                                                    coincident.segments.iter().any(|id| id.0 == other_id)
                                                 } else {
                                                     false
                                                 }
@@ -3300,15 +3309,14 @@ pub fn trim_strategy(
                     // Check if point is at original end point (with relaxed tolerance for catch-all)
                     let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
                         if let Some(end_point_obj) = objects.get(end_id) {
-                            if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                if let Segment::Point(end_point) = segment {
-                                    Some(Coords2d {
-                                        x: end_point.position.x.value,
-                                        y: end_point.position.y.value,
-                                    })
-                                } else {
-                                    None
-                                }
+                            if let ObjectKind::Segment {
+                                segment: Segment::Point(end_point),
+                            } = &end_point_obj.kind
+                            {
+                                Some(Coords2d {
+                                    x: end_point.position.x.value,
+                                    y: end_point.position.y.value,
+                                })
                             } else {
                                 None
                             }
@@ -3337,12 +3345,11 @@ pub fn trim_strategy(
                                 .iter()
                                 .any(|&constraint_id| {
                                     if let Some(constraint_obj) = objects.get(constraint_id) {
-                                        if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                            if let Constraint::Coincident(coincident) = constraint {
-                                                coincident.segments.iter().any(|id| id.0 == other_id)
-                                            } else {
-                                                false
-                                            }
+                                        if let ObjectKind::Constraint {
+                                            constraint: Constraint::Coincident(coincident),
+                                        } = &constraint_obj.kind
+                                        {
+                                            coincident.segments.iter().any(|id| id.0 == other_id)
                                         } else {
                                             false
                                         }
@@ -3378,18 +3385,18 @@ pub fn trim_strategy(
             left_trim_coords,
             right_trim_coords,
             original_end_coords,
-            left_side: left_side.clone(),
-            right_side: right_side.clone(),
-            left_side_coincident_data: serde_json::json!({
+            left_side: Box::new(left_side.clone()),
+            right_side: Box::new(right_side.clone()),
+            left_side_coincident_data: Box::new(serde_json::json!({
                 "intersectingSegId": left_intersecting_seg_id,
                 "intersectingEndpointPointId": left_coincident_data.get("intersectingEndpointPointId"),
                 "existingPointSegmentConstraintId": left_coincident_data.get("existingPointSegmentConstraintId"),
-            }),
-            right_side_coincident_data: serde_json::json!({
+            })),
+            right_side_coincident_data: Box::new(serde_json::json!({
                 "intersectingSegId": right_intersecting_seg_id,
                 "intersectingEndpointPointId": right_coincident_data.get("intersectingEndpointPointId"),
                 "existingPointSegmentConstraintId": right_coincident_data.get("existingPointSegmentConstraintId"),
-            }),
+            })),
             constraints_to_migrate,
             constraints_to_delete,
         }];
@@ -3400,6 +3407,14 @@ pub fn trim_strategy(
     Err("Not implemented".to_string())
 }
 
+/// Segment geometry information
+#[derive(Debug, Clone, Copy)]
+struct SegmentGeometry {
+    start: Coords2d,
+    end: Coords2d,
+    center: Option<Coords2d>,
+}
+
 /// Helper to find termination in a given direction from the intersection point
 fn find_termination_in_direction(
     trim_spawn_seg: &Object,
@@ -3407,9 +3422,7 @@ fn find_termination_in_direction(
     intersection_t: f64,
     direction: &str,
     objects: &[Object],
-    segment_start: Coords2d,
-    segment_end: Coords2d,
-    segment_center: Option<Coords2d>,
+    segment_geometry: SegmentGeometry,
 ) -> Result<TrimTermination, String> {
     // Use native types
     let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
@@ -3433,14 +3446,14 @@ fn find_termination_in_direction(
         Segment::Line(line) => {
             candidates.push(Candidate {
                 t: 0.0,
-                point: segment_start,
+                point: segment_geometry.start,
                 candidate_type: "endpoint".to_string(),
                 segment_id: None,
                 point_id: Some(line.start.0),
             });
             candidates.push(Candidate {
                 t: 1.0,
-                point: segment_end,
+                point: segment_geometry.end,
                 candidate_type: "endpoint".to_string(),
                 segment_id: None,
                 point_id: Some(line.end.0),
@@ -3450,14 +3463,14 @@ fn find_termination_in_direction(
             // For arcs, endpoints are at t=0 and t=1 conceptually
             candidates.push(Candidate {
                 t: 0.0,
-                point: segment_start,
+                point: segment_geometry.start,
                 candidate_type: "endpoint".to_string(),
                 segment_id: None,
                 point_id: Some(arc.start.0),
             });
             candidates.push(Candidate {
                 t: 1.0,
-                point: segment_end,
+                point: segment_geometry.end,
                 candidate_type: "endpoint".to_string(),
                 segment_id: None,
                 point_id: Some(arc.end.0),
@@ -3490,10 +3503,18 @@ fn find_termination_in_direction(
                 if let (Some(os), Some(oe)) = (other_start, other_end) {
                     match segment {
                         Segment::Line(_) => {
-                            if let Some(intersection) =
-                                line_segment_intersection(segment_start, segment_end, os, oe, EPSILON_POINT_ON_SEGMENT)
-                            {
-                                let t = project_point_onto_segment(intersection, segment_start, segment_end);
+                            if let Some(intersection) = line_segment_intersection(
+                                segment_geometry.start,
+                                segment_geometry.end,
+                                os,
+                                oe,
+                                EPSILON_POINT_ON_SEGMENT,
+                            ) {
+                                let t = project_point_onto_segment(
+                                    intersection,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
@@ -3504,17 +3525,22 @@ fn find_termination_in_direction(
                             }
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center
+                            if let Some(center) = segment_geometry.center
                                 && let Some(intersection) = line_arc_intersection(
                                     os,
                                     oe,
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     EPSILON_POINT_ON_SEGMENT,
                                 )
                             {
-                                let t = project_point_onto_arc(intersection, center, segment_start, segment_end);
+                                let t = project_point_onto_arc(
+                                    intersection,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
@@ -3535,10 +3561,19 @@ fn find_termination_in_direction(
                 if let (Some(os), Some(oe), Some(oc)) = (other_start, other_end, other_center) {
                     match segment {
                         Segment::Line(_) => {
-                            if let Some(intersection) =
-                                line_arc_intersection(segment_start, segment_end, oc, os, oe, EPSILON_POINT_ON_SEGMENT)
-                            {
-                                let t = project_point_onto_segment(intersection, segment_start, segment_end);
+                            if let Some(intersection) = line_arc_intersection(
+                                segment_geometry.start,
+                                segment_geometry.end,
+                                oc,
+                                os,
+                                oe,
+                                EPSILON_POINT_ON_SEGMENT,
+                            ) {
+                                let t = project_point_onto_segment(
+                                    intersection,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
@@ -3549,18 +3584,23 @@ fn find_termination_in_direction(
                             }
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center
+                            if let Some(center) = segment_geometry.center
                                 && let Some(intersection) = arc_arc_intersection(
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     oc,
                                     os,
                                     oe,
                                     EPSILON_POINT_ON_SEGMENT,
                                 )
                             {
-                                let t = project_point_onto_arc(intersection, center, segment_start, segment_end);
+                                let t = project_point_onto_arc(
+                                    intersection,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
@@ -3590,20 +3630,29 @@ fn find_termination_in_direction(
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_start, segment_start, segment_end);
+                            let t =
+                                project_point_onto_segment(other_start, segment_geometry.start, segment_geometry.end);
                             let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(other_start, segment_start, segment_end)
-                                    <= EPSILON_POINT_ON_SEGMENT;
+                                && perpendicular_distance_to_segment(
+                                    other_start,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                ) <= EPSILON_POINT_ON_SEGMENT;
                             (t, is_on)
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                let t = project_point_onto_arc(other_start, center, segment_start, segment_end);
+                            if let Some(center) = segment_geometry.center {
+                                let t = project_point_onto_arc(
+                                    other_start,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 let is_on = is_point_on_arc(
                                     other_start,
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     EPSILON_POINT_ON_SEGMENT,
                                 );
                                 (t, is_on)
@@ -3631,20 +3680,28 @@ fn find_termination_in_direction(
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_end, segment_start, segment_end);
+                            let t = project_point_onto_segment(other_end, segment_geometry.start, segment_geometry.end);
                             let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(other_end, segment_start, segment_end)
-                                    <= EPSILON_POINT_ON_SEGMENT;
+                                && perpendicular_distance_to_segment(
+                                    other_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                ) <= EPSILON_POINT_ON_SEGMENT;
                             (t, is_on)
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                let t = project_point_onto_arc(other_end, center, segment_start, segment_end);
+                            if let Some(center) = segment_geometry.center {
+                                let t = project_point_onto_arc(
+                                    other_end,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 let is_on = is_point_on_arc(
                                     other_end,
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     EPSILON_POINT_ON_SEGMENT,
                                 );
                                 (t, is_on)
@@ -3676,20 +3733,29 @@ fn find_termination_in_direction(
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_start, segment_start, segment_end);
+                            let t =
+                                project_point_onto_segment(other_start, segment_geometry.start, segment_geometry.end);
                             let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(other_start, segment_start, segment_end)
-                                    <= EPSILON_POINT_ON_SEGMENT;
+                                && perpendicular_distance_to_segment(
+                                    other_start,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                ) <= EPSILON_POINT_ON_SEGMENT;
                             (t, is_on)
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                let t = project_point_onto_arc(other_start, center, segment_start, segment_end);
+                            if let Some(center) = segment_geometry.center {
+                                let t = project_point_onto_arc(
+                                    other_start,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 let is_on = is_point_on_arc(
                                     other_start,
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     EPSILON_POINT_ON_SEGMENT,
                                 );
                                 (t, is_on)
@@ -3717,20 +3783,28 @@ fn find_termination_in_direction(
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
-                            let t = project_point_onto_segment(other_end, segment_start, segment_end);
+                            let t = project_point_onto_segment(other_end, segment_geometry.start, segment_geometry.end);
                             let is_on = (0.0..=1.0).contains(&t)
-                                && perpendicular_distance_to_segment(other_end, segment_start, segment_end)
-                                    <= EPSILON_POINT_ON_SEGMENT;
+                                && perpendicular_distance_to_segment(
+                                    other_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                ) <= EPSILON_POINT_ON_SEGMENT;
                             (t, is_on)
                         }
                         Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                let t = project_point_onto_arc(other_end, center, segment_start, segment_end);
+                            if let Some(center) = segment_geometry.center {
+                                let t = project_point_onto_arc(
+                                    other_end,
+                                    center,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
+                                );
                                 let is_on = is_point_on_arc(
                                     other_end,
                                     center,
-                                    segment_start,
-                                    segment_end,
+                                    segment_geometry.start,
+                                    segment_geometry.end,
                                     EPSILON_POINT_ON_SEGMENT,
                                 );
                                 (t, is_on)
@@ -3805,9 +3879,9 @@ fn find_termination_in_direction(
         None => {
             // No termination found, default to segment endpoint
             let endpoint = if direction == "left" {
-                segment_start
+                segment_geometry.start
             } else {
-                segment_end
+                segment_geometry.end
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -3874,9 +3948,9 @@ fn find_termination_in_direction(
             // return segEndPoint instead of intersection
             if is_other_seg_endpoint {
                 let endpoint = if direction == "left" {
-                    segment_start
+                    segment_geometry.start
                 } else {
-                    segment_end
+                    segment_geometry.end
                 };
                 return Ok(TrimTermination::SegEndPoint {
                     trim_termination_coords: endpoint,
@@ -3887,9 +3961,9 @@ fn find_termination_in_direction(
         // Also check if intersection is at our arc's endpoint
         let endpoint_t = if direction == "left" { 0.0 } else { 1.0 };
         let endpoint = if direction == "left" {
-            segment_start
+            segment_geometry.start
         } else {
-            segment_end
+            segment_geometry.end
         };
         let dist_to_endpoint_param = (closest_candidate.t - endpoint_t).abs();
         let dist_to_endpoint_coords = ((closest_candidate.point.x - endpoint.x)
@@ -3916,9 +3990,9 @@ fn find_termination_in_direction(
             // Intersection is at endpoint - check if there's a coincident constraint
             // or if it's just a numerical precision issue
             let endpoint = if direction == "left" {
-                segment_start
+                segment_geometry.start
             } else {
-                segment_end
+                segment_geometry.end
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -3928,9 +4002,9 @@ fn find_termination_in_direction(
 
     // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
     let endpoint = if direction == "left" {
-        segment_start
+        segment_geometry.start
     } else {
-        segment_end
+        segment_geometry.end
     };
     if closest_candidate.candidate_type == "endpoint" {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();

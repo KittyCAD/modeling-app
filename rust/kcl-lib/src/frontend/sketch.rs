@@ -9,6 +9,15 @@ use crate::{
     },
 };
 
+/// Information about a newly created segment for batch operations
+#[derive(Debug, Clone)]
+pub struct NewSegmentInfo {
+    pub segment_id: ObjectId,
+    pub start_point_id: ObjectId,
+    pub end_point_id: ObjectId,
+    pub center_point_id: Option<ObjectId>,
+}
+
 pub trait SketchApi {
     /// Execute the sketch in mock mode, without changing anything. This is
     /// useful after editing segments, and the user releases the mouse button.
@@ -111,10 +120,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
-        new_segment_id: ObjectId,
-        new_segment_start_point_id: ObjectId,
-        new_segment_end_point_id: ObjectId,
-        new_segment_center_point_id: Option<ObjectId>,
+        new_segment_info: NewSegmentInfo,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,

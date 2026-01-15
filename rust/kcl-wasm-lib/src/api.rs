@@ -454,10 +454,12 @@ impl Context {
                 edit_segments,
                 add_constraints,
                 delete_constraint_ids,
-                new_segment_id,
-                new_segment_start_point_id,
-                new_segment_end_point_id,
-                new_segment_center_point_id,
+                kcl_lib::front::NewSegmentInfo {
+                    segment_id: new_segment_id,
+                    start_point_id: new_segment_start_point_id,
+                    end_point_id: new_segment_end_point_id,
+                    center_point_id: new_segment_center_point_id,
+                },
             )
             .await
             .map_err(|e| format!("Failed to batch split segment operations: {:?}", e))?;
@@ -493,12 +495,13 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim functions from kcl-lib
-        use crate::trim::NextTrimResult;
         use kcl_lib::front::{
             get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, Coords2d as Coords2dCore,
             NextTrimResult as NextTrimResultCore, TrimTermination as TrimTerminationCore,
             TrimTerminations as TrimTerminationsCore,
         };
+
+        use crate::trim::NextTrimResult;
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch
@@ -541,6 +544,7 @@ impl Context {
             initial_scene_graph_delta,
         ));
         let mut invalidates_ids = false;
+        let mut operations_performed = false;
 
         while start_index < points_core.len().saturating_sub(1) && iteration_count < max_iterations {
             iteration_count += 1;
@@ -1648,10 +1652,13 @@ impl Context {
                                         Vec::new(), // edit_segments already done
                                         batch_constraints,
                                         constraint_object_ids,
-                                        kcl_lib::front::ObjectId(new_segment_id),
-                                        kcl_lib::front::ObjectId(new_segment_start_point_id),
-                                        kcl_lib::front::ObjectId(new_segment_end_point_id),
-                                        new_segment_center_point_id.map(|id| kcl_lib::front::ObjectId(id)),
+                                        kcl_lib::front::NewSegmentInfo {
+                                            segment_id: kcl_lib::front::ObjectId(new_segment_id),
+                                            start_point_id: kcl_lib::front::ObjectId(new_segment_start_point_id),
+                                            end_point_id: kcl_lib::front::ObjectId(new_segment_end_point_id),
+                                            center_point_id: new_segment_center_point_id
+                                                .map(|id| kcl_lib::front::ObjectId(id)),
+                                        },
                                     )
                                     .await;
 
@@ -1687,6 +1694,7 @@ impl Context {
                             Ok((source_delta, scene_graph_delta)) => {
                                 last_result = Some((source_delta, scene_graph_delta.clone()));
                                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
+                                operations_performed = true;
 
                                 // Update current scene graph delta - no serialization needed!
                                 current_scene_graph_delta = scene_graph_delta;
@@ -1728,7 +1736,17 @@ impl Context {
 
         // Return the last result or execute mock to get current state
         let (source_delta, mut scene_graph_delta) = if let Some((sd, sgd)) = last_result {
-            (sd, sgd)
+            // If source_delta is empty, it means no operations were executed
+            // In this case, we should return the original source code unchanged, not an empty string
+            if sd.text.is_empty() {
+                // Get the current source code by executing mock, which returns the unchanged source
+                guard
+                    .execute_mock(&ctx, version, actual_sketch_id)
+                    .await
+                    .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+            } else {
+                (sd, sgd)
+            }
         } else {
             guard
                 .execute_mock(&ctx, version, actual_sketch_id)
@@ -1744,11 +1762,13 @@ impl Context {
         struct TrimResult {
             kcl_source: kcl_lib::front::SourceDelta,
             scene_graph_delta: kcl_lib::front::SceneGraphDelta,
+            operations_performed: bool,
         }
 
         let result = TrimResult {
             kcl_source: source_delta,
             scene_graph_delta,
+            operations_performed,
         };
 
         Ok(JsValue::from_serde(&result)

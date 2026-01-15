@@ -4,11 +4,6 @@
 
 #[cfg(target_arch = "wasm32")]
 use gloo_utils::format::JsValueSerdeExt;
-#[cfg(target_arch = "wasm32")]
-use serde::{Deserialize, Serialize};
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::{prelude::*, JsValue};
-
 // Import core types and functions from kcl-lib
 use kcl_lib::front::{
     get_next_trim_coords, get_position_coords_for_line, get_position_coords_from_arc, get_trim_spawn_terminations,
@@ -16,6 +11,10 @@ use kcl_lib::front::{
     NextTrimResult as NextTrimResultCore, Object, TrimOperation as TrimOperationCore,
     TrimTermination as TrimTerminationCore, TrimTerminations as TrimTerminationsCore,
 };
+#[cfg(target_arch = "wasm32")]
+use serde::{Deserialize, Serialize};
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::{prelude::*, JsValue};
 
 /// 2D coordinates with WASM serialization support
 /// This is a wrapper around the core Coords2d that adds serde support for WASM
@@ -156,8 +155,9 @@ impl<'de> Deserialize<'de> for NextTrimResult {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
         use std::fmt;
+
+        use serde::de::{self, MapAccess, Visitor};
 
         struct NextTrimResultVisitor;
 
@@ -318,8 +318,9 @@ impl<'de> Deserialize<'de> for TrimTermination {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
         use std::fmt;
+
+        use serde::de::{self, MapAccess, Visitor};
 
         struct TrimTerminationVisitor;
 
@@ -446,8 +447,9 @@ impl<'de> Deserialize<'de> for TrimTerminations {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
         use std::fmt;
+
+        use serde::de::{self, MapAccess, Visitor};
 
         struct TrimTerminationsVisitor;
 
@@ -564,10 +566,10 @@ impl From<TrimOperationCore> for TrimOperation {
                 left_trim_coords: left_trim_coords.into(),
                 right_trim_coords: right_trim_coords.into(),
                 original_end_coords: original_end_coords.into(),
-                left_side: left_side.into(),
-                right_side: right_side.into(),
-                left_side_coincident_data,
-                right_side_coincident_data,
+                left_side: (*left_side).into(),
+                right_side: (*right_side).into(),
+                left_side_coincident_data: *left_side_coincident_data,
+                right_side_coincident_data: *right_side_coincident_data,
                 constraints_to_migrate: constraints_to_migrate.into_iter().map(|c| c.into()).collect(),
                 constraints_to_delete,
             },
@@ -662,8 +664,9 @@ impl<'de> Deserialize<'de> for TrimOperation {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
         use std::fmt;
+
+        use serde::de::{self, MapAccess, Visitor};
 
         struct TrimOperationVisitor;
 
@@ -872,8 +875,9 @@ impl<'de> Deserialize<'de> for ConstraintToMigrate {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
         use std::fmt;
+
+        use serde::de::{self, MapAccess, Visitor};
 
         struct ConstraintToMigrateVisitor;
 

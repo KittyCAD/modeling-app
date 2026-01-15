@@ -623,13 +623,18 @@ export default class RustContext {
     sketch: ApiObjectId,
     points: Array<[number, number]>,
     settings: DeepPartial<Configuration>
-  ): Promise<{ kclSource: SourceDelta; sceneGraphDelta: SceneGraphDelta }> {
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    operationsPerformed: boolean
+  }> {
     const instance = await this._checkContextInstance()
 
     try {
       const result: {
         kcl_source: SourceDelta
         scene_graph_delta: SceneGraphDelta
+        operations_performed: boolean
       } = await instance.execute_trim(
         JSON.stringify(version),
         JSON.stringify(sketch),
@@ -639,6 +644,7 @@ export default class RustContext {
       return {
         kclSource: result.kcl_source,
         sceneGraphDelta: result.scene_graph_delta,
+        operationsPerformed: result.operations_performed,
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)

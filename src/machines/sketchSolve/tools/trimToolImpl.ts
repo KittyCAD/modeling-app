@@ -3678,6 +3678,12 @@ export function createOnAreaSelectEndCallback({
         settings
       )
 
+      // If no trim operations were performed (trim line doesn't intersect any segments),
+      // return early and do nothing. This is not an error - it's a normal no-op case.
+      if (!result.operationsPerformed) {
+        return
+      }
+
       // Send the result
       onNewSketchOutcome({
         kclSource: result.kclSource,
