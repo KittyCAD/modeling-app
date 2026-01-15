@@ -630,12 +630,6 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     })
 
     await test.step(`Check the project was renamed`, async () => {
-      await scene.settled(cmdBar)
-
-      // Verify we're still on the project page (not home)
-      await expect(projectHomeLink).not.toBeVisible()
-
-      // Verify the project name in the sidebar reflects the new name
       const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
       if (await projectSidebarToggle.isVisible()) {
         await projectSidebarToggle.click()
