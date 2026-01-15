@@ -400,14 +400,26 @@ pub fn relevant_file_extensions() -> Result<Vec<String>, String> {
 
 /// Generate a Mermaid diagram from an artifact graph JSON.
 /// Takes the artifact graph as JSON (as serialized from Rust) and returns a Mermaid flowchart string.
+///
+/// # Arguments
+/// * `artifact_graph_json` - The artifact graph as JSON
+/// * `include_detailed_info` - If true, includes additional information useful for LLMs:
+///   - Artifact IDs (UUIDs)
+///   - Full code reference ranges with module information
+///   - Detailed node path information
+/// * `module_file_names_json` - Optional JSON mapping from module ID (number) to ModulePath for displaying file names
 #[wasm_bindgen]
-pub fn artifact_graph_to_mermaid(artifact_graph_json: &str) -> Result<String, String> {
+pub fn artifact_graph_to_mermaid(
+    artifact_graph_json: &str,
+    include_detailed_info: bool,
+    module_file_names_json: Option<String>,
+) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     let artifact_graph: ArtifactGraph =
         serde_json::from_str(artifact_graph_json).map_err(|e| format!("Failed to deserialize artifact graph: {e}"))?;
 
     artifact_graph
-        .to_mermaid_flowchart()
+        .to_mermaid_flowchart(include_detailed_info, module_file_names_json.as_deref())
         .map_err(|e| format!("Failed to generate mermaid diagram: {e}"))
 }

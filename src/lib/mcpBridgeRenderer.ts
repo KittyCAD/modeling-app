@@ -122,7 +122,11 @@ export function initMcpBridgeHandlers(): void {
 
     // Handle getArtifactGraphMermaid request
     window.electron.mcpBridge.onGetArtifactGraphMermaid(
-      async (data: { requestId: string; waitForExecution?: boolean }) => {
+      async (data: {
+        requestId: string
+        waitForExecution?: boolean
+        includeDetailedInfo?: boolean
+      }) => {
         try {
           await waitForExecutionIfNeeded(data.waitForExecution ?? true)
           const wasmInstance = await kclManager.wasmInstancePromise
@@ -133,15 +137,19 @@ export function initMcpBridgeHandlers(): void {
             typeof wasmInstance.artifact_graph_to_mermaid !== 'function'
           ) {
             const availableFunctions = Object.keys(wasmInstance).filter(
-              (key) => typeof wasmInstance[key] === 'function'
+              (key) =>
+                typeof (wasmInstance as Record<string, unknown>)[key] ===
+                'function'
             )
             console.error(
               '[MCP Bridge] artifact_graph_to_mermaid not found. Available functions:',
               availableFunctions.slice(0, 20)
             )
-            throw new Error(
-              'artifact_graph_to_mermaid function not found on WASM instance. The WASM module may need to be rebuilt with `npm run build:wasm`.'
-            )
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error:
+                'artifact_graph_to_mermaid function not found on WASM instance. The WASM module may need to be rebuilt with `npm run build:wasm`.',
+            })
+            return
           }
 
           // Convert Map back to Rust format (object with map property)
@@ -194,8 +202,41 @@ export function initMcpBridgeHandlers(): void {
 
           let mermaidDiagram: string
           try {
-            mermaidDiagram =
-              wasmInstance.artifact_graph_to_mermaid(artifactGraphJson)
+            // Use includeDetailedInfo from request, defaulting to false for human-readable diagrams
+            const includeDetailedInfo = data.includeDetailedInfo ?? false
+
+            // Get module file names from execState for displaying file names instead of module IDs
+            const moduleFileNames = kclManager.execState?.filenames
+            if (moduleFileNames) {
+              console.log(
+                '[MCP Bridge] Module file names available:',
+                Object.keys(moduleFileNames).length,
+                'modules'
+              )
+              // Log a sample to verify structure
+              const firstKey = Object.keys(moduleFileNames)[0]
+              if (firstKey) {
+                console.log(
+                  '[MCP Bridge] Sample module file name:',
+                  firstKey,
+                  '->',
+                  moduleFileNames[Number(firstKey)]
+                )
+              }
+            } else {
+              console.warn(
+                '[MCP Bridge] No module file names available in execState'
+              )
+            }
+            const moduleFileNamesJson = moduleFileNames
+              ? JSON.stringify(moduleFileNames)
+              : undefined
+
+            mermaidDiagram = wasmInstance.artifact_graph_to_mermaid(
+              artifactGraphJson,
+              includeDetailedInfo,
+              moduleFileNamesJson
+            )
           } catch (wasmError) {
             console.error(
               '[MCP Bridge] WASM function threw error:',
@@ -203,9 +244,10 @@ export function initMcpBridgeHandlers(): void {
               'Graph JSON length:',
               artifactGraphJson.length
             )
-            throw new Error(
-              `WASM function error: ${wasmError instanceof Error ? wasmError.message : String(wasmError)}`
-            )
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error: `WASM function error: ${wasmError instanceof Error ? wasmError.message : String(wasmError)}`,
+            })
+            return
           }
 
           if (!mermaidDiagram || typeof mermaidDiagram !== 'string') {
@@ -215,9 +257,10 @@ export function initMcpBridgeHandlers(): void {
               'value:',
               mermaidDiagram
             )
-            throw new Error(
-              `Unexpected return type from artifact_graph_to_mermaid: ${typeof mermaidDiagram}, got: ${String(mermaidDiagram).substring(0, 100)}`
-            )
+            window.electron?.mcpBridge?.sendResponse(data.requestId, {
+              error: `Unexpected return type from artifact_graph_to_mermaid: ${typeof mermaidDiagram}, got: ${String(mermaidDiagram).substring(0, 100)}`,
+            })
+            return
           }
 
           window.electron?.mcpBridge?.sendResponse(data.requestId, {

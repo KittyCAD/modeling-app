@@ -364,10 +364,16 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 - [x] Registered tool in `registry.ts`
 - [x] Updated TypeScript interface types in `interface.d.ts`
 - [x] Fixed WASM build compilation errors
-- [ ] **Part 2 (Future)**: Add optional parameter to include extra information (IDs, UIDs) for LLMs
-  - Add optional `includeDetailedInfo` parameter to mermaid generation
-  - Conditionally include artifact IDs, UIDs, and other metadata in diagram
-  - Keep existing behavior as default (limited detail for human readability)
+- [x] **Part 2**: Add optional parameter to include extra information for LLMs
+  - [x] Add optional `includeDetailedInfo` parameter to `to_mermaid_flowchart()` in Rust
+  - [x] Update `flowchart_node` to conditionally include:
+    - Artifact IDs (UUIDs) - shown as `id:{uuid}` in detailed mode
+    - Full code reference ranges with module information - formatted as `range:[start-end] mod:module_id` in detailed mode
+    - Detailed node path information - shown in comments in detailed mode
+  - [x] Update WASM binding to accept `includeDetailedInfo` parameter
+  - [x] Update TypeScript bridge to pass `includeDetailedInfo` parameter
+  - [x] Update MCP tool to accept `includeDetailedInfo` parameter (defaults to false)
+  - [x] Keep existing behavior as default (limited detail for human readability)
 
 ### 8.6 Stub: get and set tag for an artifact
 

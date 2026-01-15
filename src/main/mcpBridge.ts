@@ -124,8 +124,11 @@ async function handleBridgeRequest(
       case 'getArtifactGraphMermaid': {
         const waitForExecution =
           (request.params?.waitForExecution as boolean | undefined) ?? true
+        const includeDetailedInfo =
+          (request.params?.includeDetailedInfo as boolean | undefined) ?? false
         const data = await queryRenderer('mcp:getArtifactGraphMermaid', {
           waitForExecution,
+          includeDetailedInfo,
         })
         response = {
           type: request.type,

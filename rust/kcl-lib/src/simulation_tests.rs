@@ -450,7 +450,7 @@ fn assert_artifact_snapshots(
         if !test.skip_assert_artifact_graph || is_writing {
             assert_snapshot(test, "Artifact graph flowchart", || {
                 let flowchart = artifact_graph
-                    .to_mermaid_flowchart()
+                    .to_mermaid_flowchart(false, None as Option<&str>)
                     .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
                 // Change the snapshot suffix so that it is rendered as a Markdown file
                 // in GitHub.

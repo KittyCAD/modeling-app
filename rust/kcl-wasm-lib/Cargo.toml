@@ -15,6 +15,7 @@ bench = false
 dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dependencies]
+indexmap = { workspace = true }
 rayon = { workspace = true }
 typed-path = "0.12.0"
 

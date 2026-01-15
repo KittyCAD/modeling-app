@@ -409,7 +409,11 @@ contextBridge.exposeInMainWorld('electron', {
       }
     },
     onGetArtifactGraphMermaid: (
-      callback: (data: { requestId: string }) => void
+      callback: (data: {
+        requestId: string
+        waitForExecution?: boolean
+        includeDetailedInfo?: boolean
+      }) => void
     ) => {
       ipcRenderer.on('mcp:getArtifactGraphMermaid', (_, data) => callback(data))
       return () => {

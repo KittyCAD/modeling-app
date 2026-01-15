@@ -14,7 +14,9 @@ import {
 
 export const getArtifactGraphTool = {
   name: 'get_artifact_graph',
-  description: `Get the current ArtifactGraph (a snapshot of the current state), which maps geometry artifacts in the 3D scene to the code/AST. This allows you to understand how geometry relates to the user's code. ${ARTIFACT_GRAPH_STALENESS_WARNING}`,
+  description: `Get the current ArtifactGraph (a snapshot of the current state), which maps geometry artifacts in the 3D scene to the code/AST. This allows you to understand how geometry relates to the user's code. ${ARTIFACT_GRAPH_STALENESS_WARNING}
+
+Artifact code references: Some artifacts are directly created by code (e.g., Planes, Paths, Segments, Sweeps) and have codeRef fields with source ranges. Other artifacts are derived/generated automatically by operations (e.g., Walls and Caps created by Sweep operations, SweepEdges, EdgeCutEdges, Solid2d) and may not have direct code references - they inherit their relationship to code through their parent operations. Derived artifacts may have empty codeRef ranges [0, 0, 0] or missing codeRef fields. To find the source range for a derived artifact, trace back through the graph edges to find the parent artifacts (e.g., for a Wall, trace back to the Segment and Sweep operation that created it).`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -48,7 +50,7 @@ export async function handleGetArtifactGraphTool(args?: {
           text: JSON.stringify(
             {
               artifactGraph: artifactGraphData,
-              description: `The ArtifactGraph is an array of [artifactId, artifact] pairs. Each artifact represents a piece of geometry in the 3D scene and contains references to the code that created it. IMPORTANT: ${ARTIFACT_GRAPH_SNAPSHOT_DESCRIPTION}`,
+              description: `The ArtifactGraph is an array of [artifactId, artifact] pairs. Each artifact represents a piece of geometry in the 3D scene. Some artifacts have direct codeRef fields with source ranges, while others (like Walls, Caps, SweepEdges) are derived from parent operations and may have empty or missing codeRef fields - trace back through graph edges to find their source. IMPORTANT: ${ARTIFACT_GRAPH_SNAPSHOT_DESCRIPTION}`,
             },
             null,
             2

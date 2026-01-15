@@ -2373,6 +2373,7 @@ dependencies = [
  "getrandom 0.2.16",
  "getrandom 0.3.4",
  "gloo-utils",
+ "indexmap 2.12.1",
  "js-sys",
  "kcl-lib",
  "kittycad",

@@ -131,7 +131,7 @@ export async function registerTools(server: Server): Promise<void> {
       case 'get_artifact_graph_mermaid': {
         const args =
           (request.params.arguments as
-            | { waitForExecution?: boolean }
+            | { waitForExecution?: boolean; includeDetailedInfo?: boolean }
             | undefined) || {}
         return handleGetArtifactGraphMermaidTool(args)
       }

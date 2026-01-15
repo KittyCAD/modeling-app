@@ -2,6 +2,8 @@ use std::fmt::Write;
 
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
 use kittycad_modeling_cmds::{
     self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
@@ -787,7 +789,57 @@ impl ArtifactGraph {
 
     /// Output the Mermaid flowchart for the artifact graph.
     /// This generates a Mermaid diagram string that visualizes the artifact graph structure.
-    pub fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
+    ///
+    /// # Arguments
+    /// * `include_detailed_info` - If true, includes additional information useful for LLMs:
+    ///   - Artifact IDs (UUIDs)
+    ///   - Full code reference ranges with module information
+    ///   - More detailed node path information
+    /// * `module_file_names_json` - Optional JSON string mapping from module ID (number) to ModulePath for displaying file names instead of module IDs
+    pub fn to_mermaid_flowchart(
+        &self,
+        include_detailed_info: bool,
+        module_file_names_json: Option<&str>,
+    ) -> Result<String, std::fmt::Error> {
+        // Deserialize module file names from JSON if provided
+        // Note: TypeScript sends {[number]: ModulePath} which JSON serializes as {"0": {...}, "1": {...}}
+        // serde_json should handle this automatically for IndexMap with numeric keys
+        // However, we need to handle the case where keys are strings in JSON
+        let module_file_names: Option<IndexMap<ModuleId, ModulePath>> = if let Some(json) = module_file_names_json {
+            // Try deserializing directly first
+            match serde_json::from_str::<IndexMap<ModuleId, ModulePath>>(json) {
+                Ok(map) => {
+                    if !map.is_empty() {
+                        Some(map)
+                    } else {
+                        None
+                    }
+                }
+                Err(_) => {
+                    // If direct deserialization fails, try deserializing as a map with string keys
+                    // and converting them to ModuleId
+                    match serde_json::from_str::<std::collections::HashMap<String, ModulePath>>(json) {
+                        Ok(string_map) => {
+                            let mut module_map = IndexMap::new();
+                            for (key_str, path) in string_map {
+                                if let Ok(key_num) = key_str.parse::<u32>() {
+                                    // ModuleId::from_usize expects usize, but we have u32
+                                    module_map.insert(ModuleId::from_usize(key_num as usize), path);
+                                }
+                            }
+                            if !module_map.is_empty() {
+                                Some(module_map)
+                            } else {
+                                None
+                            }
+                        }
+                        Err(_) => None,
+                    }
+                }
+            }
+        } else {
+            None
+        };
         let mut output = String::new();
         output.push_str("```mermaid\n");
         output.push_str("flowchart LR\n");
@@ -803,7 +855,7 @@ impl ArtifactGraph {
         // Output all nodes first since edge order can change how Mermaid
         // lays out nodes.  This is also where we output more details about
         // the nodes, like their labels.
-        self.flowchart_nodes(&mut output, &stable_id_map, "  ")?;
+        self.flowchart_nodes(&mut output, &stable_id_map, "  ", include_detailed_info, module_file_names.as_ref())?;
         self.flowchart_edges(&mut output, &stable_id_map, "  ")?;
 
         output.push_str("```\n");
@@ -817,6 +869,8 @@ impl ArtifactGraph {
         output: &mut W,
         stable_id_map: &FnvHashMap<ArtifactId, u32>,
         prefix: &str,
+        include_detailed_info: bool,
+        module_file_names: Option<&IndexMap<ModuleId, ModulePath>>,
     ) -> std::fmt::Result {
         // Artifact ID of the path is the key.  The value is a list of
         // artifact IDs in that group.
@@ -867,7 +921,7 @@ impl ArtifactGraph {
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
-                self.flowchart_node(output, artifact, id, &indented)?;
+                self.flowchart_node(output, artifact, artifact_id, id, &indented, include_detailed_info, module_file_names)?;
             }
             writeln!(output, "{prefix}end")?;
         }
@@ -875,141 +929,270 @@ impl ArtifactGraph {
         for artifact_id in ungrouped {
             let artifact = self.map.get(&artifact_id).unwrap();
             let id = *stable_id_map.get(&artifact_id).unwrap();
-            self.flowchart_node(output, artifact, id, prefix)?;
+            self.flowchart_node(output, artifact, artifact_id, id, prefix, include_detailed_info, module_file_names)?;
         }
 
         Ok(())
     }
 
-    fn flowchart_node<W: Write>(&self, output: &mut W, artifact: &Artifact, id: u32, prefix: &str) -> std::fmt::Result {
-        // For now, only showing the source range.
-        fn code_ref_display(code_ref: &CodeRef) -> [usize; 3] {
+    fn flowchart_node<W: Write>(
+        &self,
+        output: &mut W,
+        artifact: &Artifact,
+        artifact_id: ArtifactId,
+        id: u32,
+        prefix: &str,
+        include_detailed_info: bool,
+        module_file_names: Option<&IndexMap<ModuleId, ModulePath>>,
+    ) -> std::fmt::Result {
+        // Format code reference for display
+        fn code_ref_display(
+            code_ref: &CodeRef,
+            detailed: bool,
+            module_file_names: Option<&IndexMap<ModuleId, ModulePath>>,
+        ) -> String {
             let range = code_ref.range;
-            [range.start(), range.end(), range.module_id().as_usize()]
+            let module_id = range.module_id();
+            let module_id_usize = module_id.as_usize();
+
+            // Get file name if available - use it in both detailed and non-detailed modes
+            let file_name_str = if let Some(module_file_names) = module_file_names {
+                if let Some(module_path) = module_file_names.get(&module_id) {
+                    format_module_path(module_path)
+                } else {
+                    format!("mod:{}", module_id_usize)
+                }
+            } else {
+                format!("mod:{}", module_id_usize)
+            };
+
+            if detailed {
+                format!(
+                    "range:[{}-{}] {}",
+                    range.start(),
+                    range.end(),
+                    file_name_str
+                )
+            } else {
+                // In non-detailed mode, still show file name if available, otherwise show module ID
+                if module_file_names.is_some() && module_file_names.and_then(|m| m.get(&module_id)).is_some() {
+                    format!("[{}-{}] {}", range.start(), range.end(), file_name_str)
+                } else {
+                    format!("{:?}", [range.start(), range.end(), module_id_usize])
+                }
+            }
         }
+
+        // Format ModulePath for display
+        fn format_module_path(module_path: &ModulePath) -> String {
+            match module_path {
+                ModulePath::Main => "main".to_string(),
+                ModulePath::Local { value, .. } => {
+                    // Use the file name if available, otherwise use the full path
+                    value.file_name().unwrap_or_else(|| value.to_string())
+                }
+                ModulePath::Std { value } => format!("std::{}", value),
+            }
+        }
+
+        // Format artifact ID for display (only in detailed mode)
+        fn format_artifact_id(artifact_id: ArtifactId, detailed: bool) -> String {
+            if detailed {
+                format!("<br>id:{:?}", artifact_id)
+            } else {
+                String::new()
+            }
+        }
+
         fn node_path_display<W: Write>(
             output: &mut W,
             prefix: &str,
             label: Option<&str>,
             code_ref: &CodeRef,
+            detailed: bool,
         ) -> std::fmt::Result {
             // %% is a mermaid comment. Prefix is increased one level since it's
             // a child of the line above it.
             let label = label.unwrap_or("");
-            if code_ref.node_path.is_empty() {
-                return writeln!(output, "{prefix}  %% {label}Missing NodePath");
+            if detailed {
+                if !code_ref.node_path.is_empty() {
+                    writeln!(output, "{prefix}  %% {label}NodePath: {:?}", code_ref.node_path.steps)?;
+                }
+                // Don't show "Missing NodePath" - some artifacts legitimately don't have node paths
             }
-            writeln!(output, "{prefix}  %% {label}{:?}", code_ref.node_path.steps)
+            // In non-detailed mode, don't show node path information
+            Ok(())
         }
 
         match artifact {
             Artifact::CompositeSolid(composite_solid) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&composite_solid.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}\"]",
-                    composite_solid.sub_type,
-                    code_ref_display(&composite_solid.code_ref)
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{}{}\"]",
+                    composite_solid.sub_type, code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &composite_solid.code_ref)?;
+                node_path_display(output, prefix, None, &composite_solid.code_ref, include_detailed_info)?;
             }
             Artifact::Plane(plane) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&plane.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Plane<br>{:?}\"]",
-                    code_ref_display(&plane.code_ref)
+                    "{prefix}{id}[\"Plane<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &plane.code_ref)?;
+                node_path_display(output, prefix, None, &plane.code_ref, include_detailed_info)?;
             }
             Artifact::Path(path) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&path.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}\"]",
-                    code_ref_display(&path.code_ref)
+                    "{prefix}{id}[\"Path<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &path.code_ref)?;
+                node_path_display(output, prefix, None, &path.code_ref, include_detailed_info)?;
             }
             Artifact::Segment(segment) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&segment.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Segment<br>{:?}\"]",
-                    code_ref_display(&segment.code_ref)
+                    "{prefix}{id}[\"Segment<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &segment.code_ref)?;
+                node_path_display(output, prefix, None, &segment.code_ref, include_detailed_info)?;
             }
             Artifact::Solid2d(_solid2d) => {
-                writeln!(output, "{prefix}{id}[Solid2d]")?;
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                if include_detailed_info {
+                    writeln!(output, "{prefix}{id}[\"Solid2d{}\"]", id_str)?;
+                    // Note: Solid2d doesn't have a direct code ref - it's derived from paths
+                    // Trace back through the graph edges to find the source path
+                    writeln!(output, "{prefix}  %% Derived from parent artifacts (path)")?;
+                } else {
+                    writeln!(output, "{prefix}{id}[Solid2d]")?;
+                }
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"StartSketchOnFace<br>{:?}\"]",
-                    code_ref_display(code_ref)
+                    "{prefix}{id}[\"StartSketchOnFace<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, code_ref)?;
+                node_path_display(output, prefix, None, code_ref, include_detailed_info)?;
             }
             Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"StartSketchOnPlane<br>{:?}\"]",
-                    code_ref_display(code_ref)
+                    "{prefix}{id}[\"StartSketchOnPlane<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, code_ref)?;
+                node_path_display(output, prefix, None, code_ref, include_detailed_info)?;
             }
             Artifact::SketchBlock(SketchBlock { code_ref, .. }) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"SketchBlock<br>{:?}\"]",
-                    code_ref_display(code_ref)
+                    "{prefix}{id}[\"SketchBlock<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, code_ref)?;
+                node_path_display(output, prefix, None, code_ref, include_detailed_info)?;
             }
             Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"PlaneOfFace<br>{:?}\"]",
-                    code_ref_display(code_ref)
+                    "{prefix}{id}[\"PlaneOfFace<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, code_ref)?;
+                node_path_display(output, prefix, None, code_ref, include_detailed_info)?;
             }
             Artifact::Sweep(sweep) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&sweep.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Sweep {:?}<br>{:?}\"]",
-                    sweep.sub_type,
-                    code_ref_display(&sweep.code_ref)
+                    "{prefix}{id}[\"Sweep {:?}<br>{}{}\"]",
+                    sweep.sub_type, code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &sweep.code_ref)?;
+                node_path_display(output, prefix, None, &sweep.code_ref, include_detailed_info)?;
             }
             Artifact::Wall(wall) => {
-                writeln!(output, "{prefix}{id}[Wall]")?;
-                node_path_display(output, prefix, Some("face_code_ref="), &wall.face_code_ref)?;
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                if include_detailed_info {
+                    let face_code_ref_str = code_ref_display(&wall.face_code_ref, true, module_file_names);
+                    writeln!(output, "{prefix}{id}[\"Wall<br>face:{}{}\"]", face_code_ref_str, id_str)?;
+                    // Note: Walls don't have direct code refs - they're derived from segments and extrude operations
+                    // Trace back through the graph edges to find the source segment and extrude operation
+                    writeln!(output, "{prefix}  %% Derived from parent artifacts (segment + extrude)")?;
+                } else {
+                    writeln!(output, "{prefix}{id}[Wall]")?;
+                }
+                // Don't show face_code_ref node path - it's not the wall's direct source
             }
             Artifact::Cap(cap) => {
-                writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
-                node_path_display(output, prefix, Some("face_code_ref="), &cap.face_code_ref)?;
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                if include_detailed_info {
+                    let face_code_ref_str = code_ref_display(&cap.face_code_ref, true, module_file_names);
+                    writeln!(output, "{prefix}{id}[\"Cap {:?}<br>face:{}{}\"]", cap.sub_type, face_code_ref_str, id_str)?;
+                    // Note: Caps don't have direct code refs - they're derived from extrude operations
+                    // Trace back through the graph edges to find the source extrude operation
+                    writeln!(output, "{prefix}  %% Derived from parent artifacts (extrude operation)")?;
+                } else {
+                    writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
+                }
+                // Don't show face_code_ref node path - it's not the cap's direct source
             }
             Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                if include_detailed_info {
+                    writeln!(output, "{prefix}{id}[\"SweepEdge {:?}{}\"]", sweep_edge.sub_type, id_str)?;
+                    // Note: SweepEdges don't have direct code refs - they're derived from sweep operations
+                    // Trace back through the graph edges to find the source sweep operation
+                    writeln!(output, "{prefix}  %% Derived from parent artifacts (sweep operation)")?;
+                } else {
+                    writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
+                }
             }
             Artifact::EdgeCut(edge_cut) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&edge_cut.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"EdgeCut {:?}<br>{:?}\"]",
-                    edge_cut.sub_type,
-                    code_ref_display(&edge_cut.code_ref)
+                    "{prefix}{id}[\"EdgeCut {:?}<br>{}{}\"]",
+                    edge_cut.sub_type, code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &edge_cut.code_ref)?;
+                node_path_display(output, prefix, None, &edge_cut.code_ref, include_detailed_info)?;
             }
             Artifact::EdgeCutEdge(_edge_cut_edge) => {
-                writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                if include_detailed_info {
+                    writeln!(output, "{prefix}{id}[\"EdgeCutEdge{}\"]", id_str)?;
+                    // Note: EdgeCutEdges don't have direct code refs - they're derived from edge cut operations
+                    // Trace back through the graph edges to find the source edge cut operation
+                    writeln!(output, "{prefix}  %% Derived from parent artifacts (edge cut operation)")?;
+                } else {
+                    writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
+                }
             }
             Artifact::Helix(helix) => {
+                let id_str = format_artifact_id(artifact_id, include_detailed_info);
+                let code_ref_str = code_ref_display(&helix.code_ref, include_detailed_info, module_file_names);
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Helix<br>{:?}\"]",
-                    code_ref_display(&helix.code_ref)
+                    "{prefix}{id}[\"Helix<br>{}{}\"]",
+                    code_ref_str, id_str
                 )?;
-                node_path_display(output, prefix, None, &helix.code_ref)?;
+                node_path_display(output, prefix, None, &helix.code_ref, include_detailed_info)?;
             }
         }
         Ok(())
