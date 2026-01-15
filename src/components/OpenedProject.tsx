@@ -57,6 +57,8 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
+import { SystemIOMachineStates
+} from '@src/machines/systemIO/utils'
 import {
   defaultLayout,
   DefaultLayoutPaneID,
@@ -74,6 +76,10 @@ import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
+import {
+  useFolders,
+  useLastOperation,
+} from '@src/machines/systemIO/hooks'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -91,6 +97,8 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const lastOperation = useLastOperation()
+  const projects = useFolders()
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -104,9 +112,17 @@ export function OpenedProject() {
   const projectName = loaderData.project?.name || null
   const projectPath = loaderData.project?.path || null
 
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+
+  // Handle our project folder disappearing (Go back to Projects listing)
+  useEffect(() => {
+    if (projects.every(p => p.name !== projectName) && [SystemIOMachineStates.creatingProject, SystemIOMachineStates.renamingProject].includes(lastOperation) === false) {
+      navigate(PATHS.HOME)
+    }
+  }, [projects, lastOperation])
+
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
   useEffect(() => {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
@@ -193,7 +209,6 @@ export function OpenedProject() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() && // Only show if we're in the browser,
       authToken && // we're logged in,
       searchParams.size === 0 && // we haven't come via a website "try in browser" link,
       needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
@@ -217,9 +232,9 @@ export function OpenedProject() {
       )
     }
   }, [
-    settings.app.onboardingStatus,
-    settings.app.theme,
-    location,
+    settings.app.onboardingStatus.current,
+    settings.app.theme.current,
+    location.href,
     navigate,
     searchParams.size,
     authToken,

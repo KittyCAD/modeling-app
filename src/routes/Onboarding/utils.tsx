@@ -37,6 +37,7 @@ import {
 } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import {
@@ -279,36 +280,24 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
     : deps.onboardingStatus
-  if (isDesktop()) {
-    /**
-     * Bulk create the assembly and navigate to the project
-     */
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-      data: {
-        files: fanParts.map((part) => ({
-          requestedProjectName: ONBOARDING_PROJECT_NAME,
-          ...part,
-        })),
-        // Make a unique tutorial project each time
-        override: true,
+  /**
+   * Bulk create the assembly and navigate to the project
+   */
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: fanParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
-      },
-    })
+        ...part,
+      })),
+      // Make a unique tutorial project each time
+      override: true,
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
+    },
+  })
 
-    return Promise.resolve()
-  }
-
-  const isCodeResettable = hasResetReadyCode(
-    deps.kclManager,
-    await deps.kclManager.wasmInstancePromise
-  )
-  if (isCodeResettable) {
-    return resetCodeAndAdvanceOnboarding(deps)
-  }
-
-  return Promise.reject(new Error(ERROR_MUST_WARN))
+  return Promise.resolve()
 }
 
 /**
@@ -356,7 +345,9 @@ export function onDismissOnboardingInvite() {
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
   })
-  toast.dismiss(ONBOARDING_TOAST_ID)
+  void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
+    toast.dismiss(ONBOARDING_TOAST_ID)
+  })
   toast.success(
     'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
@@ -395,9 +386,11 @@ export function TutorialRequestToast(
   const quickTipSrc = (index: number) =>
     `/quick-tip${props.theme === Themes.Light ? '-light' : ''}-${index}.jpg`
 
+  console.log('xxxxxxxxxxxxxx')
   return (
     <div
       data-testid="onboarding-toast"
+      id={ONBOARDING_TOAST_ID}
       className="flex flex-col justify-between gap-6 text-default"
     >
       <section className="flex items-center gap-4">
@@ -446,6 +439,7 @@ export function TutorialRequestToast(
             iconClassName: 'bg-destroy-80 text-6',
           }}
           data-negative-button="dismiss"
+          data-testid="onboarding-not-right-now"
           name="dismiss"
           onClick={onDismissOnboardingInvite}
         >

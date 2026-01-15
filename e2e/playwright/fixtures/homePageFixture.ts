@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 
 interface ProjectCardState {
   title: string
@@ -112,6 +113,7 @@ export class HomePageFixture {
     await this.projectButtonNew.click()
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
+    await closeOnboardingModalIfPresent(this.page)
   }
 
   openProject = async (projectTitle: string) => {
@@ -127,6 +129,8 @@ export class HomePageFixture {
     if (process.env.TARGET === 'web') return ''
 
     await this.createAndGoToProject(name)
+    await closeOnboardingModalIfPresent(this.page)
+
     return name
   }
 

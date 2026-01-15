@@ -22,6 +22,7 @@ import {
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
+  useLastOperation,
   useProjectDirectoryPath,
   useProjectIdToConversationId,
   useRequestedFileName,
@@ -32,6 +33,7 @@ import {
   NO_PROJECT_DIRECTORY,
   type RequestedKCLFile,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -39,10 +41,13 @@ import { useLocation } from 'react-router-dom'
 import path from 'path'
 
 export function SystemIOMachineLogicListenerDesktop() {
+  // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
+  const lastOperation = useLastOperation()
+
   const navigate = useNavigate()
   const settings = useSettings()
   const token = useToken()
@@ -118,6 +123,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
+
+      // Don't navigate if we are on the projects listing, unless we are creating.
+      if (pathname === PATHS.HOME && lastOperation !== SystemIOMachineStates.creatingProject) return
+
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
         requestedProjectName.name
@@ -133,7 +142,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [requestedProjectName])
+    }, [requestedProjectName, lastOperation])
   }
 
   /**

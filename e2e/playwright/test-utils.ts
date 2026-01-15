@@ -545,8 +545,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
-          const text = await editor.textContent()
-          return toNormalizedCode(text ?? '')
+          try {
+            const text = await editor.textContent()
+            return toNormalizedCode(text ?? '')
+          } catch(e) {
+            console.log(e)
+            return ''
+          }
         })
         .toContain(toNormalizedCode(code))
     },
@@ -1444,3 +1449,14 @@ export async function pinchFromCenter(
 
   await locator.dispatchEvent('touchend')
 }
+
+
+export const closeOnboardingModalIfPresent = async (page) => {
+  const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
+  await expect(page.getByTestId('stream')).toBeVisible()
+  if (await onboardingNotRightNow.isVisible()) {
+    await onboardingNotRightNow.click()
+    await expect(onboardingNotRightNow).toBeHidden()
+  }
+}
+

@@ -3,6 +3,17 @@ import type { IZooDesignStudioFS, IStat } from '@src/lib/fs-zds/interface'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import path from 'path'
 
+// Holds onto directory metadata that is not stored by the File System API.
+const META_FILE = '._meta'
+
+interface MetaFileDirectoryData {
+  mtimeMs: number,
+}
+
+const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
+  return typeof x === 'object' && x !== null && 'mtimeMs' in x && typeof x.mtimeMs === 'number'
+}
+
 const noopAsync = async (..._args: any[]) =>
   Promise.reject(new Error('unimplemented'))
 
@@ -31,7 +42,8 @@ const walk = async (
     currentChanged = false
     for await (let [name, handle] of entries) {
       looped = true
-      const currentPath = cwd + path.sep + name
+      const currentPath = path.resolve(cwd, name)
+
       if (targetPath.startsWith(currentPath) === false) {
         continue
       }
@@ -72,28 +84,31 @@ const scan = async (
 ): Promise<(FileSystemDirectoryHandle | FileSystemFileHandle)[]> => {
   console.log('scan', targetPath)
   const startingPoint = await walk(targetPath)
+  console.log(startingPoint)
   if (startingPoint === undefined) return Promise.reject('ENOENT')
 
   let visited = []
-  let handles = await startingPoint.entries()
-  let cwd = '/'
+  const asyncIters = [[targetPath, await startingPoint.entries()]]
 
   console.log('looping entries')
-  while (handles.length > 0) {
-    const current = handles.pop()
-    await onVisit?.(cwd, current)
-    visited.push(current)
-    if (current instanceof FileSystemDirectoryHandle) {
-      cwd = path.resolve(cwd, current.name)
-      handles.push(await current.entries())
+
+  while (asyncIters.length > 0) {
+    const [cwd, handles] = asyncIters.pop()
+    for await(const current of handles) {
+      await onVisit?.(cwd, current)
+      visited.push([cwd, ...current])
+      if (current[1] instanceof FileSystemDirectoryHandle) {
+        asyncIters.push([path.resolve(cwd, current[0]), await current[1].entries()])
+      }
     }
   }
 
+  debugger
   return visited
 }
 
-const stat = async (path: string): Promise<IStat> => {
-  const handle = await walk(path)
+const stat = async (targetPath: string): Promise<IStat> => {
+  const handle = await walk(targetPath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
   if (handle instanceof FileSystemFileHandle) {
@@ -123,6 +138,35 @@ const stat = async (path: string): Promise<IStat> => {
   }
 
   // Otherwise it's a directory, which oddly doesn't have any info.
+  // Update: lee's read the whole fs spec, and it truly lacks info.
+  // Because of this, we have to store a ._meta file that holds onto it, and
+  // update it as necessary. For now it will only store: creation and
+  // modification time.
+  const metaFilePath = path.resolve(targetPath, META_FILE)
+  let json
+  try {
+    json = await readFile(metaFilePath, { encoding: 'utf-8' })
+  } catch(e: unknown) {
+    if (typeof e !== "string") {
+      throw e
+    }
+
+    // The metafile didn't exist in the first place. Let's create it.
+    if (e === 'ENOENT') {
+      await writeFile(path.resolve(metaFilePath), (new TextEncoder()).encode(
+        JSON.stringify({
+          mtimeMs: new Date().getTime(),
+        })
+      ))
+    }
+
+    // This will work now.
+    json = await readFile(metaFilePath, { encoding: 'utf-8' })
+  }
+
+  const obj = JSON.parse(json)
+  if (!isMetaFileDirectoryData(obj)) throw new Error(`Corrupt ${META_FILE} file`)
+
   return {
     dev: 0,
     ino: 0,
@@ -135,11 +179,11 @@ const stat = async (path: string): Promise<IStat> => {
     blksize: 0,
     blocks: 0,
     atimeMs: 0,
-    mtimeMs: 0,
+    mtimeMs: obj.mtimeMs,
     ctimeMs: 0,
     birthtimeMs: 0,
     atime: new Date(),
-    mtime: new Date(),
+    mtime: new Date(obj.mtimeMs),
     ctime: new Date(),
     birthtime: new Date(),
   }
@@ -183,12 +227,15 @@ const readFile = async <T extends ReadFileOptions>(
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   const parts = targetPath.split(path.sep)
 
+  console.log(targetPath, parts)
   if (options?.recursive === true) {
     let current = navigator.storage.getDirectory()
     for (const part of parts) {
       // Indicative we're at /
+      console.log(part)
       if (part === '') continue
       // await
+      console.log('creating', part)
       current = (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
@@ -204,12 +251,12 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
 }
 
 const rm = async (targetPath: string, options?: { recursive: boolean }) => {
+  console.log('rm', targetPath)
   const dirName = path.dirname(targetPath)
   const baseName = path.basename(targetPath)
   const handle = await walk(dirName)
+  console.log(handle)
   if (handle === undefined) return Promise.reject('ENOENT')
-  if (!(handle instanceof FileSystemDirectoryHandle))
-    return Promise.reject('EISNOTDIR')
   let isFile = false
   try {
     await handle.getFileHandle(baseName)
@@ -217,6 +264,7 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
   } catch (e: unknown) {
     console.log(e)
   }
+  console.log(baseName)
   return handle.removeEntry(baseName, {
     recursive: (options?.recursive ?? false) && !isFile,
   })
@@ -227,9 +275,9 @@ const writeFile = async (
   data: Uint8Array<ArrayBuffer>,
   options?: any
 ) => {
-  console.log('Writefile')
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
+  console.log(parent)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
@@ -239,6 +287,20 @@ const writeFile = async (
   const writer = await (await handleFile).createWritable()
   await writer.write(data)
   await writer.close()
+
+  // Update parent directory's metadata, since OPFS doesn't support tracking it.
+  // Yep, each writeFile is recursively called, so each writeFile is actually
+  // 2 now due to this deficiency.
+  // UNLESS ITS THE META_FILE ITSELF, THEN WE SKIP.
+
+  if (targetPath.includes(META_FILE)) return undefined
+
+  await writeFile(path.resolve(targetPath, '..', META_FILE), (new TextEncoder()).encode(
+    JSON.stringify({
+      mtimeMs: new Date().getTime(),
+    })
+  ))
+
   return undefined
 }
 
@@ -256,6 +318,8 @@ const rename = async (
   sourcePath: string,
   targetPath: string
 ): Promise<undefined> => {
+  console.log('rename', sourcePath, targetPath)
+
   const handle = await walk(sourcePath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
@@ -268,7 +332,6 @@ const rename = async (
     await mkdir(targetPath)
     await cp(sourcePath, targetPath, { recursive: true })
     await rm(sourcePath, { recursive: true })
-    console.log('rename dir')
   }
   console.log('done')
   return undefined
@@ -287,22 +350,22 @@ const cp = async (
   let handleTarget = await walk(targetPath)
   if (handleTarget === undefined) return Promise.reject('ENOENT')
 
-  console.log('about to copy')
   if (handleSource instanceof FileSystemFileHandle) {
     console.log('copying file')
     const data = await readFile(sourcePath)
     await writeFile(targetPath, data)
   } else {
-    console.log('copying dir recurse')
+    console.log('copying dir recurse', sourcePath)
     await scan(sourcePath, async (cwd, handle) => {
-      console.log('hi')
-      const relativePath = path.relative(sourcePath, cwd)
-      if (handle instanceof FileSystemDirectoryHandle) {
-        await mkdir(relativePath)
+      const relativePathToSourcePath = path.basename(cwd, sourcePath)
+      const absolutePath = path.resolve(targetPath, relativePathToSourcePath, handle[0])
+      if (handle[1] instanceof FileSystemDirectoryHandle) {
+        await mkdir(absolutePath)
       } else {
-        const sourceFile = await handle.getFile()
+        console.log(absolutePath, handle)
+        const sourceFile = await handle[1].getFile()
         const data = await sourceFile.arrayBuffer()
-        await writeFile(path.resolve(relativePath, handle.name), data)
+        await writeFile(absolutePath, data)
       }
     })
   }

@@ -258,7 +258,7 @@ function ProjectMenuPopover({
           className="flex items-baseline py-0.5 text-sm gap-1"
           title={breadCrumbTooltip}
         >
-          {isDesktop() && project?.name && (
+          {project?.name && (
             <>
               <span
                 className="hidden whitespace-nowrap md:block max-w-80 truncate"

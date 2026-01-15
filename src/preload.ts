@@ -1,3 +1,4 @@
+import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import packageJson from '@root/package.json'

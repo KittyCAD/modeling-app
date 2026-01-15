@@ -85,6 +85,7 @@ export enum SystemIOMachineEvents {
   navigateToFile = 'navigate to file',
   createProject = 'create project',
   renameProject = 'rename project',
+  done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
   done_deleteProject = donePrefix + 'delete project',
   createKCLFile = 'create kcl file',
@@ -179,8 +180,10 @@ export type SystemIOContext = SystemIOInput & {
   lastProjectDeleteRequest: {
     project: string
   }
+
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  lastOperation: SystemIOMachineStates,
 
   // A mapping between project id and conversation ids.
   mlEphantConversations?: Map<string, string>
