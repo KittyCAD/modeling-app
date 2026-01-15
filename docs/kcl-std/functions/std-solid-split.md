@@ -1,14 +1,18 @@
 ---
-title: "imprint"
+title: "split"
 subtitle: "Function in std::solid"
-excerpt: "Imprint multiple bodies into one. From the outside, the result looks visually similar to a union, but where the two solids overlap, their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all the faces of shape A, you'd still be left with all the faces of shape B."
+excerpt: "Split a body into two parts: the part that overlaps with a tool, and the part that doesn't."
 layout: manual
 ---
 
-Imprint multiple bodies into one. From the outside, the result looks visually similar to a union, but where the two solids overlap, their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all the faces of shape A, you'd still be left with all the faces of shape B.
+Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
 
 ```kcl
-imprint(@bodies: [Solid; 2+]): [Solid; 1+]
+split(
+  @targets: [Solid; 1+],
+  merge: bool,
+  tools?: [Solid],
+): [Solid; 1+]
 ```
 
 
@@ -17,7 +21,9 @@ imprint(@bodies: [Solid; 2+]): [Solid; 1+]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `bodies` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The bodies to imprint together. | Yes |
+| `targets` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The bodies to split | Yes |
+| `merge` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether to merge the bodies into one after. Currently, we only support merge = true. | Yes |
+| `tools` | [[`Solid`](/docs/kcl-std/types/std-types-Solid)] | The tools to split the bodies along. | No |
 
 ### Returns
 
@@ -57,15 +63,15 @@ fn square(@plane, offset, y) {
 cube = [
   square(XY, offset = 0, y = false),
   square(XZ, offset = 0, y = true)
-  |> invert(),
+  |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),
   square(YZ, offset = sideLen, y = false)
 ]
 
-// Via imprint, create a solid cube from the 6 square surfaces (faces of the cube).
-cubeSolid = imprint(cube)
+// Via split + merge, create a solid cube from the 6 square surfaces (faces of the cube).
+cubeSolid = split(cube, merge = true)
 
 // To prove it's solid, we can set the whole cube's appearance.
 appearance(
@@ -80,11 +86,11 @@ appearance(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the imprint function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-imprint0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the split function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-imprint0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
