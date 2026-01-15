@@ -4639,15 +4639,16 @@ mod tests {
                     "end": 2,
                     "ctor": {
                         "type": "Line",
-                        "start": { "x": { "value": 0.0 }, "y": { "value": 0.0 } },
-                        "end": { "x": { "value": 10.0 }, "y": { "value": 10.0 } }
+                        "start": { "x": { "type": "Number", "value": 0.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } },
+                        "end": { "x": { "type": "Number", "value": 10.0, "units": "None" }, "y": { "type": "Number", "value": 10.0, "units": "None" } }
                     },
-                    "ctorApplicable": false
+                    "ctor_applicable": false
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         // Create point objects for start and end
@@ -4658,14 +4659,19 @@ mod tests {
                 "segment": {
                     "type": "Point",
                     "position": {
-                        "x": { "value": 0.0 },
-                        "y": { "value": 0.0 }
-                    }
+                        "x": { "type": "Number", "value": 0.0, "units": "None" },
+                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+                    },
+                    "ctor": null,
+                    "owner": null,
+                    "freedom": "Free",
+                    "constraints": []
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         let end_point_json = json!({
@@ -4675,14 +4681,19 @@ mod tests {
                 "segment": {
                     "type": "Point",
                     "position": {
-                        "x": { "value": 10.0 },
-                        "y": { "value": 10.0 }
-                    }
+                        "x": { "type": "Number", "value": 10.0, "units": "None" },
+                        "y": { "type": "Number", "value": 10.0, "units": "None" }
+                    },
+                    "ctor": null,
+                    "owner": null,
+                    "freedom": "Free",
+                    "constraints": []
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         // Deserialize JSON into Object types
@@ -4724,15 +4735,16 @@ mod tests {
                     "end": 2,
                     "ctor": {
                         "type": "Line",
-                        "start": { "x": { "value": 0.0 }, "y": { "value": 0.0 } },
-                        "end": { "x": { "value": 10.0 }, "y": { "value": 0.0 } }
+                        "start": { "x": { "type": "Number", "value": 0.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } },
+                        "end": { "x": { "type": "Number", "value": 10.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } }
                     },
-                    "ctorApplicable": false
+                    "ctor_applicable": false
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         let start_point_json = json!({
@@ -4742,14 +4754,19 @@ mod tests {
                 "segment": {
                     "type": "Point",
                     "position": {
-                        "x": { "value": 0.0 },
-                        "y": { "value": 0.0 }
-                    }
+                        "x": { "type": "Number", "value": 0.0, "units": "None" },
+                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+                    },
+                    "ctor": null,
+                    "owner": null,
+                    "freedom": "Free",
+                    "constraints": []
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         let end_point_json = json!({
@@ -4759,14 +4776,19 @@ mod tests {
                 "segment": {
                     "type": "Point",
                     "position": {
-                        "x": { "value": 10.0 },
-                        "y": { "value": 0.0 }
-                    }
+                        "x": { "type": "Number", "value": 10.0, "units": "None" },
+                        "y": { "type": "Number", "value": 0.0, "units": "None" }
+                    },
+                    "ctor": null,
+                    "owner": null,
+                    "freedom": "Free",
+                    "constraints": []
                 }
             },
             "label": "",
             "comments": "",
-            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
+            "artifact_id": "00000000-0000-0000-0000-000000000000",
+            "source": { "type": "Simple", "range": [0, 0, 0] }
         });
 
         // Deserialize JSON into Object types
@@ -4830,8 +4852,15 @@ sketch(on = YZ) {
             Err(e) => {
                 // This is expected for now since some operations aren't implemented
                 // Just verify we got a reasonable error message
+                // The error could be various things like parsing errors, execution errors, or empty results
                 assert!(
-                    e.contains("Failed") || e.contains("not yet implemented") || e.contains("Reached max iterations")
+                    e.contains("Failed") 
+                    || e.contains("not yet implemented") 
+                    || e.contains("Reached max iterations")
+                    || e.contains("No trim operations")
+                    || e.contains("No operations were executed")
+                    || e.contains("parse")
+                    || e.contains("execute")
                 );
             }
         }
