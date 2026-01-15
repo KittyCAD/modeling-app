@@ -3783,7 +3783,6 @@ mod tests {
 e
 // hewwo"#;
         let ast = crate::parsing::top_level_parse(code).unwrap();
-        eprintln!("{ast:#?}");
         // First line is chars 0 to 5 (inclusive).
         // Second line (an empty line) is 'e' and then a newline.
         assert_eq!(code.chars().nth(6), Some('e'));
