@@ -3617,8 +3617,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 4.145mm, var 5.32mm])
-  line2 = sketch2::line(start = [var 4.145mm, var 5.32mm], end = [var 9mm, var 10mm])
+  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
+  line2 = sketch2::line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
 line1.start.at[0] == 0
 line1.start.at[1] == 0
   sketch2::coincident([line1.end, line2.start])
@@ -4645,10 +4645,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.317mm, var -1.777mm])
-  line2 = sketch2::line(start = [var 2.317mm, var -1.777mm], end = [var -1.613mm, var -1.029mm])
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = sketch2::line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -1.613mm, var -1.029mm], end = [var 1mm, var 2mm])
+  line3 = sketch2::line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   sketch2::coincident([line2.end, line3.start])
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
