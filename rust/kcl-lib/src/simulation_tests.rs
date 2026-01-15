@@ -10,6 +10,7 @@ use crate::{
     errors::KclError,
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
+    test_server::ExportAction,
     walk::{Node, walk},
 };
 #[cfg(feature = "artifact-graph")]
@@ -247,16 +248,16 @@ async fn unparse_test(test: &Test) {
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png, false).await
+    execute_test(&Test::new(test_name), render_to_png, Vec::new()).await
 }
 
-async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+async fn execute_test(test: &Test, render_to_png: bool, export: Vec<ExportAction>) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
+    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), &export).await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
@@ -271,7 +272,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
 
             // Ensure the step has data.
-            if export_step {
+            if export.contains(&ExportAction::Step) {
                 let Some(step_contents) = step else {
                     panic!("Step data was not generated");
                 };

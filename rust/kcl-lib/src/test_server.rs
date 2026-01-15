@@ -60,13 +60,20 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
     ctx.close().await;
     Ok(Snapshot3d { image, gltf })
 }
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum ExportAction {
+    Step,
+    Gltf,
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
-    with_export_step: bool,
+    export: &[ExportAction],
 ) -> Result<
     (
         ExecState,
@@ -88,7 +95,7 @@ pub async fn execute_and_snapshot_ast(
         }
     };
     let mut step = None;
-    if with_export_step {
+    if export.contains(&ExportAction::Step) {
         let files = match ctx.export_step(true).await {
             Ok(f) => f,
             Err(err) => {
