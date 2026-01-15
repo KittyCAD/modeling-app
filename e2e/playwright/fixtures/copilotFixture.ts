@@ -1,4 +1,4 @@
-import { MlCopilotMode } from '@kittycad/lib/dist/types/src'
+import type { MlCopilotMode } from '@kittycad/lib/dist/types/src'
 import type { Locator, Page } from '@playwright/test'
 
 export class CopilotFixture {
