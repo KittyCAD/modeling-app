@@ -689,8 +689,8 @@ fn is_point_coincident_with_segment_native(point_id: ObjectId, segment_id: Objec
         };
 
         // Check if both pointId and segmentId are in the segments array
-        let has_point = coincident.segments.iter().any(|id| *id == point_id);
-        let has_segment = coincident.segments.iter().any(|id| *id == segment_id);
+        let has_point = coincident.segments.contains(&point_id);
+        let has_segment = coincident.segments.contains(&segment_id);
 
         if has_point && has_segment {
             return true;
@@ -2282,7 +2282,7 @@ pub fn trim_strategy(
                         .segments
                         .iter()
                         .any(|id| *id == trim_seg_id || *id == point_id);
-                    let involves_point = coincident.segments.iter().any(|id| *id == point_id);
+                    let involves_point = coincident.segments.contains(&point_id);
 
                     if involves_trim_seg && involves_point {
                         return Some(CoincidentData {
@@ -2356,7 +2356,7 @@ pub fn trim_strategy(
                     continue;
                 };
 
-                let constraint_segment_ids: Vec<ObjectId> = coincident.segments.iter().copied().collect();
+                let constraint_segment_ids: Vec<ObjectId> = coincident.segments.to_vec();
 
                 // Check if constraint involves the trim segment itself OR any trim endpoint
                 let involves_trim_seg = constraint_segment_ids.contains(&trim_seg_id)
@@ -2400,7 +2400,7 @@ pub fn trim_strategy(
             };
 
             // Check if this constraint involves the endpoint
-            if !coincident.segments.iter().any(|id| *id == endpoint_point_id) {
+            if !coincident.segments.contains(&endpoint_point_id) {
                 continue;
             }
 
@@ -2442,7 +2442,7 @@ pub fn trim_strategy(
             };
 
             // Check if this constraint involves the endpoint
-            if !coincident.segments.iter().any(|id| *id == endpoint_point_id) {
+            if !coincident.segments.contains(&endpoint_point_id) {
                 continue;
             }
 
@@ -2885,7 +2885,7 @@ pub fn trim_strategy(
                 // Note: We want to find constraints like [pointId, segmentId] where pointId is a point
                 // that happens to be at the endpoint geometrically, but the constraint doesn't reference
                 // the endpoint ID directly
-                if !coincident.segments.iter().any(|id| *id == trim_spawn_id) {
+                if !coincident.segments.contains(&trim_spawn_id) {
                     continue;
                 }
                 // Skip constraints that involve endpoint IDs directly (those are handled by endpoint constraint migration)
@@ -2961,7 +2961,7 @@ pub fn trim_strategy(
                                             constraint: Constraint::Coincident(coincident),
                                         } = &constraint_obj.kind
                                         {
-                                            coincident.segments.iter().any(|id| *id == other_id)
+                                            coincident.segments.contains(&other_id)
                                         } else {
                                             false
                                         }
@@ -3030,7 +3030,7 @@ pub fn trim_strategy(
                     };
 
                     // Check if constraint involves the segment being split
-                    if !coincident.segments.iter().any(|id| *id == trim_spawn_id) {
+                    if !coincident.segments.contains(&trim_spawn_id) {
                         continue;
                     }
 
@@ -3119,7 +3119,7 @@ pub fn trim_strategy(
                                                     constraint: Constraint::Coincident(coincident),
                                                 } = &constraint_obj.kind
                                                 {
-                                                    coincident.segments.iter().any(|id| *id == other_id)
+                                                    coincident.segments.contains(&other_id)
                                                 } else {
                                                     false
                                                 }
@@ -3201,7 +3201,7 @@ pub fn trim_strategy(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.points.iter().any(|pt| *pt == center_id)
+                    && distance.points.contains(&center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -3230,7 +3230,7 @@ pub fn trim_strategy(
             };
 
             // Only consider constraints that involve the segment ID
-            if !coincident.segments.iter().any(|id| *id == trim_spawn_id) {
+            if !coincident.segments.contains(&trim_spawn_id) {
                 continue;
             }
 
@@ -3319,7 +3319,7 @@ pub fn trim_strategy(
                                             constraint: Constraint::Coincident(coincident),
                                         } = &constraint_obj.kind
                                         {
-                                            coincident.segments.iter().any(|id| *id == other_id)
+                                            coincident.segments.contains(&other_id)
                                         } else {
                                             false
                                         }
@@ -3388,7 +3388,7 @@ pub fn trim_strategy(
 /// - Adding coincident constraints (AddCoincidentConstraint)
 /// - Splitting segments (SplitSegment)
 /// - Migrating constraints (MigrateConstraint)
-async fn execute_trim_operations_simple(
+pub async fn execute_trim_operations_simple(
     strategy: Vec<TrimOperation>,
     current_scene_graph_delta: &crate::frontend::api::SceneGraphDelta,
     frontend: &mut crate::frontend::FrontendState,
@@ -3444,7 +3444,7 @@ async fn execute_trim_operations_simple(
                             if op_index + 2 < strategy.len()
                                 && let TrimOperation::DeleteConstraints { constraint_ids } = &strategy[op_index + 2]
                             {
-                                delete_constraint_ids = constraint_ids.iter().copied().collect();
+                                delete_constraint_ids = constraint_ids.to_vec();
                                 consumed_ops = 3;
                             }
 
@@ -3607,7 +3607,7 @@ async fn execute_trim_operations_simple(
             }
             TrimOperation::DeleteConstraints { constraint_ids } => {
                 // Delete constraints
-                let constraint_object_ids: Vec<ObjectId> = constraint_ids.iter().copied().collect();
+                let constraint_object_ids: Vec<ObjectId> = constraint_ids.to_vec();
 
                 frontend
                     .delete_objects(
@@ -3665,14 +3665,14 @@ async fn execute_trim_operations_simple(
 
                         // Find coincident constraints that reference the original center point
                         if let Constraint::Coincident(coincident) = constraint
-                            && coincident.segments.iter().any(|seg_id| *seg_id == original_center_id)
+                            && coincident.segments.contains(&original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.points.iter().any(|pt| *pt == original_center_id)
+                            && distance.points.contains(&original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -4059,8 +4059,8 @@ async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.points.iter().any(|pt| *pt == original_start_id);
-                        let references_end = distance.points.iter().any(|pt| *pt == original_end_id);
+                        let references_start = distance.points.contains(&original_start_id);
+                        let references_end = distance.points.contains(&original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push(distance.distance);
@@ -4123,10 +4123,8 @@ async fn execute_trim_operations_simple(
                     };
 
                     let should_migrate = match constraint {
-                        Constraint::Parallel(parallel) => parallel.lines.iter().any(|line_id| *line_id == *segment_id),
-                        Constraint::Perpendicular(perpendicular) => {
-                            perpendicular.lines.iter().any(|line_id| *line_id == *segment_id)
-                        }
+                        Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
+                        Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
                         Constraint::Horizontal(horizontal) => horizontal.line == *segment_id,
                         Constraint::Vertical(vertical) => vertical.line == *segment_id,
                         _ => false,
@@ -4183,7 +4181,7 @@ async fn execute_trim_operations_simple(
                 }
 
                 // Step 6: Batch all remaining operations
-                let constraint_object_ids: Vec<ObjectId> = constraints_to_delete.iter().copied().collect();
+                let constraint_object_ids: Vec<ObjectId> = constraints_to_delete.to_vec();
 
                 let batch_result = frontend
                     .batch_split_segment_operations(
