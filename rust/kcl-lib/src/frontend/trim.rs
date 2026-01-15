@@ -4848,13 +4848,13 @@ sketch(on = YZ) {
                 // Just verify we got a reasonable error message
                 // The error could be various things like parsing errors, execution errors, or empty results
                 assert!(
-                    e.contains("Failed") 
-                    || e.contains("not yet implemented") 
-                    || e.contains("Reached max iterations")
-                    || e.contains("No trim operations")
-                    || e.contains("No operations were executed")
-                    || e.contains("parse")
-                    || e.contains("execute")
+                    e.contains("Failed")
+                        || e.contains("not yet implemented")
+                        || e.contains("Reached max iterations")
+                        || e.contains("No trim operations")
+                        || e.contains("No operations were executed")
+                        || e.contains("parse")
+                        || e.contains("execute")
                 );
             }
         }
