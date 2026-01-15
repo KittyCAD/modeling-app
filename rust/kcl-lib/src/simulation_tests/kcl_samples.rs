@@ -10,9 +10,8 @@ use fnv::FnvHashSet;
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
-use crate::test_server::ExportAction;
-
 use super::Test;
+use crate::test_server::ExportAction;
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
