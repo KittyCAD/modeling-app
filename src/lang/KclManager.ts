@@ -1818,6 +1818,7 @@ export class KclManager extends EventTarget {
     options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
   ) {
     const resolvedOptions: NonNullable<typeof options> = Object.assign(
+      {},
       options ?? {},
       { shouldWriteToDisk: true, shouldExecute: false }
     )
