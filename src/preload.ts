@@ -571,6 +571,47 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:filletEdge')
       }
     },
+    onGetCamera: (
+      callback: (data: {
+        requestId: string
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:getCamera', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in getCamera handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getCamera')
+      }
+    },
+    onSetCamera: (
+      callback: (data: {
+        requestId: string
+        position: { x: number; y: number; z: number }
+        target: { x: number; y: number; z: number }
+        up?: { x: number; y: number; z: number }
+        projection?: 'perspective' | 'orthographic'
+        fov?: number
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => {
+      ipcRenderer.on('mcp:setCamera', (_, data) => {
+        const result = callback(data)
+        if (result instanceof Promise) {
+          void result.catch((error) => {
+            console.error('[MCP Bridge] Error in setCamera handler:', error)
+          })
+        }
+      })
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:setCamera')
+      }
+    },
     onListKclSamples: (
       callback: (data: { requestId: string }) => void | Promise<void>
     ) => {

@@ -150,6 +150,20 @@ export interface IElectronAPI {
     onSetEntityHighlight: (
       callback: (data: { requestId: string; entityIds: string[] }) => void | Promise<void>
     ) => () => void
+    onGetCamera: (
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
+    ) => () => void
+    onSetCamera: (
+      callback: (data: {
+        requestId: string
+        position: { x: number; y: number; z: number }
+        target: { x: number; y: number; z: number }
+        up?: { x: number; y: number; z: number }
+        projection?: 'perspective' | 'orthographic'
+        fov?: number
+        waitForExecution?: boolean
+      }) => void | Promise<void>
+    ) => () => void
     onFilletEdge: (
       callback: (data: {
         requestId: string

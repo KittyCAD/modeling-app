@@ -67,6 +67,8 @@ import {
   getArtifactGraphMermaidTool,
   handleGetArtifactGraphMermaidTool,
 } from './getArtifactGraphMermaid.js'
+import { getCameraTool, handleGetCameraTool } from './getCamera.js'
+import { setCameraTool, handleSetCameraTool } from './setCamera.js'
 
 /**
  * All available MCP tools
@@ -91,6 +93,8 @@ const tools = [
   getCurrentKclFileTool,
   setCurrentKclFileTool,
   setEntityHighlightTool,
+  getCameraTool,
+  setCameraTool,
 ]
 
 /**
@@ -233,6 +237,29 @@ export async function registerTools(server: Server): Promise<void> {
           }
         }
         return handleSetEntityHighlightTool({ entityIds: args.entityIds })
+      }
+
+      case 'get_camera': {
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetCameraTool(args)
+      }
+
+      case 'set_camera': {
+        const args =
+          (request.params.arguments as
+            | {
+                position?: { x: number; y: number; z: number }
+                target?: { x: number; y: number; z: number }
+                up?: { x: number; y: number; z: number }
+                projection?: 'perspective' | 'orthographic'
+                fov?: number
+                waitForExecution?: boolean
+              }
+            | undefined) || {}
+        return handleSetCameraTool(args)
       }
 
       default: {

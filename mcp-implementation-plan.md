@@ -404,6 +404,53 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 - Highlighting persists until cleared or new selection is made
 - Useful for debugging and understanding which code corresponds to which geometry
 
+### 8.8 Get and set camera position
+**Purpose**: Allow LLMs to get the current camera position and set it to a specific position. This is particularly useful in conjunction with `get_screenshot` - if something is hard to see in the scene, moving the camera around can help the LLM get a better view of the geometry.
+
+**Design Decisions**:
+- Provide both `getCamera` and `setCamera` tools (realistically both are needed)
+- `setCamera` input parameters should match the internal camera data structure
+- Camera data includes: position (vantage), target (center), up vector, orientation (quaternion), projection type (perspective/orthographic), and FOV
+- Use existing engine commands: `default_camera_get_settings` and `default_camera_look_at` / `default_camera_set_view`
+- Tool descriptions should emphasize the synergy with `get_screenshot` for better visibility
+
+**Camera Data Structure**:
+Based on internal camera settings, the camera state includes:
+- `position` / `vantage`: `{x: number, y: number, z: number}` - Camera position in 3D space
+- `target` / `center`: `{x: number, y: number, z: number}` - Point the camera is looking at
+- `up`: `{x: number, y: number, z: number}` - Up vector (typically `{x: 0, y: 0, z: 1}`)
+- `orientation`: `{x: number, y: number, z: number, w: number}` - Quaternion rotation (optional, can be derived from position/target/up)
+- `projection`: `'perspective' | 'orthographic'` - Camera projection type
+- `fov`: `number` - Field of view in degrees (for perspective cameras, typically 45)
+
+**Implementation**:
+- [x] Create `src/mcp-server/tools/getCamera.ts`
+  - Tool name: `get_camera`
+  - Description: Get the current camera position and settings. Useful for understanding the current view and for saving camera state before changing it. Works well with `set_camera` to restore views or with `get_screenshot` to capture the current view.
+  - Input schema: `waitForExecution` (optional boolean, default true)
+  - Handler: Calls `default_camera_get_settings` engine command
+  - Returns: Camera state object with position, target, up, orientation, projection, fov
+- [x] Create `src/mcp-server/tools/setCamera.ts`
+  - Tool name: `set_camera`
+  - Description: Set the camera position and orientation. This is particularly useful in conjunction with `get_screenshot` - if something is hard to see in the scene, moving the camera around can help get a better view of the geometry. You can use `get_camera` first to save the current view, then restore it later.
+  - Input schema:
+    - `position` / `vantage`: `{x: number, y: number, z: number}` (required) - Camera position
+    - `target` / `center`: `{x: number, y: number, z: number}` (required) - Point camera looks at
+    - `up`: `{x: number, y: number, z: number}` (optional, default `{x: 0, y: 0, z: 1}`) - Up vector
+    - `projection`: `'perspective' | 'orthographic'` (optional) - Camera projection type
+    - `fov`: `number` (optional, default 45) - Field of view for perspective cameras
+    - `waitForExecution`: `boolean` (optional, default true)
+  - Handler: Calls `default_camera_look_at` engine command with vantage, center, up
+  - If projection or fov provided, may need additional command to set those
+- [x] Add bridge message types `getCamera` and `setCamera` to `src/mcp-server/types.ts`
+- [x] Implement renderer-side handlers in `src/lib/mcpBridgeRenderer.ts`
+  - `onGetCamera`: Sends `default_camera_get_settings` command, extracts camera state from response
+  - `onSetCamera`: Sends `default_camera_look_at` command with provided position/target/up
+- [x] Add main process bridge handlers in `src/main/mcpBridge.ts`
+- [x] Add IPC handlers in `src/preload.ts` for `mcp:getCamera` and `mcp:setCamera`
+- [x] Register tools in `src/mcp-server/tools/registry.ts`
+- [x] Update TypeScript interface types in `interface.d.ts`
+
 ## Technical Considerations
 
 ### Communication Mechanism Options

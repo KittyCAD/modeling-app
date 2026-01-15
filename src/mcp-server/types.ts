@@ -19,6 +19,8 @@ export type BridgeMessageType =
   | 'getCurrentKclFile'
   | 'setCurrentKclFile'
   | 'setEntityHighlight'
+  | 'getCamera'
+  | 'setCamera'
 
 /**
  * Base bridge message structure

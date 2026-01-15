@@ -332,6 +332,67 @@ async function handleBridgeRequest(
         break
       }
 
+      case 'getCamera': {
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+        const data = await queryRenderer('mcp:getCamera', {
+          waitForExecution,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
+      case 'setCamera': {
+        const position = request.params?.position as
+          | { x: number; y: number; z: number }
+          | undefined
+        const target = request.params?.target as
+          | { x: number; y: number; z: number }
+          | undefined
+        const up = request.params?.up as
+          | { x: number; y: number; z: number }
+          | undefined
+        const projection = request.params?.projection as
+          | 'perspective'
+          | 'orthographic'
+          | undefined
+        const fov = request.params?.fov as number | undefined
+        const waitForExecution =
+          (request.params?.waitForExecution as boolean | undefined) ?? true
+
+        if (!position || !target) {
+          sendErrorResponse(
+            socket,
+            request.id,
+            'position and target parameters are required'
+          )
+          return
+        }
+
+        const data = await queryRenderer('mcp:setCamera', {
+          position,
+          target,
+          up,
+          projection,
+          fov,
+          waitForExecution,
+        })
+        response = {
+          type: request.type,
+          id: request.id,
+          timestamp: Date.now(),
+          success: true,
+          data,
+        }
+        break
+      }
+
       default: {
         sendErrorResponse(
           socket,

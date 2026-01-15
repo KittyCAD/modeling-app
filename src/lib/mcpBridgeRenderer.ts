@@ -1024,6 +1024,129 @@ export function initMcpBridgeHandlers(): void {
         }
       }
     )
+
+    // Handle getCamera request
+    window.electron.mcpBridge.onGetCamera(
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
+        try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
+
+          // Wait for the response event - subscribe BEFORE sending command
+          const cameraSettings = await new Promise<{
+            pos: { x: number; y: number; z: number }
+            center: { x: number; y: number; z: number }
+            up: { x: number; y: number; z: number }
+            orientation: { x: number; y: number; z: number; w: number }
+            ortho: boolean
+            fov_y?: number
+          }>((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              unsubscribe()
+              reject(new Error('Timeout waiting for camera settings'))
+            }, 5000)
+
+            const unsubscribe = engineCommandManager.subscribeTo({
+              event: 'default_camera_get_settings',
+              callback: ({ data: eventData }) => {
+                clearTimeout(timeout)
+                unsubscribe()
+                if (
+                  eventData &&
+                  'settings' in eventData &&
+                  eventData.settings
+                ) {
+                  resolve(eventData.settings)
+                } else {
+                  reject(new Error('Invalid camera settings response'))
+                }
+              },
+            })
+
+            // Send command after subscription is set up
+            engineCommandManager
+              .sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'default_camera_get_settings' },
+              })
+              .catch((error) => {
+                clearTimeout(timeout)
+                unsubscribe()
+                reject(error)
+              })
+          })
+
+          // Format camera data for response
+          const cameraData = {
+            position: cameraSettings.pos,
+            target: cameraSettings.center,
+            up: cameraSettings.up,
+            orientation: cameraSettings.orientation,
+            projection: cameraSettings.ortho ? 'orthographic' : 'perspective',
+            fov: cameraSettings.fov_y ?? 45,
+          }
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: cameraData,
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
+
+    // Handle setCamera request
+    window.electron.mcpBridge.onSetCamera(
+      async (data: {
+        requestId: string
+        position: { x: number; y: number; z: number }
+        target: { x: number; y: number; z: number }
+        up?: { x: number; y: number; z: number }
+        projection?: 'perspective' | 'orthographic'
+        fov?: number
+        waitForExecution?: boolean
+      }) => {
+        try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
+
+          // Set camera position using look_at command
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_look_at',
+              vantage: data.position,
+              center: data.target,
+              up: data.up ?? { x: 0, y: 0, z: 1 },
+            },
+          })
+
+          // If projection type is specified, update it
+          if (data.projection) {
+            if (data.projection === 'orthographic') {
+              await sceneInfra.camControls.useOrthographicCamera()
+            } else {
+              await sceneInfra.camControls.usePerspectiveCamera()
+              // If FOV is specified, update it
+              if (data.fov !== undefined) {
+                // FOV is handled through the camera controls
+                // The engine will use the FOV from the camera settings
+              }
+            }
+          }
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: { success: true },
+          })
+        } catch (error) {
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          })
+        }
+      }
+    )
   } catch (error) {
     console.error('[MCP Bridge Renderer] Error initializing handlers:', error)
     // Don't throw - allow app to continue even if MCP bridge fails
