@@ -98,6 +98,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     // directory so that they can be used as inputs for the next run.
     // First ensure each directory exists.
     let public_screenshot_dir = INPUTS_DIR.join("screenshots");
+    let public_model_dir = INPUTS_DIR.join("models");
     for dir in [&public_screenshot_dir] {
         if !dir.exists() {
             std::fs::create_dir_all(dir).unwrap();
@@ -113,6 +114,12 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
             public_screenshot_dir.join(format!("{}.png", &tests.name)),
         )
         .unwrap();
+        let model_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_MODEL_NAME);
+        if model_file.exists() {
+            std::fs::rename(model_file, public_model_dir.join(format!("{}.gltf", &tests.name))).unwrap();
+        } else {
+            eprintln!("WARNING: Missing model for test {}", tests.name);
+        }
     }
 
     // Update the README.md with the new screenshots.
@@ -184,7 +191,7 @@ fn kcl_samples_inputs() -> Vec<Test> {
             // Skip hidden directories.
             continue;
         }
-        if matches!(dir_name_str.as_ref(), "screenshots") {
+        if matches!(dir_name_str.as_ref(), "screenshots" | "models") {
             // Skip output directories.
             continue;
         }

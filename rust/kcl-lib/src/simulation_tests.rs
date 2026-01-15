@@ -39,6 +39,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
+pub(crate) const EXPORTED_MODEL_NAME: &str = "model.gltf";
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
