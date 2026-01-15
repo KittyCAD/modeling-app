@@ -341,7 +341,13 @@ async function getArchiveBasePath() {
  */
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
-  return window.electron
-    ? window.electron.join(basePath, absolutePath)
-    : webSafeJoin([basePath, absolutePath])
+
+  if (window.electron) {
+    // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
+    // Make that make sense, right? So our archive paths need to replace that character.
+    const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
+    return window.electron.join(basePath, absolutePathWithSafeDriveName)
+  }
+
+  return webSafeJoin([basePath, absolutePath])
 }
