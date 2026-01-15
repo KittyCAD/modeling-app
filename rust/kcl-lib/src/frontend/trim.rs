@@ -72,16 +72,38 @@ pub struct TrimTerminations {
     pub right_side: TrimTermination,
 }
 
+/// Specifies where a constraint should attach when migrating during split operations
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AttachToEndpoint {
+    Start,
+    End,
+    Segment,
+}
+
+/// Specifies which endpoint of a segment was changed
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EndpointChanged {
+    Start,
+    End,
+}
+
+/// Coincident data for split segment operations
+#[derive(Debug, Clone)]
+pub struct CoincidentData {
+    pub intersecting_seg_id: usize,
+    pub intersecting_endpoint_point_id: Option<usize>,
+    pub existing_point_segment_constraint_id: Option<usize>,
+}
+
 /// Constraint to migrate during split operations
 #[derive(Debug, Clone)]
 pub struct ConstraintToMigrate {
     pub constraint_id: usize,
     pub other_entity_id: usize,
     pub is_point_point: bool,
-    pub attach_to_endpoint: String, // "start", "end", or "segment"
+    pub attach_to_endpoint: AttachToEndpoint,
 }
 
-/// Trim operation types - these match the TypeScript TrimOperation union
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
@@ -90,12 +112,12 @@ pub enum TrimOperation {
     },
     EditSegment {
         segment_id: usize,
-        ctor: serde_json::Value,  // SegmentCtor as JSON
-        endpoint_changed: String, // "start" or "end"
+        ctor: SegmentCtor,
+        endpoint_changed: EndpointChanged,
     },
     AddCoincidentConstraint {
         segment_id: usize,
-        endpoint_changed: String,
+        endpoint_changed: EndpointChanged,
         segment_or_point_to_make_coincident_to: usize,
         intersecting_endpoint_point_id: Option<usize>,
     },
@@ -106,8 +128,8 @@ pub enum TrimOperation {
         original_end_coords: Coords2d,
         left_side: Box<TrimTermination>,
         right_side: Box<TrimTermination>,
-        left_side_coincident_data: Box<serde_json::Value>, // Complex nested structure
-        right_side_coincident_data: Box<serde_json::Value>,
+        left_side_coincident_data: CoincidentData,
+        right_side_coincident_data: CoincidentData,
         constraints_to_migrate: Vec<ConstraintToMigrate>,
         constraints_to_delete: Vec<usize>,
     },
@@ -2212,87 +2234,9 @@ pub fn trim_strategy(
     };
 
     // Helper to find existing point-segment coincident constraint (using native types)
-    let find_existing_point_segment_coincident =
-        |trim_seg_id: usize, intersecting_seg_id: usize| -> serde_json::Value {
-            // If the intersecting id itself is a point, try a fast lookup using it directly
-            let lookup_by_point_id = |point_id: usize| -> Option<serde_json::Value> {
-                for obj in objects {
-                    let ObjectKind::Constraint { constraint } = &obj.kind else {
-                        continue;
-                    };
-
-                    let Constraint::Coincident(coincident) = constraint else {
-                        continue;
-                    };
-
-                    let involves_trim_seg = coincident
-                        .segments
-                        .iter()
-                        .any(|id| id.0 == trim_seg_id || id.0 == point_id);
-                    let involves_point = coincident.segments.iter().any(|id| id.0 == point_id);
-
-                    if involves_trim_seg && involves_point {
-                        return Some(serde_json::json!({
-                            "existingPointSegmentConstraintId": obj.id.0,
-                            "intersectingEndpointPointId": point_id,
-                        }));
-                    }
-                }
-                None
-            };
-
-            // Collect trim endpoints using native types
-            let trim_seg = objects.iter().find(|obj| obj.id.0 == trim_seg_id);
-
-            let mut trim_endpoint_ids: Vec<usize> = Vec::new();
-            if let Some(seg) = trim_seg
-                && let ObjectKind::Segment { segment } = &seg.kind
-            {
-                match segment {
-                    Segment::Line(line) => {
-                        trim_endpoint_ids.push(line.start.0);
-                        trim_endpoint_ids.push(line.end.0);
-                    }
-                    Segment::Arc(arc) => {
-                        trim_endpoint_ids.push(arc.start.0);
-                        trim_endpoint_ids.push(arc.end.0);
-                    }
-                    _ => {}
-                }
-            }
-
-            let intersecting_obj = objects.iter().find(|obj| obj.id.0 == intersecting_seg_id);
-
-            if let Some(obj) = intersecting_obj
-                && let ObjectKind::Segment { segment } = &obj.kind
-                && let Segment::Point(_) = segment
-                && let Some(found) = lookup_by_point_id(intersecting_seg_id)
-            {
-                return found;
-            }
-
-            // Collect intersecting endpoint IDs using native types
-            let mut intersecting_endpoint_ids: Vec<usize> = Vec::new();
-            if let Some(obj) = intersecting_obj
-                && let ObjectKind::Segment { segment } = &obj.kind
-            {
-                match segment {
-                    Segment::Line(line) => {
-                        intersecting_endpoint_ids.push(line.start.0);
-                        intersecting_endpoint_ids.push(line.end.0);
-                    }
-                    Segment::Arc(arc) => {
-                        intersecting_endpoint_ids.push(arc.start.0);
-                        intersecting_endpoint_ids.push(arc.end.0);
-                    }
-                    _ => {}
-                }
-            }
-
-            // Also include the intersecting_seg_id itself (it might already be a point id)
-            intersecting_endpoint_ids.push(intersecting_seg_id);
-
-            // Search for constraints involving trim segment (or trim endpoints) and intersecting endpoints/points
+    let find_existing_point_segment_coincident = |trim_seg_id: usize, intersecting_seg_id: usize| -> CoincidentData {
+        // If the intersecting id itself is a point, try a fast lookup using it directly
+        let lookup_by_point_id = |point_id: usize| -> Option<CoincidentData> {
             for obj in objects {
                 let ObjectKind::Constraint { constraint } = &obj.kind else {
                     continue;
@@ -2302,34 +2246,114 @@ pub fn trim_strategy(
                     continue;
                 };
 
-                let constraint_segment_ids: Vec<usize> = coincident.segments.iter().map(|id| id.0).collect();
-
-                // Check if constraint involves the trim segment itself OR any trim endpoint
-                let involves_trim_seg = constraint_segment_ids.contains(&trim_seg_id)
-                    || trim_endpoint_ids.iter().any(|&id| constraint_segment_ids.contains(&id));
-
-                if !involves_trim_seg {
-                    continue;
-                }
-
-                // Check if any intersecting endpoint/point is involved
-                if let Some(&intersecting_endpoint_id) = intersecting_endpoint_ids
+                let involves_trim_seg = coincident
+                    .segments
                     .iter()
-                    .find(|&&id| constraint_segment_ids.contains(&id))
-                {
-                    return serde_json::json!({
-                        "existingPointSegmentConstraintId": obj.id.0,
-                        "intersectingEndpointPointId": intersecting_endpoint_id,
+                    .any(|id| id.0 == trim_seg_id || id.0 == point_id);
+                let involves_point = coincident.segments.iter().any(|id| id.0 == point_id);
+
+                if involves_trim_seg && involves_point {
+                    return Some(CoincidentData {
+                        intersecting_seg_id,
+                        intersecting_endpoint_point_id: Some(point_id),
+                        existing_point_segment_constraint_id: Some(obj.id.0),
                     });
                 }
             }
-
-            // No existing constraint found
-            serde_json::json!({
-                "existingPointSegmentConstraintId": serde_json::Value::Null,
-                "intersectingEndpointPointId": serde_json::Value::Null,
-            })
+            None
         };
+
+        // Collect trim endpoints using native types
+        let trim_seg = objects.iter().find(|obj| obj.id.0 == trim_seg_id);
+
+        let mut trim_endpoint_ids: Vec<usize> = Vec::new();
+        if let Some(seg) = trim_seg
+            && let ObjectKind::Segment { segment } = &seg.kind
+        {
+            match segment {
+                Segment::Line(line) => {
+                    trim_endpoint_ids.push(line.start.0);
+                    trim_endpoint_ids.push(line.end.0);
+                }
+                Segment::Arc(arc) => {
+                    trim_endpoint_ids.push(arc.start.0);
+                    trim_endpoint_ids.push(arc.end.0);
+                }
+                _ => {}
+            }
+        }
+
+        let intersecting_obj = objects.iter().find(|obj| obj.id.0 == intersecting_seg_id);
+
+        if let Some(obj) = intersecting_obj
+            && let ObjectKind::Segment { segment } = &obj.kind
+            && let Segment::Point(_) = segment
+            && let Some(found) = lookup_by_point_id(intersecting_seg_id)
+        {
+            return found;
+        }
+
+        // Collect intersecting endpoint IDs using native types
+        let mut intersecting_endpoint_ids: Vec<usize> = Vec::new();
+        if let Some(obj) = intersecting_obj
+            && let ObjectKind::Segment { segment } = &obj.kind
+        {
+            match segment {
+                Segment::Line(line) => {
+                    intersecting_endpoint_ids.push(line.start.0);
+                    intersecting_endpoint_ids.push(line.end.0);
+                }
+                Segment::Arc(arc) => {
+                    intersecting_endpoint_ids.push(arc.start.0);
+                    intersecting_endpoint_ids.push(arc.end.0);
+                }
+                _ => {}
+            }
+        }
+
+        // Also include the intersecting_seg_id itself (it might already be a point id)
+        intersecting_endpoint_ids.push(intersecting_seg_id);
+
+        // Search for constraints involving trim segment (or trim endpoints) and intersecting endpoints/points
+        for obj in objects {
+            let ObjectKind::Constraint { constraint } = &obj.kind else {
+                continue;
+            };
+
+            let Constraint::Coincident(coincident) = constraint else {
+                continue;
+            };
+
+            let constraint_segment_ids: Vec<usize> = coincident.segments.iter().map(|id| id.0).collect();
+
+            // Check if constraint involves the trim segment itself OR any trim endpoint
+            let involves_trim_seg = constraint_segment_ids.contains(&trim_seg_id)
+                || trim_endpoint_ids.iter().any(|&id| constraint_segment_ids.contains(&id));
+
+            if !involves_trim_seg {
+                continue;
+            }
+
+            // Check if any intersecting endpoint/point is involved
+            if let Some(&intersecting_endpoint_id) = intersecting_endpoint_ids
+                .iter()
+                .find(|&&id| constraint_segment_ids.contains(&id))
+            {
+                return CoincidentData {
+                    intersecting_seg_id,
+                    intersecting_endpoint_point_id: Some(intersecting_endpoint_id),
+                    existing_point_segment_constraint_id: Some(obj.id.0),
+                };
+            }
+        }
+
+        // No existing constraint found
+        CoincidentData {
+            intersecting_seg_id,
+            intersecting_endpoint_point_id: None,
+            existing_point_segment_constraint_id: None,
+        }
+    };
 
     // Helper to find point-segment coincident constraints on an endpoint (using native types)
     let find_point_segment_coincident_constraints = |endpoint_point_id: usize| -> Vec<serde_json::Value> {
@@ -2428,7 +2452,11 @@ pub fn trim_strategy(
             }
         };
 
-        let endpoint_to_change = if left_side_needs_tail_cut { "end" } else { "start" };
+        let endpoint_to_change = if left_side_needs_tail_cut {
+            EndpointChanged::End
+        } else {
+            EndpointChanged::Start
+        };
 
         let intersecting_seg_id = match side {
             TrimTermination::Intersection {
@@ -2454,7 +2482,7 @@ pub fn trim_strategy(
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
+            data.intersecting_endpoint_point_id = Some(point_id);
             data
         } else {
             find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id)
@@ -2469,14 +2497,14 @@ pub fn trim_strategy(
             };
             match segment {
                 Segment::Line(line) => {
-                    if endpoint_to_change == "start" {
+                    if endpoint_to_change == EndpointChanged::Start {
                         Some(line.start.0)
                     } else {
                         Some(line.end.0)
                     }
                 }
                 Segment::Arc(arc) => {
-                    if endpoint_to_change == "start" {
+                    if endpoint_to_change == EndpointChanged::Start {
                         Some(arc.start.0)
                     } else {
                         Some(arc.end.0)
@@ -2512,7 +2540,7 @@ pub fn trim_strategy(
                         units,
                     }),
                 };
-                if endpoint_to_change == "start" {
+                if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
                         start: new_point,
                         end: line_ctor.end.clone(),
@@ -2537,7 +2565,7 @@ pub fn trim_strategy(
                         units,
                     }),
                 };
-                if endpoint_to_change == "start" {
+                if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
                         start: new_point,
                         end: arc_ctor.end.clone(),
@@ -2557,29 +2585,22 @@ pub fn trim_strategy(
         };
         operations.push(TrimOperation::EditSegment {
             segment_id: trim_spawn_id,
-            ctor: serde_json::to_value(&new_ctor).map_err(|e| format!("Failed to serialize ctor: {}", e))?,
-            endpoint_changed: endpoint_to_change.to_string(),
+            ctor: new_ctor,
+            endpoint_changed: endpoint_to_change,
         });
 
         // Add coincident constraint
         let add_coincident = TrimOperation::AddCoincidentConstraint {
             segment_id: trim_spawn_id,
-            endpoint_changed: endpoint_to_change.to_string(),
+            endpoint_changed: endpoint_to_change,
             segment_or_point_to_make_coincident_to: intersecting_seg_id,
-            intersecting_endpoint_point_id: coincident_data
-                .get("intersectingEndpointPointId")
-                .and_then(|v| v.as_u64())
-                .map(|id| id as usize),
+            intersecting_endpoint_point_id: coincident_data.intersecting_endpoint_point_id,
         };
         operations.push(add_coincident);
 
         // Delete old constraints
         let mut all_constraint_ids_to_delete: Vec<usize> = Vec::new();
-        if let Some(constraint_id) = coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
-        {
+        if let Some(constraint_id) = coincident_data.existing_point_segment_constraint_id {
             all_constraint_ids_to_delete.push(constraint_id);
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
@@ -2641,7 +2662,7 @@ pub fn trim_strategy(
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, left_intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
+            data.intersecting_endpoint_point_id = Some(point_id);
             data
         } else {
             find_existing_point_segment_coincident(trim_spawn_id, left_intersecting_seg_id)
@@ -2659,7 +2680,7 @@ pub fn trim_strategy(
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
+            data.intersecting_endpoint_point_id = Some(point_id);
             data
         } else {
             find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id)
@@ -2737,18 +2758,12 @@ pub fn trim_strategy(
         let mut constraints_to_delete_set: HashSet<usize> = HashSet::new();
 
         // Add existing point-segment constraints from terminations to delete list
-        if let Some(constraint_id) = left_coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
+        if let Some(constraint_id) = left_coincident_data.existing_point_segment_constraint_id
             && constraints_to_delete_set.insert(constraint_id)
         {
             constraints_to_delete.push(constraint_id);
         }
-        if let Some(constraint_id) = right_coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
+        if let Some(constraint_id) = right_coincident_data.existing_point_segment_constraint_id
             && constraints_to_delete_set.insert(constraint_id)
         {
             constraints_to_delete.push(constraint_id);
@@ -2784,7 +2799,7 @@ pub fn trim_strategy(
                         constraint_id,
                         other_entity_id: other_point_id,
                         is_point_point: true,
-                        attach_to_endpoint: "end".to_string(),
+                        attach_to_endpoint: AttachToEndpoint::End,
                     });
                 }
             }
@@ -2812,7 +2827,7 @@ pub fn trim_strategy(
                             constraint_id,
                             other_entity_id: other_id,
                             is_point_point: false,
-                            attach_to_endpoint: "end".to_string(),
+                            attach_to_endpoint: AttachToEndpoint::End,
                         });
                     }
                 }
@@ -2931,7 +2946,7 @@ pub fn trim_strategy(
                                     constraint_id: obj.id.0,
                                     other_entity_id: other_id,
                                     is_point_point: true, // Convert to point-point constraint
-                                    attach_to_endpoint: "end".to_string(), // Attach to new segment's end
+                                    attach_to_endpoint: AttachToEndpoint::End, // Attach to new segment's end
                                 });
                             }
                             // Always delete the old point-segment constraint (whether we migrate or not)
@@ -3094,7 +3109,7 @@ pub fn trim_strategy(
                                         constraint_id: obj.id.0,
                                         other_entity_id: other_id,
                                         is_point_point: true, // Convert to point-point constraint
-                                        attach_to_endpoint: "end".to_string(), // Attach to new segment's end
+                                        attach_to_endpoint: AttachToEndpoint::End, // Attach to new segment's end
                                     });
                                 }
                                 // Always delete the old point-segment constraint
@@ -3127,7 +3142,7 @@ pub fn trim_strategy(
                                     constraint_id: obj.id.0,
                                     other_entity_id: other_id,
                                     is_point_point: false, // Keep as point-segment, but replace the segment
-                                    attach_to_endpoint: "segment".to_string(), // Replace old segment with new segment
+                                    attach_to_endpoint: AttachToEndpoint::Segment, // Replace old segment with new segment
                                 });
                                 if constraints_to_delete_set.insert(obj.id.0) {
                                     constraints_to_delete.push(obj.id.0);
@@ -3297,7 +3312,7 @@ pub fn trim_strategy(
                                 constraint_id: obj.id.0,
                                 other_entity_id: other_id,
                                 is_point_point: true, // Convert to point-point constraint
-                                attach_to_endpoint: "end".to_string(), // Attach to new segment's end
+                                attach_to_endpoint: AttachToEndpoint::End, // Attach to new segment's end
                             });
                         }
                         // Always delete the old point-segment constraint
@@ -3317,16 +3332,16 @@ pub fn trim_strategy(
             original_end_coords,
             left_side: Box::new(left_side.clone()),
             right_side: Box::new(right_side.clone()),
-            left_side_coincident_data: Box::new(serde_json::json!({
-                "intersectingSegId": left_intersecting_seg_id,
-                "intersectingEndpointPointId": left_coincident_data.get("intersectingEndpointPointId"),
-                "existingPointSegmentConstraintId": left_coincident_data.get("existingPointSegmentConstraintId"),
-            })),
-            right_side_coincident_data: Box::new(serde_json::json!({
-                "intersectingSegId": right_intersecting_seg_id,
-                "intersectingEndpointPointId": right_coincident_data.get("intersectingEndpointPointId"),
-                "existingPointSegmentConstraintId": right_coincident_data.get("existingPointSegmentConstraintId"),
-            })),
+            left_side_coincident_data: CoincidentData {
+                intersecting_seg_id: left_intersecting_seg_id,
+                intersecting_endpoint_point_id: left_coincident_data.intersecting_endpoint_point_id,
+                existing_point_segment_constraint_id: left_coincident_data.existing_point_segment_constraint_id,
+            },
+            right_side_coincident_data: CoincidentData {
+                intersecting_seg_id: right_intersecting_seg_id,
+                intersecting_endpoint_point_id: right_coincident_data.intersecting_endpoint_point_id,
+                existing_point_segment_constraint_id: right_coincident_data.existing_point_segment_constraint_id,
+            },
             constraints_to_migrate,
             constraints_to_delete,
         }];
@@ -3408,9 +3423,8 @@ async fn execute_trim_operations_simple(
                                 consumed_ops = 3;
                             }
 
-                            // Parse ctor
-                            let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
-                                .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
+                            // Use ctor directly
+                            let segment_ctor = ctor.clone();
 
                             // Get endpoint point id from current scene graph (IDs stay the same after edit)
                             let edited_segment = current_scene_graph_delta
@@ -3423,14 +3437,14 @@ async fn execute_trim_operations_simple(
                             let endpoint_point_id = match &edited_segment.kind {
                                 crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                                     crate::frontend::sketch::Segment::Line(line) => {
-                                        if endpoint_changed == "start" {
+                                        if *endpoint_changed == EndpointChanged::Start {
                                             line.start.0
                                         } else {
                                             line.end.0
                                         }
                                     }
                                     crate::frontend::sketch::Segment::Arc(arc) => {
-                                        if endpoint_changed == "start" {
+                                        if *endpoint_changed == EndpointChanged::Start {
                                             arc.start.0
                                         } else {
                                             arc.end.0
@@ -3478,12 +3492,9 @@ async fn execute_trim_operations_simple(
                                 .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.msg))
                         } else {
                             // Not same segment/endpoint - execute EditSegment normally
-                            let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
-                                .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
-
                             let segment_to_edit = ExistingSegmentCtor {
                                 id: ObjectId(*segment_id),
-                                ctor: segment_ctor,
+                                ctor: ctor.clone(),
                             };
 
                             frontend
@@ -3493,12 +3504,9 @@ async fn execute_trim_operations_simple(
                         }
                     } else {
                         // Not followed by AddCoincidentConstraint - execute EditSegment normally
-                        let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
-                            .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
-
                         let segment_to_edit = ExistingSegmentCtor {
                             id: ObjectId(*segment_id),
-                            ctor: segment_ctor,
+                            ctor: ctor.clone(),
                         };
 
                         frontend
@@ -3508,12 +3516,9 @@ async fn execute_trim_operations_simple(
                     }
                 } else {
                     // No following op to batch with - execute EditSegment normally
-                    let segment_ctor: SegmentCtor = serde_json::from_value(ctor.clone())
-                        .map_err(|e| format!("Failed to parse segment ctor: {}", e))?;
-
                     let segment_to_edit = ExistingSegmentCtor {
                         id: ObjectId(*segment_id),
-                        ctor: segment_ctor,
+                        ctor: ctor.clone(),
                     };
 
                     frontend
@@ -3540,14 +3545,14 @@ async fn execute_trim_operations_simple(
                 let new_segment_endpoint_point_id = match &edited_segment.kind {
                     crate::frontend::api::ObjectKind::Segment { segment } => match segment {
                         crate::frontend::sketch::Segment::Line(line) => {
-                            if endpoint_changed == "start" {
+                            if *endpoint_changed == EndpointChanged::Start {
                                 line.start.0
                             } else {
                                 line.end.0
                             }
                         }
                         crate::frontend::sketch::Segment::Arc(arc) => {
-                            if endpoint_changed == "start" {
+                            if *endpoint_changed == EndpointChanged::Start {
                                 arc.start.0
                             } else {
                                 arc.end.0
@@ -3998,27 +4003,30 @@ async fn execute_trim_operations_simple(
                 }
 
                 for constraint_to_migrate in constraints_to_migrate.iter() {
-                    if constraint_to_migrate.attach_to_endpoint == "end" && constraint_to_migrate.is_point_point {
+                    if constraint_to_migrate.attach_to_endpoint == AttachToEndpoint::End
+                        && constraint_to_migrate.is_point_point
+                    {
                         points_constrained_to_new_segment_end.insert(constraint_to_migrate.other_entity_id);
                     }
                 }
 
                 for constraint_to_migrate in constraints_to_migrate.iter() {
                     // Skip migrating point-segment constraints if the point is already constrained
-                    if constraint_to_migrate.attach_to_endpoint == "segment"
+                    if constraint_to_migrate.attach_to_endpoint == AttachToEndpoint::Segment
                         && (points_constrained_to_new_segment_start.contains(&constraint_to_migrate.other_entity_id)
                             || points_constrained_to_new_segment_end.contains(&constraint_to_migrate.other_entity_id))
                     {
                         continue; // Skip redundant constraint
                     }
 
-                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint == "segment" {
+                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint == AttachToEndpoint::Segment {
                         vec![
                             ObjectId(constraint_to_migrate.other_entity_id),
                             ObjectId(new_segment_id),
                         ]
                     } else {
-                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint == "start" {
+                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint == AttachToEndpoint::Start
+                        {
                             new_segment_start_point_id
                         } else {
                             new_segment_end_point_id

@@ -501,8 +501,6 @@ impl Context {
             TrimTerminations as TrimTerminationsCore,
         };
 
-        use crate::trim::NextTrimResult;
-
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch
         let actual_sketch_id = if let Some(sketch_mode) = guard.scene_graph().sketch_mode {
@@ -552,9 +550,6 @@ impl Context {
             // Get next trim result - use objects from current scene graph
             let next_trim_result_core =
                 get_next_trim_coords(&points_core, start_index, &current_scene_graph_delta.new_graph.objects);
-
-            // Convert to WASM type for matching
-            let next_trim_result: NextTrimResult = next_trim_result_core.clone().into();
 
             match &next_trim_result_core {
                 NextTrimResultCore::NoTrimSpawn { next_index } => {
@@ -622,15 +617,14 @@ impl Context {
                         }
                     };
 
-                    // Convert to WASM types for matching
-                    let strategy: Vec<crate::trim::TrimOperation> =
-                        strategy_core.iter().map(|op| op.clone().into()).collect();
+                    // Use core types directly - no need for WASM wrapper since we're only pattern matching
+                    let strategy = strategy_core;
 
                     // Execute operations
                     // Check if we deleted a segment (for fail-safe logic later)
                     let was_deleted = strategy
                         .iter()
-                        .any(|op| matches!(op, crate::trim::TrimOperation::SimpleTrim { .. }));
+                        .any(|op| matches!(op, kcl_lib::front::TrimOperation::SimpleTrim { .. }));
 
                     // Track the last successful operation result to update objects once at the end
                     let mut last_operation_result: Option<(
@@ -642,7 +636,7 @@ impl Context {
                     while op_index < strategy.len() {
                         let mut consumed_ops = 1;
                         let operation_result = match &strategy[op_index] {
-                            crate::trim::TrimOperation::SimpleTrim { segment_to_trim_id } => {
+                            kcl_lib::front::TrimOperation::SimpleTrim { segment_to_trim_id } => {
                                 // Delete the segment
                                 let result = guard
                                     .delete_objects(
@@ -655,14 +649,14 @@ impl Context {
                                     .await;
                                 result
                             }
-                            crate::trim::TrimOperation::EditSegment {
+                            kcl_lib::front::TrimOperation::EditSegment {
                                 segment_id,
                                 ctor,
                                 endpoint_changed,
                             } => {
                                 // Try to batch tail-cut sequence: EditSegment + AddCoincidentConstraint (+ DeleteConstraints)
                                 if op_index + 1 < strategy.len() {
-                                    if let crate::trim::TrimOperation::AddCoincidentConstraint {
+                                    if let kcl_lib::front::TrimOperation::AddCoincidentConstraint {
                                         segment_id: coincident_seg_id,
                                         endpoint_changed: coincident_endpoint_changed,
                                         segment_or_point_to_make_coincident_to,
@@ -674,7 +668,7 @@ impl Context {
                                         {
                                             let mut delete_constraint_ids: Vec<kcl_lib::front::ObjectId> = Vec::new();
                                             if op_index + 2 < strategy.len() {
-                                                if let crate::trim::TrimOperation::DeleteConstraints {
+                                                if let kcl_lib::front::TrimOperation::DeleteConstraints {
                                                     constraint_ids,
                                                 } = &strategy[op_index + 2]
                                                 {
@@ -690,16 +684,8 @@ impl Context {
                                                 consumed_ops = 2;
                                             }
 
-                                            // Parse ctor
-                                            let segment_ctor: kcl_lib::front::SegmentCtor =
-                                                match serde_json::from_value(ctor.clone()) {
-                                                    Ok(ctor) => ctor,
-                                                    Err(e) => {
-                                                        eprintln!("Failed to parse segment ctor: {}", e);
-                                                        op_index += consumed_ops;
-                                                        continue;
-                                                    }
-                                                };
+                                            // Use ctor directly
+                                            let segment_ctor = ctor.clone();
 
                                             // Get endpoint point id from current scene graph (IDs stay the same after edit)
                                             let edited_segment = match current_scene_graph_delta
@@ -722,14 +708,14 @@ impl Context {
                                             let endpoint_point_id = match &edited_segment.kind {
                                                 kcl_lib::front::ObjectKind::Segment { segment } => match segment {
                                                     kcl_lib::front::Segment::Line(line) => {
-                                                        if endpoint_changed == "start" {
+                                                        if *endpoint_changed == kcl_lib::front::EndpointChanged::Start {
                                                             line.start.0
                                                         } else {
                                                             line.end.0
                                                         }
                                                     }
                                                     kcl_lib::front::Segment::Arc(arc) => {
-                                                        if endpoint_changed == "start" {
+                                                        if *endpoint_changed == kcl_lib::front::EndpointChanged::Start {
                                                             arc.start.0
                                                         } else {
                                                             arc.end.0
@@ -787,19 +773,9 @@ impl Context {
                                             result
                                         } else {
                                             // not same segment/endpoint
-                                            let segment_ctor: kcl_lib::front::SegmentCtor =
-                                                match serde_json::from_value(ctor.clone()) {
-                                                    Ok(ctor) => ctor,
-                                                    Err(e) => {
-                                                        eprintln!("Failed to parse segment ctor: {}", e);
-                                                        op_index += consumed_ops;
-                                                        continue;
-                                                    }
-                                                };
-
                                             let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
                                                 id: kcl_lib::front::ObjectId(*segment_id),
-                                                ctor: segment_ctor,
+                                                ctor: ctor.clone(),
                                             };
 
                                             let result = guard
@@ -809,19 +785,9 @@ impl Context {
                                         }
                                     } else {
                                         // Not followed by AddCoincidentConstraint
-                                        let segment_ctor: kcl_lib::front::SegmentCtor =
-                                            match serde_json::from_value(ctor.clone()) {
-                                                Ok(ctor) => ctor,
-                                                Err(e) => {
-                                                    eprintln!("Failed to parse segment ctor: {}", e);
-                                                    op_index += consumed_ops;
-                                                    continue;
-                                                }
-                                            };
-
                                         let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
                                             id: kcl_lib::front::ObjectId(*segment_id),
-                                            ctor: segment_ctor,
+                                            ctor: ctor.clone(),
                                         };
 
                                         let result = guard
@@ -831,19 +797,9 @@ impl Context {
                                     }
                                 } else {
                                     // No following op to batch with
-                                    let segment_ctor: kcl_lib::front::SegmentCtor =
-                                        match serde_json::from_value(ctor.clone()) {
-                                            Ok(ctor) => ctor,
-                                            Err(e) => {
-                                                eprintln!("Failed to parse segment ctor: {}", e);
-                                                op_index += consumed_ops;
-                                                continue;
-                                            }
-                                        };
-
                                     let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
                                         id: kcl_lib::front::ObjectId(*segment_id),
-                                        ctor: segment_ctor,
+                                        ctor: ctor.clone(),
                                     };
 
                                     let result = guard
@@ -852,7 +808,7 @@ impl Context {
                                     result
                                 }
                             }
-                            crate::trim::TrimOperation::AddCoincidentConstraint {
+                            kcl_lib::front::TrimOperation::AddCoincidentConstraint {
                                 segment_id,
                                 endpoint_changed,
                                 segment_or_point_to_make_coincident_to,
@@ -876,14 +832,14 @@ impl Context {
                                 let new_segment_endpoint_point_id = match &edited_segment.kind {
                                     kcl_lib::front::ObjectKind::Segment { segment } => match segment {
                                         kcl_lib::front::Segment::Line(line) => {
-                                            if endpoint_changed == "start" {
+                                            if *endpoint_changed == kcl_lib::front::EndpointChanged::Start {
                                                 line.start.0
                                             } else {
                                                 line.end.0
                                             }
                                         }
                                         kcl_lib::front::Segment::Arc(arc) => {
-                                            if endpoint_changed == "start" {
+                                            if *endpoint_changed == kcl_lib::front::EndpointChanged::Start {
                                                 arc.start.0
                                             } else {
                                                 arc.end.0
@@ -919,7 +875,7 @@ impl Context {
 
                                 guard.add_constraint(&ctx, version, actual_sketch_id, constraint).await
                             }
-                            crate::trim::TrimOperation::DeleteConstraints { constraint_ids } => {
+                            kcl_lib::front::TrimOperation::DeleteConstraints { constraint_ids } => {
                                 // Delete constraints
                                 let constraint_object_ids: Vec<kcl_lib::front::ObjectId> =
                                     constraint_ids.iter().map(|id| kcl_lib::front::ObjectId(*id)).collect();
@@ -934,7 +890,7 @@ impl Context {
                                     )
                                     .await
                             }
-                            crate::trim::TrimOperation::SplitSegment {
+                            kcl_lib::front::TrimOperation::SplitSegment {
                                 segment_id,
                                 left_trim_coords,
                                 right_trim_coords,
@@ -1039,7 +995,7 @@ impl Context {
 
                                 // Helper to convert Coords2d to Point2d with units
                                 let coords_to_point =
-                                    |coords: crate::trim::Coords2d| -> kcl_lib::front::Point2d<kcl_lib::front::Number> {
+                                    |coords: kcl_lib::front::Coords2d| -> kcl_lib::front::Point2d<kcl_lib::front::Number> {
                                         // Round to 2 decimal places (matching TypeScript roundOff function)
                                         let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
                                         kcl_lib::front::Point2d {
@@ -1233,16 +1189,16 @@ impl Context {
                                 let mut batch_constraints = Vec::new();
 
                                 // Left constraint
-                                let left_intersecting_seg_id = match &left_side {
-                                    crate::trim::TrimTermination::Intersection { intersecting_seg_id, .. }
-                                    | crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
+                                let left_intersecting_seg_id = match &**left_side {
+                                    kcl_lib::front::TrimTermination::Intersection { intersecting_seg_id, .. }
+                                    | kcl_lib::front::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
                                     _ => {
                                         eprintln!("Left side is not an intersection or coincident");
                                         continue;
                                     }
                                 };
-                                let left_coincident_segments = match &left_side {
-                                    crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                let left_coincident_segments = match &**left_side {
+                                    kcl_lib::front::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                                         trim_spawn_segment_coincident_with_another_segment_point_id,
                                         ..
                                     } => {
@@ -1265,9 +1221,9 @@ impl Context {
                                 ));
 
                                 // Right constraint
-                                let right_intersecting_seg_id = match &right_side {
-                                    crate::trim::TrimTermination::Intersection { intersecting_seg_id, .. }
-                                    | crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
+                                let right_intersecting_seg_id = match &**right_side {
+                                    kcl_lib::front::TrimTermination::Intersection { intersecting_seg_id, .. }
+                                    | kcl_lib::front::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
                                     _ => {
                                         eprintln!("Right side is not an intersection or coincident");
                                         continue;
@@ -1276,7 +1232,7 @@ impl Context {
 
                                 // Check if right side is an intersection and if it's at an endpoint
                                 let mut intersection_point_id: Option<usize> = None;
-                                if matches!(right_side, crate::trim::TrimTermination::Intersection { .. }) {
+                                if matches!(&**right_side, kcl_lib::front::TrimTermination::Intersection { .. }) {
                                     let intersecting_seg = current_scene_graph_delta
                                         .new_graph
                                         .objects
@@ -1378,10 +1334,10 @@ impl Context {
                                         kcl_lib::front::ObjectId(new_segment_start_point_id),
                                         kcl_lib::front::ObjectId(point_id),
                                     ]
-                                } else if let crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                } else if let kcl_lib::front::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                                     trim_spawn_segment_coincident_with_another_segment_point_id,
                                     ..
-                                } = &right_side {
+                                } = &**right_side {
                                     vec![
                                         kcl_lib::front::ObjectId(new_segment_start_point_id),
                                         kcl_lib::front::ObjectId(*trim_spawn_segment_coincident_with_another_segment_point_id),
@@ -1402,15 +1358,15 @@ impl Context {
                                 let mut points_constrained_to_new_segment_start = std::collections::HashSet::new();
                                 let mut points_constrained_to_new_segment_end = std::collections::HashSet::new();
 
-                                if let crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                if let kcl_lib::front::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                                     trim_spawn_segment_coincident_with_another_segment_point_id,
                                     ..
-                                } = &right_side {
+                                } = &**right_side {
                                     points_constrained_to_new_segment_start.insert(*trim_spawn_segment_coincident_with_another_segment_point_id);
                                 }
 
                                 for constraint_to_migrate in constraints_to_migrate.iter() {
-                                    if constraint_to_migrate.attach_to_endpoint == "end"
+                                    if constraint_to_migrate.attach_to_endpoint == kcl_lib::front::AttachToEndpoint::End
                                         && constraint_to_migrate.is_point_point
                                     {
                                         points_constrained_to_new_segment_end
@@ -1420,7 +1376,9 @@ impl Context {
 
                                 for constraint_to_migrate in constraints_to_migrate.iter() {
                                     // Skip migrating point-segment constraints if the point is already constrained
-                                    if constraint_to_migrate.attach_to_endpoint == "segment" {
+                                    if constraint_to_migrate.attach_to_endpoint
+                                        == kcl_lib::front::AttachToEndpoint::Segment
+                                    {
                                         if points_constrained_to_new_segment_start
                                             .contains(&constraint_to_migrate.other_entity_id)
                                             || points_constrained_to_new_segment_end
@@ -1430,13 +1388,16 @@ impl Context {
                                         }
                                     }
 
-                                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint == "segment" {
+                                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint
+                                        == kcl_lib::front::AttachToEndpoint::Segment
+                                    {
                                         vec![
                                             kcl_lib::front::ObjectId(constraint_to_migrate.other_entity_id),
                                             kcl_lib::front::ObjectId(new_segment_id),
                                         ]
                                     } else {
-                                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint == "start"
+                                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint
+                                            == kcl_lib::front::AttachToEndpoint::Start
                                         {
                                             new_segment_start_point_id
                                         } else {
@@ -1712,9 +1673,9 @@ impl Context {
 
                     // Move to next segment (or re-check same segment if deletion occurred)
                     let old_start_index = start_index;
-                    start_index = match &next_trim_result {
-                        NextTrimResult::TrimSpawn { next_index, .. } => *next_index,
-                        NextTrimResult::NoTrimSpawn { .. } => {
+                    start_index = match &next_trim_result_core {
+                        NextTrimResultCore::TrimSpawn { next_index, .. } => *next_index,
+                        NextTrimResultCore::NoTrimSpawn { .. } => {
                             // Should not happen here
                             break;
                         }
