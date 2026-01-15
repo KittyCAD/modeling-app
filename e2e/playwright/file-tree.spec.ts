@@ -9,7 +9,6 @@ import {
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
-import type { Locator } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', { tag: '@desktop' }, () => {

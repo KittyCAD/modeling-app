@@ -11,7 +11,11 @@ import type { ActorRefFrom } from 'xstate'
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
 
-type FSEffectProps = { src: string; target: string }
+type FSEffectProps = {
+  src: string
+  target: string
+  requestedProjectName: string
+}
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
 const moveFile = StateEffect.define<FSEffectProps>()
@@ -50,7 +54,7 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
  * FS history extension. This is where FS un/redo editor events
  * actually call systemIO APIs.
  */
-export function buildFSEffectExtension(
+export function buildFSHistoryExtension(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>,
   kclManager: KclManager
 ) {
@@ -102,7 +106,7 @@ export function buildFSEffectExtension(
  * to CodeMirror in a way that works with CM's normal history flow,
  * making things like archiving files and folders un/redoable.
  */
-export function fsEffectExtension(): Extension {
+export function fsHistoryExtension(): Extension {
   const undoableFs = invertedEffects.of((tr) => {
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
