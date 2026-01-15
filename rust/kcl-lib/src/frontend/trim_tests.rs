@@ -709,7 +709,7 @@ sketch(on = YZ) {
 "#;
 
         // Test that all trim lines produce the same result
-        let trim_lines = vec![
+        let trim_lines = [
             vec![Coords2d { x: -3.45, y: -1.3 }, Coords2d { x: -5.53, y: -1.3 }],
             vec![Coords2d { x: -3.93, y: 2.17 }, Coords2d { x: -6.24, y: 2.14 }],
             vec![Coords2d { x: -3.77, y: 0.5 }, Coords2d { x: -6.11, y: 0.37 }],
@@ -1839,7 +1839,7 @@ sketch(on = YZ) {
         // (this is only available when artifact-graph feature is enabled)
         #[cfg(feature = "artifact-graph")]
         if scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
-            scene_graph.objects = exec_outcome.scene_objects.clone();
+            scene_graph.objects = exec_outcome.scene_objects;
         }
 
         if scene_graph.objects.is_empty() {
@@ -1853,10 +1853,10 @@ sketch(on = YZ) {
 
     fn find_first_line_id(objects: &[crate::frontend::api::Object]) -> usize {
         for obj in objects {
-            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind {
-                if matches!(segment, crate::frontend::sketch::Segment::Line(_)) {
-                    return obj.id.0;
-                }
+            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind
+                && matches!(segment, crate::frontend::sketch::Segment::Line(_))
+            {
+                return obj.id.0;
             }
         }
         panic!("No line segment found in {} objects", objects.len());
@@ -1864,10 +1864,10 @@ sketch(on = YZ) {
 
     fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> usize {
         for obj in objects {
-            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind {
-                if matches!(segment, crate::frontend::sketch::Segment::Arc(_)) {
-                    return obj.id.0;
-                }
+            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind
+                && matches!(segment, crate::frontend::sketch::Segment::Arc(_))
+            {
+                return obj.id.0;
             }
         }
         panic!("No arc segment found in {} objects", objects.len());

@@ -4,15 +4,13 @@
 
 #[cfg(target_arch = "wasm32")]
 use gloo_utils::format::JsValueSerdeExt;
+#[cfg(target_arch = "wasm32")]
+use kcl_lib::front::{get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, Object};
 // Import core types and functions from kcl-lib
 use kcl_lib::front::{
-    ConstraintToMigrate as ConstraintToMigrateCore, Coords2d as Coords2dCore,
-    NextTrimResult as NextTrimResultCore, TrimOperation as TrimOperationCore,
-    TrimTermination as TrimTerminationCore, TrimTerminations as TrimTerminationsCore,
-};
-#[cfg(target_arch = "wasm32")]
-use kcl_lib::front::{
-    get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, Object,
+    ConstraintToMigrate as ConstraintToMigrateCore, Coords2d as Coords2dCore, NextTrimResult as NextTrimResultCore,
+    TrimOperation as TrimOperationCore, TrimTermination as TrimTerminationCore,
+    TrimTerminations as TrimTerminationsCore,
 };
 #[cfg(target_arch = "wasm32")]
 use serde::{Deserialize, Serialize};

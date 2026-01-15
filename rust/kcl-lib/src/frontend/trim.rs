@@ -4424,8 +4424,8 @@ mod tests {
         // Use a point that's exactly on the unit circle
         let angle = std::f64::consts::PI / 4.0; // 45 degrees
         let point = Coords2d {
-            x: angle.cos(),
-            y: angle.sin(),
+            x: libm::cos(angle),
+            y: libm::sin(angle),
         };
         let result = is_point_on_arc(
             point,
@@ -4491,16 +4491,16 @@ mod tests {
         // Arc from 350° to 10° (wraps around)
         let center = Coords2d { x: 0.0, y: 0.0 };
         let start = Coords2d {
-            x: (350.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (350.0 * std::f64::consts::PI / 180.0).sin(),
+            x: libm::cos(350.0 * std::f64::consts::PI / 180.0),
+            y: libm::sin(350.0 * std::f64::consts::PI / 180.0),
         };
         let end = Coords2d {
-            x: (10.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (10.0 * std::f64::consts::PI / 180.0).sin(),
+            x: libm::cos(10.0 * std::f64::consts::PI / 180.0),
+            y: libm::sin(10.0 * std::f64::consts::PI / 180.0),
         };
         let point = Coords2d {
-            x: (5.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (5.0 * std::f64::consts::PI / 180.0).sin(),
+            x: libm::cos(5.0 * std::f64::consts::PI / 180.0),
+            y: libm::sin(5.0 * std::f64::consts::PI / 180.0),
         };
         let result = is_point_on_arc(point, center, start, end, EPSILON_POINT_ON_SEGMENT);
         assert!(result);
