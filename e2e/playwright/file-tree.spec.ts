@@ -608,62 +608,63 @@ test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
 })
 
 test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
-  test(`delete file when main.kcl exists, navigate to main.kcl`, async ({
-    page,
-    context,
-  }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      const testDir = join(dir, 'testProject')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        join(testDir, 'main.kcl')
-      )
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        join(testDir, 'fileToDelete.kcl')
-      )
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+  test(
+    `delete file when main.kcl exists, navigate to main.kcl`,
+    { tag: '@windows' },
+    async ({ page, context }, testInfo) => {
+      await context.folderSetupFn(async (dir) => {
+        const testDir = join(dir, 'testProject')
+        await fsp.mkdir(testDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('cylinder.kcl'),
+          join(testDir, 'main.kcl')
+        )
+        await fsp.copyFile(
+          executorInputPath('basic_fillet_cube_end.kcl'),
+          join(testDir, 'fileToDelete.kcl')
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-    // Constants and locators
-    const projectCard = page.getByText('testProject')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const fileToDelete = u.locatorFile('fileToDelete.kcl')
-    const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
-    const deleteConfirmation = page.getByTestId('delete-confirmation')
+      // Constants and locators
+      const projectCard = page.getByText('testProject')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const fileToDelete = u.locatorFile('fileToDelete.kcl')
+      const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+      const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-    await test.step('Open project and navigate to fileToDelete.kcl', async () => {
-      await projectCard.click()
-      await u.waitForPageLoad()
-      await u.openFilePanel()
+      await test.step('Open project and navigate to fileToDelete.kcl', async () => {
+        await projectCard.click()
+        await u.waitForPageLoad()
+        await u.openFilePanel()
 
-      await fileToDelete.click()
-      await u.waitForPageLoad()
-      await u.openKclCodePanel()
-      await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
-      await u.closeKclCodePanel()
-    })
+        await fileToDelete.click()
+        await u.waitForPageLoad()
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        await u.closeKclCodePanel()
+      })
 
-    await test.step('Delete fileToDelete.kcl', async () => {
-      await fileToDelete.click({ button: 'right' })
-      await expect(deleteMenuItem).toBeVisible()
-      await deleteMenuItem.click()
-      await expect(deleteConfirmation).toBeVisible()
-      await deleteConfirmation.click()
-    })
+      await test.step('Delete fileToDelete.kcl', async () => {
+        await fileToDelete.click({ button: 'right' })
+        await expect(deleteMenuItem).toBeVisible()
+        await deleteMenuItem.click()
+        await expect(deleteConfirmation).toBeVisible()
+        await deleteConfirmation.click()
+      })
 
-    await test.step('Check deletion and navigation', async () => {
-      await u.waitForPageLoad()
-      await expect(fileToDelete).not.toBeVisible()
-      await u.closeFilePanel()
-      await u.openKclCodePanel()
-      await expect(u.codeLocator).toContainText('circle(')
-      await expect(projectMenuButton).toContainText('main.kcl')
-    })
-  })
+      await test.step('Check deletion and navigation', async () => {
+        await u.waitForPageLoad()
+        await expect(fileToDelete).not.toBeVisible()
+        await u.closeFilePanel()
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('circle(')
+        await expect(projectMenuButton).toContainText('main.kcl')
+      })
+    }
+  )
 
   test(`Delete folder we are not in, don't navigate`, async ({
     context,
