@@ -125,6 +125,7 @@ layout: manual
   * [`patternLinear3d`](/docs/kcl-std/functions/std-solid-patternLinear3d)
   * [`patternTransform`](/docs/kcl-std/functions/std-solid-patternTransform)
   * [`shell`](/docs/kcl-std/functions/std-solid-shell)
+  * [`split`](/docs/kcl-std/functions/std-solid-split)
   * [`subtract`](/docs/kcl-std/functions/std-solid-subtract)
   * [`union`](/docs/kcl-std/functions/std-solid-union)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
