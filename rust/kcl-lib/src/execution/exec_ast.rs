@@ -1779,6 +1779,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
                                     segment: UnsolvedSegment {
+                                        id: segment.id,
                                         object_id: *start_object_id,
                                         kind: UnsolvedSegmentKind::Point {
                                             position: start.clone(),
@@ -1802,6 +1803,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
                                     segment: UnsolvedSegment {
+                                        id: segment.id,
                                         object_id: *start_object_id,
                                         kind: UnsolvedSegmentKind::Point {
                                             position: start.clone(),
@@ -1835,6 +1837,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
                                     segment: Segment {
+                                        id: segment.id,
                                         object_id: *start_object_id,
                                         kind: SegmentKind::Point {
                                             position: start.clone(),
@@ -1860,6 +1863,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
                                     segment: Segment {
+                                        id: segment.id,
                                         object_id: *start_object_id,
                                         kind: SegmentKind::Point {
                                             position: start.clone(),
@@ -1895,6 +1899,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
                                     segment: UnsolvedSegment {
+                                        id: segment.id,
                                         object_id: *end_object_id,
                                         kind: UnsolvedSegmentKind::Point {
                                             position: end.clone(),
@@ -1918,6 +1923,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
                                     segment: UnsolvedSegment {
+                                        id: segment.id,
                                         object_id: *end_object_id,
                                         kind: UnsolvedSegmentKind::Point {
                                             position: end.clone(),
@@ -1951,6 +1957,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
                                     segment: Segment {
+                                        id: segment.id,
                                         object_id: *end_object_id,
                                         kind: SegmentKind::Point {
                                             position: end.clone(),
@@ -1976,6 +1983,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
                                     segment: Segment {
+                                        id: segment.id,
                                         object_id: *end_object_id,
                                         kind: SegmentKind::Point {
                                             position: end.clone(),
@@ -2004,6 +2012,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
                                     segment: UnsolvedSegment {
+                                        id: segment.id,
                                         object_id: *center_object_id,
                                         kind: UnsolvedSegmentKind::Point {
                                             position: center.clone(),
@@ -2037,6 +2046,7 @@ impl Node<MemberExpression> {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
                                     segment: Segment {
+                                        id: segment.id,
                                         object_id: *center_object_id,
                                         kind: SegmentKind::Point {
                                             position: center.clone(),

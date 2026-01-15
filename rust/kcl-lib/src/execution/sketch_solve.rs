@@ -184,6 +184,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, analysis, &srs)?;
             let position = [position_x, position_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Point {
                     position,
@@ -211,6 +212,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Line {
                     start,
@@ -249,6 +251,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let end = [end_x, end_y];
             let center = [center_x, center_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Arc {
                     start,

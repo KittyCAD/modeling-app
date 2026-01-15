@@ -61,6 +61,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         },
     };
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: exec_state.next_object_id(),
         kind: UnsolvedSegmentKind::Point {
             position: [at_x, at_y],
@@ -197,6 +198,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let end_object_id = exec_state.next_object_id();
     let line_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: line_object_id,
         kind: UnsolvedSegmentKind::Line {
             start: [start_x, start_y],
@@ -404,6 +406,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let center_object_id = exec_state.next_object_id();
     let arc_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: arc_object_id,
         kind: UnsolvedSegmentKind::Arc {
             start: [UnsolvedExpr::Unknown(start_x), UnsolvedExpr::Unknown(start_y)],
