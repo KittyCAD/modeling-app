@@ -397,78 +397,6 @@ impl Context {
 
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
-    #[wasm_bindgen]
-    pub async fn batch_split_segment_operations(
-        &self,
-        version_json: &str,
-        sketch_json: &str,
-        edit_segments_json: &str,
-        add_constraints_json: &str,
-        delete_constraint_ids_json: &str,
-        new_segment_id_json: &str,
-        new_segment_start_point_id_json: &str,
-        new_segment_end_point_id_json: &str,
-        new_segment_center_point_id_json: &str,
-        settings: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
-            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let edit_segments: Vec<kcl_lib::front::ExistingSegmentCtor> = serde_json::from_str(edit_segments_json)
-            .map_err(|e| format!("Could not deserialize edit_segments: {e}"))?;
-        let add_constraints: Vec<kcl_lib::front::Constraint> = serde_json::from_str(add_constraints_json)
-            .map_err(|e| format!("Could not deserialize add_constraints: {e}"))?;
-        let delete_constraint_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(delete_constraint_ids_json)
-            .map_err(|e| format!("Could not deserialize delete_constraint_ids: {e}"))?;
-        let new_segment_id: kcl_lib::front::ObjectId = serde_json::from_str(new_segment_id_json)
-            .map_err(|e| format!("Could not deserialize new_segment_id: {e}"))?;
-        let new_segment_start_point_id: kcl_lib::front::ObjectId =
-            serde_json::from_str(new_segment_start_point_id_json)
-                .map_err(|e| format!("Could not deserialize new_segment_start_point_id: {e}"))?;
-        let new_segment_end_point_id: kcl_lib::front::ObjectId = serde_json::from_str(new_segment_end_point_id_json)
-            .map_err(|e| format!("Could not deserialize new_segment_end_point_id: {e}"))?;
-        let new_segment_center_point_id: Option<kcl_lib::front::ObjectId> =
-            if new_segment_center_point_id_json.is_empty() {
-                None
-            } else {
-                Some(
-                    serde_json::from_str(new_segment_center_point_id_json)
-                        .map_err(|e| format!("Could not deserialize new_segment_center_point_id: {e}"))?,
-                )
-            };
-
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for batch split segment operations. {TRUE_BUG} Details: {e}")
-        })?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .batch_split_segment_operations(
-                &ctx,
-                version,
-                sketch,
-                edit_segments,
-                add_constraints,
-                delete_constraint_ids,
-                kcl_lib::front::NewSegmentInfo {
-                    segment_id: new_segment_id,
-                    start_point_id: new_segment_start_point_id,
-                    end_point_id: new_segment_end_point_id,
-                    center_point_id: new_segment_center_point_id,
-                },
-            )
-            .await
-            .map_err(|e| format!("Failed to batch split segment operations: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result).map_err(|e| {
-            format!("Could not serialize batch split segment operations result. {TRUE_BUG} Details: {e}")
-        })?)
-    }
-
     /// Execute trim operations on a sketch.
     /// This runs the full trim loop internally, executing all trim operations.
     #[wasm_bindgen]
@@ -1229,12 +1157,12 @@ impl Context {
                                                     if let (Some(start_coords), Some(end_coords)) = (
                                                         kcl_lib::front::get_position_coords_for_line(
                                                             seg,
-                                                            "start",
+                                                            kcl_lib::front::LineEndpoint::Start,
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
                                                         kcl_lib::front::get_position_coords_for_line(
                                                             seg,
-                                                            "end",
+                                                            kcl_lib::front::LineEndpoint::End,
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
                                                     ) {
@@ -1268,12 +1196,12 @@ impl Context {
                                                     if let (Some(start_coords), Some(end_coords)) = (
                                                         kcl_lib::front::get_position_coords_from_arc(
                                                             seg,
-                                                            "start",
+                                                            kcl_lib::front::ArcPoint::Start,
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
                                                         kcl_lib::front::get_position_coords_from_arc(
                                                             seg,
-                                                            "end",
+                                                            kcl_lib::front::ArcPoint::End,
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
                                                     ) {

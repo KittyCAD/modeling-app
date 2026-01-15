@@ -24,6 +24,28 @@ pub struct Coords2d {
     pub y: f64,
 }
 
+/// Which endpoint of a line segment to get coordinates for
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LineEndpoint {
+    Start,
+    End,
+}
+
+/// Which point of an arc segment to get coordinates for
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArcPoint {
+    Start,
+    End,
+    Center,
+}
+
+/// Direction along a segment for finding trim terminations
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TrimDirection {
+    Left,
+    Right,
+}
+
 // Manual serde implementation for Coords2d to serialize as [x, y] array
 // This matches TypeScript's Coords2d type which is [number, number]
 
@@ -636,11 +658,7 @@ fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId) -> Optio
 
 // Legacy JSON helper (will be removed)
 /// Helper to get point coordinates from a Line segment by looking up the point object (native types)
-pub fn get_position_coords_for_line(
-    segment_obj: &Object,
-    which: &str, // "start" or "end"
-    objects: &[Object],
-) -> Option<Coords2d> {
+pub fn get_position_coords_for_line(segment_obj: &Object, which: LineEndpoint, objects: &[Object]) -> Option<Coords2d> {
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
         return None;
     };
@@ -650,7 +668,10 @@ pub fn get_position_coords_for_line(
     };
 
     // Get the point ID from the segment
-    let point_id = if which == "start" { line.start } else { line.end };
+    let point_id = match which {
+        LineEndpoint::Start => line.start,
+        LineEndpoint::End => line.end,
+    };
 
     get_point_coords_from_native(objects, point_id)
 }
@@ -679,11 +700,7 @@ fn is_point_coincident_with_segment_native(point_id: ObjectId, segment_id: Objec
 }
 
 /// Helper to get point coordinates from an Arc segment by looking up the point object (native types)
-pub fn get_position_coords_from_arc(
-    segment_obj: &Object,
-    which: &str, // "start", "end", or "center"
-    objects: &[Object],
-) -> Option<Coords2d> {
+pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objects: &[Object]) -> Option<Coords2d> {
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
         return None;
     };
@@ -693,12 +710,10 @@ pub fn get_position_coords_from_arc(
     };
 
     // Get the point ID from the segment
-    let point_id = if which == "start" {
-        arc.start
-    } else if which == "end" {
-        arc.end
-    } else {
-        arc.center
+    let point_id = match which {
+        ArcPoint::Start => arc.start,
+        ArcPoint::End => arc.end,
+        ArcPoint::Center => arc.center,
     };
 
     get_point_coords_from_native(objects, point_id)
@@ -741,8 +756,8 @@ pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[
 
             // Handle Line segments
             if let Segment::Line(_line) = segment {
-                let start_point = get_position_coords_for_line(obj, "start", objects);
-                let end_point = get_position_coords_for_line(obj, "end", objects);
+                let start_point = get_position_coords_for_line(obj, LineEndpoint::Start, objects);
+                let end_point = get_position_coords_for_line(obj, LineEndpoint::End, objects);
 
                 if let (Some(start), Some(end)) = (start_point, end_point)
                     && let Some(intersection) = line_segment_intersection(p1, p2, start, end, EPSILON_POINT_ON_SEGMENT)
@@ -760,9 +775,9 @@ pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[
 
             // Handle Arc segments
             if let Segment::Arc(_arc) = segment {
-                let center_point = get_position_coords_from_arc(obj, "center", objects);
-                let start_point = get_position_coords_from_arc(obj, "start", objects);
-                let end_point = get_position_coords_from_arc(obj, "end", objects);
+                let center_point = get_position_coords_from_arc(obj, ArcPoint::Center, objects);
+                let start_point = get_position_coords_from_arc(obj, ArcPoint::Start, objects);
+                let end_point = get_position_coords_from_arc(obj, ArcPoint::End, objects);
 
                 if let (Some(center), Some(start), Some(end)) = (center_point, start_point, end_point)
                     && let Some(intersection) =
@@ -863,26 +878,27 @@ pub fn get_trim_spawn_terminations(
 
     let (segment_start, segment_end, segment_center) = match segment {
         Segment::Line(_) => {
-            let start = get_position_coords_for_line(trim_spawn_seg, "start", objects).ok_or_else(|| {
-                format!(
-                    "Could not get start coordinates for line segment {}",
-                    trim_spawn_seg_id.0
-                )
-            })?;
-            let end = get_position_coords_for_line(trim_spawn_seg, "end", objects)
+            let start =
+                get_position_coords_for_line(trim_spawn_seg, LineEndpoint::Start, objects).ok_or_else(|| {
+                    format!(
+                        "Could not get start coordinates for line segment {}",
+                        trim_spawn_seg_id.0
+                    )
+                })?;
+            let end = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::End, objects)
                 .ok_or_else(|| format!("Could not get end coordinates for line segment {}", trim_spawn_seg_id.0))?;
             (start, end, None)
         }
         Segment::Arc(_) => {
-            let start = get_position_coords_from_arc(trim_spawn_seg, "start", objects).ok_or_else(|| {
+            let start = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Start, objects).ok_or_else(|| {
                 format!(
                     "Could not get start coordinates for arc segment {}",
                     trim_spawn_seg_id.0
                 )
             })?;
-            let end = get_position_coords_from_arc(trim_spawn_seg, "end", objects)
+            let end = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::End, objects)
                 .ok_or_else(|| format!("Could not get end coordinates for arc segment {}", trim_spawn_seg_id.0))?;
-            let center = get_position_coords_from_arc(trim_spawn_seg, "center", objects).ok_or_else(|| {
+            let center = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Center, objects).ok_or_else(|| {
                 format!(
                     "Could not get center coordinates for arc segment {}",
                     trim_spawn_seg_id.0
@@ -976,7 +992,7 @@ pub fn get_trim_spawn_terminations(
         trim_spawn_seg,
         intersection_point,
         intersection_t,
-        "left",
+        TrimDirection::Left,
         objects,
         SegmentGeometry {
             start: segment_start,
@@ -989,7 +1005,7 @@ pub fn get_trim_spawn_terminations(
         trim_spawn_seg,
         intersection_point,
         intersection_t,
-        "right",
+        TrimDirection::Right,
         objects,
         SegmentGeometry {
             start: segment_start,
@@ -1068,7 +1084,7 @@ fn find_termination_in_direction(
     trim_spawn_seg: &Object,
     _intersection_point: Coords2d,
     intersection_t: f64,
-    direction: &str,
+    direction: TrimDirection,
     objects: &[Object],
     segment_geometry: SegmentGeometry,
 ) -> Result<TrimTermination, String> {
@@ -1146,8 +1162,8 @@ fn find_termination_in_direction(
         // Handle Line-Line, Line-Arc, Arc-Line, Arc-Arc intersections
         match other_segment {
             Segment::Line(_) => {
-                let other_start = get_position_coords_for_line(other_seg, "start", objects);
-                let other_end = get_position_coords_for_line(other_seg, "end", objects);
+                let other_start = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects);
+                let other_end = get_position_coords_for_line(other_seg, LineEndpoint::End, objects);
                 if let (Some(os), Some(oe)) = (other_start, other_end) {
                     match segment {
                         Segment::Line(_) => {
@@ -1203,9 +1219,9 @@ fn find_termination_in_direction(
                 }
             }
             Segment::Arc(_) => {
-                let other_start = get_position_coords_from_arc(other_seg, "start", objects);
-                let other_end = get_position_coords_from_arc(other_seg, "end", objects);
-                let other_center = get_position_coords_from_arc(other_seg, "center", objects);
+                let other_start = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects);
+                let other_end = get_position_coords_from_arc(other_seg, ArcPoint::End, objects);
+                let other_center = get_position_coords_from_arc(other_seg, ArcPoint::Center, objects);
                 if let (Some(os), Some(oe), Some(oc)) = (other_start, other_end, other_center) {
                     match segment {
                         Segment::Line(_) => {
@@ -1274,7 +1290,7 @@ fn find_termination_in_direction(
 
                 // Check if other segment's start endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) = get_position_coords_for_line(other_seg, "start", objects)
+                    && let Some(other_start) = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1324,7 +1340,7 @@ fn find_termination_in_direction(
 
                 // Check if other segment's end endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) = get_position_coords_for_line(other_seg, "end", objects)
+                    && let Some(other_end) = get_position_coords_for_line(other_seg, LineEndpoint::End, objects)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1377,7 +1393,7 @@ fn find_termination_in_direction(
 
                 // Check if other segment's start endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) = get_position_coords_from_arc(other_seg, "start", objects)
+                    && let Some(other_start) = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1427,7 +1443,7 @@ fn find_termination_in_direction(
 
                 // Check if other segment's end endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) = get_position_coords_from_arc(other_seg, "end", objects)
+                    && let Some(other_end) = get_position_coords_from_arc(other_seg, ArcPoint::End, objects)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1489,10 +1505,9 @@ fn find_termination_in_direction(
                 return false; // Too close to intersection point
             }
 
-            if direction == "left" {
-                candidate.t < intersection_t
-            } else {
-                candidate.t > intersection_t
+            match direction {
+                TrimDirection::Left => candidate.t < intersection_t,
+                TrimDirection::Right => candidate.t > intersection_t,
             }
         })
         .collect();
@@ -1526,10 +1541,9 @@ fn find_termination_in_direction(
         Some(c) => c,
         None => {
             // No trim termination found, default to segment endpoint
-            let endpoint = if direction == "left" {
-                segment_geometry.start
-            } else {
-                segment_geometry.end
+            let endpoint = match direction {
+                TrimDirection::Left => segment_geometry.start,
+                TrimDirection::Right => segment_geometry.end,
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -1554,8 +1568,8 @@ fn find_termination_in_direction(
                 match other_segment {
                     Segment::Line(_) => {
                         if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_for_line(intersecting_seg, "start", objects),
-                            get_position_coords_for_line(intersecting_seg, "end", objects),
+                            get_position_coords_for_line(intersecting_seg, LineEndpoint::Start, objects),
+                            get_position_coords_for_line(intersecting_seg, LineEndpoint::End, objects),
                         ) {
                             let dist_to_start = ((closest_candidate.point.x - other_start.x)
                                 * (closest_candidate.point.x - other_start.x)
@@ -1572,8 +1586,8 @@ fn find_termination_in_direction(
                     }
                     Segment::Arc(_) => {
                         if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_from_arc(intersecting_seg, "start", objects),
-                            get_position_coords_from_arc(intersecting_seg, "end", objects),
+                            get_position_coords_from_arc(intersecting_seg, ArcPoint::Start, objects),
+                            get_position_coords_from_arc(intersecting_seg, ArcPoint::End, objects),
                         ) {
                             let dist_to_start = ((closest_candidate.point.x - other_start.x)
                                 * (closest_candidate.point.x - other_start.x)
@@ -1595,10 +1609,9 @@ fn find_termination_in_direction(
             // If the intersection point is another segment's endpoint (even without coincident constraint),
             // return segEndPoint instead of intersection
             if is_other_seg_endpoint {
-                let endpoint = if direction == "left" {
-                    segment_geometry.start
-                } else {
-                    segment_geometry.end
+                let endpoint = match direction {
+                    TrimDirection::Left => segment_geometry.start,
+                    TrimDirection::Right => segment_geometry.end,
                 };
                 return Ok(TrimTermination::SegEndPoint {
                     trim_termination_coords: endpoint,
@@ -1607,11 +1620,13 @@ fn find_termination_in_direction(
         }
 
         // Also check if intersection is at our arc's endpoint
-        let endpoint_t = if direction == "left" { 0.0 } else { 1.0 };
-        let endpoint = if direction == "left" {
-            segment_geometry.start
-        } else {
-            segment_geometry.end
+        let endpoint_t = match direction {
+            TrimDirection::Left => 0.0,
+            TrimDirection::Right => 1.0,
+        };
+        let endpoint = match direction {
+            TrimDirection::Left => segment_geometry.start,
+            TrimDirection::Right => segment_geometry.end,
         };
         let dist_to_endpoint_param = (closest_candidate.t - endpoint_t).abs();
         let dist_to_endpoint_coords = ((closest_candidate.point.x - endpoint.x)
@@ -1631,16 +1646,18 @@ fn find_termination_in_direction(
     }
 
     // Check if the closest candidate is an intersection at an endpoint
-    let endpoint_t_for_return = if direction == "left" { 0.0 } else { 1.0 };
+    let endpoint_t_for_return = match direction {
+        TrimDirection::Left => 0.0,
+        TrimDirection::Right => 1.0,
+    };
     if closest_candidate.candidate_type == "intersection" {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
         if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
             // Intersection is at endpoint - check if there's a coincident constraint
             // or if it's just a numerical precision issue
-            let endpoint = if direction == "left" {
-                segment_geometry.start
-            } else {
-                segment_geometry.end
+            let endpoint = match direction {
+                TrimDirection::Left => segment_geometry.start,
+                TrimDirection::Right => segment_geometry.end,
             };
             return Ok(TrimTermination::SegEndPoint {
                 trim_termination_coords: endpoint,
@@ -1649,10 +1666,9 @@ fn find_termination_in_direction(
     }
 
     // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
-    let endpoint = if direction == "left" {
-        segment_geometry.start
-    } else {
-        segment_geometry.end
+    let endpoint = match direction {
+        TrimDirection::Left => segment_geometry.start,
+        TrimDirection::Right => segment_geometry.end,
     };
     if closest_candidate.candidate_type == "endpoint" {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
@@ -2711,8 +2727,8 @@ pub fn trim_strategy(
 
         // Get the original end point coordinates before editing using native types
         let original_end_point_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "end", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "end", objects),
+            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects),
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects),
             _ => None,
         };
 
@@ -2978,18 +2994,18 @@ pub fn trim_strategy(
         // They should be migrated to [pointId, newSegmentId] if the point is after the split point
         let split_point = right_trim_coords; // Use right trim coords as split point
         let segment_start_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "start", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "start", objects),
+            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::Start, objects),
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Start, objects),
             _ => None,
         };
         let segment_end_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "end", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "end", objects),
+            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects),
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects),
             _ => None,
         };
         let segment_center_coords = match segment {
             Segment::Line(_) => None,
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "center", objects),
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Center, objects),
             _ => None,
         };
 
@@ -3891,12 +3907,12 @@ async fn execute_trim_operations_simple(
                                     if let (Some(start_coords), Some(end_coords)) = (
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
-                                            "start",
+                                            crate::frontend::trim::LineEndpoint::Start,
                                             &edit_scene_graph_delta.new_graph.objects,
                                         ),
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
-                                            "end",
+                                            crate::frontend::trim::LineEndpoint::End,
                                             &edit_scene_graph_delta.new_graph.objects,
                                         ),
                                     ) {
@@ -3927,12 +3943,12 @@ async fn execute_trim_operations_simple(
                                     if let (Some(start_coords), Some(end_coords)) = (
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
-                                            "start",
+                                            crate::frontend::trim::ArcPoint::Start,
                                             &edit_scene_graph_delta.new_graph.objects,
                                         ),
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
-                                            "end",
+                                            crate::frontend::trim::ArcPoint::End,
                                             &edit_scene_graph_delta.new_graph.objects,
                                         ),
                                     ) {
