@@ -1263,6 +1263,16 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  pause: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="pause"
+    >
+      <path d="M6 5H9V15H6V5ZM11 5H14V15H11V5Z" fill="currentColor" />
+    </svg>
+  ),
   rotate: (
     <svg
       viewBox="0 0 20 20"

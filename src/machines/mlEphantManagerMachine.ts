@@ -59,6 +59,7 @@ export enum MlEphantManagerTransitions {
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
@@ -104,6 +105,9 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.Cancel
+    }
+  | {
+      type: MlEphantManagerTransitions.Interrupt
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
@@ -584,6 +588,23 @@ export const mlEphantManagerMachine = setup({
 
       return {}
     }),
+    [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
@@ -782,6 +803,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
                 MlEphantManagerTransitions.Cancel,
+                MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
                 MlEphantManagerTransitions.AbruptClose,
               ]),
@@ -821,6 +843,25 @@ export const mlEphantManagerMachine = setup({
                   }
                 },
                 src: MlEphantManagerTransitions.Cancel,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.Interrupt,
                 onDone: {
                   target: S.Await,
                   actions: [],

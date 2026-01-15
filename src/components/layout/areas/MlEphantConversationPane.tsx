@@ -34,6 +34,7 @@ export const MlEphantConversationPane = (props: {
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [isInterrupted, setIsInterrupted] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -111,6 +112,9 @@ export const MlEphantConversationPane = (props: {
       mode,
     })
 
+    // Reset interrupted state when sending a new message
+    setIsInterrupted(false)
+
     props.sendBillingUpdate()
   }
 
@@ -139,6 +143,13 @@ export const MlEphantConversationPane = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Cancel,
     })
+  }
+
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.Interrupt,
+    })
+    setIsInterrupted(true)
   }
 
   if (needsReconnect && timeoutReconnect.current === undefined) {
@@ -306,9 +317,11 @@ export const MlEphantConversationPane = (props: {
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       onCancel={onCancel}
+      onInterrupt={onInterrupt}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
+      isInterrupted={isInterrupted}
       userAvatarSrc={props.user?.image}
       userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}

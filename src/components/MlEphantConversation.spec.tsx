@@ -41,10 +41,12 @@ describe('MlEphantConversation', () => {
           onClickClearChat={() => {}}
           onReconnect={() => {}}
           onCancel={() => {}}
+          onInterrupt={() => {}}
           needsReconnect={false}
           contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
+          isInterrupted={false}
         />
       )
     }
@@ -152,9 +154,11 @@ describe('MlEphantConversation', () => {
         onClickClearChat={() => {}}
         onReconnect={() => {}}
         onCancel={() => {}}
+        onInterrupt={() => {}}
         needsReconnect={false}
         disabled={false}
         hasPromptCompleted={true}
+        isInterrupted={false}
         contexts={[]}
       />
     )
