@@ -89,6 +89,9 @@ impl<'de> Deserialize<'de> for Coords2d {
 // Wrapper types for WASM serialization
 // These wrap the kcl-lib types and implement Serialize/Deserialize
 
+// A trim spawn is the intersection point of the trim line (drawn by the user) and a segment.
+// We travel in both directions along the segment from the trim spawn to determine how to implement the trim.
+
 /// Result of finding the next trim spawn (intersection) - WASM version
 #[derive(Debug, Clone)]
 pub enum NextTrimResult {
@@ -223,6 +226,11 @@ impl<'de> Deserialize<'de> for NextTrimResult {
 }
 
 /// Trim termination types - WASM version
+///
+/// Trim termination is the term used to figure out each end of a segment after a trim spawn has been found.
+/// When a trim spawn is found, we travel in both directions to find this termination. It can be:
+/// (1) the end of a segment (floating end), (2) an intersection with another segment, or
+/// (3) a coincident point where another segment is coincident with the segment we're traveling along.
 #[derive(Debug, Clone)]
 pub enum TrimTermination {
     SegEndPoint {

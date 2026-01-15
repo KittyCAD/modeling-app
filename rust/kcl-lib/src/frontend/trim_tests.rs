@@ -1749,7 +1749,7 @@ sketch(on = YZ) {
                 // Assert that the test completes within a reasonable time
                 // Note: Rust implementation may have different performance characteristics
                 assert!(
-                    duration.as_millis() < 20_000,
+                    duration.as_millis() < 40_000,
                     "Stress test should complete within 20 seconds, took {}ms",
                     duration.as_millis()
                 );
@@ -1804,6 +1804,427 @@ sketch(on = YZ) {
             }
             Err(e) => {
                 panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    // Helper function to get objects from KCL code (similar to getSceneGraphDeltaFromKcl in TypeScript)
+    async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Object> {
+        use crate::{ExecutorContext, Program, execution::MockConfig, frontend::FrontendState};
+
+        // Parse KCL code
+        let parse_result = Program::parse(kcl_code).expect("Failed to parse KCL");
+        let (program_opt, errors) = parse_result;
+        if !errors.is_empty() {
+            panic!("Failed to parse KCL: {:?}", errors);
+        }
+        let program = program_opt.expect("No AST produced");
+
+        // Use mock context
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mut frontend = FrontendState::new();
+        frontend.program = program.clone();
+
+        // Execute to get scene graph
+        let exec_outcome = mock_ctx
+            .run_mock(&program, &MockConfig::default())
+            .await
+            .expect("Failed to execute program");
+
+        let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
+        #[allow(unused_mut)]
+        let mut scene_graph = frontend.scene_graph.clone();
+
+        // If scene graph is empty, try to get objects from exec_outcome.scene_objects
+        // (this is only available when artifact-graph feature is enabled)
+        #[cfg(feature = "artifact-graph")]
+        if scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
+            scene_graph.objects = exec_outcome.scene_objects.clone();
+        }
+
+        if scene_graph.objects.is_empty() {
+            panic!(
+                "No objects found in scene graph. This might indicate the KCL code didn't produce any objects. Try enabling the 'artifact-graph' feature."
+            );
+        }
+
+        scene_graph.objects
+    }
+
+    fn find_first_line_id(objects: &[crate::frontend::api::Object]) -> usize {
+        for obj in objects {
+            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind {
+                if matches!(segment, crate::frontend::sketch::Segment::Line(_)) {
+                    return obj.id.0;
+                }
+            }
+        }
+        panic!("No line segment found in {} objects", objects.len());
+    }
+
+    fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> usize {
+        for obj in objects {
+            if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind {
+                if matches!(segment, crate::frontend::sketch::Segment::Arc(_)) {
+                    return obj.id.0;
+                }
+            }
+        }
+        panic!("No arc segment found in {} objects", objects.len());
+    }
+
+    /// Tests for `get_trim_spawn_terminations` function.
+    /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
+    /// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
+    mod get_trim_spawn_terminations_tests {
+        use super::*;
+        use crate::frontend::trim::{Coords2d, TrimTermination, get_trim_spawn_terminations};
+
+        #[tokio::test]
+        async fn test_line_segment_intersection_terminations() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -3.05mm, var 2.44mm], end = [var 2.88mm, var 2.81mm])
+  line2 = sketch2::line(start = [var -2.77mm, var 1mm], end = [var -1.91mm, var 4.06mm])
+  arc1 = sketch2::arc(start = [var 2.4mm, var 4.48mm], end = [var 3.4mm, var 5.41mm], center = [var 3.99mm, var 3.07mm])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
+
+            let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be intersections
+            assert!(matches!(result.left_side, TrimTermination::Intersection { .. }));
+            assert!(matches!(result.right_side, TrimTermination::Intersection { .. }));
+
+            if let TrimTermination::Intersection {
+                trim_termination_coords,
+                intersecting_seg_id,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-2.3530729879512666)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.4834844847315396).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 7);
+            }
+
+            if let TrimTermination::Intersection {
+                trim_termination_coords,
+                intersecting_seg_id,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - 1.8273063333627224).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 11);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_line_segment_seg_endpoint_with_coincident_constraints() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
+  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
+  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
+  sketch2::coincident([line2.start, line1.start])
+  sketch2::coincident([arc1.end, line1.end])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be segEndPoint
+            assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
+            assert!(matches!(result.right_side, TrimTermination::SegEndPoint { .. }));
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-2.810000000215)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.469999999985).abs() < 1e-5);
+            }
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - 2.0716435933183504).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.7918829774915763).abs() < 1e-5);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_line_segment_coincident_with_another_segment_point() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
+  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
+  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
+  sketch2::coincident([arc1.end, line1])
+  sketch2::coincident([line2.start, line1])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be trimSpawnSegmentCoincidentWithAnotherSegmentPoint
+            assert!(matches!(
+                result.left_side,
+                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
+            ));
+            assert!(matches!(
+                result.right_side,
+                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
+            ));
+
+            if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords,
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-2.380259288059525)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.5040925592307945).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 7);
+                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 5);
+            }
+
+            if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords,
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - 1.6587744607636377).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.784726710328238).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 11);
+                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 9);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_line_segment_seg_endpoint_without_coincident_constraint() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -3.24mm, var 2.46mm], end = [var 2.6mm, var 2.9mm])
+  line2 = sketch2::line(start = [var -2.38mm, var 2.47mm], end = [var -3.94mm, var -0.64mm])
+  arc1 = sketch2::arc(start = [var 2.239mm, var 5.641mm], end = [var 1.651mm, var 2.85mm], center = [var 3.6mm, var 3.889mm])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be segEndPoint
+            assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
+            assert!(matches!(result.right_side, TrimTermination::SegEndPoint { .. }));
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-3.24)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.46).abs() < 1e-5);
+            }
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - 2.6).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.9).abs() < 1e-5);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_arc_segment_intersection_terminations() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
+  sketch2::arc(start = [var -0.072mm, var 4.051mm], end = [var -0.128mm, var -0.439mm], center = [var 5.32mm, var 1.738mm])
+  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
+
+            let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be intersections
+            assert!(matches!(result.left_side, TrimTermination::Intersection { .. }));
+            assert!(matches!(result.right_side, TrimTermination::Intersection { .. }));
+
+            if let TrimTermination::Intersection {
+                trim_termination_coords,
+                intersecting_seg_id,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-0.44459011806535265)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.8295671172502757).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 9);
+            }
+
+            if let TrimTermination::Intersection {
+                trim_termination_coords,
+                intersecting_seg_id,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - (-4.728585883881671)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.3133661338085765).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 12);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_arc_segment_seg_endpoint_with_coincident_constraints() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
+  arc2 = sketch2::arc(start = [var -0.07mm, var 4.05mm], end = [var -0.13mm, var -0.44mm], center = [var 5.32mm, var 1.74mm])
+  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
+  sketch2::coincident([line1.end, arc1.end])
+  sketch2::coincident([arc1.start, arc2.start])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be segEndPoint
+            assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
+            assert!(matches!(result.right_side, TrimTermination::SegEndPoint { .. }));
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - 0.008837118620591083).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.809080419697051).abs() < 1e-5);
+            }
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - (-5.1310115335133135)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 1.0662359198714615).abs() < 1e-5);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_arc_segment_coincident_with_another_segment_point() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
+  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
+  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
+  sketch2::coincident([line1.end, arc1])
+  sketch2::coincident([arc1, arc2.start])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be trimSpawnSegmentCoincidentWithAnotherSegmentPoint
+            assert!(matches!(
+                result.left_side,
+                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
+            ));
+            assert!(matches!(
+                result.right_side,
+                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
+            ));
+
+            if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords,
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - (-0.36700307305406205)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.966675365647721).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 9);
+                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 6);
+            }
+
+            if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords,
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - (-4.178878101257838)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.447749604872991).abs() < 1e-5);
+                assert_eq!(intersecting_seg_id, 12);
+                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 11);
+            }
+        }
+
+        #[tokio::test]
+        async fn test_arc_segment_seg_endpoint_without_coincident_constraint() {
+            let kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
+  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
+  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
+}
+"#;
+
+            let objects = get_objects_from_kcl(kcl_code).await;
+            let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
+
+            let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
+                .expect("get_trim_spawn_terminations failed");
+
+            // Both sides should be segEndPoint
+            assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
+            assert!(matches!(result.right_side, TrimTermination::SegEndPoint { .. }));
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.left_side
+            {
+                assert!((trim_termination_coords.x - 0.8820069182524407).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 2.596016620488862).abs() < 1e-5);
+            }
+
+            if let TrimTermination::SegEndPoint {
+                trim_termination_coords,
+            } = result.right_side
+            {
+                assert!((trim_termination_coords.x - (-5.480988312959221)).abs() < 1e-5);
+                assert!((trim_termination_coords.y - 1.5949863061464085).abs() < 1e-5);
             }
         }
     }

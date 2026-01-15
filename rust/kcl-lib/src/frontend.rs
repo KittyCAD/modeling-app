@@ -438,17 +438,14 @@ impl SketchApi for FrontendState {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
 
-        let result = self
-            .execute_after_edit(
-                ctx,
-                sketch,
-                Default::default(),
-                EditDeleteKind::DeleteNonSketch,
-                &mut new_ast,
-            )
-            .await;
-
-        result
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            Default::default(),
+            EditDeleteKind::DeleteNonSketch,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn add_constraint(
