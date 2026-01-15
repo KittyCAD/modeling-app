@@ -363,7 +363,7 @@ description: Operations executed polysurface_to_solid.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "invert",
+      "name": "flipSurface",
       "unlabeledArg": {
         "value": {
           "type": "Solid",

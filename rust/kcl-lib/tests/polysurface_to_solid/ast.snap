@@ -966,7 +966,7 @@ description: Result of parsing polysurface_to_solid.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "invert",
+                        "name": "flipSurface",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -1388,7 +1388,7 @@ description: Result of parsing polysurface_to_solid.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "This face comes out the wrong orientation, so we have to invert it.",
+                      "value": "This face comes out the wrong orientation, so we have to flip it.",
                       "style": "line"
                     }
                   }

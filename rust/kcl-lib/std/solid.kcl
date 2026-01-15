@@ -1292,7 +1292,7 @@ export fn appearance(
   roughness?: number(Count),
 ): [Solid; 1+] | ImportedGeometry {}
 
-/// Inverts the orientation of a surface, swapping which side is the front and which is the reverse.
+/// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 ///
 /// ```kcl
 /// sideLen = 4
@@ -1312,7 +1312,7 @@ export fn appearance(
 /// // Make a cube polysurface from 6 squares
 /// cube = [
 ///   square(XY, offset = 0, y = false),
-///   square(XZ, offset = 0, y = true) |> invert(),
+///   square(XZ, offset = 0, y = true) |> flipSurface(),
 ///   square(YZ, offset = 0, y = false),
 ///   square(XY, offset = sideLen, y = false),
 ///   square(XZ, offset = -sideLen, y = true),
@@ -1320,7 +1320,7 @@ export fn appearance(
 /// ]
 /// ```
 @(impl = std_rust, feature_tree = true)
-export fn invert(
+export fn flipSurface(
   /// The surface to flip (swap its back and front sides)
   @surface: Solid,
 ): Solid {}
@@ -1349,7 +1349,7 @@ export fn invert(
 /// // Make a cube polysurface from 6 squares.
 /// cube = [
 ///   square(XY, offset = 0, y = false),
-///   square(XZ, offset = 0, y = true) |> invert(),
+///   square(XZ, offset = 0, y = true) |> flip(),
 ///   square(YZ, offset = 0, y = false),
 ///   square(XY, offset = sideLen, y = false),
 ///   square(XZ, offset = -sideLen, y = true),

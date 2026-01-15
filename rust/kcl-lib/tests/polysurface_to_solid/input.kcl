@@ -16,8 +16,8 @@ fn square(@plane, offset, y) {
 // Make a cube polysurface from 6 squares.
 cube = [
   square(XY, offset = 0, y = false),
-  // This face comes out the wrong orientation, so we have to invert it.
-  square(XZ, offset = 0, y = true) |> invert(),
+  // This face comes out the wrong orientation, so we have to flip it.
+  square(XZ, offset = 0, y = true) |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),
