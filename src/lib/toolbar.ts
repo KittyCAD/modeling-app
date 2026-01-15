@@ -371,6 +371,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
+          {
+            id: 'boolean-split',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Boolean Split', groupId: 'modeling' },
+              }),
+            icon: 'booleanIntersect', // TODO: fix
+            status: 'available',
+            title: 'Split',
+            description: 'Split a solid into multiple solids.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
+              },
+            ],
+          },
         ],
       },
       'break',

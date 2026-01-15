@@ -1911,6 +1911,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'sketch',
     prepareToEdit: prepareToEditSketchSolve,
   },
+  split: {
+    label: 'Split',
+    icon: 'booleanIntersect', // TODO: fix
+    supportsAppearance: true,
+    supportsTransform: true,
+    // prepareToEdit: prepareToEditSplit, // TODO: add
+  },
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',

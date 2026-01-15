@@ -2,7 +2,7 @@ import { recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { addSubtract } from '@src/lang/modifyAst/boolean'
+import { addSplit, addSubtract } from '@src/lang/modifyAst/boolean'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
@@ -40,6 +40,42 @@ afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
 
+async function getSolidsAndTools(
+  code: string,
+  solidIds: number[],
+  toolIds: number[],
+  instance: ModuleType,
+  kclManager: KclManager
+) {
+  const { artifactGraph, ast } = await getAstAndArtifactGraph(
+    code,
+    instance,
+    kclManager
+  )
+  // path selection is what p&c is doing with the filter (v. sweep)
+  const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
+  const solids: Selections = {
+    graphSelections: solidIds.map((i) => {
+      return {
+        artifact: paths[i],
+        codeRef: paths[i].codeRef,
+      }
+    }),
+    otherSelections: [],
+  }
+  const tools: Selections = {
+    graphSelections: toolIds.map((i) => {
+      return {
+        artifact: paths[i],
+        codeRef: paths[i].codeRef,
+      }
+    }),
+    otherSelections: [],
+  }
+
+  return { ast, artifactGraph, solids, tools }
+}
+
 describe('boolean', () => {
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(
@@ -50,31 +86,13 @@ describe('boolean', () => {
       kclManager: KclManager,
       rustContext: RustContext
     ) {
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+      const { ast, artifactGraph, solids, tools } = await getSolidsAndTools(
         code,
+        solidIds,
+        toolIds,
         instance,
         kclManager
       )
-      // path selection is what p&c is doing with the filter (v. sweep)
-      const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
-      const solids: Selections = {
-        graphSelections: solidIds.map((i) => {
-          return {
-            artifact: paths[i],
-            codeRef: paths[i].codeRef,
-          }
-        }),
-        otherSelections: [],
-      }
-      const tools: Selections = {
-        graphSelections: toolIds.map((i) => {
-          return {
-            artifact: paths[i],
-            codeRef: paths[i].codeRef,
-          }
-        }),
-        otherSelections: [],
-      }
       const result = addSubtract({
         ast,
         artifactGraph,
@@ -220,4 +238,48 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
   // From https://github.com/KittyCAD/modeling-app/blob/d83324ac30430af675806c143ee6fb30df8bdaa8/src/lang/modifyAst/boolean.test.ts#L7
   // addIntersect and addUnion are not tested here, as they would be 1:1 with existing e2e tests
   // so just adding extra addSubtract cases here
+
+  describe('Testing addSplit', () => {
+    it('should add a split call on selected solid and tool', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5.53)
+extrude001 = extrude(profile001, length = 5, symmetric = true)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-8.55, 7.53])
+  |> angledLine(angle = 0deg, length = 16.04, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 15.25)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = .1)`
+      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true)`
+      const targetIds = [0]
+      const toolIds = [1]
+      const {
+        ast,
+        artifactGraph,
+        solids: targets,
+        tools,
+      } = await getSolidsAndTools(
+        code,
+        targetIds,
+        toolIds,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addSplit({
+        ast,
+        artifactGraph,
+        targets,
+        tools,
+        merge: true,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+      await enginelessExecutor(ast, rustContextInThisFile)
+    })
+  })
 })

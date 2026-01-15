@@ -3,6 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -195,6 +196,93 @@ export function addSubtract({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addSplit({
+  ast,
+  artifactGraph,
+  targets,
+  tools,
+  merge,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  targets: Selections
+  tools: Selections
+  merge: boolean
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // 2. Prepare unlabeled and labeled arguments
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    targets,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    lastChildLookup,
+    artifactGraph,
+    ['compositeSolid', 'sweep']
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const toolVars = getVariableExprsFromSelection(
+    tools,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    lastChildLookup,
+    artifactGraph,
+    ['compositeSolid', 'sweep']
+  )
+  if (err(toolVars)) {
+    return toolVars
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
+  if (toolsExpr === null) {
+    return new Error('No tools provided for split operation')
+  }
+
+  const call = createCallExpressionStdLibKw('split', objectsExpr, [
+    createLabeledArg('tools', toolsExpr),
+    createLabeledArg('merge', createLiteral(merge, wasmInstance)),
+  ])
+  if (vars.pathIfPipe && toolVars.pathIfPipe) {
+    return new Error(
+      'Cannot use both targets and tools in a split operation with a pipe'
+    )
+  }
+
+  const pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathIfNewPipe,
+    pathToEdit: mNodeToEdit,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SPLIT,
     wasmInstance,
   })
   if (err(pathToNode)) {
