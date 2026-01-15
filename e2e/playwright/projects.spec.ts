@@ -80,10 +80,7 @@ test(
         { encoding: 'utf-8' }
       )
 
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        testFileData
-      )
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -125,20 +122,14 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        testFileData
-        )
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
       const errorDir = path.join(dir, 'broken-code')
       await fs.mkdir(errorDir, { recursive: true })
       testFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(errorDir, 'main.kcl'),
-        testFileData
-      )
+      await fs.writeFile(path.join(errorDir, 'main.kcl'), testFileData)
     })
 
     const u = await getUtils(page)
@@ -178,7 +169,17 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: ['@web', '@desktop'] },
-  async ({ toolbar, editor, scene, cmdBar, context, page, homePage, fs, folderSetupFn }) => {
+  async ({
+    toolbar,
+    editor,
+    scene,
+    cmdBar,
+    context,
+    page,
+    homePage,
+    fs,
+    folderSetupFn,
+  }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
@@ -186,10 +187,7 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        testFileData
-        )
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
       const emptyDir = path.join(dir, 'empty')
       await fs.mkdir(emptyDir, { recursive: true })
       await fs.writeFile(path.join(emptyDir, 'main.kcl'), '')
@@ -221,7 +219,17 @@ test(
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: ['@web', '@desktop'] },
-  async ({ scene, cmdBar, context, page, toolbar, editor, homePage, fs, folderSetupFn }) => {
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    toolbar,
+    editor,
+    homePage,
+    fs,
+    folderSetupFn,
+  }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
@@ -229,10 +237,7 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        testFileData
-        )
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
 
       await fs.writeFile(path.join(bracketDir, 'empty.kcl'), '')
     })
@@ -264,7 +269,17 @@ test(
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page, toolbar, homePage, editor, fs, folderSetupFn }) => {
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    toolbar,
+    homePage,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
@@ -272,10 +287,7 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        testFileData
-        )
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
 
       const brokenFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl'),
@@ -284,7 +296,7 @@ test(
       await fs.writeFile(
         path.join(bracketDir, 'broken-code-test.kcl'),
         brokenFileData
-        )
+      )
     })
 
     const u = await getUtils(page)
@@ -327,14 +339,17 @@ test(
   {
     tag: ['@web', '@desktop'],
   },
-  async ({ context, page, editor, fs, folderSetupFn, homePage, scene, cmdBar }, testInfo) => {
+  async (
+    { context, page, editor, fs, folderSetupFn, homePage, scene, cmdBar },
+    testInfo
+  ) => {
     const u = await getUtils(page)
 
     await folderSetupFn(async (dir) => {
       await fs.mkdir(path.join(dir, 'broken-code'), { recursive: true })
       const testFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl'),
-        { encoding: 'utf-8' },
+        { encoding: 'utf-8' }
       )
       await fs.writeFile(
         path.join(dir, 'broken-code', 'main.kcl'),
@@ -370,17 +385,22 @@ test(
     await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
       let testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl'), { encoding: 'utf-8' })
+        executorInputPath('router-template-slate.kcl'),
+        { encoding: 'utf-8' }
+      )
       await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
 
       await fs.mkdir(`${dir}/bracket`, { recursive: true })
       testFileData = await nodeFs.readFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),  { encoding: 'utf-8' })
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
+        { encoding: 'utf-8' }
+      )
       await fs.writeFile(`${dir}/bracket/main.kcl`, testFileData)
 
       await fs.mkdir(`${dir}/lego`, { recursive: true })
-      testFileData = await nodeFs.readFile(
-        executorInputPath('lego.kcl'),  { encoding: 'utf-8' })
+      testFileData = await nodeFs.readFile(executorInputPath('lego.kcl'), {
+        encoding: 'utf-8',
+      })
       await fs.writeFile(`${dir}/lego/main.kcl`, testFileData)
     })
 
@@ -577,12 +597,9 @@ test(
       await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
       const testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' },
+        { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        `${dir}/router-template-slate/main.kcl`,
-        testFileData
-      )
+      await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -602,306 +619,316 @@ test(
   }
 )
 
-test.describe(`Project management commands`, { tag: ['@web', '@desktop'] }, () => {
-  test(`Rename from project page`, async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn
-  }, testInfo) => {
-    const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
-      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
-    })
-
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_project`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
-
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await projectHomeLink.click()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
-
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
-    })
-
-    const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
-    await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
-      await expect(projectSidebarToggle).toBeVisible()
-      await expect(projectSidebarToggle).toContainText(projectRenamedName)
-    })
-  })
-
-  test(`Delete from project page`, async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn
-  }, testInfo) => {
-    const projectName = `my_project_to_delete`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
-      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
-    })
-
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'delete project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const commandWarning = page.getByText('Are you sure you want to delete?')
-    const toastMessage = page.getByText(`Successfully deleted`)
-    const noProjectsMessage = page.getByText('No projects found')
-
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await projectHomeLink.click()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step(`Run delete command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      await expect(commandWarning).toBeVisible()
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was deleted and we navigated home`, async () => {
-      await expect(noProjectsMessage).toBeVisible()
-    })
-  })
-  test(`Rename from home page`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn,
-  }, testInfo) => {
-    const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
-      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
-    })
-
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_home`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
-
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-      await homePage.projectsLoaded()
-      await expect(projectHomeLink).toBeVisible()
-    })
-
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
-
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was renamed`, async () => {
-      await expect(
-        page.getByRole('link', { name: projectRenamedName })
-      ).toBeVisible()
-      await expect(projectHomeLink).not.toHaveText(projectName)
-    })
-  })
-  test(`Delete from home page`, async ({
-    context,
-    page,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn
-  }, testInfo) => {
-    const projectName = `my_project_to_delete`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
-      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
-    })
-
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'delete project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const commandWarning = page.getByText('Are you sure you want to delete?')
-    const toastMessage = page.getByText(`Successfully deleted`)
-    const noProjectsMessage = page.getByText('No projects found')
-
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-      await expect(projectHomeLink).toBeVisible()
-    })
-
-    await test.step(`Run delete command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-
-      await projectNameOption.click()
-
-      await expect(commandWarning).toBeVisible()
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was deleted`, async () => {
-      await expect(projectHomeLink).not.toBeVisible()
-      await expect(noProjectsMessage).toBeVisible()
-    })
-  })
-  test('Create a new project with a colliding name', async ({
-    context,
-    homePage,
-    toolbar,
-    fs,
-    folderSetupFn,
-  }) => {
-    const projectName = 'test-project'
-    await test.step('Setup', async () => {
+test.describe(
+  `Project management commands`,
+  { tag: ['@web', '@desktop'] },
+  () => {
+    test(`Rename from project page`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      fs,
+      folderSetupFn,
+    }, testInfo) => {
+      const projectName = `my_project_to_rename`
       await folderSetupFn(async (dir) => {
-        const projectDir = path.join(dir, projectName)
-        await fs.mkdir(projectDir, { recursive: true })
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          executorInputPath('router-template-slate.kcl'), { encoding: 'utf-8' })
-        await fs.writeFile(path.join(projectDir, 'main.kcl'), testFileData)
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       })
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
       })
-    })
-
-    await test.step('Create a new project with the same name', async () => {
-      await homePage.createAndGoToProject(projectName)
-      await toolbar.logoLink.click()
-    })
-
-    await test.step('Check the project was created with a non-colliding name', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: `${projectName}-1`,
-            fileCount: 1,
-          },
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `my_project_after_rename_from_project`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
       })
-    })
+      const toastMessage = page.getByText(`Successfully renamed`)
 
-    await test.step('Create another project with the same name', async () => {
-      await homePage.createAndGoToProject(projectName)
-      await toolbar.logoLink.click()
-    })
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        page.on('console', console.log)
 
-    await test.step('Check the second project was created with a non-colliding name', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: `${projectName}-2`,
-            fileCount: 1,
-          },
-          {
-            title: `${projectName}-1`,
-            fileCount: 1,
-          },
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
+        await projectHomeLink.click()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        // Fill in the new project name
+        const newNameInput = page.getByTestId('cmd-bar-arg-value')
+        await expect(newNameInput).toBeVisible()
+        await newNameInput.fill(projectRenamedName)
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
+      await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
+        await expect(projectSidebarToggle).toBeVisible()
+        await expect(projectSidebarToggle).toContainText(projectRenamedName)
       })
     })
-  })
-})
+  
+    test(`Delete from project page`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      fs,
+      folderSetupFn,
+    }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+          { encoding: 'utf-8' }
+        )
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        await projectHomeLink.click()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted and we navigated home`, async () => {
+        await expect(noProjectsMessage).toBeVisible()
+      })
+    })
+    test(`Rename from home page`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      fs,
+      folderSetupFn,
+    }, testInfo) => {
+      const projectName = `my_project_to_rename`
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl', { encoding: 'utf-8' })
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `my_project_after_rename_from_home`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
+
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await homePage.projectsLoaded()
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        // Fill in the new project name
+        const newNameInput = page.getByTestId('cmd-bar-arg-value')
+        await expect(newNameInput).toBeVisible()
+        await newNameInput.fill(projectRenamedName)
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was renamed`, async () => {
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(projectHomeLink).not.toHaveText(projectName)
+      })
+    })
+    test(`Delete from home page`, async ({
+      context,
+      page,
+      scene,
+      cmdBar,
+      fs,
+      folderSetupFn,
+    }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+          { encoding: 'utf-8' }
+        )
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted`, async () => {
+        await expect(projectHomeLink).not.toBeVisible()
+        await expect(noProjectsMessage).toBeVisible()
+      })
+    })
+    test('Create a new project with a colliding name', async ({
+      context,
+      homePage,
+      toolbar,
+      fs,
+      folderSetupFn,
+    }) => {
+      const projectName = 'test-project'
+      await test.step('Setup', async () => {
+        await folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, projectName)
+          await fs.mkdir(projectDir, { recursive: true })
+          const testFileData = await nodeFs.readFile(
+            executorInputPath('router-template-slate.kcl'),
+            { encoding: 'utf-8' }
+          )
+          await fs.writeFile(path.join(projectDir, 'main.kcl'), testFileData)
+        })
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: projectName,
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
+
+      await test.step('Create a new project with the same name', async () => {
+        await homePage.createAndGoToProject(projectName)
+        await toolbar.logoLink.click()
+      })
+
+      await test.step('Check the project was created with a non-colliding name', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: `${projectName}-1`,
+              fileCount: 1,
+            },
+            {
+              title: projectName,
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
+
+      await test.step('Create another project with the same name', async () => {
+        await homePage.createAndGoToProject(projectName)
+        await toolbar.logoLink.click()
+      })
+
+      await test.step('Check the second project was created with a non-colliding name', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: `${projectName}-2`,
+              fileCount: 1,
+            },
+            {
+              title: `${projectName}-1`,
+              fileCount: 1,
+            },
+            {
+              title: projectName,
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
+    })
+  }
+)
 
 test(
   `Create a few projects using the default project name`,
@@ -967,21 +994,21 @@ profile001 = startProfile(sketch001, at = [0, 0])
 test(
   'File in the file pane should open with a single click',
   { tag: ['@web', '@desktop'] },
-  async ({ context, homePage, page, scene, toolbar, fs, folderSetupFn }, testInfo) => {
+  async (
+    { context, homePage, page, scene, toolbar, fs, folderSetupFn },
+    testInfo
+  ) => {
     const projectName = 'router-template-slate'
     await folderSetupFn(async (dir) => {
       await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
       const testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl'),
-        { encoding: 'utf-8' },
+        { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        `${dir}/${projectName}/main.kcl`,
-        testFileData
-      )
+      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
       const testFileData2 = await nodeFs.readFile(
         executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        { encoding: 'utf-8' },
+        { encoding: 'utf-8' }
       )
       await fs.writeFile(
         `${dir}/${projectName}/otherThingToClickOn.kcl`,
@@ -1027,7 +1054,7 @@ test(
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl'),
-        testFileData2,
+        testFileData2
       )
 
       const testFileData = await nodeFs.readFile(
@@ -1036,7 +1063,7 @@ test(
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'slate.kcl'),
-        testFileData,
+        testFileData
       )
 
       testDir = dir
@@ -1089,11 +1116,10 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), { encoding: 'utf-8' })
-        await fs.writeFile(
-          path.join(dir, name, `main.kcl`),
-          testFileData
-        )
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {
+          encoding: 'utf-8',
+        })
+        await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
       }
@@ -1203,10 +1229,9 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(
-          executorInputPath(file),
-          { encoding: 'utf-8' }
-        )
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {
+          encoding: 'utf-8',
+        })
         await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
 
         // Wait 1s between each project to ensure the order is correct
@@ -1423,14 +1448,10 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(
-          executorInputPath(file),
-          { encoding: 'utf-8' },
-        )
-        await fs.writeFile(
-          path.join(dir, name, `main.kcl`),
-          testFileData
-        )
+        const testFileData = await nodeFs.readFile(executorInputPath(file), {
+          encoding: 'utf-8',
+        })
+        await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
       }
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1539,12 +1560,9 @@ test(
       for (const fileName of fileNames) {
         const testFileData = await nodeFs.readFile(
           executorInputPath(fileName),
-          { encoding: 'utf-8' },
+          { encoding: 'utf-8' }
         )
-        await fs.writeFile(
-          path.join(testDir, fileName),
-          testFileData
-        )
+        await fs.writeFile(path.join(testDir, fileName), testFileData)
       }
     })
 
@@ -1589,12 +1607,9 @@ test(
       await fs.mkdir(testDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
         executorInputPath(`${name}.kcl`),
-        { encoding: 'utf-8' },
+        { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(testDir, 'main.kcl'),
-        testFileData
-      )
+      await fs.writeFile(path.join(testDir, 'main.kcl'), testFileData)
     })
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1731,11 +1746,7 @@ test(
         { encoding: 'utf-8' }
       )
       const finalPath = path.join(bracketDir, 'main.kcl')
-      await fs.writeFile(
-        finalPath,
-        testFileData
-      )
-
+      await fs.writeFile(finalPath, testFileData)
     })
 
     await homePage.openProject(projectName)
@@ -1746,7 +1757,16 @@ test(
 test(
   'import from nested directory',
   { tag: ['@web', '@desktop', '@windows', '@macos'] },
-  async ({ homePage, scene, cmdBar, context, page, editor, fs, folderSetupFn }) => {
+  async ({
+    homePage,
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
     const lineOfKcl = runningOnWindows()
       ? `import 'nested\\main.kcl' as thing`
       : `import 'nested/main.kcl' as thing`
@@ -1760,10 +1780,7 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         { encoding: 'utf-8' }
       )
-      await fs.writeFile(
-        path.join(nestedDir, 'main.kcl'),
-        testFileData
-      )
+      await fs.writeFile(path.join(nestedDir, 'main.kcl'), testFileData)
 
       await fs.writeFile(
         path.join(bracketDir, 'main.kcl'),
@@ -1788,7 +1805,16 @@ test(
 test(
   'segment position changes persist after dragging and reopening project',
   { tag: ['@web', '@desktop'] },
-  async ({ scene, cmdBar, context, page, editor, toolbar, fs, folderSetupFn }) => {
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    toolbar,
+    fs,
+    folderSetupFn,
+  }) => {
     const projectName = 'segment-drag-test'
 
     await folderSetupFn(async (dir) => {
@@ -1852,37 +1878,39 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
 test.describe('Project id', { tag: ['@web', '@desktop'] }, () => {
   // Should work on both web and desktop.
-  test(
-    'is created on new project',
-    async ({ page, toolbar, context, homePage }, testInfo) => {
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await createProject({ name: 'new-project', page, returnHome: false })
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+  test('is created on new project', async ({
+    page,
+    toolbar,
+    context,
+    homePage,
+  }, testInfo) => {
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await createProject({ name: 'new-project', page, returnHome: false })
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
-      const inputProjectId = page.getByTestId('project-id')
+    const inputProjectId = page.getByTestId('project-id')
 
-      await test.step('Open the project settings modal', async () => {
-        await toolbar.projectSidebarToggle.click()
-        await page.getByTestId('project-settings').click()
-        // Give time to system for writing to a persistent store
-        await page.waitForTimeout(1000)
-      })
+    await test.step('Open the project settings modal', async () => {
+      await toolbar.projectSidebarToggle.click()
+      await page.getByTestId('project-settings').click()
+      // Give time to system for writing to a persistent store
+      await page.waitForTimeout(1000)
+    })
 
-      await test.step('Check project id is not the NIL UUID and not empty', async () => {
-        await expect(inputProjectId).not.toHaveValue(uuidNIL)
-        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
-      })
-    }
-  )
+    await test.step('Check project id is not the NIL UUID and not empty', async () => {
+      await expect(inputProjectId).not.toHaveValue(uuidNIL)
+      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+    })
+  })
   test('is created on existing project without one', async ({
     page,
     toolbar,
     context,
     homePage,
     fs,
-    folderSetupFn
+    folderSetupFn,
   }, testInfo) => {
     const u = await getUtils(page)
 

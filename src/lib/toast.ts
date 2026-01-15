@@ -1,4 +1,7 @@
-export const waitForToastAnimationEnd = async (elementId: string, cb: () => void) => {
+export const waitForToastAnimationEnd = async (
+  elementId: string,
+  cb: () => void
+) => {
   return new Promise(async (resolve) => {
     const toaster = document.querySelector(`[data-rht-toaster]`)
 

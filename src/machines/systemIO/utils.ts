@@ -183,7 +183,7 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
-  lastOperation: SystemIOMachineStates,
+  lastOperation: SystemIOMachineStates
 
   // A mapping between project id and conversation ids.
   mlEphantConversations?: Map<string, string>

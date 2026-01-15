@@ -7,11 +7,16 @@ import path from 'path'
 const META_FILE = '._meta'
 
 interface MetaFileDirectoryData {
-  mtimeMs: number,
+  mtimeMs: number
 }
 
 const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
-  return typeof x === 'object' && x !== null && 'mtimeMs' in x && typeof x.mtimeMs === 'number'
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'mtimeMs' in x &&
+    typeof x.mtimeMs === 'number'
+  )
 }
 
 const noopAsync = async (..._args: any[]) =>
@@ -94,11 +99,14 @@ const scan = async (
 
   while (asyncIters.length > 0) {
     const [cwd, handles] = asyncIters.pop()
-    for await(const current of handles) {
+    for await (const current of handles) {
       await onVisit?.(cwd, current)
       visited.push([cwd, ...current])
       if (current[1] instanceof FileSystemDirectoryHandle) {
-        asyncIters.push([path.resolve(cwd, current[0]), await current[1].entries()])
+        asyncIters.push([
+          path.resolve(cwd, current[0]),
+          await current[1].entries(),
+        ])
       }
     }
   }
@@ -146,18 +154,21 @@ const stat = async (targetPath: string): Promise<IStat> => {
   let json
   try {
     json = await readFile(metaFilePath, { encoding: 'utf-8' })
-  } catch(e: unknown) {
-    if (typeof e !== "string") {
+  } catch (e: unknown) {
+    if (typeof e !== 'string') {
       throw e
     }
 
     // The metafile didn't exist in the first place. Let's create it.
     if (e === 'ENOENT') {
-      await writeFile(path.resolve(metaFilePath), (new TextEncoder()).encode(
-        JSON.stringify({
-          mtimeMs: new Date().getTime(),
-        })
-      ))
+      await writeFile(
+        path.resolve(metaFilePath),
+        new TextEncoder().encode(
+          JSON.stringify({
+            mtimeMs: new Date().getTime(),
+          })
+        )
+      )
     }
 
     // This will work now.
@@ -165,7 +176,8 @@ const stat = async (targetPath: string): Promise<IStat> => {
   }
 
   const obj = JSON.parse(json)
-  if (!isMetaFileDirectoryData(obj)) throw new Error(`Corrupt ${META_FILE} file`)
+  if (!isMetaFileDirectoryData(obj))
+    throw new Error(`Corrupt ${META_FILE} file`)
 
   return {
     dev: 0,
@@ -295,11 +307,14 @@ const writeFile = async (
 
   if (targetPath.includes(META_FILE)) return undefined
 
-  await writeFile(path.resolve(targetPath, '..', META_FILE), (new TextEncoder()).encode(
-    JSON.stringify({
-      mtimeMs: new Date().getTime(),
-    })
-  ))
+  await writeFile(
+    path.resolve(targetPath, '..', META_FILE),
+    new TextEncoder().encode(
+      JSON.stringify({
+        mtimeMs: new Date().getTime(),
+      })
+    )
+  )
 
   return undefined
 }
@@ -358,7 +373,11 @@ const cp = async (
     console.log('copying dir recurse', sourcePath)
     await scan(sourcePath, async (cwd, handle) => {
       const relativePathToSourcePath = path.basename(cwd, sourcePath)
-      const absolutePath = path.resolve(targetPath, relativePathToSourcePath, handle[0])
+      const absolutePath = path.resolve(
+        targetPath,
+        relativePathToSourcePath,
+        handle[0]
+      )
       if (handle[1] instanceof FileSystemDirectoryHandle) {
         await mkdir(absolutePath)
       } else {

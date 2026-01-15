@@ -1128,7 +1128,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              lastOperation: SystemIOMachineStates.bulkCreateKCLFilesAndNavigateToProject,
+              lastOperation:
+                SystemIOMachineStates.bulkCreateKCLFilesAndNavigateToProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,
@@ -1431,7 +1432,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              lastOperation: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+              lastOperation:
+                SystemIOMachineStates.renamingFolderAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1477,7 +1479,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              lastOperation: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+              lastOperation:
+                SystemIOMachineStates.deletingFileOrFolderAndNavigate,
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,

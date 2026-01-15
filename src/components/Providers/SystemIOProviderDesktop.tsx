@@ -125,7 +125,11 @@ export function SystemIOMachineLogicListenerDesktop() {
       }
 
       // Don't navigate if we are on the projects listing, unless we are creating.
-      if (pathname === PATHS.HOME && lastOperation !== SystemIOMachineStates.creatingProject) return
+      if (
+        pathname === PATHS.HOME &&
+        lastOperation !== SystemIOMachineStates.creatingProject
+      )
+        return
 
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,

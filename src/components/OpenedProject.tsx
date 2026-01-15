@@ -57,8 +57,7 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { SystemIOMachineStates
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   defaultLayout,
   DefaultLayoutPaneID,
@@ -76,10 +75,7 @@ import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
-import {
-  useFolders,
-  useLastOperation,
-} from '@src/machines/systemIO/hooks'
+import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -116,7 +112,13 @@ export function OpenedProject() {
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
-    if (projects.every(p => p.name !== projectName) && [SystemIOMachineStates.creatingProject, SystemIOMachineStates.renamingProject].includes(lastOperation) === false) {
+    if (
+      projects.every((p) => p.name !== projectName) &&
+      [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.renamingProject,
+      ].includes(lastOperation) === false
+    ) {
       navigate(PATHS.HOME)
     }
   }, [projects, lastOperation])

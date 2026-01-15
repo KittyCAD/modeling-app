@@ -548,7 +548,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
           try {
             const text = await editor.textContent()
             return toNormalizedCode(text ?? '')
-          } catch(e) {
+          } catch (e) {
             console.log(e)
             return ''
           }
@@ -1450,7 +1450,6 @@ export async function pinchFromCenter(
   await locator.dispatchEvent('touchend')
 }
 
-
 export const closeOnboardingModalIfPresent = async (page) => {
   const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
   await expect(page.getByTestId('stream')).toBeVisible()
@@ -1459,4 +1458,3 @@ export const closeOnboardingModalIfPresent = async (page) => {
     await expect(onboardingNotRightNow).toBeHidden()
   }
 }
-
