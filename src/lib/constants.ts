@@ -318,7 +318,7 @@ export const DEFAULT_BACKFACE_COLOR = {
   a: 1.0,
   b: 0.05,
   g: 0.05,
-  r: 0.05,
+  r: 0.95,
 }
 
 /**

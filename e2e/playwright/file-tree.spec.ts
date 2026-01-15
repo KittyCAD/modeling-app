@@ -834,6 +834,116 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   })
 })
 
+test.describe('Drag and drop moves are undoable', { tag: '@desktop' }, () => {
+  test('dragging a file moves it and undo restores it', async ({
+    context,
+    page,
+    homePage,
+    toolbar,
+    editor,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'Drag File Project')
+      await fsp.mkdir(join(projectDir, 'target'), { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('basic_fillet_cube_end.kcl'),
+        join(projectDir, 'main.kcl')
+      )
+      await fsp.copyFile(
+        executorInputPath('cylinder.kcl'),
+        join(projectDir, 'fileToMove.kcl')
+      )
+    })
+
+    const u = await getUtils(page)
+
+    const fileToMove = u.locatorFile('fileToMove.kcl')
+    const targetFolder = u.locatorFolder('target')
+
+    await homePage.openProject('Drag File Project')
+    await u.openFilePanel()
+
+    await expect(fileToMove).toBeVisible()
+    await expect(targetFolder).toBeVisible()
+
+    await test.step('Move and ensure that the file lands where it should', async () => {
+      await fileToMove.dragTo(targetFolder)
+
+      await toolbar.ensureFolderOpen(targetFolder, true)
+      await expect(u.locatorFile('fileToMove.kcl')).toBeVisible()
+      await toolbar.ensureFolderOpen(targetFolder, false)
+      await expect(fileToMove).not.toBeAttached()
+    })
+
+    await test.step('Undo and ensure the file returns and has content', async () => {
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('ControlOrMeta')
+
+      await expect(fileToMove).toBeVisible()
+      await toolbar.openFile('fileToMove.kcl')
+      await expect(editor.codeContent).toContainText('circle')
+    })
+  })
+
+  test('dragging a folder moves it and undo restores it', async ({
+    context,
+    page,
+    homePage,
+    toolbar,
+    editor,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'Drag Folder Project')
+      await fsp.mkdir(join(projectDir, 'folderToMove'), { recursive: true })
+      await fsp.mkdir(join(projectDir, 'targetFolder'), { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('basic_fillet_cube_end.kcl'),
+        join(projectDir, 'main.kcl')
+      )
+      await fsp.copyFile(
+        executorInputPath('cylinder.kcl'),
+        join(projectDir, 'folderToMove', 'inside.kcl')
+      )
+    })
+
+    const u = await getUtils(page)
+
+    const folderToMove = u.locatorFolder('folderToMove')
+    const targetFolder = u.locatorFolder('targetFolder')
+    const movedFile = u.locatorFile('inside.kcl')
+
+    await homePage.openProject('Drag Folder Project')
+    await u.openFilePanel()
+
+    await expect(folderToMove).toBeVisible()
+    await expect(targetFolder).toBeVisible()
+
+    await test.step('Move folder and ensure it lands where it, with contents intact', async () => {
+      await folderToMove.dragTo(targetFolder)
+
+      await toolbar.ensureFolderOpen(targetFolder, true)
+      await expect(folderToMove).toBeVisible()
+      await toolbar.ensureFolderOpen(folderToMove, true)
+      await expect(movedFile).toBeVisible()
+      await toolbar.openFile('inside.kcl')
+      await expect(editor.codeContent).toContainText('circle')
+      await toolbar.ensureFolderOpen(targetFolder, false)
+      await expect(folderToMove).not.toBeAttached()
+    })
+
+    await test.step('Undo and ensure the folder returns and has content', async () => {
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('ControlOrMeta')
+
+      await expect(folderToMove).toBeVisible()
+      await toolbar.ensureFolderOpen(folderToMove, true)
+      await expect(movedFile).toBeVisible()
+    })
+  })
+})
+
 test.describe(
   'Undo and redo do not keep history when navigating between files',
   { tag: '@desktop' },
