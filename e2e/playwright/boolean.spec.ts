@@ -22,6 +22,10 @@ test.describe(
         name: 'intersect',
         code: 'intersect([extrude001, extrude006])',
       },
+      {
+        name: 'split',
+        code: 'split(extrude001, tools = extrude006, merge = true)',
+      },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {
       const operation = booleanOperations[i]
@@ -83,7 +87,7 @@ test.describe(
           await page.waitForTimeout(1000)
 
           // For subtract, we need to proceed to the next step before selecting the second object
-          if (operationName !== 'subtract') {
+          if (operationName !== 'subtract' && operationName !== 'split') {
             // should down shift key to select multiple objects
             await page.keyboard.down('Shift')
           } else {
@@ -115,6 +119,16 @@ test.describe(
               },
               commandName,
             })
+          } else if (operationName === 'split') {
+            await cmdBar.expectState({
+              stage: 'review',
+              headerArguments: {
+                Targets: '1 path',
+                Tools: '1 path',
+                Merge: '',
+              },
+              commandName,
+            })
           }
 
           await cmdBar.submit()
@@ -126,7 +140,10 @@ test.describe(
 
         await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation('solid001', 0)
+          const op = await toolbar.getFeatureTreeOperation(
+            operationName === 'split' ? 'split001' : 'solid001',
+            0
+          )
           await op.click({ button: 'right' })
           await page.getByTestId('context-menu-delete').click()
           await scene.settled(cmdBar)
