@@ -131,7 +131,6 @@ type UpdateCodeEditorOptions = {
   /** Only has an effect if `shouldClearHistory` is `false`.
   if it is `true` then this will act as `false`. */
   shouldAddToHistory: boolean
-  /** Only has an effect if `shouldExecute` is also `true`. */
   shouldWriteToDisk: boolean
   /** Only has an effect if `shouldExecute` is also `true`. */
   shouldResetCamera: boolean
