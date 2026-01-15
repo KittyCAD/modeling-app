@@ -165,6 +165,7 @@ export async function registerTools(server: Server): Promise<void> {
             | {
                 view?: ScreenshotView
                 waitForExecution?: boolean
+                entityIds?: string[]
               }
             | undefined) || {}
         return handleGetScreenshotTool(args)

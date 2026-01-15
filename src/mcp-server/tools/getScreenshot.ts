@@ -21,7 +21,7 @@ export type ScreenshotView =
 export const getScreenshotTool = {
   name: 'get_screenshot',
   description:
-    'Capture a screenshot of the 3D scene from a specified viewing angle. Making multiple calls to view the part from different angles (Top, Bottom, Front, Rear, Left, Right, Isometric) is useful for understanding the 3D geometry. The camera will be temporarily moved to the requested view, then restored to its original position.',
+    'Capture a screenshot of the 3D scene from a specified viewing angle. Making multiple calls to view the part from different angles (Top, Bottom, Front, Rear, Left, Right, Isometric) is useful for understanding the 3D geometry. The camera will be temporarily moved to the requested view, then restored to its original position. Optionally provide entityIds to zoom to fit specific entities - the camera will zoom to fit these entities in the view.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -47,6 +47,14 @@ export const getScreenshotTool = {
           'Whether to wait for any in-progress execution to complete before taking the screenshot. Defaults to true to ensure the scene is fully rendered.',
         default: true,
       },
+      entityIds: {
+        type: 'array',
+        description:
+          'Optional array of entity artifact IDs. When provided, the camera will zoom to fit these specific entities in the view. Useful when combined with get_artifact_graph to focus on specific geometry.',
+        items: {
+          type: 'string',
+        },
+      },
     },
   },
 } as const
@@ -57,6 +65,7 @@ export const getScreenshotTool = {
 export async function handleGetScreenshotTool(args?: {
   view?: ScreenshotView
   waitForExecution?: boolean
+  entityIds?: string[]
 }): Promise<{
   content: Array<
     | { type: 'image'; data: string; mimeType: string }
@@ -68,6 +77,7 @@ export async function handleGetScreenshotTool(args?: {
     const screenshotDataUrl = (await client.request('getScreenshot', {
       view: args?.view ?? 'Isometric view',
       waitForExecution: args?.waitForExecution ?? true,
+      entityIds: args?.entityIds,
     })) as string
 
     // Extract base64 data from data URL

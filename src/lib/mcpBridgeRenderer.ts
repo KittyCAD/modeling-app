@@ -164,6 +164,7 @@ export function initMcpBridgeHandlers(): void {
         requestId: string
         view?: string
         waitForExecution?: boolean
+        entityIds?: string[]
       }) => {
         try {
           await waitForExecutionIfNeeded(data.waitForExecution ?? true)
@@ -212,6 +213,18 @@ export function initMcpBridgeHandlers(): void {
                   engineCommandManager,
                   padding: 0.1,
                 })
+                // Wait for initial zoom to complete
+                // await new Promise((resolve) => setTimeout(resolve, 400))
+                // If entityIds provided, zoom to fit those entities
+                if (data.entityIds && data.entityIds.length > 0) {
+                  await engineStreamZoomToFit({
+                    engineCommandManager,
+                    padding: 0.1,
+                    objectIds: data.entityIds,
+                  })
+                  // Wait for zoom to fit specific entities to complete
+                  await new Promise((resolve) => setTimeout(resolve, 1000))
+                }
               } else {
                 // Map view names to axis names
                 const axisMap: Record<
@@ -232,16 +245,27 @@ export function initMcpBridgeHandlers(): void {
                 }
                 const axis = axisMap[view]
                 await sceneInfra.camControls.updateCameraToAxis(axis)
+                // Wait for camera axis change to complete
+                await new Promise((resolve) => setTimeout(resolve, 400))
                 // Zoom to fit after changing view direction
+                // If entityIds provided, zoom to fit those entities; otherwise zoom to all
                 await engineStreamZoomToFit({
                   engineCommandManager,
                   padding: 0.1,
+                  objectIds: data.entityIds,
                 })
+                // Wait for zoom to fit to complete
+                await new Promise((resolve) => setTimeout(resolve, 500))
               }
-
-              // Wait for camera animation to complete
-              // Camera animations typically take ~500ms, wait a bit longer to be safe
-              await new Promise((resolve) => setTimeout(resolve, 800))
+            } else if (data.entityIds && data.entityIds.length > 0) {
+              // If Current view but entityIds provided, zoom to fit those entities
+              await engineStreamZoomToFit({
+                engineCommandManager,
+                padding: 0.1,
+                objectIds: data.entityIds,
+              })
+              // Wait for zoom to fit to complete
+              await new Promise((resolve) => setTimeout(resolve, 500))
             }
 
             // Take screenshot

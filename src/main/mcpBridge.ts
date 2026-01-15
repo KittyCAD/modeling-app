@@ -191,9 +191,11 @@ async function handleBridgeRequest(
           (request.params?.view as string | undefined) ?? 'Isometric view'
         const waitForExecution =
           (request.params?.waitForExecution as boolean | undefined) ?? true
+        const entityIds = request.params?.entityIds as string[] | undefined
         const data = await queryRenderer('mcp:getScreenshot', {
           view,
           waitForExecution,
+          entityIds,
         })
         response = {
           type: request.type,

@@ -126,6 +126,7 @@ export interface IElectronAPI {
         requestId: string
         view?: string
         waitForExecution?: boolean
+        entityIds?: string[]
       }) => void | Promise<void>
     ) => () => void
     onGetKclFileNames: (

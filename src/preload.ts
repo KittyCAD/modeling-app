@@ -363,6 +363,7 @@ contextBridge.exposeInMainWorld('electron', {
         requestId: string
         view?: string
         waitForExecution?: boolean
+        entityIds?: string[]
       }) => void | Promise<void>
     ) => {
       ipcRenderer.on('mcp:getScreenshot', (_, data) => {

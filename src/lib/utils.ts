@@ -579,9 +579,11 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
 export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
+  objectIds,
 }: {
   engineCommandManager: ConnectionManager
   padding: number
+  objectIds?: string[]
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
   // loaded for the first time, but not overtaking the work kevin did
@@ -591,7 +593,7 @@ export async function engineStreamZoomToFit({
     cmd_id: uuidv4(),
     cmd: {
       type: 'zoom_to_fit',
-      object_ids: [], // leave empty to zoom to all objects
+      object_ids: objectIds ?? [], // leave empty to zoom to all objects, or provide specific entity IDs
       padding, // padding around the objects
       animated: false, // don't animate the zoom for now
     },
