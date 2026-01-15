@@ -5,8 +5,12 @@ import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
+import { Vector3, Group } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
@@ -35,11 +39,18 @@ export const machine = setup({
   actions: {
     'add area select listener': ({ context, self }) => {
       const scene = context.sceneInfra.scene
-      let currentLine: Line | null = null
+      let currentLine: Line2 | null = null
       let points: Vector3[] = []
       let lastPoint2D: [number, number] | null = null
 
       const pxThreshold = 5
+
+      // Helper to get the sketch solve group which has the correct plane orientation
+      // Retrieved dynamically in case it's created after the tool is equipped
+      const getSketchSolveGroup = (): Group | null => {
+        const obj = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        return obj instanceof Group ? obj : null
+      }
 
       // Helper to get pixel distance between two world-space points
       const distancePx = (a: [number, number], b: [number, number]) =>
@@ -49,9 +60,7 @@ export const machine = setup({
         onAreaSelectStart: ({ startPoint }) => {
           if (!startPoint?.twoD) return
           // Store the starting point but don't create the Line yet (needs at least 2 points)
-          points = [
-            new Vector3(startPoint.twoD.x, startPoint.twoD.y, 0),
-          ] as Vector3[]
+          points = [new Vector3(startPoint.twoD.x, startPoint.twoD.y, 0)]
           lastPoint2D = [startPoint.twoD.x, startPoint.twoD.y]
         },
         onAreaSelect: ({ currentPoint }) => {
@@ -61,18 +70,37 @@ export const machine = setup({
           if (distance >= pxThreshold) {
             points.push(new Vector3(x, y, 0))
 
-            // Create the Line when we have at least 2 points
+            // Create the Line2 when we have at least 2 points
             if (!currentLine && points.length >= 2) {
-              const geom = new BufferGeometry().setFromPoints(points)
-              const mat = new LineBasicMaterial({ color: 0xff8800 })
-              currentLine = new Line(geom, mat)
+              const positions: number[] = []
+              for (const point of points) {
+                positions.push(point.x, point.y, point.z)
+              }
+              const geom = new LineGeometry()
+              geom.setPositions(positions)
+              const mat = new LineMaterial({
+                color: 0xff8800,
+                linewidth: 2 * window.devicePixelRatio,
+              })
+              currentLine = new Line2(geom, mat)
               currentLine.name = 'trim-tool-preview'
-              scene.add(currentLine)
+              // Add to sketchSolveGroup if available (for correct plane orientation),
+              // otherwise fall back to scene (for backwards compatibility)
+              const sketchSolveGroup = getSketchSolveGroup()
+              if (sketchSolveGroup) {
+                sketchSolveGroup.add(currentLine)
+              } else {
+                scene.add(currentLine)
+              }
             } else if (currentLine) {
               // Update existing line: dispose old geometry and create new one
-              // (setFromPoints doesn't resize buffers, so we need a fresh geometry)
+              const positions: number[] = []
+              for (const point of points) {
+                positions.push(point.x, point.y, point.z)
+              }
               const oldGeom = currentLine.geometry
-              const newGeom = new BufferGeometry().setFromPoints(points)
+              const newGeom = new LineGeometry()
+              newGeom.setPositions(positions)
               currentLine.geometry = newGeom
               oldGeom.dispose()
             }
@@ -83,9 +111,7 @@ export const machine = setup({
         onAreaSelectEnd: async () => {
           const onAreaSelectEndHandler = createOnAreaSelectEndCallback({
             getContextData: () => {
-              // CRITICAL FIX: Get current context at execution time, not the stale captured context
-              // The 'context' variable in the closure is stale because it was captured when the
-              // callback was set up. We need to get the current context from the machine snapshot.
+              // current context must be got at at execution time, else it will be stale in the closure
               const currentSnapshot = self.getSnapshot()
               const currentContext = currentSnapshot?.context
 
@@ -131,9 +157,18 @@ export const machine = setup({
 
           // Clean up the preview line
           if (currentLine) {
-            scene.remove(currentLine)
+            // Remove from the group it was added to
+            const sketchSolveGroup = getSketchSolveGroup()
+            if (
+              sketchSolveGroup &&
+              sketchSolveGroup.children.includes(currentLine)
+            ) {
+              sketchSolveGroup.remove(currentLine)
+            } else {
+              scene.remove(currentLine)
+            }
             currentLine.geometry.dispose()
-            ;(currentLine.material as LineBasicMaterial).dispose()
+            currentLine.material.dispose()
             currentLine = null
             points = []
             lastPoint2D = null

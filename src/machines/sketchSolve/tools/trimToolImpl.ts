@@ -3583,9 +3583,6 @@ export function createOnAreaSelectEndCallbackTypescript({
         if (result instanceof Error) {
           console.error('[TRIM] Error executing trim strategy:', result)
         } else {
-          // CRITICAL FIX: Update objects array from result for subsequent operations
-          // This ensures that if there are multiple trim operations in the same drag,
-          // or if invalidates_ids is true, we use the fresh objects
           objects = result.sceneGraphDelta.new_graph.objects
 
           // Store the result but don't send event yet - we'll send one final event at the end
