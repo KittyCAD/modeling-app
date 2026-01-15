@@ -33,6 +33,7 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     await test.step(`Submit basic prompt`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.TTC)
+      await copilot.setMode('fast')
       await copilot.conversationInput.fill(
         'make a 10x10x10cm cube centered on the origin, name the last variable "cube"'
       )
