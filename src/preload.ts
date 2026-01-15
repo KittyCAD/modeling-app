@@ -408,6 +408,14 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners('mcp:getArtifactGraph')
       }
     },
+    onGetArtifactGraphMermaid: (
+      callback: (data: { requestId: string }) => void
+    ) => {
+      ipcRenderer.on('mcp:getArtifactGraphMermaid', (_, data) => callback(data))
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getArtifactGraphMermaid')
+      }
+    },
     onGetFeatureTree: (callback: (data: { requestId: string }) => void) => {
       ipcRenderer.on('mcp:getFeatureTree', (_, data) => callback(data))
       return () => {

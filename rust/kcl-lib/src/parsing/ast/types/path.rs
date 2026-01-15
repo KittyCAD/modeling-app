@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "artifact-graph")]
 use super::{BodyItem, Expr};
@@ -12,13 +12,13 @@ use crate::{SourceRange, execution::ProgramLookup};
 ///
 /// The implementation doesn't cover all parts of the tree. It currently only
 /// works on parts of the tree that the frontend uses.
-#[derive(Debug, Default, Clone, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, ts_rs::TS)]
 #[ts(export_to = "NodePath.ts")]
 pub struct NodePath {
     pub steps: Vec<Step>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, ts_rs::TS)]
 #[ts(export_to = "NodePath.ts")]
 #[serde(tag = "type")]
 pub enum Step {

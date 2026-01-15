@@ -63,6 +63,10 @@ import {
   setEntityHighlightTool,
   handleSetEntityHighlightTool,
 } from './setEntityHighlight.js'
+import {
+  getArtifactGraphMermaidTool,
+  handleGetArtifactGraphMermaidTool,
+} from './getArtifactGraphMermaid.js'
 
 /**
  * All available MCP tools
@@ -75,6 +79,7 @@ import {
  */
 const tools = [
   getArtifactGraphTool,
+  getArtifactGraphMermaidTool,
   getFeatureTreeTool,
   getCurrentSelectionTool,
   filletEdgeTool,
@@ -121,6 +126,14 @@ export async function registerTools(server: Server): Promise<void> {
             | { waitForExecution?: boolean }
             | undefined) || {}
         return handleGetArtifactGraphTool(args)
+      }
+
+      case 'get_artifact_graph_mermaid': {
+        const args =
+          (request.params.arguments as
+            | { waitForExecution?: boolean }
+            | undefined) || {}
+        return handleGetArtifactGraphMermaidTool(args)
       }
 
       case 'get_feature_tree': {

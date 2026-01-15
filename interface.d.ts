@@ -118,6 +118,9 @@ export interface IElectronAPI {
     onGetArtifactGraph: (
       callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void
+    onGetArtifactGraphMermaid: (
+      callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
+    ) => () => void
     onGetFeatureTree: (
       callback: (data: { requestId: string; waitForExecution?: boolean }) => void | Promise<void>
     ) => () => void

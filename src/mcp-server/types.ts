@@ -7,6 +7,7 @@
  */
 export type BridgeMessageType =
   | 'getArtifactGraph'
+  | 'getArtifactGraphMermaid'
   | 'getFeatureTree'
   | 'getCurrentSelection'
   | 'filletEdge'

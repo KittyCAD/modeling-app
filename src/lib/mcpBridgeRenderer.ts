@@ -120,6 +120,121 @@ export function initMcpBridgeHandlers(): void {
       }
     )
 
+    // Handle getArtifactGraphMermaid request
+    window.electron.mcpBridge.onGetArtifactGraphMermaid(
+      async (data: { requestId: string; waitForExecution?: boolean }) => {
+        try {
+          await waitForExecutionIfNeeded(data.waitForExecution ?? true)
+          const wasmInstance = await kclManager.wasmInstancePromise
+
+          // Check if function exists
+          if (
+            !wasmInstance.artifact_graph_to_mermaid ||
+            typeof wasmInstance.artifact_graph_to_mermaid !== 'function'
+          ) {
+            const availableFunctions = Object.keys(wasmInstance).filter(
+              (key) => typeof wasmInstance[key] === 'function'
+            )
+            console.error(
+              '[MCP Bridge] artifact_graph_to_mermaid not found. Available functions:',
+              availableFunctions.slice(0, 20)
+            )
+            throw new Error(
+              'artifact_graph_to_mermaid function not found on WASM instance. The WASM module may need to be rebuilt with `npm run build:wasm`.'
+            )
+          }
+
+          // Convert Map back to Rust format (object with map property)
+          // Note: We need to remove pathToNode fields that were added in TypeScript,
+          // as Rust expects path_to_node to be omitted (it has #[serde(default)] and will use empty Vec<()>)
+          const cleanArtifactForRust = (artifact: unknown): unknown => {
+            if (!artifact || typeof artifact !== 'object') {
+              return artifact
+            }
+            const cleaned = JSON.parse(JSON.stringify(artifact))
+            // Delete pathToNode from codeRef - Rust will use default (empty Vec<()>)
+            if (cleaned?.codeRef && 'pathToNode' in cleaned.codeRef) {
+              delete cleaned.codeRef.pathToNode
+            }
+            // Delete pathToNode from faceCodeRef for Wall/Cap artifacts
+            if (cleaned?.faceCodeRef && 'pathToNode' in cleaned.faceCodeRef) {
+              delete cleaned.faceCodeRef.pathToNode
+            }
+            return cleaned
+          }
+
+          const rustArtifactGraphMap: Record<string, unknown> = {}
+          for (const [id, artifact] of kclManager.artifactGraph.entries()) {
+            rustArtifactGraphMap[id] = cleanArtifactForRust(artifact)
+          }
+
+          const rustArtifactGraph = {
+            map: rustArtifactGraphMap,
+            itemCount: kclManager.artifactGraph.size,
+          }
+
+          // Serialize to JSON and call WASM function
+          const artifactGraphJson = JSON.stringify(rustArtifactGraph)
+          console.log(
+            '[MCP Bridge] Calling artifact_graph_to_mermaid with graph size:',
+            kclManager.artifactGraph.size
+          )
+          // Log a sample artifact to debug structure
+          const firstArtifactId = Object.keys(rustArtifactGraphMap)[0]
+          if (firstArtifactId) {
+            console.log(
+              '[MCP Bridge] Sample artifact structure:',
+              JSON.stringify(
+                rustArtifactGraphMap[firstArtifactId],
+                null,
+                2
+              ).substring(0, 500)
+            )
+          }
+
+          let mermaidDiagram: string
+          try {
+            mermaidDiagram =
+              wasmInstance.artifact_graph_to_mermaid(artifactGraphJson)
+          } catch (wasmError) {
+            console.error(
+              '[MCP Bridge] WASM function threw error:',
+              wasmError,
+              'Graph JSON length:',
+              artifactGraphJson.length
+            )
+            throw new Error(
+              `WASM function error: ${wasmError instanceof Error ? wasmError.message : String(wasmError)}`
+            )
+          }
+
+          if (!mermaidDiagram || typeof mermaidDiagram !== 'string') {
+            console.error(
+              '[MCP Bridge] Unexpected return type:',
+              typeof mermaidDiagram,
+              'value:',
+              mermaidDiagram
+            )
+            throw new Error(
+              `Unexpected return type from artifact_graph_to_mermaid: ${typeof mermaidDiagram}, got: ${String(mermaidDiagram).substring(0, 100)}`
+            )
+          }
+
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            data: mermaidDiagram,
+          })
+        } catch (error) {
+          console.error('[MCP Bridge] Error in getArtifactGraphMermaid:', error)
+          window.electron?.mcpBridge?.sendResponse(data.requestId, {
+            error:
+              error instanceof Error
+                ? error.message
+                : `Unknown error: ${String(error)}`,
+          })
+        }
+      }
+    )
+
     // Handle getFeatureTree request
     window.electron.mcpBridge.onGetFeatureTree(
       async (data: { requestId: string; waitForExecution?: boolean }) => {

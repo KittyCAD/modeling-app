@@ -338,7 +338,36 @@ The goal of these tools is to provide LLMs with rich context about the 3D scene 
 - `get_geometry_stats`: Get statistics (face count, edge count, etc.)
 - Could help LLMs understand model complexity
 
-### 8.5 Stub: get artifact graph as mermaid diagram
+### 8.5 Get artifact graph as mermaid diagram
+**Purpose**: Provide a visual Mermaid diagram representation of the artifact graph structure. This helps LLMs understand how geometry artifacts relate to each other and to the code. The diagram is currently limited in detail (shows type and basic info) for human readability, but can be extended with optional additional information for LLMs.
+
+**Design Decisions**:
+- Use existing `to_mermaid_flowchart()` function from Rust artifact graph
+- Expose via WASM binding to TypeScript
+- Make it optional to add extra information (IDs, UIDs) for LLMs while keeping existing code unchanged
+- Return mermaid diagram as a string
+
+**Implementation**:
+- [x] Made `to_mermaid_flowchart()` public in Rust (`artifact.rs`)
+- [x] Added helper methods `back_edges()` and `child_ids()` to `Artifact` impl
+- [x] Added `Deserialize` trait to all artifact-related types for WASM serialization
+- [x] Exported `ArtifactGraph` at crate level in `lib.rs`
+- [x] Added WASM binding function `artifact_graph_to_mermaid()` in `wasm.rs`
+- [x] Added bridge message type `getArtifactGraphMermaid` to `types.ts`
+- [x] Added renderer handler in `mcpBridgeRenderer.ts` to:
+  - Convert artifact graph Map to Rust format
+  - Call WASM function to generate mermaid diagram
+  - Return mermaid string
+- [x] Added main process bridge handler in `mcpBridge.ts`
+- [x] Added IPC handler in `preload.ts` for `mcp:getArtifactGraphMermaid`
+- [x] Created MCP tool `getArtifactGraphMermaid.ts`
+- [x] Registered tool in `registry.ts`
+- [x] Updated TypeScript interface types in `interface.d.ts`
+- [x] Fixed WASM build compilation errors
+- [ ] **Part 2 (Future)**: Add optional parameter to include extra information (IDs, UIDs) for LLMs
+  - Add optional `includeDetailedInfo` parameter to mermaid generation
+  - Conditionally include artifact IDs, UIDs, and other metadata in diagram
+  - Keep existing behavior as default (limited detail for human readability)
 
 ### 8.6 Stub: get and set tag for an artifact
 
