@@ -416,15 +416,41 @@ impl SketchApi for FrontendState {
         // Deduplicate IDs.
         let mut constraint_ids_set = constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
         let segment_ids_set = segment_ids.into_iter().collect::<AhashIndexSet<_>>();
+
+        // If a point is owned by a Line/Arc, we want to delete the owner, which will
+        // also delete the point, as well as other points that are owned by the owner.
+        let mut delete_ids = AhashIndexSet::default();
+
+        for segment_id in segment_ids_set.iter().copied() {
+            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0) {
+                if let ObjectKind::Segment { segment } = &segment_object.kind {
+                    if let Segment::Point(point) = segment {
+                        if let Some(owner_id) = point.owner {
+                            if let Some(owner_object) = self.scene_graph.objects.get(owner_id.0) {
+                                if let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind {
+                                    if matches!(owner_segment, Segment::Line(_) | Segment::Arc(_)) {
+                                        // segment is owned -> delete the owner
+                                        delete_ids.insert(owner_id);
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // segment is not owned by anything -> can be deleted
+            delete_ids.insert(segment_id);
+        }
         // Find constraints that reference the segments to be deleted, and add
         // those to the set to be deleted.
-        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+        self.add_dependent_constraints_to_delete(sketch, &delete_ids, &mut constraint_ids_set)?;
 
         let mut new_ast = self.program.ast.clone();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
-        for segment_id in segment_ids_set {
+        for segment_id in delete_ids {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
         self.execute_after_edit(

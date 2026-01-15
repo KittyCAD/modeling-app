@@ -145,7 +145,7 @@ export const machine = setup({
           type: 'set draft entities',
           data: {
             // Only setting line ids instead of segmentIds
-            segmentIds: output.draft.lineIds,
+            segmentIds: output.draft.segmentIds,
             constraintIds: output.draft.constraintIds,
           },
         })
