@@ -1325,3 +1325,47 @@ export fn flipSurface(
   @surface: Solid,
 ): Solid {}
 
+/// Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
+///
+/// ```kcl
+/// sideLen = 4
+/// 
+/// // Helper function to make a square surface body.
+/// fn square(@plane, offset, y) {
+///   at = if y {
+///     [-offset, 0]
+///   } else {
+///     [0, offset]
+///   }
+///   return startSketchOn(plane)
+///     |> startProfile(at)
+///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
+///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
+/// }
+/// 
+/// // Make a cube polysurface from 6 squares.
+/// cube = [
+///   square(XY, offset = 0, y = false),
+///   square(XZ, offset = 0, y = true) |> flipSurface(),
+///   square(YZ, offset = 0, y = false),
+///   square(XY, offset = sideLen, y = false),
+///   square(XZ, offset = -sideLen, y = true),
+///   square(YZ, offset = sideLen, y = false)
+/// ]
+///
+/// // Via split + merge, create a solid cube from the 6 square surfaces (faces of the cube).
+/// cubeSolid = split(cube, merge = true)
+///
+/// // To prove it's solid, we can set the whole cube's appearance.
+/// appearance(cubeSolid, color = "#da4333", roughness = 50, metalness = 90)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn split(
+  /// The bodies to split
+  @targets: [Solid; 1+],
+  /// Whether to merge the bodies into one after.
+  /// Currently, we only support merge = true.
+  merge: bool,
+  /// The tools to split the bodies along.
+  tools?: [Solid],
+): [Solid; 1+] {}

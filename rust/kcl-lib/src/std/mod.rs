@@ -252,6 +252,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::flip_surface(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::flipSurface"),
         ),
+        ("solid", "split") => (
+            |e, a| Box::pin(crate::std::csg::split(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::split"),
+        ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::map"),
