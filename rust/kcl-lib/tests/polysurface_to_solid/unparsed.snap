@@ -1,0 +1,52 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing polysurface_to_solid.kcl
+---
+sideLen = 4
+
+// Helper function to make a square surface body.
+fn square(@plane, offset, y) {
+  at = if y {
+    [-offset, 0]
+  } else {
+    [0, offset]
+  }
+  return startSketchOn(plane)
+    |> startProfile(at)
+    |>     if y {
+      yLine(length = sideLen)
+    } else {
+      xLine(length = sideLen)
+    }
+    |> extrude(
+         length =       if y {
+        -sideLen
+      } else {
+        sideLen
+      },
+         bodyType = SURFACE,
+       )
+}
+
+// Make a cube polysurface from 6 squares.
+cube = [
+  square(XY, offset = 0, y = false),
+  // This face comes out the wrong orientation, so we have to invert it.
+  square(XZ, offset = 0, y = true)
+  |> invert(),
+  square(YZ, offset = 0, y = false),
+  square(XY, offset = sideLen, y = false),
+  square(XZ, offset = -sideLen, y = true),
+  square(YZ, offset = sideLen, y = false)
+]
+
+// Via imprint, create a solid cube from the 6 square surfaces (faces of the cube).
+cubeSolid = imprint(cube)
+
+// To prove it's solid, we can set the whole cube's appearance.
+appearance(
+  cubeSolid,
+  color = "#da4333",
+  roughness = 50,
+  metalness = 90,
+)
