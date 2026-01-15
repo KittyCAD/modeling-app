@@ -378,7 +378,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Boolean Split', groupId: 'modeling' },
               }),
-            icon: 'booleanIntersect', // TODO: fix
+            icon: 'split',
             status: 'available',
             title: 'Split',
             description: 'Split a solid into multiple solids.',

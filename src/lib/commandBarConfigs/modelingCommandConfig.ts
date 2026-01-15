@@ -1202,7 +1202,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Boolean Split': {
     description:
       "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
-    icon: 'booleanIntersect', // TODO: fix
+    icon: 'split',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
@@ -1244,7 +1244,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'boolean',
         required: true,
         defaultValue: true,
-        skip: true, // TODO: revisit once KCL supports false
+        hidden: true, // TODO: revisit once KCL supports false
+        skip: true,
       },
     },
   },

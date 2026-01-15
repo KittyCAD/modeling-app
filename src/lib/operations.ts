@@ -1913,10 +1913,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   split: {
     label: 'Split',
-    icon: 'booleanIntersect', // TODO: fix
+    icon: 'split',
     supportsAppearance: true,
     supportsTransform: true,
-    // prepareToEdit: prepareToEditSplit, // TODO: add
+    // prepareToEdit: prepareToEditSplit, // TODO: add once merge can be edited
   },
   startSketchOn: {
     label: 'Sketch',
