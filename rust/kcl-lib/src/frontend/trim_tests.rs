@@ -1852,23 +1852,23 @@ sketch(on = YZ) {
         scene_graph.objects
     }
 
-    fn find_first_line_id(objects: &[crate::frontend::api::Object]) -> usize {
+    fn find_first_line_id(objects: &[crate::frontend::api::Object]) -> crate::frontend::api::ObjectId {
         for obj in objects {
             if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind
                 && matches!(segment, crate::frontend::sketch::Segment::Line(_))
             {
-                return obj.id.0;
+                return obj.id;
             }
         }
         panic!("No line segment found in {} objects", objects.len());
     }
 
-    fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> usize {
+    fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> crate::frontend::api::ObjectId {
         for obj in objects {
             if let crate::frontend::api::ObjectKind::Segment { segment } = &obj.kind
                 && matches!(segment, crate::frontend::sketch::Segment::Arc(_))
             {
-                return obj.id.0;
+                return obj.id;
             }
         }
         panic!("No arc segment found in {} objects", objects.len());
@@ -1909,7 +1909,7 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-2.3530729879512666)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.4834844847315396).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 7);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(7));
             }
 
             if let TrimTermination::Intersection {
@@ -1919,7 +1919,7 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - 1.8273063333627224).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 11);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
             }
         }
 
@@ -2000,8 +2000,11 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-2.380259288059525)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.5040925592307945).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 7);
-                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 5);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(7));
+                assert_eq!(
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    crate::frontend::api::ObjectId(5)
+                );
             }
 
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
@@ -2012,8 +2015,11 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - 1.6587744607636377).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.784726710328238).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 11);
-                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 9);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
+                assert_eq!(
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    crate::frontend::api::ObjectId(9)
+                );
             }
         }
 
@@ -2083,7 +2089,7 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-0.44459011806535265)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.8295671172502757).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 9);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(9));
             }
 
             if let TrimTermination::Intersection {
@@ -2093,7 +2099,7 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-4.728585883881671)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.3133661338085765).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 12);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(12));
             }
         }
 
@@ -2174,8 +2180,11 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-0.36700307305406205)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.966675365647721).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 9);
-                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 6);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(9));
+                assert_eq!(
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    crate::frontend::api::ObjectId(6)
+                );
             }
 
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
@@ -2186,8 +2195,11 @@ sketch(on = YZ) {
             {
                 assert!((trim_termination_coords.x - (-4.178878101257838)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.447749604872991).abs() < 1e-5);
-                assert_eq!(intersecting_seg_id, 12);
-                assert_eq!(trim_spawn_segment_coincident_with_another_segment_point_id, 11);
+                assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(12));
+                assert_eq!(
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    crate::frontend::api::ObjectId(11)
+                );
             }
         }
 
