@@ -234,7 +234,7 @@ pub(crate) async fn inner_subtract(
 
 /// Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.
 pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let targets: Vec<Solid> = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
+    let targets: Vec<Solid> = args.get_unlabeled_kw_arg("targets", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tools: Option<Vec<Solid>> = args.get_kw_arg_opt("tools", &RuntimeType::solids(), exec_state)?;
     let tools = tools.unwrap_or_default();
