@@ -1,5 +1,5 @@
 import { invertedEffects } from '@codemirror/commands'
-import type { Extension } from '@codemirror/state'
+import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
@@ -18,10 +18,27 @@ type FSEffectProps = {
 }
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
+const moveFile = StateEffect.define<FSEffectProps>()
+
+function getSuccessMessage(e: StateEffect<unknown>, tr: Transaction): string {
+  if (e.is(restoreFile)) {
+    return 'Restored successfully'
+  } else if (e.is(archiveFile)) {
+    return 'Archived successfully'
+  } else if (
+    e.is(moveFile) &&
+    (tr.isUserEvent('undo') || tr.isUserEvent('redo'))
+  ) {
+    return 'Moved back successfully'
+  } else if (e.is(moveFile)) {
+    return 'Moved successfully'
+  }
+  return 'Unknown file operation'
+}
+
 /** helper function that builds a transaction with a default annotation */
 const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
   effects: e,
-  // makes initial transactions ignored and undo/redo not ignored.
   annotations: [fsIgnoreAnnotationType.of(true)],
 })
 
@@ -29,6 +46,8 @@ const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
 export const fsRestoreFile = (props: FSEffectProps) => h(restoreFile.of(props))
 /** CodeMirror transaction to mark an "archive" file action */
 export const fsArchiveFile = (props: FSEffectProps) => h(archiveFile.of(props))
+/** CodeMirror transaction to mark a "move" file action */
+export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
 
 /**
  * Builder function to provide necessary system dependencies for the
@@ -45,14 +64,16 @@ export function buildFSHistoryExtension(
         continue
       }
       for (const e of tr.effects) {
-        if (e.is(restoreFile) || e.is(archiveFile)) {
+        if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
+          const type = e.is(moveFile)
+            ? SystemIOMachineEvents.moveRecursive
+            : SystemIOMachineEvents.moveRecursiveAndNavigate
+
           systemIOActor.send({
-            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+            type,
             data: {
               ...e.value,
-              successMessage: e.is(restoreFile)
-                ? 'Restored successfully'
-                : 'Archived successfully',
+              successMessage: getSuccessMessage(e, tr),
             },
           })
         }
@@ -104,6 +125,10 @@ export function fsHistoryExtension(): Extension {
             src: e.value.target,
             target: e.value.src,
           })
+        )
+      } else if (e.is(moveFile)) {
+        found.push(
+          moveFile.of({ ...e.value, src: e.value.target, target: e.value.src })
         )
       }
     }
