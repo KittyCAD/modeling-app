@@ -1681,7 +1681,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>>
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
         })
-        .map(|nc| Node::new(nc.inner, nc.start.saturating_sub(1), nc.end, nc.module_id))
+        .map(|nc| Node::new(nc.inner, nc.start, nc.end, nc.module_id))
         .parse_next(i)?;
     Ok(nc)
 }
@@ -1729,7 +1729,7 @@ fn noncode_just_after_pipe_code(i: &mut TokenSlice) -> ModalResult<Vec<Node<NonC
                 };
                 nodes.push(Node::new(
                     NonCodeNode { value, ..nc.inner },
-                    nc.start.saturating_sub(1),
+                    nc.start,
                     nc.end,
                     nc.module_id,
                 ));
@@ -3778,6 +3778,24 @@ mod tests {
     }
 
     #[test]
+    fn test_if_is_in_comment_again() {
+        let code = r#"x = 4
+e
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        eprintln!("{ast:#?}");
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is 'e' and then a newline.
+        assert_eq!(code.chars().nth(6), Some('e'));
+        assert!(!ast.in_comment(6));
+        assert_eq!(code.chars().nth(7), Some('\n'));
+        assert!(!ast.in_comment(7));
+        // The whole line should be a comment.
+        assert_eq!(code.chars().nth(8), Some('/'));
+        assert!(ast.in_comment(8));
+    }
+
+    #[test]
     fn reserved_words() {
         // Since these are stored in a set, we sort to make the tests
         // deterministic.
@@ -4141,7 +4159,7 @@ mySk1 = startSketchOn(XY)
                         },
                         digest: None,
                     },
-                    57,
+                    58,
                     79,
                     module_id,
                 ),
