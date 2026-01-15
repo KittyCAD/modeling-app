@@ -254,7 +254,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-subtract-1",
     "std-solid-subtract-2",
     "std-solid-flipSurface-0",
-    "std-solid-imprint-0",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",

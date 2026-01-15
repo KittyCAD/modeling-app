@@ -252,10 +252,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::flip_surface(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::flipSurface"),
         ),
-        ("solid", "imprint") => (
-            |e, a| Box::pin(crate::std::csg::imprint(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::solid::imprint"),
-        ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::map"),
