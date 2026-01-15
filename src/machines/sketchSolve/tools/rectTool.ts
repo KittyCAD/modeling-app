@@ -8,6 +8,7 @@ import type {
   SourceDelta,
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
@@ -53,13 +54,7 @@ export const machine = setup({
   types: {
     context: {} as CenterRectToolContext,
     events: {} as CenterRectToolEvent,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-      rectOriginMode?: RectOriginMode
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'add first point listener': ({ self, context }) => {
@@ -212,7 +207,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     origin: [0, 0],
-    rectOriginMode: input.rectOriginMode ?? 'corner',
+    rectOriginMode: (input.toolVariant ?? 'corner') as RectOriginMode,
   }),
   id: RECTANGLE_TOOL_ID,
   initial: 'awaiting first point',

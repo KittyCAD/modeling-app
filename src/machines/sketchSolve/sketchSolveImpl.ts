@@ -59,13 +59,7 @@ export type SpawnToolActor = <K extends EquipTool>(
   src: K,
   options?: {
     id?: string
-    input?: {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-      rectOriginMode: 'corner' | 'center'
-    }
+    input?: ToolInput
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
@@ -905,8 +899,7 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
-      rectOriginMode:
-        nameOfToolToSpawn === 'centerRectTool' ? 'center' : 'corner',
+      toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
 
@@ -915,4 +908,17 @@ export function spawnTool(
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
+}
+
+export type ToolInput = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  toolVariant?: string | undefined // eg. 'corner' | 'center' for rectTool
+}
+
+const toolVariants: Record<string, string> = {
+  centerRectTool: 'center',
+  cornerRectTool: 'corner',
 }
