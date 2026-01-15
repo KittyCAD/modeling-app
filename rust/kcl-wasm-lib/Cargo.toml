@@ -15,7 +15,9 @@ bench = false
 dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dependencies]
+kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 rayon = { workspace = true }
+serde_json = { workspace = true }
 typed-path = "0.12.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

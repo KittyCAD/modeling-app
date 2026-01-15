@@ -578,7 +578,10 @@ impl From<TrimOperationCore> for TrimOperation {
                 right_side: (*right_side).into(),
                 left_side_coincident_data: *left_side_coincident_data,
                 right_side_coincident_data: *right_side_coincident_data,
-                constraints_to_migrate: constraints_to_migrate.into_iter().map(|c| c.into()).collect(),
+                constraints_to_migrate: constraints_to_migrate
+                    .into_iter()
+                    .map(|c: ConstraintToMigrateCore| c.into())
+                    .collect(),
                 constraints_to_delete,
             },
             TrimOperationCore::DeleteConstraints { constraint_ids } => {
