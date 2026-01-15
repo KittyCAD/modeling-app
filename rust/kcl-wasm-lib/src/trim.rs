@@ -6,10 +6,13 @@
 use gloo_utils::format::JsValueSerdeExt;
 // Import core types and functions from kcl-lib
 use kcl_lib::front::{
-    get_next_trim_coords, get_position_coords_for_line, get_position_coords_from_arc, get_trim_spawn_terminations,
-    trim_strategy, ConstraintToMigrate as ConstraintToMigrateCore, Coords2d as Coords2dCore,
-    NextTrimResult as NextTrimResultCore, Object, TrimOperation as TrimOperationCore,
+    ConstraintToMigrate as ConstraintToMigrateCore, Coords2d as Coords2dCore,
+    NextTrimResult as NextTrimResultCore, TrimOperation as TrimOperationCore,
     TrimTermination as TrimTerminationCore, TrimTerminations as TrimTerminationsCore,
+};
+#[cfg(target_arch = "wasm32")]
+use kcl_lib::front::{
+    get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, Object,
 };
 #[cfg(target_arch = "wasm32")]
 use serde::{Deserialize, Serialize};
@@ -94,6 +97,7 @@ impl<'de> Deserialize<'de> for Coords2d {
 
 /// Result of finding the next trim spawn (intersection) - WASM version
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Used for serialization in TrimLoopOutput
 pub enum NextTrimResult {
     TrimSpawn {
         trim_spawn_seg_id: usize,
@@ -232,6 +236,7 @@ impl<'de> Deserialize<'de> for NextTrimResult {
 /// (1) the end of a segment (floating end), (2) an intersection with another segment, or
 /// (3) a coincident point where another segment is coincident with the segment we're traveling along.
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Used for serialization in TrimTerminations and TrimLoopOutput
 pub enum TrimTermination {
     SegEndPoint {
         trim_termination_coords: Coords2d,
@@ -421,6 +426,7 @@ impl<'de> Deserialize<'de> for TrimTermination {
 
 /// Trim terminations for both sides - WASM version
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Used for serialization in TrimLoopOutput
 pub struct TrimTerminations {
     pub left_side: TrimTermination,
     pub right_side: TrimTermination,
@@ -502,6 +508,7 @@ impl<'de> Deserialize<'de> for TrimTerminations {
 
 /// Trim operation types - WASM version
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Used for serialization in TrimLoopOutput
 pub enum TrimOperation {
     SimpleTrim {
         segment_to_trim_id: usize,
@@ -846,6 +853,7 @@ impl<'de> Deserialize<'de> for TrimOperation {
 
 /// Constraint to migrate during split operations - WASM version
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Used for serialization in TrimOperation
 pub struct ConstraintToMigrate {
     pub constraint_id: usize,
     pub other_entity_id: usize,
