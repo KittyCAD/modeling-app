@@ -40,7 +40,7 @@ describe('MlEphantConversation', () => {
           onProcess={handleProcess}
           onClickClearChat={() => {}}
           onReconnect={() => {}}
-          onInterrupt={() => {}}
+          onCancel={() => {}}
           needsReconnect={false}
           contexts={[]}
           disabled={false}
@@ -151,7 +151,7 @@ describe('MlEphantConversation', () => {
         onProcess={vi.fn()}
         onClickClearChat={() => {}}
         onReconnect={() => {}}
-        onInterrupt={() => {}}
+        onCancel={() => {}}
         needsReconnect={false}
         disabled={false}
         hasPromptCompleted={true}

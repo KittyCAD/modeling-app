@@ -1105,25 +1105,6 @@ description: Result of parsing sprocket.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "2": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Pattern the tooth profile around the origin to create a single closed profile",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1136,8 +1117,6 @@ description: Result of parsing sprocket.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Lightening/bolt holes patterned around center",
                     "// Create as a separate sketch group to use as a subtract2d tool later"
                   ],
@@ -2360,6 +2339,16 @@ description: Result of parsing sprocket.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Roller seating arc at tooth root",
                                 "style": "line"
@@ -2367,6 +2356,16 @@ description: Result of parsing sprocket.kcl
                             }
                           ],
                           "2": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -2388,6 +2387,16 @@ description: Result of parsing sprocket.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Transition arc to pitch-circle point between teeth",
                                 "style": "line"
@@ -2395,6 +2404,16 @@ description: Result of parsing sprocket.kcl
                             }
                           ],
                           "4": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -2416,13 +2435,9 @@ description: Result of parsing sprocket.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "blockComment",
-                                "value": "Pattern tooth around sprocket",
-                                "style": "line"
+                                "type": "newLine"
                               }
-                            }
-                          ],
-                          "7": [
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -2430,8 +2445,8 @@ description: Result of parsing sprocket.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Subtract center bore and lightening/bolt holes from the closed sprocket profile",
+                                "type": "blockComment",
+                                "value": "Pattern tooth around sprocket",
                                 "style": "line"
                               }
                             }
@@ -2450,6 +2465,9 @@ description: Result of parsing sprocket.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Pattern the tooth profile around the origin to create a single closed profile"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2705,6 +2723,9 @@ description: Result of parsing sprocket.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Subtract center bore and lightening/bolt holes from the closed sprocket profile"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2826,8 +2847,6 @@ description: Result of parsing sprocket.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Thickness set by roller width"
                   ],
                   "start": 0,
@@ -2866,6 +2885,54 @@ description: Result of parsing sprocket.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "1": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "2": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "3": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "5": [
                     {
                       "commentStart": 0,
@@ -3025,8 +3092,6 @@ description: Result of parsing sprocket.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// model an instance of the sprocket with 28 teeth and a 5/8 inch diameter center bore"
         ],
         "start": 0,
@@ -3100,6 +3165,18 @@ description: Result of parsing sprocket.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
           {
             "commentStart": 0,
             "end": 0,

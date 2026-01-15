@@ -567,7 +567,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Plane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
+impl<'a> FromKclValue<'a> for crate::execution::PlaneKind {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let plane_type = match arg.as_str()? {
             "XY" | "xy" => Self::XY,

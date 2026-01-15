@@ -49,10 +49,10 @@ expression: actual
     "nonCodeNodes": {
       "0": [
         {
-          "commentStart": 5,
+          "commentStart": 6,
           "end": 34,
           "moduleId": 0,
-          "start": 5,
+          "start": 6,
           "type": "NonCodeNode",
           "value": {
             "type": "inlineComment",

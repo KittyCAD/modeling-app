@@ -20,14 +20,14 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
-    front::ObjectId,
+    front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
-    front::{Number, Object},
+    front::Number,
     id::IncIdGenerator,
 };
 
@@ -132,6 +132,9 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    /// True if executing in sketch mode. Only a single sketch block will be
+    /// executed. All other code is ignored.
+    pub sketch_mode: bool,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained. The only time we disable this is when a user is
     /// dragging segments.
@@ -159,11 +162,11 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0, true),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
 
-    pub fn new_sketch_mode(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
+    pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         #[cfg(feature = "artifact-graph")]
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -174,7 +177,7 @@ impl ExecState {
                 ModulePath::Main,
                 ProgramMemory::new(),
                 Default::default(),
-                0,
+                mock_config.sketch_block_id.is_some(),
                 mock_config.freedom_analysis,
             ),
         }
@@ -189,7 +192,7 @@ impl ExecState {
                 self.mod_local.path.clone(),
                 ProgramMemory::new(),
                 Default::default(),
-                0,
+                false,
                 true,
             ),
         };
@@ -306,6 +309,19 @@ impl ExecState {
         Ok(())
     }
 
+    /// Returns true if we're executing in sketch mode for the current module.
+    /// In sketch mode, we still want to execute the prelude and other stdlib
+    /// modules as normal, so it can vary per module within a single overall
+    /// execution.
+    pub(crate) fn sketch_mode(&self) -> bool {
+        self.mod_local.sketch_mode
+            && match &self.mod_local.path {
+                ModulePath::Main => true,
+                ModulePath::Local { .. } => true,
+                ModulePath::Std { .. } => false,
+            }
+    }
+
     #[cfg(not(feature = "artifact-graph"))]
     pub fn next_object_id(&mut self) -> ObjectId {
         // The return value should only ever be used when the feature is
@@ -318,10 +334,27 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    pub fn peek_object_id(&self) -> ObjectId {
+        // The return value should only ever be used when the feature is
+        // enabled,
+        ObjectId(0)
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn peek_object_id(&self) -> ObjectId {
+        ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
-        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
+        debug_assert!(
+            id.0 == self.mod_local.artifacts.scene_objects.len(),
+            "Adding scene object with ID {} but next ID is {}",
+            id.0,
+            self.mod_local.artifacts.scene_objects.len()
+        );
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
@@ -671,7 +704,10 @@ impl ModuleArtifactState {
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
-        self.scene_objects.extend(other.scene_objects);
+        if other.scene_objects.len() > self.scene_objects.len() {
+            self.scene_objects
+                .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
+        }
         self.source_range_to_object.extend(other.source_range_to_object);
         self.var_solutions.extend(other.var_solutions);
     }
@@ -686,6 +722,44 @@ impl ModuleArtifactState {
         self.commands.extend(unprocessed);
         new_module_commands
     }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id_mut(&mut self, id: ObjectId) -> Option<&mut Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get_mut(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
 }
 
 impl ModuleState {
@@ -693,11 +767,9 @@ impl ModuleState {
         path: ModulePath,
         memory: Arc<ProgramMemory>,
         module_id: Option<ModuleId>,
-        next_object_id: usize,
+        sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = next_object_id;
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
@@ -710,14 +782,9 @@ impl ModuleState {
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            sketch_mode,
             freedom_analysis,
-            #[cfg(not(feature = "artifact-graph"))]
             artifacts: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifacts: ModuleArtifactState {
-                object_id_generator: IncIdGenerator::new(next_object_id),
-                ..Default::default()
-            },
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,

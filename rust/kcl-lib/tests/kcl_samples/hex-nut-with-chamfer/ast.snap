@@ -523,8 +523,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Auxiliary circle used to produce circular end edges for chamfering"
         ],
         "start": 0,
@@ -697,8 +695,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Hex nut exterior profile (regular hexagon, circumscribed about hexCircumscribedRadius)"
         ],
         "start": 0,
@@ -847,8 +843,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Central hole sketch (axis-aligned with the nut center)"
         ],
         "start": 0,
@@ -950,8 +944,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ─────────",
           "// 3D SOLIDS",
           "// ─────────",
@@ -1098,8 +1090,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Circular auxiliary solid; its start/end faces provide the circular edges for chamfering"
         ],
         "start": 0,
@@ -1425,8 +1415,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Apply chamfers to both circular end edges of the auxiliary solid"
         ],
         "start": 0,
@@ -1528,8 +1516,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Through-hole solid created from the center circle (used as subtraction tool)"
         ],
         "start": 0,
@@ -1629,8 +1615,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ──────────────────────────────",
           "// BOOLEAN COMPOSITION OF FEATURES",
           "// ──────────────────────────────",
@@ -1738,8 +1722,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Subtract the central cylindrical hole from the nut"
         ],
         "start": 0,
@@ -1817,8 +1799,6 @@ description: Result of parsing hex-nut-with-chamfer.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Apply a visual appearance to the finished nut"
         ],
         "start": 0,
@@ -2032,6 +2012,126 @@ description: Result of parsing hex-nut-with-chamfer.kcl
               "style": "line"
             }
           },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
           {
             "commentStart": 0,
             "end": 0,

@@ -2,4 +2,32 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands sketch_block_arc_using_center_coincident.kcl
 ---
-{}
+{
+  "rust/kcl-lib/tests/sketch_block_arc_using_center_coincident/input.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    }
+  ]
+}

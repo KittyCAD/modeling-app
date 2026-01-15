@@ -305,10 +305,10 @@ export class MockSocket extends WebSocket {
       // response = { conversation_id: { conversation_id: 'satehusateohustahseut' }}
     }
 
-    if (obj.type === 'system' && obj.command === 'interrupt') {
+    if (obj.type === 'system' && obj.command === 'cancel') {
       const response = {
         info: {
-          text: 'Stream interrupted by user request',
+          text: 'Message canceled by user request',
         },
       }
       generateUserResponse(this, this.cbs.message, response)

@@ -97,7 +97,8 @@ bottomSash = panelFn(
   |> translate(x = 0, y = 0, z = frameWidth / 2 - (sashHeight / 2))
   |> translate(x = 0, y = 0, z = sashTravelDistance) // open / close
 
-  // Latch mechanism on bottom sash
+
+// Latch mechanism on bottom sash
 // Create latch plate
 latchPlateWidth = 13
 latchPlateLength = 30
@@ -119,6 +120,7 @@ latchPlateShape = startProfile(
 latchPlateBody = extrude(latchPlateShape, length = latchPlateThickness)
   |> translate(x = 0, y = -frameDepth / 4, z = 0)
   |> translate(x = 0, y = 0, z = sashTravelDistance) // open / close
+
 
 // Create latch cylinder
 latchCylinderHeight = 5

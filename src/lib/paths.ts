@@ -1,6 +1,6 @@
 import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import type { IElectronAPI } from '@root/interface'
 import { fsManager } from '@src/lang/std/fileSystemManager'
@@ -322,4 +322,26 @@ export function getFilePathRelativeToProject(
   const sliceOffset = projectNameWithSeparators.length - 1
 
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
+}
+
+/** TODO: This is not used by the web yet. */
+async function getArchiveBasePath() {
+  return window.electron
+    ? desktopSafePathJoin([
+        await window.electron.getPathUserData(),
+        ARCHIVE_DIR,
+      ])
+    : webSafeJoin(['/', ARCHIVE_DIR])
+}
+
+/** Convert any given path to an archived one.
+ * The archive works by keeping the same structure as the original paths were on disk,
+ * just nested within the return value of `getArchiveBasePath`,
+ * so that if they are restored they can be returned to the original location.
+ */
+export async function toArchivePath(absolutePath: string) {
+  const basePath = await getArchiveBasePath()
+  return window.electron
+    ? window.electron.join(basePath, absolutePath)
+    : webSafeJoin([basePath, absolutePath])
 }

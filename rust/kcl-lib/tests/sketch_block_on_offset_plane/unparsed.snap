@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_on_offset_plane.kcl
+---
+@settings(experimentalFeatures = allow)
+
+plane1 = offsetPlane(XY, offset = 5mm)
+
+sketch(on = plane1) {
+  // Square
+  line1 = sketch2::line(start = [var 0, var 0], end = [var 1mm, var 0])
+  line2 = sketch2::line(start = [var 1mm, var 0], end = [var 1mm, var 1mm])
+  line3 = sketch2::line(start = [var 1mm, var 1mm], end = [var 0, var 1mm])
+  line4 = sketch2::line(start = [var 0, var 1mm], end = [var 0, var 0])
+  sketch2::horizontal(line1)
+  sketch2::vertical(line2)
+  sketch2::horizontal(line3)
+  sketch2::vertical(line4)
+  sketch2::coincident([line1.end, line2.start])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line4.start])
+  sketch2::coincident([line4.end, line1.start])
+  sketch2::equalLength([line1, line3])
+  sketch2::equalLength([line2, line4])
+}

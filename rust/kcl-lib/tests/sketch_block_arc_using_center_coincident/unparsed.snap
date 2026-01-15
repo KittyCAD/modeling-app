@@ -4,7 +4,7 @@ description: Result of unparsing sketch_block_arc_using_center_coincident.kcl
 ---
 @settings(experimentalFeatures = allow)
 
-s = sketch() {
+s = sketch(on = XY) {
   arc1 = sketch2::arc(start = [var 1.5mm, var], end = [var, var 2mm], center = [var, var])
   // Point at the origin.
   p0 = sketch2::point(at = [var, var])

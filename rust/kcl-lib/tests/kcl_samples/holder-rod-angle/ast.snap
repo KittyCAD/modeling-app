@@ -1565,25 +1565,6 @@ description: Result of parsing holder-rod-angle.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "holder_sketch = startSketchOn(YZ)\n  |> startProfile(at = [\n       (length_1 - length) / 2,\n       (length_1 - length) / 2\n     ])\n  |> yLine(length = length, tag = $h_seg02)\n  |> xLine(length = length, tag = $h_seg03)\n  |> yLine(length = -length, tag = $h_seg04)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $h_seg05)\n  |> close()\nholder = extrude(\n       holder_sketch,\n       length = -depth,\n       tagStart = $h_capStart001,\n       tagEnd = $h_capEnd002,\n     )\n  |> fillet(\n       radius = radius001,\n       tags = [\n         getCommonEdge(faces = [h_seg02, h_capStart001]),\n         getCommonEdge(faces = [h_seg03, h_capStart001]),\n         getCommonEdge(faces = [h_seg04, h_capStart001]),\n         getCommonEdge(faces = [h_seg05, h_capStart001]),\n         // outside\n         getCommonEdge(faces = [h_seg02, h_seg03]),\n         getCommonEdge(faces = [h_seg03, h_seg04]),\n         getCommonEdge(faces = [h_seg04, h_seg05]),\n         getCommonEdge(faces = [h_seg05, h_seg02])\n       ],\n     )",
-                      "style": "block"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2092,8 +2073,6 @@ description: Result of parsing holder-rod-angle.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// hole_holder_sketch = startSketchOn(-YZ, face = seg01)  |> circle(center = [-circle_center, circle_center], radius = hole_radius)",
           "// hold_holder = extrude(hole_holder_sketch, length = 4)",
           "",
@@ -3102,25 +3081,6 @@ description: Result of parsing holder-rod-angle.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "hole_inset = 0.6",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -3169,6 +3129,9 @@ description: Result of parsing holder-rod-angle.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// hole_inset = 0.6"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5695,49 +5658,6 @@ description: Result of parsing holder-rod-angle.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "hole = startSketchOn(extrude001, face = END)\n  |> circle(\n       center = [\n         1,1\n       ],\n       radius = screw_hole,\n       tag = $seg09,\n     )",
-                      "style": "block"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "mounting_hole = extrude(hole, length = -0.2) |>  chamfer(\n       length = 0.1,\n       tags = [\n         getCommonEdge(faces = [capEnd002, seg09])\n       ],\n     )",
-                      "style": "block"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -6029,6 +5949,15 @@ description: Result of parsing holder-rod-angle.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "/* hole = startSketchOn(extrude001, face = END)\n  |> circle(\n       center = [\n         1,1\n       ],\n       radius = screw_hole,\n       tag = $seg09,\n     ) */",
+          "",
+          "",
+          "// mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)",
+          "",
+          "",
+          "/* mounting_hole = extrude(hole, length = -0.2) |>  chamfer(\n       length = 0.1,\n       tags = [\n         getCommonEdge(faces = [capEnd002, seg09])\n       ],\n     ) */"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -7025,6 +6954,40 @@ description: Result of parsing holder-rod-angle.kcl
             "value": {
               "type": "newLine"
             }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "holder_sketch = startSketchOn(YZ)\n  |> startProfile(at = [\n       (length_1 - length) / 2,\n       (length_1 - length) / 2\n     ])\n  |> yLine(length = length, tag = $h_seg02)\n  |> xLine(length = length, tag = $h_seg03)\n  |> yLine(length = -length, tag = $h_seg04)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $h_seg05)\n  |> close()\nholder = extrude(\n       holder_sketch,\n       length = -depth,\n       tagStart = $h_capStart001,\n       tagEnd = $h_capEnd002,\n     )\n  |> fillet(\n       radius = radius001,\n       tags = [\n         getCommonEdge(faces = [h_seg02, h_capStart001]),\n         getCommonEdge(faces = [h_seg03, h_capStart001]),\n         getCommonEdge(faces = [h_seg04, h_capStart001]),\n         getCommonEdge(faces = [h_seg05, h_capStart001]),\n         // outside\n         getCommonEdge(faces = [h_seg02, h_seg03]),\n         getCommonEdge(faces = [h_seg03, h_seg04]),\n         getCommonEdge(faces = [h_seg04, h_seg05]),\n         getCommonEdge(faces = [h_seg05, h_seg02])\n       ],\n     )",
+              "style": "block"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
           }
         ],
         "13": [
@@ -7076,6 +7039,18 @@ description: Result of parsing holder-rod-angle.kcl
           }
         ],
         "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
           {
             "commentStart": 0,
             "end": 0,
@@ -7172,6 +7147,18 @@ description: Result of parsing holder-rod-angle.kcl
           }
         ],
         "28": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "29": [
           {
             "commentStart": 0,
             "end": 0,

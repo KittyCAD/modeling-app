@@ -105,6 +105,8 @@ description: Variables in memory after executing marine-ladder.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -112,7 +114,6 @@ description: Variables in memory after executing marine-ladder.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -187,6 +188,8 @@ description: Variables in memory after executing marine-ladder.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -194,7 +197,6 @@ description: Variables in memory after executing marine-ladder.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -284,6 +286,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -291,7 +295,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -383,6 +386,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -390,7 +395,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -498,6 +502,8 @@ description: Variables in memory after executing marine-ladder.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": -225.0,
           "y": 0.0,
@@ -505,7 +511,6 @@ description: Variables in memory after executing marine-ladder.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -604,6 +609,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": -225.0,
                 "y": 0.0,
@@ -611,7 +618,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -703,6 +709,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": -225.0,
                 "y": 0.0,
@@ -710,7 +718,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -802,6 +809,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": -225.0,
                 "y": 0.0,
@@ -809,7 +818,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -901,6 +909,8 @@ description: Variables in memory after executing marine-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": -225.0,
                 "y": 0.0,
@@ -908,7 +918,6 @@ description: Variables in memory after executing marine-ladder.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1002,6 +1011,8 @@ description: Variables in memory after executing marine-ladder.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1009,7 +1020,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1101,6 +1111,8 @@ description: Variables in memory after executing marine-ladder.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": -225.0,
             "y": 0.0,
@@ -1108,7 +1120,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

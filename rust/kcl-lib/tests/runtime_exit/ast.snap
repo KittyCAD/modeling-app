@@ -167,8 +167,6 @@ description: Result of parsing runtime_exit.kcl
                   },
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// We should never reach this."
                   ],
                   "start": 0,
@@ -202,6 +200,18 @@ description: Result of parsing runtime_exit.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "1": [
                     {
                       "commentStart": 0,
@@ -355,8 +365,6 @@ description: Result of parsing runtime_exit.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// We should never reach this."
         ],
         "start": 0,
@@ -422,6 +430,18 @@ description: Result of parsing runtime_exit.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
           {
             "commentStart": 0,
             "end": 0,

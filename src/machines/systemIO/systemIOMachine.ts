@@ -226,6 +226,23 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.moveRecursive
+          data: {
+            src: string
+            target: string
+            successMessage?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate
+          data: {
+            src: string
+            target: string
+            requestedProjectName: string
+            successMessage?: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.getMlEphantConversations
         }
       | {
@@ -635,6 +652,26 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.moveRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+          successMessage?: string
+          requestedProjectName?: string | undefined
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+          requestedProjectName: '',
+        }
+      }
+    ),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       return new Map()
     }),
@@ -775,6 +812,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.copyRecursive]: {
           target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
+          target: SystemIOMachineStates.movingRecursiveAndNavigate,
         },
         [SystemIOMachineEvents.getMlEphantConversations]: {
           target: SystemIOMachineStates.gettingMlEphantConversations,
@@ -1422,6 +1465,68 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.movingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.moveRecursive,
+        src: SystemIOMachineActors.moveRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.moveRecursive)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            successMessage: event.data.successMessage,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.movingRecursiveAndNavigate]: {
+      invoke: {
+        id: SystemIOMachineActors.moveRecursiveAndNavigate,
+        src: SystemIOMachineActors.moveRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.moveRecursiveAndNavigate)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            requestedProjectName: event.data.requestedProjectName,
+            successMessage: event.data.successMessage,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_moveRecursiveAndNavigate
+                )
+                return {
+                  name: event.output.requestedProjectName,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

@@ -180,7 +180,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -207,19 +207,6 @@ impl Node<NonCodeNode> {
                     }
                 }
             },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{add_start_new_line}{indentation}//\n")
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
@@ -978,6 +965,10 @@ impl Node<PipeExpression> {
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
+                    if let NonCodeValue::NewLine = val.value {
+                        buf.push('\n');
+                        continue;
+                    }
                     // TODO: Remove allocation here by switching val.recast to accept buf.
                     let formatted = if val.end == self.end {
                         val.recast(options, indentation_level)
@@ -988,7 +979,9 @@ impl Node<PipeExpression> {
                             .trim_end_matches('\n')
                             .to_string()
                     };
-                    if let NonCodeValue::BlockComment { .. } = val.value {
+                    if let NonCodeValue::BlockComment { .. } = val.value
+                        && !buf.ends_with('\n')
+                    {
                         buf.push('\n');
                     }
                     buf.push_str(&formatted);

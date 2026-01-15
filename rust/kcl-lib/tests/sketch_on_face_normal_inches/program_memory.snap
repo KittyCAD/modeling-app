@@ -172,6 +172,8 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -179,7 +181,6 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -338,6 +339,8 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -345,7 +348,6 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -433,6 +435,8 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 127.0,
           "y": -127.0,
@@ -440,7 +444,6 @@ description: Variables in memory after executing sketch_on_face_normal_inches.kc
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": -0.0,

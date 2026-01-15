@@ -30,10 +30,11 @@ nozzle3 = clone(nozzle1)
 nozzle4 = clone(nozzle1)
   |> rotate(roll = 0, pitch = 0, yaw = 270)
 
-  // ------------------------------------
-  // --- Nozzle Hoods (Alternating) ---
-  // ------------------------------------
+// ------------------------------------
+// --- Nozzle Hoods (Alternating) ---
+// ------------------------------------
 // Modeled identically to nozzles but translated upward and given alternating colors
+
 
 hoodSketch = startSketchOn(YZ)
 hoodProfile = startProfile(hoodSketch, at = [-0.1, 0])
@@ -54,10 +55,11 @@ hood4 = clone(hood1)
   |> rotate(roll = 0, pitch = 0, yaw = 270)
   |> appearance(%, color = "#000000")
 
-  // ----------------------------
-  // --- Stabilizer Fins (x4) ---
-  // ----------------------------
+// ----------------------------
+// --- Stabilizer Fins (x4) ---
+// ----------------------------
 // Small extrusions in X-Y profile, rotated to form cross pattern
+
 
 finSketch = startSketchOn(YZ)
 finProfile = startProfile(finSketch, at = [-4.23, 6.02])
@@ -75,10 +77,11 @@ fin3 = clone(fin1)
 fin4 = clone(fin1)
   |> rotate(roll = 0, pitch = 0, yaw = 270)
 
-  // -------------------------------
-  // --- Stage 1: Bottom Section ---
-  // -------------------------------
+// -------------------------------
+// --- Stage 1: Bottom Section ---
+// -------------------------------
 // Uses split white/black geometry to emulate paint scheme with mirrored arcs
+
 
 bottomBasePlane = offsetPlane(XY, offset = 6)
 blackPanelSketch = startSketchOn(bottomBasePlane)
@@ -96,10 +99,11 @@ whitePanelProfile = startProfile(blackPanelSketch, at = [0, -r1])
 whitePanel = extrude(whitePanelProfile, length = 14)
   |> appearance(%, color = "#ffffff")
 
-  // ------------------------------
-  // --- Stage 1: Upper Section ---
-  // ------------------------------
+// ------------------------------
+// --- Stage 1: Upper Section ---
+// ------------------------------
 // Alternating black and white zones using circular cross-sections
+
 
 cylinderBasePlane = offsetPlane(XY, offset = 20)
 cylinderSketch = startSketchOn(cylinderBasePlane)
@@ -138,10 +142,10 @@ upperCylProfile = circle(upperCylSketch, center = [0, 0], radius = r1)
 upperStage1 = extrude(upperCylProfile, length = 15)
   |> appearance(%, color = "#ffffff")
 
-  // --------------------------------
-  // --- Stage Transition Cones ---
-  // --------------------------------
-  // This conic taper transitions between stage diameters
+// --------------------------------
+// --- Stage Transition Cones ---
+// --------------------------------
+// This conic taper transitions between stage diameters
 
 // lower cones
 transitionLowerConeSketch = startSketchOn(YZ)
@@ -183,10 +187,10 @@ transitionUpperConeWhiteProfile = startProfile(transitionUpperConeSketch, at = [
 transitionUpperConeWhite = revolve(transitionUpperConeWhiteProfile, angle = -180, axis = Y)
   |> appearance(%, color = "#ffffff")
 
-  // ----------------------------
-  // --- Stage 2: Upper Body ---
-  // ----------------------------
-  // Simple white and black stack of extruded cylinders
+// ----------------------------
+// --- Stage 2: Upper Body ---
+// ----------------------------
+// Simple white and black stack of extruded cylinders
 
 // white
 stage2Plane = offsetPlane(XY, offset = 69)
@@ -202,10 +206,11 @@ stage2StripeProfile = circle(stage2StripeSketch, center = [0, 0], radius = r2)
 stage2Black = extrude(stage2StripeProfile, length = 2)
   |> appearance(%, color = "#000000")
 
-  // ----------------------------
-  // --- Launch Escape System ---
-  // ----------------------------
+// ----------------------------
+// --- Launch Escape System ---
+// ----------------------------
 // Final tapered nose modeled using a revolve profile for a sleek profile
+
 
 lesSketch = startSketchOn(XZ)
 lesProfile = startProfile(lesSketch, at = [0, 80])

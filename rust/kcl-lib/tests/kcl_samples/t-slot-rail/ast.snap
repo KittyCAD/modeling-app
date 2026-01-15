@@ -2363,7 +2363,27 @@ description: Result of parsing t-slot-rail.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch",
                                 "style": "line"
                               }
@@ -2377,7 +2397,27 @@ description: Result of parsing t-slot-rail.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Sketch a dimensioned hole in the center of the profile",
                                 "style": "line"
                               }
@@ -2391,7 +2431,27 @@ description: Result of parsing t-slot-rail.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Scale the entire sketch by a factor of the rail height, then extrude",
                                 "style": "line"
                               }
@@ -2598,8 +2658,6 @@ description: Result of parsing t-slot-rail.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Generate one rail using the rail function"
         ],
         "start": 0,
@@ -2699,7 +2757,20 @@ description: Result of parsing t-slot-rail.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

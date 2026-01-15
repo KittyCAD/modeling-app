@@ -327,8 +327,6 @@ description: Result of parsing countersunk-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Check that the plate is thick enough to countersink a hole",
           "// assertGreaterThan(plateThickness, boltDiameter, \"This plate is not thick enough for the necessary countersink dimensions\")",
           "",
@@ -2103,20 +2101,6 @@ description: Result of parsing countersunk-plate.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "12": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Function to create a countersunk hole",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -2558,6 +2542,16 @@ description: Result of parsing countersunk-plate.kcl
                             "start": 0,
                             "type": "NonCodeNode",
                             "value": {
+                              "type": "newLine"
+                            }
+                          },
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "NonCodeNode",
+                            "value": {
                               "type": "blockComment",
                               "value": "Use a chamfer to create a 90-degree countersink",
                               "style": "line"
@@ -2635,6 +2629,9 @@ description: Result of parsing countersunk-plate.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Function to create a countersunk hole"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2719,8 +2716,6 @@ description: Result of parsing countersunk-plate.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place a countersunk hole at each bolt hole position"
         ],
         "start": 0,
@@ -2867,7 +2862,43 @@ description: Result of parsing countersunk-plate.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
           {
             "commentStart": 0,
             "end": 0,

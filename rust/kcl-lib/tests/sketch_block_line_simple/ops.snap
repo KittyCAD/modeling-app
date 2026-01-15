@@ -6,7 +6,7 @@ description: Operations executed sketch_block_line_simple.kcl
   "rust/kcl-lib/tests/sketch_block_line_simple/input.kcl": [
     {
       "type": "SketchSolve",
-      "sketchId": 0,
+      "sketchId": 1,
       "nodePath": {
         "steps": [
           {

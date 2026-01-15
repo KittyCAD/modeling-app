@@ -1826,6 +1826,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Position the end line of the sketch at the start of the next tooth",
                                 "style": "line"
@@ -1833,6 +1843,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                             }
                           ],
                           "5": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -1854,6 +1874,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Subtract a 10mm diameter center hole from the gear",
                                 "style": "line"
@@ -1861,6 +1891,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                             }
                           ],
                           "8": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -1889,8 +1929,6 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                   ],
                   "start": 0,
@@ -1929,6 +1967,18 @@ description: Result of parsing spur-reduction-gearset.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "5": [
                     {
                       "commentStart": 0,
@@ -2150,8 +2200,6 @@ description: Result of parsing spur-reduction-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model a small gear"
         ],
         "start": 0,
@@ -2507,7 +2555,27 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
-                    "type": "newLineBlockComment",
+                    "type": "newLine"
+                  }
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "newLine"
+                  }
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
                     "value": "Rotate the gear so that the teeth mesh but do not intersect",
                     "style": "line"
                   }
@@ -2522,8 +2590,6 @@ description: Result of parsing spur-reduction-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model a larger gear with the same module"
         ],
         "start": 0,
@@ -2595,7 +2661,32 @@ description: Result of parsing spur-reduction-gearset.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

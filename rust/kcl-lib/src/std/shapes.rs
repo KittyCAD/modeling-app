@@ -36,6 +36,15 @@ pub enum SketchOrSurface {
     Sketch(Box<Sketch>),
 }
 
+impl SketchOrSurface {
+    pub fn into_sketch_surface(self) -> SketchSurface {
+        match self {
+            SketchOrSurface::SketchSurface(surface) => surface,
+            SketchOrSurface::Sketch(sketch) => sketch.on,
+        }
+    }
+}
+
 /// Sketch a rectangle.
 pub async fn rectangle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
@@ -60,10 +69,7 @@ async fn inner_rectangle(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_or_surface {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(s) => s.on,
-    };
+    let sketch_surface = sketch_or_surface.into_sketch_surface();
 
     // Find the corner in the negative quadrant
     let (ty, corner) = match (center, corner) {
@@ -181,10 +187,7 @@ async fn inner_circle(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_or_surface {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(s) => s.on,
-    };
+    let sketch_surface = sketch_or_surface.into_sketch_surface();
     let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
@@ -290,10 +293,7 @@ async fn inner_circle_three_point(
     // It can be the distance to any of the 3 points - they all lay on the circumference.
     let radius = distance(center, p2);
 
-    let sketch_surface = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
-    };
+    let sketch_surface = sketch_surface_or_group.into_sketch_surface();
 
     let from = [TyF64::new(center[0] + radius, ty), TyF64::new(center[1], ty)];
     let sketch =
@@ -575,10 +575,7 @@ async fn inner_ellipse(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
-    };
+    let sketch_surface = sketch_surface_or_group.into_sketch_surface();
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 

@@ -1075,8 +1075,6 @@ description: Result of parsing dodecahedron.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a face template function that makes a large thin cube"
         ],
         "start": 0,
@@ -2191,8 +2189,6 @@ description: Result of parsing dodecahedron.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define the rotations array with [pitch, roll, yaw, dither] for each face"
         ],
         "start": 0,
@@ -2592,8 +2588,6 @@ description: Result of parsing dodecahedron.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create faces by mapping over the rotations array"
         ],
         "start": 0,
@@ -3441,8 +3435,6 @@ description: Result of parsing dodecahedron.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Apply intersection to all faces"
         ],
         "start": 0,
@@ -3543,6 +3535,42 @@ description: Result of parsing dodecahedron.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "3": [
           {
             "commentStart": 0,
@@ -3556,6 +3584,18 @@ description: Result of parsing dodecahedron.kcl
           }
         ],
         "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
           {
             "commentStart": 0,
             "end": 0,

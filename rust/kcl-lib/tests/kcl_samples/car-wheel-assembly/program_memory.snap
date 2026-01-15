@@ -5,36 +5,45 @@ description: Variables in memory after executing car-wheel-assembly.kcl
 {
   "__mod_brakeCaliper": {
     "type": "Module",
-    "value": 4
+    "value": 2
   },
-  "__mod_carRotor": {
+  "__mod_brakeRotor": {
     "type": "Module",
     "value": 3
   },
   "__mod_carTire": {
     "type": "Module",
-    "value": 6
+    "value": 4
   },
   "__mod_carWheel": {
     "type": "Module",
-    "value": 1
+    "value": 5
   },
   "__mod_lugNut": {
     "type": "Module",
-    "value": 5
+    "value": 6
   },
-  "backSpacing": {
+  "aBase": {
     "type": "Number",
-    "value": 6.38,
+    "value": 90.0,
     "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
     }
   },
-  "bendRadius": {
+  "aSweep": {
     "type": "Number",
-    "value": 1.6,
+    "value": 30.0,
+    "ty": {
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
+    }
+  },
+  "aspectRatio": {
+    "type": "Number",
+    "value": 30.0,
     "ty": {
       "type": "Default",
       "len": "in",
@@ -46,54 +55,36 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "TagIdentifier",
     "value": "c1"
   },
-  "caliperInnerEdgeRadius": {
-    "type": "Number",
-    "value": 0.12,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "caliperOuterEdgeRadius": {
-    "type": "Number",
-    "value": 0.39,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "caliperPadLength": {
-    "type": "Number",
-    "value": 1.6,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
   "caliperThickness": {
     "type": "Number",
-    "value": 0.39,
+    "value": 2.5,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "caliperTolerance": {
+  "dDrillDia": {
     "type": "Number",
-    "value": 0.05,
+    "value": 0.25,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "drillAndSlotCount": {
+  "hBellAboveDiscFace": {
     "type": "Number",
-    "value": 5.0,
+    "value": 1.5,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "hFrictionSurface": {
+    "type": "Number",
+    "value": 2.36,
     "ty": {
       "type": "Default",
       "len": "in",
@@ -118,31 +109,13 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "type": "Length"
     }
   },
-  "lugHeadLength": {
+  "lugLength": {
     "type": "Number",
-    "value": 12.0,
-    "ty": {
-      "mm": null,
-      "type": "Known",
-      "type": "Length"
-    }
-  },
-  "lugHolePatternDia": {
-    "type": "Number",
-    "value": 3.0,
+    "value": 0.625,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
-    }
-  },
-  "lugLength": {
-    "type": "Number",
-    "value": 30.0,
-    "ty": {
-      "mm": null,
-      "type": "Known",
-      "type": "Length"
     }
   },
   "lugSpacing": {
@@ -154,31 +127,85 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "type": "Length"
     }
   },
-  "lugThreadDepth": {
+  "lugThreadDiameter": {
     "type": "Number",
-    "value": 17.3,
+    "value": 13.714285714285714,
     "ty": {
       "mm": null,
       "type": "Known",
       "type": "Length"
     }
   },
-  "lugThreadDiameter": {
+  "nArcs": {
     "type": "Number",
-    "value": 10.2,
+    "value": 12.0,
     "ty": {
-      "mm": null,
-      "type": "Known",
-      "type": "Length"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "nVentBosses": {
+    "type": "Number",
+    "value": 36.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "offset": {
     "type": "Number",
-    "value": -35.0,
+    "value": -10.0,
     "ty": {
       "mm": null,
       "type": "Known",
       "type": "Length"
+    }
+  },
+  "overallDiameter": {
+    "type": "Number",
+    "value": 610.2,
+    "ty": {
+      "mm": null,
+      "type": "Known",
+      "type": "Length"
+    }
+  },
+  "rDraftAngle": {
+    "type": "Number",
+    "value": 83.0,
+    "ty": {
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
+    }
+  },
+  "rVentFillet": {
+    "type": "Number",
+    "value": 0.1,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "rimDiameter": {
+    "type": "Number",
+    "value": 18.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "rotorBore": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rotorDiameter": {
@@ -190,97 +217,25 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "angle": "degrees"
     }
   },
-  "rotorInnerDiameter": {
+  "sidewallThickness": {
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "rotorInnerDiameterThickness": {
-    "type": "Number",
-    "value": 0.5,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "rotorSinglePlateThickness": {
-    "type": "Number",
-    "value": 0.25,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "rotorTotalThickness": {
-    "type": "Number",
-    "value": 1.0,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "spacerCount": {
-    "type": "Number",
-    "value": 16.0,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "spacerDiameter": {
-    "type": "Number",
-    "value": 0.25,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "spacerLength": {
-    "type": "Number",
-    "value": 0.5,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "spacerPatternDiameter": {
-    "type": "Number",
-    "value": 11.0,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "spokeAngle": {
-    "type": "Number",
-    "value": 0.02,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "mm": null,
+      "type": "Known",
+      "type": "Length"
     }
   },
   "spokeCount": {
     "type": "Number",
-    "value": 6.0,
+    "value": 5.0,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "spokeGap": {
+  "tBell": {
     "type": "Number",
     "value": 0.2,
     "ty": {
@@ -289,72 +244,54 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "angle": "degrees"
     }
   },
-  "spokeThickness": {
+  "tDiscHalf": {
     "type": "Number",
-    "value": 0.95,
+    "value": 0.375,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "tireDepth": {
+  "tVent": {
     "type": "Number",
-    "value": 11.02,
+    "value": 0.375,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "tireInnerDiameter": {
+  "tireWidth": {
     "type": "Number",
-    "value": 19.0,
+    "value": 255.0,
+    "ty": {
+      "mm": null,
+      "type": "Known",
+      "type": "Length"
+    }
+  },
+  "treadDepth": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "mm": null,
+      "type": "Known",
+      "type": "Length"
+    }
+  },
+  "wUndercut": {
+    "type": "Number",
+    "value": 0.2,
     "ty": {
       "type": "Default",
       "len": "in",
       "angle": "degrees"
     }
   },
-  "tireOuterDiameter": {
+  "wVent": {
     "type": "Number",
-    "value": 24.0,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "tireTreadDepth": {
-    "type": "Number",
-    "value": 0.39,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "tireTreadOffset": {
-    "type": "Number",
-    "value": 3.15,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "tireTreadWidth": {
-    "type": "Number",
-    "value": 0.39,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "wheelDiameter": {
-    "type": "Number",
-    "value": 19.0,
+    "value": 0.25,
     "ty": {
       "type": "Default",
       "len": "in",
@@ -364,15 +301,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   "wheelWidth": {
     "type": "Number",
     "value": 9.5,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
-    }
-  },
-  "yAxisOffset": {
-    "type": "Number",
-    "value": 0.5,
     "ty": {
       "type": "Default",
       "len": "in",

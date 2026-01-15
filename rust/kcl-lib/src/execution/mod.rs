@@ -42,15 +42,13 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
+    front::{Object, ObjectId},
     fs::FileManager,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    collections::AhashIndexSet,
-    front::{Number, Object, ObjectId},
-};
+use crate::{collections::AhashIndexSet, front::Number};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -196,10 +194,33 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+impl ExecOutcome {
+    pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+}
+
 /// Configuration for mock execution.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
+    /// specified sketch block will be executed. All other code is ignored.
+    pub sketch_block_id: Option<ObjectId>,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained.
     pub freedom_analysis: bool,
@@ -213,6 +234,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            sketch_block_id: None,
             freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
@@ -221,6 +243,14 @@ impl Default for MockConfig {
 }
 
 impl MockConfig {
+    /// Create a new mock config for sketch mode.
+    pub fn new_sketch_mode(sketch_block_id: ObjectId) -> Self {
+        Self {
+            sketch_block_id: Some(sketch_block_id),
+            ..Default::default()
+        }
+    }
+
     #[must_use]
     pub(crate) fn no_freedom_analysis(mut self) -> Self {
         self.freedom_analysis = false;
@@ -716,15 +746,32 @@ impl ExecutorContext {
         );
 
         let use_prev_memory = mock_config.use_prev_memory;
-        #[cfg(not(feature = "artifact-graph"))]
-        let mut exec_state = ExecState::new(self);
-        #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
-                    *exec_state.mut_stack() = mem.0;
-                    exec_state.global.module_infos = mem.1;
+                    *exec_state.mut_stack() = mem.stack;
+                    exec_state.global.module_infos = mem.module_infos;
+                    #[cfg(feature = "artifact-graph")]
+                    {
+                        let len = mock_config
+                            .sketch_block_id
+                            .map(|sketch_block_id| sketch_block_id.0)
+                            .unwrap_or(0);
+                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+                            exec_state.global.root_module_artifacts.scene_objects = scene_objects.to_vec();
+                        } else {
+                            let message = format!(
+                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                                mem.scene_objects.len(),
+                                len
+                            );
+                            debug_assert!(false, "{message}");
+                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+                            )));
+                        }
+                    }
                 }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
@@ -742,12 +789,21 @@ impl ExecutorContext {
         // memory in case another run wants to use them. Note this is just saved to the preserved
         // memory, not to the exec_state which is not cached for mock execution.
 
-        let mut mem = exec_state.stack().clone();
+        let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
+        #[cfg(feature = "artifact-graph")]
+        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        #[cfg(not(feature = "artifact-graph"))]
+        let scene_objects = Default::default();
         let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
-        mem.squash_env(result.0);
-        cache::write_old_memory((mem, module_infos)).await;
+        stack.squash_env(result.0);
+        let state = cache::SketchModeState {
+            stack,
+            module_infos,
+            scene_objects,
+        };
+        cache::write_old_memory(state).await;
 
         Ok(outcome)
     }
@@ -1315,9 +1371,17 @@ impl ExecutorContext {
         let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
 
         if !self.is_mock() {
-            let mut mem = exec_state.stack().deep_clone();
-            mem.restore_env(env_ref);
-            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
+            let mut stack = exec_state.stack().deep_clone();
+            stack.restore_env(env_ref);
+            let state = cache::SketchModeState {
+                stack,
+                module_infos: exec_state.global.module_infos.clone(),
+                #[cfg(feature = "artifact-graph")]
+                scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                #[cfg(not(feature = "artifact-graph"))]
+                scene_objects: Default::default(),
+            };
+            cache::write_old_memory(state).await;
         }
         let session_data = self.engine.get_session_data().await;
 

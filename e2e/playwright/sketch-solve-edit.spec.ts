@@ -125,7 +125,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Drag point segment 13 down', async () => {
       const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="13"]'
+        '[data-segment_id="14"]'
       )
 
       const centerX = segmentBox.x + segmentBox.width / 2
@@ -145,7 +145,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
-      const midpoint = await getMidpointBetweenSegments(scene, '8', '9')
+      const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
       const lineToEdit = getCodeLine({ code: TEST_CODE, line: 8 })
       await editor.expectEditor.toContain(lineToEdit)
@@ -306,10 +306,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.getByTestId('point').click()
     })
 
-    await test.step('Select segments 1 and 8, then apply coincident constraint', async () => {
-      await page.locator('[data-segment_id="1"]').click()
+    await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
+      await page.locator('[data-segment_id="2"]').click()
       // await page.waitForTimeout(100)
-      await page.locator('[data-segment_id="8"]').click()
+      await page.locator('[data-segment_id="9"]').click()
       // await page.waitForTimeout(100)
 
       // Click the coincident tool
@@ -323,10 +323,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
       format: 'ratio',
     })
-    await test.step('Select lines between segments 1-2 and 4-5, then apply parallel constraint', async () => {
+    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
       await clearSelection()
       const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="1"]'
+        '[data-segment_id="2"]'
       )
       const centerX = segmentBox.x + segmentBox.width / 2
       const centerY = segmentBox.y + segmentBox.height / 2
@@ -336,10 +336,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.mouse.up()
     })
 
-    await test.step('Select lines between segments 1-2 and 4-5, then apply parallel constraint', async () => {
+    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
       // Click in dead space to clear selections
-      const midpoint1_2 = await getMidpointBetweenSegments(scene, '1', '2')
-      const midpoint4_5 = await getMidpointBetweenSegments(scene, '4', '5')
+      const midpoint1_2 = await getMidpointBetweenSegments(scene, '2', '3')
+      const midpoint4_5 = await getMidpointBetweenSegments(scene, '5', '6')
 
       await clearSelection()
       // await page.waitForTimeout(100)

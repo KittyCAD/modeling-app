@@ -25,9 +25,24 @@ pub(super) async fn make_face(
 ) -> Result<Box<Face>, KclError> {
     let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
 
+    let object_id = exec_state.next_object_id();
+    #[cfg(feature = "artifact-graph")]
+    {
+        let face_object = crate::front::Object {
+            id: object_id,
+            kind: crate::front::ObjectKind::Face(crate::front::Face { id: object_id }),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: extrude_plane_id.into(),
+            source: args.source_range.into(),
+        };
+        exec_state.add_scene_object(face_object, args.source_range);
+    }
+
     Ok(Box::new(Face {
         id: extrude_plane_id,
         artifact_id: extrude_plane_id.into(),
+        object_id,
         value: tag.to_string(),
         // TODO: get this from the extrude plane data.
         x_axis: solid.sketch.on.x_axis(),

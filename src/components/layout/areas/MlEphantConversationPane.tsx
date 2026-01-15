@@ -134,10 +134,10 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
-  const onInterrupt = () => {
+  const onCancel = () => {
     props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.Interrupt,
+      type: MlEphantManagerTransitions.Cancel,
     })
   }
 
@@ -305,7 +305,7 @@ export const MlEphantConversationPane = (props: {
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
-      onInterrupt={onInterrupt}
+      onCancel={onCancel}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}

@@ -1654,18 +1654,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
@@ -1717,19 +1715,13 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesn't have a new line above it.
-    /// If it did it would be a `NewLineBlockComment`.
+    /// This is always the case.
     BlockComment {
         value: String,
         style: CommentStyle,
     },
-    /// A block comment that has a new line above it.
-    /// The user explicitly added a new line above the block comment.
-    NewLineBlockComment {
-        value: String,
-        style: CommentStyle,
-    },
     // A new line like `\n\n` NOT a new line like `\n`.
+    // i.e. an empty line, not just the ending of a non-empty line.
     // This is also not a comment.
     NewLine,
 }
@@ -1777,6 +1769,36 @@ impl NonCodeMeta {
                 .filter(|node| node.is_comment())
                 .any(|node| node.contains(pos))
         })
+    }
+
+    /// The source range of a comment node should start at a '/', because both
+    /// styles of comments (// line comments and /* block comments */) start
+    /// with a /.
+    /// If a comment does NOT start with a /, that likely indicates an off-by-one
+    /// error, or some other kindof inaccurate source range. This is bad, because the
+    /// LSP won't offer suggestions if it thinks the user is in a comment.
+    /// So inaccurate comment start/ends could cause disabling autocompletion.
+    pub fn comment_start_is_accurate(&self, str: &[u8]) -> bool {
+        for nodes in self.non_code_nodes.values() {
+            for node in nodes {
+                match node.inner.value {
+                    NonCodeValue::InlineComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::BlockComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::NewLine => {}
+                }
+            }
+        }
+        true
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.

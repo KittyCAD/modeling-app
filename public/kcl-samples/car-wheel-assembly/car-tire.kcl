@@ -5,41 +5,27 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
-import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "parameters.kcl"
+import * from "parameters.kcl"
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)
-  |> startProfile(at = [tireInnerDiameter / 2, tireDepth / 2])
-  |> line(
-       endAbsolute = [
-         tireOuterDiameter / 2 - bendRadius,
-         tireDepth / 2
-       ],
-       tag = $edge1,
-     )
-  |> tangentialArc(angle = -90deg, radius = bendRadius)
-  |> line(endAbsolute = [
-       tireOuterDiameter / 2,
-       tireDepth / 2 - tireTreadOffset
+  |> startProfile(at = [overallDiameter / 2, 0])
+  |> yLine(length = tireWidth / 4)
+  |> arc(angleStart = 270, angleEnd = 90, radius = treadDepth)
+  |> yLine(endAbsolute = tireWidth / 2 - (tireWidth / 10))
+  |> tangentialArc(angle = 85deg, radius = tireWidth / 10)
+  |> tangentialArc(endAbsolute = [rimDiameter / 2, wheelWidth / 2], tag = $seg02)
+  |> yLine(length = -sidewallThickness)
+  |> angledLine(angle = tangentToEnd(seg02), length = -0.1)
+  |> tangentialArc(endAbsolute = [
+       overallDiameter / 2 - 1,
+       tireWidth / 2.4
      ])
-  |> xLine(length = -tireTreadDepth)
-  |> yLine(length = -tireTreadWidth)
-  |> xLine(length = tireTreadDepth)
-  |> line(endAbsolute = [
-       tireOuterDiameter / 2,
-       -tireDepth / 2 + tireTreadOffset + tireTreadWidth
-     ])
-  |> xLine(length = -tireTreadDepth)
-  |> yLine(length = -tireTreadWidth)
-  |> xLine(length = tireTreadDepth)
-  |> line(endAbsolute = [
-       tireOuterDiameter / 2,
-       -tireDepth / 2 + bendRadius
-     ])
-  |> tangentialArc(angle = -90deg, radius = bendRadius)
-  |> line(endAbsolute = [tireInnerDiameter / 2, -tireDepth / 2], tag = $edge2)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
   |> close()
 
 // Revolve the sketch to create the tire
 carTire = revolve(tireSketch, axis = Y)
-  |> appearance(color = "#0f0f0f", roughness = 80)
+  |> appearance(color = "#0a0a0a", roughness = 20)
+  |> translate(y = -tBell + offset)

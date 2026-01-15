@@ -161,6 +161,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 33,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -312,6 +313,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -319,7 +322,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -515,6 +517,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 34,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -666,6 +669,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -673,7 +678,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -869,6 +873,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 35,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1020,6 +1025,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1027,7 +1034,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1223,6 +1229,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 36,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1374,6 +1381,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1381,7 +1390,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1577,6 +1585,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 37,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1728,6 +1737,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1735,7 +1746,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1931,6 +1941,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 38,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -2082,6 +2093,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2089,7 +2102,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2285,6 +2297,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 39,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -2436,6 +2449,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2443,7 +2458,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2693,6 +2707,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 12,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2844,6 +2859,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2851,7 +2868,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3047,6 +3063,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 17,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3198,6 +3215,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3205,7 +3224,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3509,6 +3527,8 @@ description: Variables in memory after executing kitt.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3516,7 +3536,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3721,6 +3740,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 18,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3845,6 +3865,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -3996,6 +4017,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4003,7 +4026,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -4226,6 +4248,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 19,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -4350,6 +4373,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -4501,6 +4525,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4508,7 +4534,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -4731,6 +4756,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 20,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -4855,6 +4881,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -5006,6 +5033,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -5013,7 +5042,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -5540,6 +5568,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -5664,6 +5693,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 1,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -5815,6 +5845,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -5822,7 +5854,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6081,6 +6112,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 14,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -6205,6 +6237,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -6356,6 +6389,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -6363,7 +6398,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6586,6 +6620,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 15,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -6710,6 +6745,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -6861,6 +6897,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -6868,7 +6906,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -7091,6 +7128,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 16,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -7215,6 +7253,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -7366,6 +7405,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -7373,7 +7414,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -7641,6 +7681,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -7792,6 +7833,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -7799,7 +7842,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8040,6 +8082,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 29,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -8191,6 +8234,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -8198,7 +8243,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8394,6 +8438,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -8710,6 +8755,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -8834,6 +8880,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -8985,6 +9032,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -8992,7 +9041,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -9242,6 +9290,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -9558,6 +9607,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -9682,6 +9732,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -9833,6 +9884,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -9840,7 +9893,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -10090,6 +10142,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -10406,6 +10459,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -10530,6 +10584,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -10681,6 +10736,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -10688,7 +10745,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -10937,6 +10993,8 @@ description: Variables in memory after executing kitt.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 23,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -10944,7 +11002,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11116,6 +11173,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 9,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -11432,6 +11490,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -11556,6 +11615,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -11707,6 +11767,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -11714,7 +11776,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -11964,6 +12025,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 11,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -12280,6 +12342,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -12404,6 +12467,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -12555,6 +12619,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -12562,7 +12628,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -12830,6 +12895,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 8,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -13146,6 +13212,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -13270,6 +13337,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -13421,6 +13489,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -13428,7 +13498,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -13678,6 +13747,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 10,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -13994,6 +14064,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -14118,6 +14189,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -14269,6 +14341,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -14276,7 +14350,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -14718,6 +14791,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 7,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -15034,6 +15108,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -15158,6 +15233,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -15309,6 +15385,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -15316,7 +15394,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -15575,6 +15652,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 25,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -15726,6 +15804,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -15733,7 +15813,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -15929,6 +16008,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -16245,6 +16325,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -16369,6 +16450,7 @@ description: Variables in memory after executing kitt.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -16520,6 +16602,8 @@ description: Variables in memory after executing kitt.kcl
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -16527,7 +16611,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -16776,6 +16859,8 @@ description: Variables in memory after executing kitt.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 21,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -16783,7 +16868,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16969,6 +17053,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 13,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -17093,6 +17178,7 @@ description: Variables in memory after executing kitt.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -17244,6 +17330,8 @@ description: Variables in memory after executing kitt.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -17251,7 +17339,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -17510,6 +17597,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 40,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -17661,6 +17749,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -17668,7 +17758,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -17864,6 +17953,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 41,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -18015,6 +18105,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -18022,7 +18114,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -18218,6 +18309,7 @@ description: Variables in memory after executing kitt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 42,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -18369,6 +18461,8 @@ description: Variables in memory after executing kitt.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -18376,7 +18470,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
