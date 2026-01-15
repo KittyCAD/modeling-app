@@ -81,6 +81,39 @@ sketch(on = YZ) {
   })
 })
 
+describe('Trim line that does not intersect anything', () => {
+  it('should be a no-op when trim line does not intersect any segments', async () => {
+    const baseKclCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
+}
+`
+
+    // Trim line far away from all segments - should not intersect anything
+    const trimPoints: Coords2d[] = [
+      [10, 10],
+      [15, 10],
+    ]
+
+    const result = await executeTrimFlow({
+      kclCode: baseKclCode,
+      trimPoints,
+      sketchId: 0,
+    })
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    // Should be unchanged (no-op)
+    expect(result.kclSource.text).toBe(baseKclCode)
+  })
+})
+
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
@@ -525,13 +558,14 @@ async function executeTrimFlow({
     hadError = error instanceof Error ? error : new Error(String(error))
   }
 
-  // Return error if one occurred, or if no operations were executed
+  // Return error if one occurred
   if (hadError) {
     return hadError
   }
 
+  // If no operations were executed (no-op case), return the original KCL code
   if (!lastResult) {
-    return new Error('No trim operations were executed')
+    return { kclSource: { text: kclCode } }
   }
 
   return lastResult

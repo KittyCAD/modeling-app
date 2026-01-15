@@ -5,7 +5,6 @@ use std::{
 };
 
 use kcl_error::SourceRange;
-use web_time::Instant;
 
 use crate::{
     ExecOutcome, ExecutorContext, Program,
@@ -432,19 +431,13 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
 
-        let _constraint_count = constraint_ids_set.len();
-        let _segment_count = segment_ids_set.len();
-
-        let delete_loop_start = Instant::now();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        let _delete_loop_duration = delete_loop_start.elapsed();
 
-        let execute_start = Instant::now();
         let result = self
             .execute_after_edit(
                 ctx,
@@ -454,7 +447,6 @@ impl SketchApi for FrontendState {
                 &mut new_ast,
             )
             .await;
-        let _execute_duration = execute_start.elapsed();
 
         result
     }
