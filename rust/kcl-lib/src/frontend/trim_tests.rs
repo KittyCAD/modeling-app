@@ -915,12 +915,12 @@ sketch(on = YZ) {
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
-  simpleDeleteLineDisContraintDeletedAsWell = sketch2::line(start = [var -3mm, var 5mm], end = [var 3.5mm, var 4.5mm])
+  simpleDeleteLineDisConstraintDeletedAsWell = sketch2::line(start = [var -3mm, var 5mm], end = [var 3.5mm, var 4.5mm])
   sketch2::coincident([
     line1.end,
-    simpleDeleteLineDisContraintDeletedAsWell.start
+    simpleDeleteLineDisConstraintDeletedAsWell.start
   ])
-  simpleDeleteLineDisContraintDeletedAsWell2 = sketch2::line(start = [var -3.5mm, var 3.5mm], end = [var 3.5mm, var 3.5mm])
+  simpleDeleteLineDisConstraintDeletedAsWell2 = sketch2::line(start = [var -3.5mm, var 3.5mm], end = [var 3.5mm, var 3.5mm])
   line4 = sketch2::line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
   endTrimmedShouldDeleteDisConstraint = sketch2::line(start = [var -3.5mm, var 2mm], end = [var 3mm, var 2mm])
   sketch2::coincident([
@@ -928,10 +928,10 @@ sketch(on = YZ) {
     endTrimmedShouldDeleteDisConstraint.start
   ])
   line6 = sketch2::line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
-  startTrimmedAlsDeleteDisConstraint = sketch2::line(start = [var -3.22mm, var -0.64mm], end = [var 3.02mm, var -0.75mm])
+  startTrimmedAlsoDeleteDisConstraint = sketch2::line(start = [var -3.22mm, var -0.64mm], end = [var 3.02mm, var -0.75mm])
   line3 = sketch2::line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
   sketch2::coincident([
-    startTrimmedAlsDeleteDisConstraint.end,
+    startTrimmedAlsoDeleteDisConstraint.end,
     line3.start
   ])
   line5 = sketch2::line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
@@ -953,20 +953,20 @@ sketch(on = YZ) {
     splitTrimLineDistanceConstraintMigrated
   ])
   sketch2::distance([
-    simpleDeleteLineDisContraintDeletedAsWell.start,
-    simpleDeleteLineDisContraintDeletedAsWell.end
+    simpleDeleteLineDisConstraintDeletedAsWell.start,
+    simpleDeleteLineDisConstraintDeletedAsWell.end
   ]) == 6.52mm
   sketch2::distance([
-    simpleDeleteLineDisContraintDeletedAsWell2.start,
-    simpleDeleteLineDisContraintDeletedAsWell2.end
+    simpleDeleteLineDisConstraintDeletedAsWell2.start,
+    simpleDeleteLineDisConstraintDeletedAsWell2.end
   ]) == 7mm
   sketch2::distance([
     endTrimmedShouldDeleteDisConstraint.start,
     endTrimmedShouldDeleteDisConstraint.end
   ]) == 6.5mm
   sketch2::distance([
-    startTrimmedAlsDeleteDisConstraint.start,
-    startTrimmedAlsDeleteDisConstraint.end
+    startTrimmedAlsoDeleteDisConstraint.start,
+    startTrimmedAlsoDeleteDisConstraint.end
   ]) == 6.24mm
   sketch2::distance([
     splitTrimLineDistanceConstraintMigrated.start,
@@ -1001,10 +1001,10 @@ sketch(on = YZ) {
     endTrimmedShouldDeleteDisConstraint.start
   ])
   line6 = sketch2::line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
-  startTrimmedAlsDeleteDisConstraint = sketch2::line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
+  startTrimmedAlsoDeleteDisConstraint = sketch2::line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
   line3 = sketch2::line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
   sketch2::coincident([
-    startTrimmedAlsDeleteDisConstraint.end,
+    startTrimmedAlsoDeleteDisConstraint.end,
     line3.start
   ])
   line5 = sketch2::line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
@@ -1018,7 +1018,7 @@ sketch(on = YZ) {
     line6
   ])
   sketch2::coincident([
-    startTrimmedAlsDeleteDisConstraint.start,
+    startTrimmedAlsoDeleteDisConstraint.start,
     line5
   ])
   line2 = sketch2::line(start = [var 1.1mm, var -3.91mm], end = [var 2.87mm, var -3.72mm])
