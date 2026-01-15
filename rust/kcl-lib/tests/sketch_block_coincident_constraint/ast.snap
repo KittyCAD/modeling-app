@@ -353,8 +353,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   },
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Constrain the line segment endpoints"
                   ],
                   "start": 0,
@@ -869,8 +867,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Create another line with a start point"
                   ],
                   "start": 0,
@@ -998,8 +994,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   },
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Constrain line5 endpoints",
                     "// Note: We don't constrain line5.start.at[0] directly",
                     "// and instead let the coincident constraint determine it"
@@ -1245,8 +1239,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   },
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Make line5.start coincident with line4 (point-segment)",
                     "// This matches the user's example syntax: coincident([line5.start, line4])"
                   ],
@@ -1258,6 +1250,54 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
               "moduleId": 0,
               "non_code_meta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "5": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "7": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "8": [
                     {
                       "commentStart": 0,
@@ -1266,7 +1306,17 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
-                        "type": "newLineBlockComment",
+                        "type": "newLine"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "blockComment",
                         "value": "We'll verify that line5.start is somewhere on line4",
                         "style": "line"
                       }
@@ -1513,8 +1563,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Use tolerance to account for floating-point precision in solver results"
         ],
         "start": 0,
@@ -2398,7 +2446,20 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

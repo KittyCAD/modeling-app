@@ -116,7 +116,7 @@ secondSpacerPosition = switchPosition + switchWidth / 2 + secondSpacerWidth / 2
 secondSpacerBody = boxModuleFn(width = secondSpacerWidth)
   |> translate(x = secondSpacerPosition, y = 0, z = 0)
 
-  // European power plug modules with circular sockets and two-pin holes
+// European power plug modules with circular sockets and two-pin holes
 // 8 identical sockets, each with grounding notch and dual-pin recesses
 powerPlugWidth = moduleWidth
 powerPlugCount = 8

@@ -1291,3 +1291,79 @@ export fn appearance(
   /// Roughness of the new material, a percentage like 95.7.
   roughness?: number(Count),
 ): [Solid; 1+] | ImportedGeometry {}
+
+/// Inverts the orientation of a surface, swapping which side is the front and which is the reverse.
+///
+/// ```kcl
+/// sideLen = 4
+/// 
+/// fn square(@plane, offset, y) {
+///   at = if y {
+///     [-offset, 0]
+///   } else {
+///     [0, offset]
+///   }
+///   return startSketchOn(plane)
+///     |> startProfile(at)
+///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
+///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
+/// }
+/// 
+/// // Make a cube polysurface from 6 squares
+/// cube = [
+///   square(XY, offset = 0, y = false),
+///   square(XZ, offset = 0, y = true) |> invert(),
+///   square(YZ, offset = 0, y = false),
+///   square(XY, offset = sideLen, y = false),
+///   square(XZ, offset = -sideLen, y = true),
+///   square(YZ, offset = sideLen, y = false)
+/// ]
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn invert(
+  /// The surface to flip (swap its back and front sides)
+  @surface: Solid,
+): Solid {}
+
+/// Imprint multiple bodies into one.
+/// From the outside, the result looks visually similar to a union, but where the two solids overlap,
+/// their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all
+/// the faces of shape A, you'd still be left with all the faces of shape B.
+///
+/// ```kcl
+/// sideLen = 4
+/// 
+/// // Helper function to make a square surface body.
+/// fn square(@plane, offset, y) {
+///   at = if y {
+///     [-offset, 0]
+///   } else {
+///     [0, offset]
+///   }
+///   return startSketchOn(plane)
+///     |> startProfile(at)
+///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
+///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
+/// }
+/// 
+/// // Make a cube polysurface from 6 squares.
+/// cube = [
+///   square(XY, offset = 0, y = false),
+///   square(XZ, offset = 0, y = true) |> invert(),
+///   square(YZ, offset = 0, y = false),
+///   square(XY, offset = sideLen, y = false),
+///   square(XZ, offset = -sideLen, y = true),
+///   square(YZ, offset = sideLen, y = false)
+/// ]
+///
+/// // Via imprint, create a solid cube from the 6 square surfaces (faces of the cube).
+/// cubeSolid = imprint(cube)
+///
+/// // To prove it's solid, we can set the whole cube's appearance.
+/// appearance(cubeSolid, color = "#da4333", roughness = 50, metalness = 90)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn imprint(
+  /// The bodies to imprint together.
+  @bodies: [Solid; 2+],
+): [Solid; 1+] {}

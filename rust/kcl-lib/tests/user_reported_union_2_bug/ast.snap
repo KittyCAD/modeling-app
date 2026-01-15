@@ -1556,8 +1556,6 @@ description: Result of parsing user_reported_union_2_bug.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Function to create a cube"
         ],
         "start": 0,
@@ -1692,8 +1690,6 @@ description: Result of parsing user_reported_union_2_bug.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create 4 cubes around the triangle"
         ],
         "start": 0,
@@ -2192,8 +2188,6 @@ description: Result of parsing user_reported_union_2_bug.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the rounded triangle"
         ],
         "start": 0,
@@ -2558,6 +2552,42 @@ description: Result of parsing user_reported_union_2_bug.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
           {
             "commentStart": 0,
             "end": 0,
