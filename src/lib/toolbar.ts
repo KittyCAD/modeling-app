@@ -1349,7 +1349,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                     type: 'equip tool',
                     data: { tool: 'centerRectTool' },
                   }),
-            icon: 'rectangle',
+            icon: 'rectangleCenter',
             status: 'available',
             title: 'Center Rectangle',
             hotkey: 'Alt+R',
