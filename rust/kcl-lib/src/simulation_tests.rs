@@ -10,7 +10,7 @@ use crate::{
     errors::KclError,
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
-    test_server::ExportAction,
+    test_server::{ExecutionSnapshot, ExportAction},
     walk::{Node, walk},
 };
 #[cfg(feature = "artifact-graph")]
@@ -260,7 +260,14 @@ async fn execute_test(test: &Test, render_to_png: bool, export: Vec<ExportAction
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), &export).await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, png, step, gltf)) => {
+        Ok(ExecutionSnapshot {
+            exec_state,
+            ctx,
+            env: env_ref,
+            img: png,
+            step,
+            gltf,
+        }) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(

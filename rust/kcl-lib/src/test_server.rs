@@ -67,6 +67,15 @@ pub enum ExportAction {
     Gltf,
 }
 
+pub struct ExecutionSnapshot {
+    pub exec_state: ExecState,
+    pub ctx: ExecutorContext,
+    pub env: EnvironmentRef,
+    pub img: image::DynamicImage,
+    pub step: Option<Vec<u8>>,
+    pub gltf: Option<Vec<u8>>,
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
@@ -74,17 +83,7 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     export: &[ExportAction],
-) -> Result<
-    (
-        ExecState,
-        ExecutorContext,
-        EnvironmentRef,
-        image::DynamicImage,
-        Option<Vec<u8>>,
-        Option<Vec<u8>>,
-    ),
-    ExecErrorWithState,
-> {
+) -> Result<ExecutionSnapshot, ExecErrorWithState> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -129,7 +128,14 @@ pub async fn execute_and_snapshot_ast(
         None
     };
     ctx.close().await;
-    Ok((exec_state, ctx, env, img, step, gltf))
+    Ok(ExecutionSnapshot {
+        exec_state,
+        ctx,
+        env,
+        img,
+        step,
+        gltf,
+    })
 }
 
 pub async fn execute_and_snapshot_no_auth(
