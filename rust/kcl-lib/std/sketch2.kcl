@@ -61,3 +61,20 @@ export fn horizontal(@input: Segment) {}
 /// Constrain a line to be vertical.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn vertical(@input: Segment) {}
+
+/// Create a region from closed segments.
+///
+/// Form the region by tracing the first segment from its start point to the
+/// intersection with the second segment, and turn at each intersection using
+///  the `direction` until returning back to the first segment.
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn region(
+  /// The first two segments that form the region's boundary.
+  segments: [Segment; 2],
+  /// Index of the intersection of the first segment with the second segment to
+  /// use as the region's boundary. The default is `-1`, which uses the last
+  /// intersection.
+  intersectionIndex: number(Count),
+  /// `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`.
+  direction: string,
+) {}

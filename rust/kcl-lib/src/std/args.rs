@@ -22,6 +22,7 @@ use crate::{
     front::Number,
     parsing::ast::types::TagNode,
     std::{
+        CircularDirection,
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
         sweep::SweepPath,
@@ -588,6 +589,17 @@ impl<'a> FromKclValue<'a> for BodyType {
             _ => return None,
         };
         Some(body_type)
+    }
+}
+
+impl<'a> FromKclValue<'a> for CircularDirection {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let dir = match arg.as_str()? {
+            "ccw" => Self::Counterclockwise,
+            "cw" => Self::Clockwise,
+            _ => return None,
+        };
+        Some(dir)
     }
 }
 
