@@ -22,9 +22,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { kclManager, rustContext } from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -72,6 +70,13 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const {
+    commandBarActor,
+    kclManager,
+    rustContext,
+    useCommandBarState,
+    useSettings,
+  } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
