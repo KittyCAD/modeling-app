@@ -223,6 +223,14 @@ export class ToolbarFixture {
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
   }
+  ensureFolderOpen = async (folder: Locator, open: boolean) => {
+    const expanded = await folder.getAttribute('aria-expanded')
+    const isOpen = expanded === 'true'
+    if (isOpen !== open) {
+      await folder.click()
+    }
+  }
+
   selectTangentialArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(

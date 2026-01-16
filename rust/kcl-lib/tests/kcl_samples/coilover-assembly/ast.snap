@@ -97,8 +97,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Bottom Coilover Part"
         ],
         "start": 0,
@@ -128,8 +126,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Coilover Spring"
         ],
         "start": 0,
@@ -269,8 +265,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Top Coilover Part"
         ],
         "start": 0,
@@ -342,7 +336,44 @@ description: Result of parsing coilover-assembly.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

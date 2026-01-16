@@ -419,8 +419,6 @@ description: Result of parsing spur-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define the constants of the keyway and the bore hole"
                   ],
                   "start": 0,
@@ -1452,25 +1450,6 @@ description: Result of parsing spur-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "7": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1483,8 +1462,6 @@ description: Result of parsing spur-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Sketch the keyway and center hole"
                   ],
                   "start": 0,
@@ -2851,6 +2828,16 @@ description: Result of parsing spur-gear.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Position the end line of the sketch at the start of the next tooth",
                                 "style": "line"
@@ -2858,6 +2845,16 @@ description: Result of parsing spur-gear.kcl
                             }
                           ],
                           "5": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -2879,6 +2876,16 @@ description: Result of parsing spur-gear.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Subtract the keyway sketch from the gear sketch",
                                 "style": "line"
@@ -2886,6 +2893,16 @@ description: Result of parsing spur-gear.kcl
                             }
                           ],
                           "8": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -2913,6 +2930,9 @@ description: Result of parsing spur-gear.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2949,6 +2969,42 @@ description: Result of parsing spur-gear.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "9": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "10": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "11": [
                     {
                       "commentStart": 0,

@@ -20,6 +20,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { isErr } from '@src/lib/trap'
 import type { AppMachineContext } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -830,6 +831,51 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           return {
             message: 'no file system found',
             requestedAbsolutePath: '',
+          }
+        }
+      }
+    ),
+    [SystemIOMachineActors.moveRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+          successMessage?: string
+          requestedProjectName?: string
+        }
+      }) => {
+        if (window.electron) {
+          const result = await window.electron.move(input.src, input.target)
+          if (
+            isErr(result) &&
+            // Where did the error code go? It's available in preload.ts
+            result.message.includes('ENOTEMPTY') &&
+            window.electron
+          ) {
+            // TODO: this force deletion behavior assumes this move is only
+            // really used in our archive/restore workflow. We should make
+            // dedicated archive/restore code paths for that if we need cases
+            // where we want to check with the user before going through with forcing.
+            await window.electron.rm(input.target, {
+              recursive: true,
+              force: true,
+            })
+            await window.electron.move(input.src, input.target)
+          }
+          return {
+            message: input.successMessage || 'Moved successfully',
+            requestedAbsolutePath: '',
+            requestedProjectName: input.requestedProjectName || '',
+          }
+        } else {
+          return {
+            message: 'no file system found',
+            requestedAbsolutePath: '',
+            requestedProjectName: input.requestedProjectName || '',
           }
         }
       }

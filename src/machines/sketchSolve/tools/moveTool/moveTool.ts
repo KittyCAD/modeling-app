@@ -714,30 +714,31 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
             <div
               ${{ key: 'id', value: 'selection-box' }}
+              class = "border-bg-3 bg-black/5 dark:bg-white/10"
               style="
                 position: absolute;
                 pointer-events: none;
-                border: ${borderWidthPx} ${borderStyle} rgba(255, 255, 255, 0.5);
-                background-color: rgba(255, 255, 255, 0.1);
+                border-width: ${borderWidthPx};
+                border-style: ${borderStyle};
                 transform: translate(-50%, -50%);
                 box-sizing: border-box;
               "
             >
               <div
                 ${{ key: 'id', value: 'vertical-line' }}
+                class="bg-3"
                 style="
                   position: absolute;
                   pointer-events: none;
-                  background-color: rgba(255, 255, 255, 0.5);
                   width: ${borderWidthPx};
                 "
               ></div>
               <div
                 ${{ key: 'id', value: 'horizontal-line' }}
+                class="bg-3"
                 style="
                   position: absolute;
                   pointer-events: none;
-                  background-color: rgba(255, 255, 255, 0.5);
                   height: ${borderWidthPx};
                 "
               ></div>
@@ -754,9 +755,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
               >
                 <div
                   ${{ key: 'id', value: 'intersects-label' }}
+                  class="text-3 dark:text-3"
                   style="
                     font-size: 11px;
-                    color: rgba(255, 255, 255, 0.7);
                     user-select: none;
                     width: 100px;
                     padding: 6px;
@@ -766,9 +767,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 >Intersects</div>
                 <div
                   ${{ key: 'id', value: 'contains-label' }}
+                  class="text-3 dark:text-3"
                   style="
                     font-size: 11px;
-                    color: rgba(255, 255, 255, 0.7);
                     user-select: none;
                     width: 100px;
                     padding: 6px;
@@ -810,7 +811,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   ): void {
     boxDiv.style.width = `${widthPx}px`
     boxDiv.style.height = `${heightPx}px`
-    boxDiv.style.border = `${AREA_SELECT_BORDER_WIDTH}px ${borderStyle} rgba(255, 255, 255, 0.5)`
+    boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
+    boxDiv.style.borderStyle = borderStyle
   }
 
   /**

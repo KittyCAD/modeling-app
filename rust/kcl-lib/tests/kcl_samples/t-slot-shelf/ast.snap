@@ -2548,7 +2548,27 @@ description: Result of parsing t-slot-shelf.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch",
                                 "style": "line"
                               }
@@ -2562,7 +2582,27 @@ description: Result of parsing t-slot-shelf.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Sketch a dimensioned hole in the center of the profile",
                                 "style": "line"
                               }
@@ -2576,7 +2616,27 @@ description: Result of parsing t-slot-shelf.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Scale the entire sketch by a factor of the rail height, then extrude",
                                 "style": "line"
                               }
@@ -3173,33 +3233,12 @@ description: Result of parsing t-slot-shelf.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "3": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Generate the horizontal rails",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Generate the vertical rails"
         ],
         "start": 0,
@@ -3679,6 +3718,9 @@ description: Result of parsing t-slot-shelf.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Generate the horizontal rails"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -4212,25 +4254,6 @@ description: Result of parsing t-slot-shelf.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "3": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Generate the shelf rails",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -4602,6 +4625,9 @@ description: Result of parsing t-slot-shelf.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Generate the shelf rails"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -5139,7 +5165,43 @@ description: Result of parsing t-slot-shelf.kcl
             }
           }
         ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
           {
             "commentStart": 0,
             "end": 0,

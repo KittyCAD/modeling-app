@@ -64,6 +64,11 @@ export interface IElectronAPI {
   join: typeof path.join
   sep: typeof path.sep
   copy: typeof fs.cp
+  // No such thing as fs.mv, but our function will use fs.cp as a fallback
+  move: (
+    source: string | URL,
+    destination: string | URL
+  ) => Promise<void | Error>
   rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
@@ -95,6 +100,7 @@ export interface IElectronAPI {
     callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
+  getPathUserData: () => Promise<string>
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any
