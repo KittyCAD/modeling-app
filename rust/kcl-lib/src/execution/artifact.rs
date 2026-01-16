@@ -126,6 +126,8 @@ pub struct Path {
     pub id: ArtifactId,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// The sweep, if any, that this Path serves as the base path for.
     /// corresponds to `path_id` on the Sweep.
@@ -917,6 +919,7 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
+                consumed: false,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -1042,6 +1045,7 @@ fn artifacts_to_update(
                         composite_solid_id: None,
                         inner_path_id: None,
                         outer_path_id: None,
+                        consumed: false,
                     }
                 };
 
@@ -1108,12 +1112,14 @@ fn artifacts_to_update(
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
                 new_path.sweep_id = Some(id);
+                new_path.consumed = true;
                 return_arr.push(Artifact::Path(new_path));
                 if let Some(inner_path_id) = path.inner_path_id
                     && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
                     && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
                 {
                     inner_path_artifact.sweep_id = Some(id);
+                    inner_path_artifact.consumed = true;
                     return_arr.push(Artifact::Path(inner_path_artifact))
                 }
             }
@@ -1193,6 +1199,7 @@ fn artifacts_to_update(
                 let path = artifacts.get(&ArtifactId::new(*section_id));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
+                    new_path.consumed = true;
                     new_path.sweep_id = Some(id);
                     return_arr.push(Artifact::Path(new_path));
                 }
@@ -1514,6 +1521,7 @@ fn artifacts_to_update(
             let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
             if let Some(Artifact::Path(path)) = outer_path {
                 let mut new_path = path.clone();
+                new_path.consumed = true;
                 new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
                 return_arr.push(Artifact::Path(new_path));
             }
@@ -1521,6 +1529,7 @@ fn artifacts_to_update(
             let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
             if let Some(Artifact::Path(path)) = inner_solid2d {
                 let mut new_path = path.clone();
+                new_path.consumed = true;
                 new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
                 return_arr.push(Artifact::Path(new_path));
             }
@@ -1620,6 +1629,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
+                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
                                 return_arr.push(Artifact::Path(new_path));
                             }
@@ -1640,6 +1650,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
+                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
                                 return_arr.push(Artifact::Path(new_path));
                             }
