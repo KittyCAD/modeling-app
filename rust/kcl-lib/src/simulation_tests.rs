@@ -39,7 +39,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-pub(crate) const EXPORTED_MODEL_NAME: &str = "model.gltf";
+pub(crate) const EXPORTED_MODEL_NAME: &str = "model.glb";
 
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
@@ -296,7 +296,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export: Vec<ExportAction
                 if gltf_contents.is_empty() {
                     panic!("Gltf data was empty");
                 }
-                let gltf_path = Path::new("..").join(&test.output_dir).join("model.gltf");
+                let gltf_path = Path::new("..").join(&test.output_dir).join(EXPORTED_MODEL_NAME);
                 std::fs::write(gltf_path, gltf_contents).expect("Writing to FS should succeed");
             }
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
