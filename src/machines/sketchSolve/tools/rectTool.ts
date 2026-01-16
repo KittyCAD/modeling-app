@@ -20,7 +20,7 @@ import type { Coords2d } from '@src/lang/util'
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
 export type RectOriginMode = 'corner' | 'center'
-export type CenterRectToolEvent =
+export type RectToolEvent =
   | BaseToolEvent
   | { type: 'finalize' }
   | {
@@ -32,7 +32,7 @@ export type CenterRectToolEvent =
       }
     }
 
-type CenterRectToolContext = {
+type RectToolContext = {
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -43,17 +43,17 @@ type CenterRectToolContext = {
   rectOriginMode: RectOriginMode
 }
 
-type CenterRectToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
-  CenterRectToolContext,
-  CenterRectToolEvent,
-  CenterRectToolEvent,
+type RectToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
+  RectToolContext,
+  RectToolEvent,
+  RectToolEvent,
   TActor
 >
 
 export const machine = setup({
   types: {
-    context: {} as CenterRectToolContext,
-    events: {} as CenterRectToolEvent,
+    context: {} as RectToolContext,
+    events: {} as RectToolEvent,
     input: {} as ToolInput,
   },
   actions: {
@@ -133,28 +133,26 @@ export const machine = setup({
         },
       })
     },
-    'send result to parent': assign(
-      ({ event, self }: CenterRectToolAssignArgs) => {
-        if (event.type !== ADDING_FIRST_POINT) {
-          return {}
-        }
-
-        const output = event.output
-
-        self._parent?.send({
-          type: 'set draft entities',
-          data: {
-            // Only setting line ids instead of segmentIds
-            segmentIds: output.draft.segmentIds,
-            constraintIds: output.draft.constraintIds,
-          },
-        })
-
-        return {
-          draft: output.draft,
-        }
+    'send result to parent': assign(({ event, self }: RectToolAssignArgs) => {
+      if (event.type !== ADDING_FIRST_POINT) {
+        return {}
       }
-    ),
+
+      const output = event.output
+
+      self._parent?.send({
+        type: 'set draft entities',
+        data: {
+          // Only setting line ids instead of segmentIds
+          segmentIds: output.draft.segmentIds,
+          constraintIds: output.draft.constraintIds,
+        },
+      })
+
+      return {
+        draft: output.draft,
+      }
+    }),
     'delete draft entities': ({ self }) => {
       self._parent?.send({ type: 'delete draft entities' })
     },
