@@ -351,6 +351,7 @@ pub struct Helix {
     /// add axes to the graph.
     pub axis_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    pub sweep_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -459,7 +460,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
-            Artifact::Helix(_) => Some(new),
+            Artifact::Helix(a) => a.merge(new),
         }
     }
 }
@@ -561,6 +562,17 @@ impl EdgeCut {
         };
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+
+        None
+    }
+}
+
+impl Helix {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Helix(new) = new else {
+            return Some(new);
+        };
+        merge_opt_id(&mut self.sweep_id, new.sweep_id);
 
         None
     }
@@ -768,6 +780,7 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
     }
 }
 
+/// Merge optional Artifact ID
 fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     // Always use the new one, even if it clears it.
     *base = new;
