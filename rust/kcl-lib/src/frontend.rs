@@ -422,25 +422,20 @@ impl SketchApi for FrontendState {
         let mut delete_ids = AhashIndexSet::default();
 
         for segment_id in segment_ids_set.iter().copied() {
-            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0) {
-                if let ObjectKind::Segment { segment } = &segment_object.kind {
-                    if let Segment::Point(point) = segment {
-                        if let Some(owner_id) = point.owner {
-                            if let Some(owner_object) = self.scene_graph.objects.get(owner_id.0) {
-                                if let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind {
-                                    if matches!(owner_segment, Segment::Line(_) | Segment::Arc(_)) {
-                                        // segment is owned -> delete the owner
-                                        delete_ids.insert(owner_id);
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
+                && let ObjectKind::Segment { segment } = &segment_object.kind
+                && let Segment::Point(point) = segment
+                && let Some(owner_id) = point.owner
+                && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
+                && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
+                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_))
+            {
+                // segment is owned -> delete the owner
+                delete_ids.insert(owner_id);
+            } else {
+                // segment is not owned by anything -> can be deleted
+                delete_ids.insert(segment_id);
             }
-            // segment is not owned by anything -> can be deleted
-            delete_ids.insert(segment_id);
         }
         // Find constraints that reference the segments to be deleted, and add
         // those to the set to be deleted.
