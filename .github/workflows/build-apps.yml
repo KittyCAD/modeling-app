@@ -111,8 +111,7 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           # export VERSION=${GITHUB_REF_NAME#v}
-          export VERSION=255.255.0
-          npm run files:set-version
+          # npm run files:set-version
           npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v6
