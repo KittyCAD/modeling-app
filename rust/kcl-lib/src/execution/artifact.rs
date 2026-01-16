@@ -272,6 +272,8 @@ pub struct Cap {
     pub face_code_ref: CodeRef,
     /// The command ID that got the data for this cap. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -876,6 +878,7 @@ fn artifacts_to_update(
                         path_ids: cap.path_ids.clone(),
                         face_code_ref: cap.face_code_ref.clone(),
                         cmd_id: artifact_command.cmd_id,
+                        consumed: false,
                     })]);
                 }
                 Some(_) | None => {
@@ -944,6 +947,7 @@ fn artifacts_to_update(
                     path_ids: vec![id],
                     face_code_ref: cap.face_code_ref.clone(),
                     cmd_id: artifact_command.cmd_id,
+                    consumed: true,
                 }));
             }
             return Ok(return_arr);
@@ -1312,6 +1316,7 @@ fn artifacts_to_update(
                         path_ids: Vec::new(),
                         face_code_ref: sketch_on_face_code_ref,
                         cmd_id: artifact_command.cmd_id,
+                        consumed: false,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
