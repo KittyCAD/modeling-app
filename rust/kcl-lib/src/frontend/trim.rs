@@ -1887,82 +1887,89 @@ pub async fn execute_trim_flow(
     }
     let program = program_opt.ok_or_else(|| "No AST produced".to_string())?;
 
-    // Use mock context for everything - sketch mode doesn't need engine connection
-    // Note: We create a fresh ExecutorContext for each test to maintain test isolation.
-    // The WASM path reuses a shared mock_engine which benefits from memory cache,
-    // but for tests, isolation is more important than performance.
-    // If test performance becomes an issue, we could share the mock_engine across tests
-    // using a static OnceCell, but that would reduce test isolation.
-    let mock_ctx = ExecutorContext::new_mock(None).await;
-    let mut frontend = FrontendState::new();
-
-    // Set the program and get initial scene graph using run_mock instead of hack_set_program
-    // This avoids the expensive engine connection
-    frontend.program = program.clone();
-
-    // Use run_mock instead of run_with_caching for sketch-only tests
-    use crate::execution::MockConfig;
-    let exec_outcome = mock_ctx
-        .run_mock(&program, &MockConfig::default())
+    let ctx = ExecutorContext::new_with_default_client()
         .await
-        .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
+        .map_err(|e| format!("Failed to create executor context: {}", e))?;
 
-    let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
-    #[allow(unused_mut)] // mut is needed when artifact-graph feature is enabled
-    let mut initial_scene_graph = frontend.scene_graph.clone();
+    let mock_ctx = ExecutorContext::new_mock(None).await;
 
-    // If scene graph is empty, try to get objects from exec_outcome.scene_objects
-    // (this is only available when artifact-graph feature is enabled)
-    #[cfg(feature = "artifact-graph")]
-    if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
-        initial_scene_graph.objects = exec_outcome.scene_objects.clone();
+    // Use a guard to ensure contexts are closed even on error
+    let result = async {
+        let mut frontend = FrontendState::new();
+
+        // Set the program
+        frontend.program = program.clone();
+
+        let exec_outcome = ctx
+            .run_with_caching(program.clone())
+            .await
+            .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
+
+        let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
+        #[allow(unused_mut)] // mut is needed when artifact-graph feature is enabled
+        let mut initial_scene_graph = frontend.scene_graph.clone();
+
+        // If scene graph is empty, try to get objects from exec_outcome.scene_objects
+        // (this is only available when artifact-graph feature is enabled)
+        #[cfg(feature = "artifact-graph")]
+        if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
+            initial_scene_graph.objects = exec_outcome.scene_objects.clone();
+        }
+
+        // Get the sketch ID from the scene graph
+        // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch_id
+        let actual_sketch_id = if let Some(sketch_mode) = initial_scene_graph.sketch_mode {
+            sketch_mode
+        } else {
+            // Try to find a sketch object in the scene graph
+            initial_scene_graph
+                .objects
+                .iter()
+                .find(|obj| matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
+                .map(|obj| obj.id)
+                .unwrap_or(sketch_id) // Fall back to provided sketch_id
+        };
+
+        let version = Version(0);
+        let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
+            new_graph: initial_scene_graph,
+            new_objects: vec![],
+            invalidates_ids: false,
+            exec_outcome,
+        };
+
+        // Execute the trim loop with a callback that executes operations using SketchApi
+        // We need to use a different approach since we can't easily capture mutable references in closures
+        // Instead, we'll use a helper that takes the necessary parameters
+        // Use mock_ctx for operations (SketchApi methods require mock context)
+        let (source_delta, scene_graph_delta) = execute_trim_loop_with_context(
+            trim_points,
+            initial_scene_graph_delta,
+            &mut frontend,
+            &mock_ctx,
+            version,
+            actual_sketch_id,
+        )
+        .await?;
+
+        // Return the source delta text - this should contain the full updated KCL code
+        // If it's empty, that means no operations were executed, which is an error
+        if source_delta.text.is_empty() {
+            return Err("No trim operations were executed - source delta is empty".to_string());
+        }
+
+        Ok(TrimFlowResult {
+            kcl_code: source_delta.text,
+            invalidates_ids: scene_graph_delta.invalidates_ids,
+        })
     }
+    .await;
 
-    // Get the sketch ID from the scene graph
-    // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch_id
-    let actual_sketch_id = if let Some(sketch_mode) = initial_scene_graph.sketch_mode {
-        sketch_mode
-    } else {
-        // Try to find a sketch object in the scene graph
-        initial_scene_graph
-            .objects
-            .iter()
-            .find(|obj| matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
-            .map(|obj| obj.id)
-            .unwrap_or(sketch_id) // Fall back to provided sketch_id
-    };
+    // Clean up contexts regardless of success or failure
+    ctx.close().await;
+    mock_ctx.close().await;
 
-    let version = Version(0);
-    let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
-        new_graph: initial_scene_graph,
-        new_objects: vec![],
-        invalidates_ids: false,
-        exec_outcome,
-    };
-
-    // Execute the trim loop with a callback that executes operations using SketchApi
-    // We need to use a different approach since we can't easily capture mutable references in closures
-    // Instead, we'll use a helper that takes the necessary parameters
-    // Use mock_ctx for operations (SketchApi methods require mock context)
-    let (source_delta, scene_graph_delta) = execute_trim_loop_with_context(
-        trim_points,
-        initial_scene_graph_delta,
-        &mut frontend,
-        &mock_ctx,
-        version,
-        actual_sketch_id,
-    )
-    .await?;
-
-    // Return the source delta text - this should contain the full updated KCL code
-    // If it's empty, that means no operations were executed, which is an error
-    if source_delta.text.is_empty() {
-        return Err("No trim operations were executed - source delta is empty".to_string());
-    }
-    Ok(TrimFlowResult {
-        kcl_code: source_delta.text,
-        invalidates_ids: scene_graph_delta.invalidates_ids,
-    })
+    result
 }
 
 /// Execute the trim loop with a context struct that provides access to FrontendState.
