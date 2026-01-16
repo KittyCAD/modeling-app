@@ -1,8 +1,9 @@
 import Loading from '@src/components/Loading'
-import { useAuthState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
+  const { useAuthState } = useSingletons()
   const authState = useAuthState()
   const isLoggingIn = authState.matches('checkIfLoggedIn')
 
