@@ -34,17 +34,7 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import {
-  commandBarActor,
-  engineCommandManager,
-  getLayout,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-  setLayout,
-  useLayout,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
@@ -67,14 +57,11 @@ import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
 
-// Defined outside of React to prevent rerenders
-// TODO: get all system dependencies into React via global context
-const systemDeps = {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  rustContext,
-}
+type Singletons = ReturnType<typeof useSingletons>
+type SystemDeps = Pick<
+  Singletons,
+  'kclManager' | 'sceneInfra' | 'sceneEntitiesManager' | 'rustContext'
+>
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -96,9 +83,26 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
 }
 
 export const FeatureTreePaneContents = memo(() => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    getLayout,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+    setLayout,
+    useLayout,
+  } = useSingletons()
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const layout = useLayout()
   const { send: modelingSend, state: modelingState } = useModelingContext()
+  const systemDeps: SystemDeps = {
+    kclManager,
+    sceneInfra,
+    sceneEntitiesManager,
+    rustContext,
+  }
 
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -265,7 +269,9 @@ export const FeatureTreePaneContents = memo(() => {
           </Loading>
         ) : (
           <>
-            {!modelingState.matches('Sketch') && <DefaultPlanes />}
+            {!modelingState.matches('Sketch') && (
+              <DefaultPlanes systemDeps={systemDeps} />
+            )}
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
@@ -302,6 +308,8 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  engineCommandManager={engineCommandManager}
                 />
               ) : (
                 <OperationItem
@@ -310,6 +318,8 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  engineCommandManager={engineCommandManager}
                 />
               )
             })}
@@ -359,6 +369,8 @@ function OperationItemGroup({
   code,
   send,
   sketchNoFace,
+  systemDeps,
+  engineCommandManager,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
     <Disclosure>
@@ -385,6 +397,8 @@ function OperationItemGroup({
                 code={code}
                 send={send}
                 sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                engineCommandManager={engineCommandManager}
               />
             )
           })}
@@ -522,12 +536,15 @@ interface OperationProps {
   code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
+  systemDeps: SystemDeps
+  engineCommandManager: Singletons['engineCommandManager']
 }
 /**
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
 const OperationItem = (props: OperationProps) => {
+  const { kclManager, sceneInfra } = props.systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -558,7 +575,7 @@ const OperationItem = (props: OperationProps) => {
           props.item,
           kclManager.artifactGraph
         )
-        const result = await selectOffsetSketchPlane(artifact, systemDeps)
+        const result = await selectOffsetSketchPlane(artifact, props.systemDeps)
         if (err(result)) {
           console.error(result)
         }
@@ -683,7 +700,7 @@ const OperationItem = (props: OperationProps) => {
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectOffsetSketchPlane(artifact, props.systemDeps)
       }
     }
   }
@@ -748,7 +765,7 @@ const OperationItem = (props: OperationProps) => {
                 const exportDxf = async () => {
                   if (props.item.type !== 'StdLibCall') return
                   const result = await exportSketchToDxf(props.item, {
-                    engineCommandManager,
+                    engineCommandManager: props.engineCommandManager,
                     kclManager,
                     toast,
                     uuidv4,
@@ -899,7 +916,8 @@ const OperationItem = (props: OperationProps) => {
   )
 }
 
-const DefaultPlanes = () => {
+const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
+  const { rustContext, sceneInfra } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
