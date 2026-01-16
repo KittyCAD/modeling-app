@@ -370,6 +370,7 @@ const Home = () => {
           projects={projects}
           query={query}
           sort={sort}
+          handleRenameProject={handleRenameProject}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -491,6 +492,10 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: Project[]
   query: string
   sort: string
+  handleRenameProject: (
+    e: FormEvent<HTMLFormElement>,
+    project: Project
+  ) => Promise<void>
 }
 
 function ProjectGrid({
@@ -498,6 +503,7 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  handleRenameProject,
   ...rest
 }: ProjectGridProps) {
   const state = useSystemIOState()
@@ -566,6 +572,7 @@ async function handleRenameProject(
       data: {
         requestedProjectName: String(newProjectName),
         projectName: project.name,
+        redirect: false, // only redirect when renaming from within the project
       },
     })
   }

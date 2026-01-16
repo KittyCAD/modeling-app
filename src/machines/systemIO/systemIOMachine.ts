@@ -76,7 +76,11 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.renameProject
-          data: { requestedProjectName: string; projectName: string }
+          data: {
+            requestedProjectName: string
+            projectName: string
+            redirect: boolean
+          }
         }
       | {
           type: SystemIOMachineEvents.deleteProject
@@ -403,9 +407,15 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          redirect: boolean
         }
-      }): Promise<{ message: string; newName: string; oldName: string }> => {
-        return { message: '', newName: '', oldName: '' }
+      }): Promise<{
+        message: string
+        newName: string
+        oldName: string
+        redirect: boolean
+      }> => {
+        return { message: '', newName: '', oldName: '', redirect: true }
       }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
@@ -849,10 +859,7 @@ export const systemIOMachine = setup({
                 }
                 return context.requestedProjectName
               },
-              pendingRenamedProjectName: ({ context }) => {
-                // Clear the pending rename after using it
-                return undefined
-              },
+              pendingRenamedProjectName: () => undefined, // clear after redirect
             }),
           ],
         },
@@ -899,13 +906,19 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             projectName: event.data.projectName,
+            redirect: event.data.redirect,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              pendingRenamedProjectName: ({ event }) => event.output.newName,
+              pendingRenamedProjectName: ({ event }) => {
+                // Redirect back to the project if renamed from the current project
+                const redirect = (event.output as { redirect: boolean })
+                  .redirect
+                return redirect ? event.output.newName : undefined
+              },
             }),
             SystemIOMachineActions.toastSuccess,
           ],
