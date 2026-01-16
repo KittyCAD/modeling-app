@@ -223,6 +223,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          CSC_FOR_PULL_REQUEST: true
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
