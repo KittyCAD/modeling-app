@@ -1618,6 +1618,7 @@ fn artifacts_to_update(
             let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
             if let Some(Artifact::Path(path)) = outer_path {
                 let mut new_path = path.clone();
+                new_path.consumed = true;
                 new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
                 return_arr.push(Artifact::Path(new_path));
             }
@@ -1725,6 +1726,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
+                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
 
                                 // We want to mark any sweeps of the path used in this operation
@@ -1756,6 +1758,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
+                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
 
                                 // We want to mark any sweeps of the path used in this operation
