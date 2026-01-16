@@ -60,23 +60,30 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
     ctx.close().await;
     Ok(Snapshot3d { image, gltf })
 }
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum ExportAction {
+    Step,
+    Gltf,
+}
+
+pub struct ExecutionSnapshot {
+    pub exec_state: ExecState,
+    pub ctx: ExecutorContext,
+    pub env: EnvironmentRef,
+    pub img: image::DynamicImage,
+    pub step: Option<Vec<u8>>,
+    pub gltf: Option<Vec<u8>>,
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
-    with_export_step: bool,
-) -> Result<
-    (
-        ExecState,
-        ExecutorContext,
-        EnvironmentRef,
-        image::DynamicImage,
-        Option<Vec<u8>>,
-    ),
-    ExecErrorWithState,
-> {
+    export: &[ExportAction],
+) -> Result<ExecutionSnapshot, ExecErrorWithState> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -88,7 +95,7 @@ pub async fn execute_and_snapshot_ast(
         }
     };
     let mut step = None;
-    if with_export_step {
+    if export.contains(&ExportAction::Step) {
         let files = match ctx.export_step(true).await {
             Ok(f) => f,
             Err(err) => {
@@ -103,8 +110,32 @@ pub async fn execute_and_snapshot_ast(
 
         step = files.into_iter().next().map(|f| f.contents);
     }
+    let gltf = if export.contains(&ExportAction::Gltf) {
+        let files = match ctx.export_gltf().await {
+            Ok(f) => f,
+            Err(err) => {
+                // Close the context to avoid any resource leaks.
+                ctx.close().await;
+                return Err(ExecErrorWithState::new(
+                    ExecError::BadExport(format!("Export failed: {err:?}")),
+                    exec_state.clone(),
+                ));
+            }
+        };
+
+        files.into_iter().next().map(|f| f.contents)
+    } else {
+        None
+    };
     ctx.close().await;
-    Ok((exec_state, ctx, env, img, step))
+    Ok(ExecutionSnapshot {
+        exec_state,
+        ctx,
+        env,
+        img,
+        step,
+        gltf,
+    })
 }
 
 pub async fn execute_and_snapshot_no_auth(
