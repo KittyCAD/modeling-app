@@ -19,7 +19,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -72,7 +72,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.18, y: 4.92 }, Coords2d { x: -4.23, y: -5.15 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -123,7 +123,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -170,7 +170,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -217,7 +217,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -264,7 +264,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -311,7 +311,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -358,7 +358,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -405,7 +405,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -452,7 +452,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -5.0, y: 1.0 }, Coords2d { x: 5.0, y: 1.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -500,7 +500,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -556,7 +556,7 @@ sketch(on = YZ) {
         // Trim line that intersects arc9 at two points to cause a split trim
         let trim_points = vec![Coords2d { x: -5.69, y: 4.67 }, Coords2d { x: -7.65, y: 4.83 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -609,7 +609,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -657,7 +657,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.0, y: 2.0 }, Coords2d { x: 0.0, y: -2.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -711,7 +711,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.0, y: 6.0 }, Coords2d { x: -1.1, y: 1.6 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -783,7 +783,7 @@ sketch(on = YZ) {
 }
 "#;
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         for (i, trim_points) in trim_lines.iter().enumerate() {
             let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
@@ -829,7 +829,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -0.4, y: 4.4 }, Coords2d { x: 1.3, y: 2.4 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -901,7 +901,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.0, y: 4.0 }, Coords2d { x: 0.0, y: -4.0 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1040,7 +1040,7 @@ sketch(on = YZ) {
             Coords2d { x: 0.14, y: -4.8 },
         ];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1131,7 +1131,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -1.75, y: -0.56 }, Coords2d { x: -1.75, y: -2.93 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1190,7 +1190,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1244,7 +1244,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1299,7 +1299,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: 0.95, y: 1.67 }, Coords2d { x: -2.3, y: -0.08 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1365,7 +1365,7 @@ sketch(on = YZ) {
 
         let trim_points = vec![Coords2d { x: -1.66, y: 7.54 }, Coords2d { x: -1.81, y: 2.11 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1444,7 +1444,7 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
             Coords2d { x: -1.57, y: 1.03 },
         ];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
@@ -1788,7 +1788,7 @@ sketch(on = YZ) {
             },
         ];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let start = std::time::Instant::now();
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
@@ -1839,7 +1839,7 @@ sketch(on = YZ) {
         // Trim line that goes through segments (points from the user's example)
         let trim_points = vec![Coords2d { x: 2.57, y: 1.83 }, Coords2d { x: 3.42, y: 2.49 }];
 
-        let sketch_id = ObjectId(0);
+        let sketch_id = ObjectId(1);
 
         let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
