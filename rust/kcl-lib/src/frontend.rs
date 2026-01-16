@@ -4645,10 +4645,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = sketch2::line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
   sketch2::coincident([line1.end, line2.start])
-  line3 = sketch2::line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
   sketch2::coincident([line2.end, line3.start])
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
