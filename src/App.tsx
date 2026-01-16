@@ -37,16 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import {
-  billingActor,
-  systemIOActor,
-  getSettings,
-  kclManager,
-  useLayout,
-  setLayout,
-  getLayout,
-} from '@src/lib/singletons'
-import { useSettings, useToken } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -82,6 +73,17 @@ if (window.electron) {
 }
 
 export function App() {
+  const {
+    billingActor,
+    systemIOActor,
+    getSettings,
+    kclManager,
+    useLayout,
+    setLayout,
+    getLayout,
+    useSettings,
+    useToken,
+  } = useSingletons()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
   const loaderData = useLoaderData<IndexLoaderData>()
