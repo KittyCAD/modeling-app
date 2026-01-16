@@ -106,6 +106,7 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
   | 'ImportStatement'
+  | 'SketchBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
