@@ -7,11 +7,12 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { codeToIdSelections } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
@@ -100,6 +101,7 @@ function DisplayObj({
   node: any
 }) {
   const { send } = useModelingContext()
+  const { kclManager } = useSingletons()
   const ref = useRef<HTMLPreElement>(null)
   const [hasCursor, setHasCursor] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
