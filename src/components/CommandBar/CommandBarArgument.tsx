@@ -10,14 +10,11 @@ import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextar
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { use } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
+  const { commandBarActor, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const {
     context: { currentArgument },
@@ -70,6 +67,7 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   // @ts-ignore
   switch (arg.inputType) {
