@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
 export default function CubeGizmo() {
+  const { sceneInfra, useSettings } = useSingletons()
   const { state: modelingState } = useModelingContext()
   const settings = useSettings()
 
