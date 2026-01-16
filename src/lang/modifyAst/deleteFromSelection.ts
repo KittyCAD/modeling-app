@@ -162,13 +162,25 @@ export async function deleteFromSelection(
     'SketchBlock'
   )
   if (!err(sketchBlock) && sketchBlock.node.type === 'SketchBlock') {
-    const itemsIndex = -2 // index of items in sketch body is second to last
+    const isItemInSketchBlock =
+      sketchBlock.deepPath.length > sketchBlock.shallowPath.length
+    const itemsIndex = -2 // index of items in body is second to last
     const nodeIndex = sketchBlock.deepPath.at(itemsIndex)?.[0]
     if (
+      isItemInSketchBlock &&
       typeof nodeIndex === 'number' &&
-      sketchBlock.node.body.items[nodeIndex].type === 'ExpressionStatement'
+      sketchBlock.node.body.items[nodeIndex] !== undefined
     ) {
       sketchBlock.node.body.items.splice(nodeIndex, 1)
+      return astClone
+    }
+
+    // Whole sketch block deletion case
+    if (
+      typeof nodeIndex === 'number' &&
+      astClone.body[nodeIndex] !== undefined
+    ) {
+      astClone.body.splice(nodeIndex, 1)
       return astClone
     }
   }
