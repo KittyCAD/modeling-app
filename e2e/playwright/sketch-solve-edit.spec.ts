@@ -413,7 +413,7 @@ sketch(on = XY) {
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain('sketch(on = XZ)')
+      await editor.expectEditor.not.toContain('sketch(on')
     })
   })
 })
