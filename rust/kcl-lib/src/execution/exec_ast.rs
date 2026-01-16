@@ -1377,11 +1377,18 @@ impl Node<SketchBlock> {
         }
         // Substitute solutions back into sketch variables.
         let solution_ty = solver_numeric_type(exec_state);
-        let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty, solve_analysis.as_ref())?;
+        let variables = substitute_sketch_vars(
+            variables,
+            &sketch_surface,
+            &solve_outcome,
+            solution_ty,
+            solve_analysis.as_ref(),
+        )?;
         let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
+                &sketch_surface,
                 &solve_outcome,
                 solver_numeric_type(exec_state),
                 solve_analysis.as_ref(),
@@ -1840,6 +1847,7 @@ impl Node<MemberExpression> {
                                             }),
                                             freedom: *start_freedom,
                                         },
+                                        surface: segment.surface.clone(),
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1866,6 +1874,7 @@ impl Node<MemberExpression> {
                                             }),
                                             freedom: *start_freedom,
                                         },
+                                        surface: segment.surface.clone(),
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1960,6 +1969,7 @@ impl Node<MemberExpression> {
                                             }),
                                             freedom: *end_freedom,
                                         },
+                                        surface: segment.surface.clone(),
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1986,6 +1996,7 @@ impl Node<MemberExpression> {
                                             }),
                                             freedom: *end_freedom,
                                         },
+                                        surface: segment.surface.clone(),
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -2049,6 +2060,7 @@ impl Node<MemberExpression> {
                                             }),
                                             freedom: *center_freedom,
                                         },
+                                        surface: segment.surface.clone(),
                                         meta: segment.meta.clone(),
                                     },
                                 },

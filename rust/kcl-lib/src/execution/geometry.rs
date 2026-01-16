@@ -1999,6 +1999,7 @@ pub struct Segment {
     pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: SegmentKind,
+    pub surface: SketchSurface,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
