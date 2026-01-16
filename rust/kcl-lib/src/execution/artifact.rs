@@ -569,6 +569,7 @@ impl Wall {
         };
         merge_ids(&mut self.edge_cut_edge_ids, new.edge_cut_edge_ids);
         merge_ids(&mut self.path_ids, new.path_ids);
+        self.consumed = new.consumed;
 
         None
     }
@@ -1730,7 +1731,6 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
-                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
 
                                 // We want to mark any sweeps of the path used in this operation
