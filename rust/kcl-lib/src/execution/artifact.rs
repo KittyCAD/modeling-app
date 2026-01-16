@@ -1038,8 +1038,7 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
-        | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
@@ -1060,7 +1059,6 @@ fn artifacts_to_update(
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
-                ModelingCmd::Sweep(_) => SweepSubType::Sweep,
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
@@ -1087,6 +1085,52 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Path(inner_path_artifact))
                 }
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::Sweep(kcmc::Sweep { target, trajectory, .. }) => {
+            // Determine the resulting method from the specific command, if provided
+            let method = kittycad_modeling_cmds::shared::ExtrudeMethod::Merge;
+            let sub_type = SweepSubType::Sweep;
+            let mut return_arr = Vec::new();
+            let target = ArtifactId::from(target);
+            let trajectory = ArtifactId::from(trajectory);
+            return_arr.push(Artifact::Sweep(Sweep {
+                id,
+                sub_type,
+                path_id: target,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                method,
+            }));
+            let path = artifacts.get(&target);
+            if let Some(Artifact::Path(path)) = path {
+                let mut new_path = path.clone();
+                new_path.sweep_id = Some(id);
+                return_arr.push(Artifact::Path(new_path));
+                if let Some(inner_path_id) = path.inner_path_id
+                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                {
+                    inner_path_artifact.sweep_id = Some(id);
+                    return_arr.push(Artifact::Path(inner_path_artifact))
+                }
+            }
+            if let Some(trajectory_artifact) = artifacts.get(&trajectory) {
+                match trajectory_artifact {
+                    Artifact::Path(path) => {
+                        let mut new_path = path.clone();
+                        new_path.sweep_id = Some(id);
+                        return_arr.push(Artifact::Path(new_path));
+                    }
+                    Artifact::Helix(helix) => {
+                        let mut new_helix = helix.clone();
+                        new_helix.sweep_id = Some(id);
+                        return_arr.push(Artifact::Helix(new_helix));
+                    }
+                    _ => {}
+                }
+            };
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
@@ -1411,6 +1455,7 @@ fn artifacts_to_update(
                 id,
                 axis_id: None,
                 code_ref,
+                sweep_id: None,
             })];
             return Ok(return_arr);
         }
@@ -1420,6 +1465,7 @@ fn artifacts_to_update(
                 id,
                 axis_id: Some(edge_id),
                 code_ref,
+                sweep_id: None,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
