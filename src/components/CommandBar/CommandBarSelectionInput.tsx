@@ -9,12 +9,7 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -33,6 +28,13 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
+    useCommandBarState,
+  } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
