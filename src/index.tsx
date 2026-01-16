@@ -11,32 +11,29 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import {
-  appActor,
-  commandBarActor,
-  kclManager,
-  rustContext,
-  systemIOActor,
-} from '@src/lib/singletons'
+import { singletons, SingletonsContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler(kclManager, rustContext)
+initializeWindowExceptionHandler(singletons.kclManager, singletons.rustContext)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
-kclManager.wasmInstancePromise
+singletons.kclManager.wasmInstancePromise
   .then((wasmInstance) => {
-    appActor.start()
+    singletons.appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
-    commandBarActor.send({
+    singletons.commandBarActor.send({
       type: 'Add commands',
       data: {
         commands: [
-          ...createApplicationCommands({ systemIOActor, wasmInstance }),
+          ...createApplicationCommands({
+            systemIOActor: singletons.systemIOActor,
+            wasmInstance,
+          }),
         ],
       },
     })
@@ -54,32 +51,34 @@ if (!window.electron) {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
-  <HotkeysProvider>
-    <AppStreamProvider>
-      <Router />
-      <Toaster
-        position="bottom-center"
-        toastOptions={{
-          style: {
-            borderRadius: '3px',
-            maxInlineSize: 'min(480px, 100%)',
-          },
-          className:
-            'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
-          success: {
-            iconTheme: {
-              primary: 'oklch(89% 0.16 143.4deg)',
-              secondary: 'oklch(48.62% 0.1654 142.5deg)',
+  <SingletonsContext.Provider value={singletons}>
+    <HotkeysProvider>
+      <AppStreamProvider>
+        <Router />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              borderRadius: '3px',
+              maxInlineSize: 'min(480px, 100%)',
             },
-            // We shouldn't have a different duration in tests than prod, it might
-            // lead to issues.
-            duration: 1500,
-          },
-        }}
-      />
-      <ModalContainer />
-    </AppStreamProvider>
-  </HotkeysProvider>
+            className:
+              'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
+            success: {
+              iconTheme: {
+                primary: 'oklch(89% 0.16 143.4deg)',
+                secondary: 'oklch(48.62% 0.1654 142.5deg)',
+              },
+              // We shouldn't have a different duration in tests than prod, it might
+              // lead to issues.
+              duration: 1500,
+            },
+          }}
+        />
+        <ModalContainer />
+      </AppStreamProvider>
+    </HotkeysProvider>
+  </SingletonsContext.Provider>
 )
 
 // If you want to start measuring performance in your app, pass a function

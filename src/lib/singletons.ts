@@ -50,33 +50,10 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import React from 'react'
 
-/**
- * THE bundle of WASM, a cornerstone of our app. We use this for:
- * - settings parse/unparse
- * - KCL parsing, execution, linting, and LSP
- *
- * Access this through `kclManager.wasmInstance`, not directly.
- */
-const initPromise = initialiseWasm()
-
-export const commandBarActor = createActor(commandBarMachine, {
-  input: { commands: [], wasmInstancePromise: initPromise },
-}).start()
-const dummySettingsActor = createActor(settingsMachine, {
-  input: { commandBarActor, ...createSettings() },
-})
-
-export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(
-  engineCommandManager,
-  initPromise,
-  // HACK: convert settings to not be an XState actor to prevent the need for
-  // this dummy-with late binding of the real thing.
-  // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
-  dummySettingsActor
-)
-
+// We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
     kclManager: KclManager
@@ -85,340 +62,396 @@ declare global {
   }
 }
 
-// Accessible for tests mostly
-window.engineCommandManager = engineCommandManager
+type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
-export const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
-export const kclManager = new KclManager(engineCommandManager, initPromise, {
-  rustContext,
-  sceneInfra,
-})
+export function buildSingletons() {
+  /**
+   * THE bundle of WASM, a cornerstone of our app. We use this for:
+   * - settings parse/unparse
+   * - KCL parsing, execution, linting, and LSP
+   *
+   * Access this through `kclManager.wasmInstance`, not directly.
+   */
+  const initPromise = initialiseWasm()
 
-// These are all late binding because of their circular dependency.
-// TODO: proper dependency injection.
-engineCommandManager.kclManager = kclManager
-engineCommandManager.sceneInfra = sceneInfra
-engineCommandManager.rustContext = rustContext
-
-kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
-  sceneInfra.baseUnit = unit
-}
-
-export const sceneEntitiesManager = new SceneEntities(
-  engineCommandManager,
-  sceneInfra,
-  kclManager,
-  rustContext
-)
-/** 🚨 Circular dependency alert 🚨 */
-kclManager.sceneEntitiesManager = sceneEntitiesManager
-
-if (typeof window !== 'undefined') {
-  ;(window as any).engineCommandManager = engineCommandManager
-  ;(window as any).kclManager = kclManager
-  ;(window as any).sceneInfra = sceneInfra
-  ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).rustContext = rustContext
-  ;(window as any).engineDebugger = EngineDebugger
-  ;(window as any).enableMousePositionLogs = () =>
-    document.addEventListener('mousemove', (e) =>
-      console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-    )
-  ;(window as any).enableFillet = () => {
-    ;(window as any)._enableFillet = true
-  }
-  ;(window as any).zoomToFit = () =>
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
-      },
-    })
-}
-const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
-const appMachineActors = {
-  [AUTH]: authMachine,
-  [SETTINGS]: settingsMachine.provide({
-    actors: {
-      persistSettings: fromPromise<
-        undefined,
-        {
-          doNotPersist: boolean
-          context: SettingsMachineContext
-          toastCallback?: () => void
-        }
-      >(async ({ input }) => {
-        // Without this, when a user changes the file, it'd
-        // create a detection loop with the file-system watcher.
-        if (input.doNotPersist) return
-
-        // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
-        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-        const {
-          currentProject,
-          commandBarActor: _c,
-          ...settings
-        } = input.context
-
-        await saveSettings(initPromise, settings, currentProject?.path)
-
-        if (input.toastCallback) {
-          input.toastCallback()
-        }
-      }),
-      loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
-        const { settings } = await loadAndValidateSettings(
-          kclManager.wasmInstancePromise
-        )
-        return settings
-      }),
-      loadProjectSettings: fromPromise<
-        SettingsType,
-        { project?: Project; settings: SettingsType }
-      >(async ({ input }) => {
-        const { settings } = await loadAndValidateSettings(
-          kclManager.wasmInstancePromise,
-          input.project?.path
-        )
-        return settings
-      }),
-    },
-    actions: {
-      setEngineTheme: ({ context }) => {
-        engineCommandManager
-          .setTheme(context.app.theme.current)
-          .catch(reportRejection)
-      },
-      setEditorLineWrapping: ({ context }) => {
-        kclManager.setEditorLineWrapping(
-          context.textEditor.textWrapping.current
-        )
-      },
-      setCursorBlinking: ({ context }) => {
-        document.documentElement.style.setProperty(
-          `--cursor-color`,
-          context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
-        )
-        kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
-      },
-      setEngineHighlightEdges: ({ context }) => {
-        engineCommandManager
-          .setHighlightEdges(context.modeling.highlightEdges.current)
-          .catch(reportRejection)
-      },
-      setClientTheme: ({ context }) => {
-        const resolvedTheme = getResolvedTheme(context.app.theme.current)
-        const opposingTheme = getOppositeTheme(context.app.theme.current)
-        sceneInfra.theme = opposingTheme
-        sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-        kclManager.setEditorTheme(resolvedTheme)
-      },
-      setAllowOrbitInSketchMode: ({ context }) => {
-        sceneInfra.camControls._setting_allowOrbitInSketchMode =
-          context.app.allowOrbitInSketchMode.current
-        // ModelingMachineProvider will do a use effect to trigger the camera engine sync
-      },
-      'Execute AST': ({ context, event }) => {
-        try {
-          const relevantSetting = (s: SettingsType) => {
-            return (
-              s.modeling?.defaultUnit?.current !==
-                context.modeling.defaultUnit.current ||
-              s.modeling.showScaleGrid.current !==
-                context.modeling.showScaleGrid.current ||
-              s.modeling?.highlightEdges.current !==
-                context.modeling.highlightEdges.current
-            )
-          }
-
-          const allSettingsIncludesUnitChange =
-            event.type === 'Set all settings' &&
-            relevantSetting(event.settings || context)
-
-          const shouldExecute =
-            kclManager !== undefined &&
-            (event.type === 'set.modeling.defaultUnit' ||
-              event.type === 'set.modeling.showScaleGrid' ||
-              event.type === 'set.modeling.highlightEdges' ||
-              event.type === 'Reset settings' ||
-              allSettingsIncludesUnitChange)
-
-          if (shouldExecute) {
-            // Unit changes requires a re-exec of code
-            kclManager.executeCode().catch(reportRejection)
-          } else {
-            // For any future logging we'd like to do
-            // console.log(
-            //   'Not re-executing AST because the settings change did not affect the code interpretation'
-            // )
-          }
-        } catch (e) {
-          console.error('Error executing AST after settings change', e)
-        }
-      },
-      setEngineCameraProjection: ({ context }) => {
-        const newCurrentProjection = context.modeling.cameraProjection.current
-        sceneInfra.camControls?.setEngineCameraProjection(newCurrentProjection)
-      },
-    },
-  }),
-  [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [COMMAND_BAR]: commandBarMachine,
-  [BILLING]: billingMachine,
-} as const
-
-const appMachine = setup({
-  types: {} as {
-    events: AppMachineEvent
-    context: AppMachineContext
-  },
-}).createMachine({
-  id: 'modeling-app',
-  context: {
-    kclManager: kclManager,
-    engineCommandManager: engineCommandManager,
-    sceneInfra: sceneInfra,
-    sceneEntitiesManager: sceneEntitiesManager,
-    commandBarActor,
-    layout: defaultLayout,
-  },
-  entry: [
-    /**
-     * We have been battling XState's type unions exploding in size,
-     * so for these global actors, we have decided to forego creating them by reference
-     * using the `actors` property in the `setup` function, and
-     * inline them instead.
-     */
-    spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
-    spawnChild(appMachineActors[SETTINGS], {
-      systemId: SETTINGS,
-      input: {
-        ...createSettings(),
-        commandBarActor: commandBarActor,
-      },
-    }),
-    spawnChild(appMachineActors[SYSTEM_IO], {
-      systemId: SYSTEM_IO,
-      input: {
-        wasmInstancePromise: initPromise,
-      },
-    }),
-    spawnChild(appMachineActors[COMMAND_BAR], {
-      systemId: COMMAND_BAR,
-      input: {
-        commands: [],
-      },
-    }),
-    spawnChild(appMachineActors[BILLING], {
-      systemId: BILLING,
-      input: {
-        ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: () => withAPIBaseURL(''),
-      },
-    }),
-  ],
-  on: {
-    [AppMachineEventType.SetLayout]: {
-      actions: [
-        assign({ layout: ({ event }) => structuredClone(event.layout) }),
-        ({ event }) => saveLayout({ layout: event.layout }),
-      ],
-    },
-    [AppMachineEventType.ResetLayout]: {
-      actions: [
-        assign({ layout: structuredClone(defaultLayoutConfig) }),
-        ({ context }) => saveLayout({ layout: context.layout }),
-      ],
-    },
-  },
-})
-
-export const appActor = createActor(appMachine, {
-  systemId: 'root',
-})
-
-/**
- * GOTCHA: the type coercion of this actor works because it is spawned for
- * the lifetime of {appActor}, but would not work if it were invoked
- * or if it were destroyed under any conditions during {appActor}'s life
- */
-export const authActor = appActor.system.get(AUTH) as ActorRefFrom<
-  (typeof appMachineActors)[typeof AUTH]
->
-export const useAuthState = () => useSelector(authActor, (state) => state)
-export const useToken = () =>
-  useSelector(authActor, (state) => state.context.token)
-export const useUser = () =>
-  useSelector(authActor, (state) => state.context.user)
-
-/**
- * GOTCHA: the type coercion of this actor works because it is spawned for
- * the lifetime of {appActor}, but would not work if it were invoked
- * or if it were destroyed under any conditions during {appActor}'s life
- */
-export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
-  (typeof appMachineActors)[typeof SETTINGS]
->
-
-// HACK: late attaching settings actor to this manager
-rustContext.settingsActor = settingsActor
-
-export const getSettings = () => {
-  const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
-  return settings
-}
-
-// These are all late binding because of their circular dependency.
-// TODO: proper dependency injection.
-sceneInfra.camControls.getSettings = getSettings
-sceneEntitiesManager.getSettings = getSettings
-
-export const useSettings = () =>
-  useSelector(settingsActor, (state) => {
-    // We have to peel everything that isn't settings off
-    return getOnlySettingsFromContext(state.context)
+  const commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [], wasmInstancePromise: initPromise },
+  }).start()
+  const dummySettingsActor = createActor(settingsMachine, {
+    input: { commandBarActor, ...createSettings() },
   })
 
-export type SystemIOActor = ActorRefFrom<
-  (typeof appMachineActors)[typeof SYSTEM_IO]
->
+  const engineCommandManager = new ConnectionManager()
+  const rustContext = new RustContext(
+    engineCommandManager,
+    initPromise,
+    // HACK: convert settings to not be an XState actor to prevent the need for
+    // this dummy-with late binding of the real thing.
+    // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
+    dummySettingsActor
+  )
 
-export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-// This extension makes it possible to mark FS operations as un/redoable
-buildFSHistoryExtension(systemIOActor, kclManager)
+  // Accessible for tests mostly
+  window.engineCommandManager = engineCommandManager
 
-// TODO: proper dependency management
-sceneEntitiesManager.commandBarActor = commandBarActor
-commandBarActor.send({ type: 'Set kclManager', data: kclManager })
+  const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
+  const kclManager = new KclManager(engineCommandManager, initPromise, {
+    rustContext,
+    sceneInfra,
+  })
 
-export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
-  (typeof appMachineActors)[typeof BILLING]
->
+  // These are all late binding because of their circular dependency.
+  // TODO: proper dependency injection.
+  engineCommandManager.kclManager = kclManager
+  engineCommandManager.sceneInfra = sceneInfra
+  engineCommandManager.rustContext = rustContext
 
-const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state
-export const useCommandBarState = () => {
-  return useSelector(commandBarActor, cmdBarStateSelector)
+  kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
+    sceneInfra.baseUnit = unit
+  }
+
+  const sceneEntitiesManager = new SceneEntities(
+    engineCommandManager,
+    sceneInfra,
+    kclManager,
+    rustContext
+  )
+  /** 🚨 Circular dependency alert 🚨 */
+  kclManager.sceneEntitiesManager = sceneEntitiesManager
+
+  if (typeof window !== 'undefined') {
+    ;(window as any).engineCommandManager = engineCommandManager
+    ;(window as any).kclManager = kclManager
+    ;(window as any).sceneInfra = sceneInfra
+    ;(window as any).sceneEntitiesManager = sceneEntitiesManager
+    ;(window as any).rustContext = rustContext
+    ;(window as any).engineDebugger = EngineDebugger
+    ;(window as any).enableMousePositionLogs = () =>
+      document.addEventListener('mousemove', (e) =>
+        console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+      )
+    ;(window as any).enableFillet = () => {
+      ;(window as any)._enableFillet = true
+    }
+    ;(window as any).zoomToFit = () =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+          animated: false, // don't animate the zoom for now
+        },
+      })
+  }
+  const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
+  const appMachineActors = {
+    [AUTH]: authMachine,
+    [SETTINGS]: settingsMachine.provide({
+      actors: {
+        persistSettings: fromPromise<
+          undefined,
+          {
+            doNotPersist: boolean
+            context: SettingsMachineContext
+            toastCallback?: () => void
+          }
+        >(async ({ input }) => {
+          // Without this, when a user changes the file, it'd
+          // create a detection loop with the file-system watcher.
+          if (input.doNotPersist) return
+
+          // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
+          kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+          const {
+            currentProject,
+            commandBarActor: _c,
+            ...settings
+          } = input.context
+
+          await saveSettings(initPromise, settings, currentProject?.path)
+
+          if (input.toastCallback) {
+            input.toastCallback()
+          }
+        }),
+        loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
+          const { settings } = await loadAndValidateSettings(
+            kclManager.wasmInstancePromise
+          )
+          return settings
+        }),
+        loadProjectSettings: fromPromise<
+          SettingsType,
+          { project?: Project; settings: SettingsType }
+        >(async ({ input }) => {
+          const { settings } = await loadAndValidateSettings(
+            kclManager.wasmInstancePromise,
+            input.project?.path
+          )
+          return settings
+        }),
+      },
+      actions: {
+        setEngineTheme: ({ context }) => {
+          engineCommandManager
+            .setTheme(context.app.theme.current)
+            .catch(reportRejection)
+        },
+        setEditorLineWrapping: ({ context }) => {
+          kclManager.setEditorLineWrapping(
+            context.textEditor.textWrapping.current
+          )
+        },
+        setCursorBlinking: ({ context }) => {
+          document.documentElement.style.setProperty(
+            `--cursor-color`,
+            context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+          )
+          kclManager.setCursorBlinking(
+            context.textEditor.blinkingCursor.current
+          )
+        },
+        setEngineHighlightEdges: ({ context }) => {
+          engineCommandManager
+            .setHighlightEdges(context.modeling.highlightEdges.current)
+            .catch(reportRejection)
+        },
+        setClientTheme: ({ context }) => {
+          const resolvedTheme = getResolvedTheme(context.app.theme.current)
+          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          sceneInfra.theme = opposingTheme
+          sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+          kclManager.setEditorTheme(resolvedTheme)
+        },
+        setAllowOrbitInSketchMode: ({ context }) => {
+          sceneInfra.camControls._setting_allowOrbitInSketchMode =
+            context.app.allowOrbitInSketchMode.current
+          // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+        },
+        'Execute AST': ({ context, event }) => {
+          try {
+            const relevantSetting = (s: SettingsType) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
+            const allSettingsIncludesUnitChange =
+              event.type === 'Set all settings' &&
+              relevantSetting(event.settings || context)
+
+            const shouldExecute =
+              kclManager !== undefined &&
+              (event.type === 'set.modeling.defaultUnit' ||
+                event.type === 'set.modeling.showScaleGrid' ||
+                event.type === 'set.modeling.highlightEdges' ||
+                event.type === 'Reset settings' ||
+                allSettingsIncludesUnitChange)
+
+            if (shouldExecute) {
+              // Unit changes requires a re-exec of code
+              kclManager.executeCode().catch(reportRejection)
+            } else {
+              // For any future logging we'd like to do
+              // console.log(
+              //   'Not re-executing AST because the settings change did not affect the code interpretation'
+              // )
+            }
+          } catch (e) {
+            console.error('Error executing AST after settings change', e)
+          }
+        },
+        setEngineCameraProjection: ({ context }) => {
+          const newCurrentProjection = context.modeling.cameraProjection.current
+          sceneInfra.camControls?.setEngineCameraProjection(
+            newCurrentProjection
+          )
+        },
+      },
+    }),
+    [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+    [COMMAND_BAR]: commandBarMachine,
+    [BILLING]: billingMachine,
+  } as const
+
+  const appMachine = setup({
+    types: {} as {
+      events: AppMachineEvent
+      context: AppMachineContext
+    },
+  }).createMachine({
+    id: 'modeling-app',
+    context: {
+      kclManager: kclManager,
+      engineCommandManager: engineCommandManager,
+      sceneInfra: sceneInfra,
+      sceneEntitiesManager: sceneEntitiesManager,
+      commandBarActor,
+      layout: defaultLayout,
+    },
+    entry: [
+      /**
+       * We have been battling XState's type unions exploding in size,
+       * so for these global actors, we have decided to forego creating them by reference
+       * using the `actors` property in the `setup` function, and
+       * inline them instead.
+       */
+      spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
+      spawnChild(appMachineActors[SETTINGS], {
+        systemId: SETTINGS,
+        input: {
+          ...createSettings(),
+          commandBarActor: commandBarActor,
+        },
+      }),
+      spawnChild(appMachineActors[SYSTEM_IO], {
+        systemId: SYSTEM_IO,
+        input: {
+          wasmInstancePromise: initPromise,
+        },
+      }),
+      spawnChild(appMachineActors[COMMAND_BAR], {
+        systemId: COMMAND_BAR,
+        input: {
+          commands: [],
+        },
+      }),
+      spawnChild(appMachineActors[BILLING], {
+        systemId: BILLING,
+        input: {
+          ...BILLING_CONTEXT_DEFAULTS,
+          urlUserService: () => withAPIBaseURL(''),
+        },
+      }),
+    ],
+    on: {
+      [AppMachineEventType.SetLayout]: {
+        actions: [
+          assign({ layout: ({ event }) => structuredClone(event.layout) }),
+          ({ event }) => saveLayout({ layout: event.layout }),
+        ],
+      },
+      [AppMachineEventType.ResetLayout]: {
+        actions: [
+          assign({ layout: structuredClone(defaultLayoutConfig) }),
+          ({ context }) => saveLayout({ layout: context.layout }),
+        ],
+      },
+    },
+  })
+
+  const appActor = createActor(appMachine, {
+    systemId: 'root',
+  })
+
+  /**
+   * GOTCHA: the type coercion of this actor works because it is spawned for
+   * the lifetime of {appActor}, but would not work if it were invoked
+   * or if it were destroyed under any conditions during {appActor}'s life
+   */
+  const authActor = appActor.system.get(AUTH) as ActorRefFrom<
+    (typeof appMachineActors)[typeof AUTH]
+  >
+  const useAuthState = () => useSelector(authActor, (state) => state)
+  const useToken = () => useSelector(authActor, (state) => state.context.token)
+  const useUser = () => useSelector(authActor, (state) => state.context.user)
+
+  /**
+   * GOTCHA: the type coercion of this actor works because it is spawned for
+   * the lifetime of {appActor}, but would not work if it were invoked
+   * or if it were destroyed under any conditions during {appActor}'s life
+   */
+  const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
+    (typeof appMachineActors)[typeof SETTINGS]
+  >
+
+  // HACK: late attaching settings actor to this manager
+  rustContext.settingsActor = settingsActor
+
+  const getSettings = () => {
+    const { currentProject: _, ...settings } =
+      settingsActor.getSnapshot().context
+    return settings
+  }
+
+  // These are all late binding because of their circular dependency.
+  // TODO: proper dependency injection.
+  sceneInfra.camControls.getSettings = getSettings
+  sceneEntitiesManager.getSettings = getSettings
+
+  const useSettings = () =>
+    useSelector(settingsActor, (state) => {
+      // We have to peel everything that isn't settings off
+      return getOnlySettingsFromContext(state.context)
+    })
+
+  const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
+  // This extension makes it possible to mark FS operations as un/redoable
+  buildFSHistoryExtension(systemIOActor, kclManager)
+
+  // TODO: proper dependency management
+  sceneEntitiesManager.commandBarActor = commandBarActor
+  commandBarActor.send({ type: 'Set kclManager', data: kclManager })
+
+  const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
+    (typeof appMachineActors)[typeof BILLING]
+  >
+
+  const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+    state
+  const useCommandBarState = () => {
+    return useSelector(commandBarActor, cmdBarStateSelector)
+  }
+
+  // Initialize global commands
+  commandBarActor.send({
+    type: 'Add commands',
+    data: {
+      commands: [
+        ...createAuthCommands({ authActor }),
+        ...createProjectCommands({ systemIOActor }),
+      ],
+    },
+  })
+
+  const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
+    state.context.layout
+  const getLayout = () => appActor.getSnapshot().context.layout
+  const useLayout = () => useSelector(appActor, layoutSelector)
+  const setLayout = (layout: Layout) =>
+    appActor.send({ type: AppMachineEventType.SetLayout, layout })
+
+  return {
+    commandBarActor,
+    engineCommandManager,
+    rustContext,
+    sceneInfra,
+    kclManager,
+    sceneEntitiesManager,
+    appActor,
+    authActor,
+    useAuthState,
+    useToken,
+    useUser,
+    settingsActor,
+    getSettings,
+    useSettings,
+    systemIOActor,
+    billingActor,
+    useCommandBarState,
+    getLayout,
+    useLayout,
+    setLayout,
+  }
 }
 
-// Initialize global commands
-commandBarActor.send({
-  type: 'Add commands',
-  data: {
-    commands: [
-      ...createAuthCommands({ authActor }),
-      ...createProjectCommands({ systemIOActor }),
-    ],
-  },
-})
-
-const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
-  state.context.layout
-export const getLayout = () => appActor.getSnapshot().context.layout
-export const useLayout = () => useSelector(appActor, layoutSelector)
-export const setLayout = (layout: Layout) =>
-  appActor.send({ type: AppMachineEventType.SetLayout, layout })
+export const singletons = buildSingletons()
+export const SingletonsContext = React.createContext(singletons)
+export const useSingletons = () => React.useContext(SingletonsContext)
