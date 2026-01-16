@@ -125,7 +125,6 @@ test.describe(
               headerArguments: {
                 Targets: '1 path',
                 Tools: '1 path',
-                Merge: '',
               },
               commandName,
             })
