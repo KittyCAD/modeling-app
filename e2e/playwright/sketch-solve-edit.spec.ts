@@ -355,4 +355,50 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await editor.expectEditor.toContain('sketch2::parallel([line1, line2])')
     })
   })
+
+  test('can delete an individual constraint and the sketch block from the feature tree', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app with test code', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
+  sketch2::horizontal(line1)
+}`
+      await context.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, code)
+      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch(on')
+    })
+
+    await test.step('Delete constraint from feature tree and verify code updates', async () => {
+      await toolbar.openFeatureTreePane()
+      const op = await toolbar.getFeatureTreeOperation(
+        'Horizontal Constraint',
+        0
+      )
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('sketch2::horizontal(line1)')
+    })
+
+    await test.step('Delete sketch block from feature tree and verify code updates', async () => {
+      const op = await toolbar.getFeatureTreeOperation('Solve Sketch', 0)
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('sketch(on = XZ)')
+    })
+  })
 })
