@@ -5,9 +5,10 @@ import { DebugDisplayArray } from '@src/components/DebugDisplayObj'
 import type { PlaneArtifactRich } from '@src/lang/std/artifactGraph'
 import { expandPlane } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 export function DebugArtifactGraph() {
+  const { kclManager } = useSingletons()
   const artifactGraphTree = useMemo(() => {
     return computeTree(kclManager.artifactGraph)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
