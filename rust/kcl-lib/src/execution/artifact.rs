@@ -202,6 +202,8 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -372,6 +374,8 @@ pub struct Helix {
     pub code_ref: CodeRef,
     /// The sweep, if any, that this Helix serves as the trajectory for.
     pub trajectory_sweep_id: Option<ArtifactId>,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -493,6 +497,7 @@ impl CompositeSolid {
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -504,6 +509,7 @@ impl Plane {
             return Some(new);
         };
         merge_ids(&mut self.path_ids, new.path_ids);
+        self.consumed = new.consumed;
 
         None
     }
@@ -521,6 +527,7 @@ impl Path {
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -548,6 +555,7 @@ impl Sweep {
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -986,6 +994,7 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
+                    consumed: false,
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
@@ -1499,7 +1508,8 @@ fn artifacts_to_update(
                 id,
                 axis_id: None,
                 code_ref,
-                trajectory_sweep_id: None,
+                sweep_id_trajectory: None,
+                consumed: false,
             })];
             return Ok(return_arr);
         }
@@ -1509,7 +1519,8 @@ fn artifacts_to_update(
                 id,
                 axis_id: Some(edge_id),
                 code_ref,
-                trajectory_sweep_id: None,
+                sweep_id_trajectory: None,
+                consumed: false,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
