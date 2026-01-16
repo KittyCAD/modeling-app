@@ -137,6 +137,7 @@ export const ModelingMachineContext = createContext(
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
+    actor: Actor<typeof modelingMachine>
     theProject: MutableRefObject<Project | undefined>
   }
 )
@@ -1839,6 +1840,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        actor: modelingActor,
         theProject,
       }}
     >

@@ -184,6 +184,41 @@ extrude001 = extrude(sketch001, length = 50)
       page.locator('.pretty-json-container >> text=myVar:"67')
     ).toBeVisible()
   })
+  test('Writes to disk from sketch mode', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await homePage.createAndGoToProject('test')
+    await scene.settled(cmdBar)
+
+    await test.step('Create a sketch', async () => {
+      await toolbar.startSketchPlaneSelection()
+      const [selectXZPlane] = scene.makeMouseHelpers(0.55, 0.3, {
+        format: 'ratio',
+      })
+      await selectXZPlane()
+      await page.waitForTimeout(600)
+      await editor.expectEditor.toContain('startSketchOn(XZ)')
+
+      const [lineStart] = scene.makeMouseHelpers(0.5, 0.8, { format: 'ratio' })
+      const [lineEnd] = scene.makeMouseHelpers(0.5, 0.2, { format: 'ratio' })
+      await lineStart()
+      await page.waitForTimeout(300)
+      await lineEnd()
+      await editor.expectEditor.toContain('|> yLine(')
+      await toolbar.exitSketch()
+      await page.waitForTimeout(2_000)
+    })
+
+    await test.step('Navigate to same file again to verify code persists', async () => {
+      await page.reload()
+      await expect(editor.codeContent).toContainText('yLine')
+    })
+  })
   test('ProgramMemory can be serialised', async ({ page, homePage, scene }) => {
     // const u = await getUtils(page)
     await page.addInitScript(async () => {

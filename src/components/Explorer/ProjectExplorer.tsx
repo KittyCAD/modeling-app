@@ -15,7 +15,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { fsArchiveFile } from '@src/editor/plugins/fs'
+import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
@@ -684,13 +684,21 @@ export const ProjectExplorer = ({
                 '-copy-'
               )
               if (result && result.src && result.target) {
+                const { src, target } = result
                 systemIOActor.send({
-                  type: SystemIOMachineEvents.copyRecursive,
+                  type: SystemIOMachineEvents.moveRecursive,
                   data: {
-                    src: result.src,
-                    target: result.target,
+                    src,
+                    target,
                   },
                 })
+                kclManager.addGlobalHistoryEvent(
+                  fsMoveFile({
+                    src,
+                    target,
+                    requestedProjectName: project.name,
+                  })
+                )
               } else {
                 toast.error('Failed to copy and paste the result is null')
               }

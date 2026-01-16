@@ -1,14 +1,14 @@
 ---
-title: "invert"
+title: "flipSurface"
 subtitle: "Function in std::solid"
-excerpt: "Inverts the orientation of a surface, swapping which side is the front and which is the reverse."
+excerpt: "Flips the orientation of a surface, swapping which side is the front and which is the reverse."
 layout: manual
 ---
 
-Inverts the orientation of a surface, swapping which side is the front and which is the reverse.
+Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 
 ```kcl
-invert(@surface: Solid): Solid
+flipSurface(@surface: Solid): Solid
 ```
 
 
@@ -56,7 +56,7 @@ fn square(@plane, offset, y) {
 cube = [
   square(XY, offset = 0, y = false),
   square(XZ, offset = 0, y = true)
-  |> invert(),
+  |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),
@@ -68,11 +68,11 @@ cube = [
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the invert function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-invert0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the flipSurface function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-flipSurface0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-invert0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-flipSurface0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

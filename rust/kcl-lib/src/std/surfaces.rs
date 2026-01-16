@@ -11,16 +11,16 @@ use crate::{
 };
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
-pub async fn invert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let surface = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
-    inner_invert(surface, exec_state, args)
+    inner_flip_surface(surface, exec_state, args)
         .await
         .map(|surface| KclValue::Solid {
             value: Box::new(surface),
         })
 }
 
-async fn inner_invert(surface: Solid, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+async fn inner_flip_surface(surface: Solid, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
