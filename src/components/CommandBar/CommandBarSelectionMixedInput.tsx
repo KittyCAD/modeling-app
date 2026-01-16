@@ -8,12 +8,7 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import {
-  kclManager,
-  engineCommandManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -36,6 +31,13 @@ export default function CommandBarSelectionMixedInput({
   onSubmit: (data: unknown) => void
   wasmInstance: ModuleType
 }) {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
+    useCommandBarState,
+  } = useSingletons()
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
