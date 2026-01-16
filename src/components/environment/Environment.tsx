@@ -1,6 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import env from '@src/env'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
@@ -23,6 +23,7 @@ export function EnvironmentChip() {
 }
 
 export function EnvironmentDescription() {
+  const { commandBarActor } = useSingletons()
   const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
