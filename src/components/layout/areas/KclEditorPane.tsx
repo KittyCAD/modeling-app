@@ -3,17 +3,18 @@ import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 import { useEffect, useRef } from 'react'
-import { kclManager } from '@src/lib/singletons'
 import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
+
+type Singletons = ReturnType<typeof useSingletons>
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -45,6 +46,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
+  const { kclManager } = useSingletons()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
     kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
@@ -65,7 +67,7 @@ export const KclEditorPaneContents = () => {
   )
 }
 
-function copyKclCodeToClipboard() {
+function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy')
     return
@@ -85,6 +87,7 @@ function copyKclCodeToClipboard() {
 }
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
+  const { commandBarActor, kclManager, settingsActor } = useSingletons()
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -123,7 +126,10 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
             </button>
           </Menu.Item>
           <Menu.Item>
-            <button onClick={copyKclCodeToClipboard} className={styles.button}>
+            <button
+              onClick={() => copyKclCodeToClipboard(kclManager)}
+              className={styles.button}
+            >
               <span>Copy code</span>
             </button>
           </Menu.Item>
