@@ -155,6 +155,7 @@ import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 export type ModelingMachineEvent =
   | {
@@ -259,6 +260,7 @@ export type ModelingMachineEvent =
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | {
       type:
         | 'Add circle origin'
@@ -3530,6 +3532,45 @@ export const modelingMachine = setup({
         )
       }
     ),
+    flipSurfaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Flip Surface'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const result = addFlipSurface({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -3968,6 +4009,10 @@ export const modelingMachine = setup({
 
         'Pattern Linear 3D': {
           target: 'Pattern Linear 3D',
+        },
+
+        'Flip Surface': {
+          target: 'Applying Flip Surface',
         },
 
         // Modeling actions
@@ -5900,6 +5945,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Flip Surface': {
+      invoke: {
+        src: 'flipSurfaceAstMod',
+        id: 'flipSurfaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Flip Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],

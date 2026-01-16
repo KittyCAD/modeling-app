@@ -76,6 +76,7 @@ import {
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -366,6 +367,9 @@ export type ModelingCommandSchema = {
   }
   'Boolean Intersect': {
     solids: Selections
+  }
+  'Flip Surface': {
+    surface: Selections
   }
 }
 
@@ -2133,6 +2137,43 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
+      },
+    },
+  },
+  'Flip Surface': {
+    description:
+      'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
+    icon: 'rotate', // TODO: Update
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlipSurface({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Flip Surface']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      surface: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
       },
     },
   },

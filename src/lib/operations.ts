@@ -1790,6 +1790,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'fillet3d',
     prepareToEdit: prepareToEditFillet,
   },
+  flipSurface: {
+    label: 'Flip Surface',
+    icon: 'rotate', // TODO: fix
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   'gdt::datum': {
     label: 'Datum',
     icon: 'gdtDatum',

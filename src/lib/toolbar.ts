@@ -547,6 +547,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
+          {
+            id: 'flip-surface',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Flip Surface', groupId: 'modeling' },
+              }),
+            icon: 'rotate', // TODO: Update
+            status: 'available',
+            title: 'Flip Surface',
+            description:
+              'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-flipSurface'
+                ),
+              },
+            ],
+          },
         ],
       },
       {
