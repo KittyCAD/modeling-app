@@ -1,4 +1,4 @@
-import { setup } from 'xstate'
+import { assign, setup } from 'xstate'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
@@ -16,7 +16,12 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 // At drag end the preview is removed – no sketch entities are created (yet).
 const TOOL_ID = 'Trim tool'
 
-type ToolEvents = BaseToolEvent
+type ToolEvents =
+  | BaseToolEvent
+  | { type: 'reset trim state'; startPoint: [number, number] }
+  | { type: 'add trim point'; point: [number, number]; points: Vector3[] }
+  | { type: 'set trim line'; line: Line2 }
+  | { type: 'clear trim state' }
 
 export const machine = setup({
   types: {
@@ -26,6 +31,10 @@ export const machine = setup({
       kclManager: KclManager
       sketchId: number
       sceneGraphDelta?: SceneGraphDelta
+      trimPoints: Vector3[]
+      trimIsCancelled: boolean
+      trimLastPoint2D: [number, number] | null
+      trimCurrentLine: Line2 | null
     },
     events: {} as ToolEvents,
     input: {} as {
@@ -36,13 +45,64 @@ export const machine = setup({
       sceneGraphDelta?: SceneGraphDelta
     },
   },
+  guards: {
+    'has active trim line': ({ context }) => {
+      const scene = context.sceneInfra.scene
+      const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      const groupToSearch =
+        sketchSolveGroup instanceof Group ? sketchSolveGroup : scene
+      const trimLine = groupToSearch.getObjectByName('trim-tool-preview')
+      return trimLine instanceof Line2
+    },
+  },
   actions: {
+    'cancel trim line': assign(({ context }) => {
+      const scene = context.sceneInfra.scene
+      const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+
+      // Remove the visual line if it exists
+      if (context.trimCurrentLine) {
+        if (
+          sketchSolveGroup &&
+          sketchSolveGroup.children.includes(context.trimCurrentLine)
+        ) {
+          sketchSolveGroup.remove(context.trimCurrentLine)
+        } else {
+          scene.remove(context.trimCurrentLine)
+        }
+        context.trimCurrentLine.geometry.dispose()
+        context.trimCurrentLine.material.dispose()
+      } else {
+        // Fallback: try to find the line by name
+        const groupToSearch =
+          sketchSolveGroup instanceof Group ? sketchSolveGroup : scene
+        const trimLine = groupToSearch.getObjectByName('trim-tool-preview')
+        if (trimLine instanceof Line2) {
+          if (
+            sketchSolveGroup &&
+            sketchSolveGroup.children.includes(trimLine)
+          ) {
+            sketchSolveGroup.remove(trimLine)
+          } else if (scene.children.includes(trimLine)) {
+            scene.remove(trimLine)
+          } else if (trimLine.parent) {
+            trimLine.parent.remove(trimLine)
+          }
+          trimLine.geometry.dispose()
+          trimLine.material.dispose()
+        }
+      }
+
+      // Clear points and set cancellation flag
+      return {
+        trimPoints: [],
+        trimIsCancelled: true,
+        trimLastPoint2D: null,
+        trimCurrentLine: null,
+      }
+    }),
     'add area select listener': ({ context, self }) => {
       const scene = context.sceneInfra.scene
-      let currentLine: Line2 | null = null
-      let points: Vector3[] = []
-      let lastPoint2D: [number, number] | null = null
-
       const pxThreshold = 5
 
       // Helper to get the sketch solve group which has the correct plane orientation
@@ -59,21 +119,46 @@ export const machine = setup({
       context.sceneInfra.setCallbacks({
         onAreaSelectStart: ({ startPoint }) => {
           if (!startPoint?.twoD) return
-          // Store the starting point but don't create the Line yet (needs at least 2 points)
-          points = [new Vector3(startPoint.twoD.x, startPoint.twoD.y, 0)]
-          lastPoint2D = [startPoint.twoD.x, startPoint.twoD.y]
+          // Reset cancellation flag and initialize points in context
+          self.send({
+            type: 'reset trim state',
+            startPoint: [startPoint.twoD.x, startPoint.twoD.y],
+          })
         },
         onAreaSelect: ({ currentPoint }) => {
-          if (!currentPoint?.twoD || !lastPoint2D) return
-          const { x, y } = currentPoint.twoD
-          const distance = distancePx(lastPoint2D, [x, y])
-          if (distance >= pxThreshold) {
-            points.push(new Vector3(x, y, 0))
+          if (!currentPoint?.twoD) return
+          // Get current state from snapshot
+          const snapshot = self.getSnapshot()
+          const currentContext = snapshot.context
 
-            // Create the Line2 when we have at least 2 points
-            if (!currentLine && points.length >= 2) {
+          // Don't add points if trim was cancelled
+          if (currentContext.trimIsCancelled) return
+          if (!currentContext.trimLastPoint2D) return
+
+          const { x, y } = currentPoint.twoD
+          const distance = distancePx(currentContext.trimLastPoint2D, [x, y])
+          if (distance >= pxThreshold) {
+            // Add point to context
+            const newPoints = [
+              ...currentContext.trimPoints,
+              new Vector3(x, y, 0),
+            ]
+            self.send({
+              type: 'add trim point',
+              point: [x, y],
+              points: newPoints,
+            })
+
+            // Get fresh snapshot after sending event to check for line
+            const updatedSnapshot = self.getSnapshot()
+            const updatedContext = updatedSnapshot.context
+
+            // Update or create the line
+            const sketchSolveGroup = getSketchSolveGroup()
+            if (!updatedContext.trimCurrentLine && newPoints.length >= 2) {
+              // Create new line
               const positions: number[] = []
-              for (const point of points) {
+              for (const point of newPoints) {
                 positions.push(point.x, point.y, point.z)
               }
               const geom = new LineGeometry()
@@ -82,33 +167,64 @@ export const machine = setup({
                 color: 0xff8800,
                 linewidth: 2 * window.devicePixelRatio,
               })
-              currentLine = new Line2(geom, mat)
-              currentLine.name = 'trim-tool-preview'
-              // Add to sketchSolveGroup if available (for correct plane orientation),
-              // otherwise fall back to scene (for backwards compatibility)
-              const sketchSolveGroup = getSketchSolveGroup()
+              const line = new Line2(geom, mat)
+              line.name = 'trim-tool-preview'
               if (sketchSolveGroup) {
-                sketchSolveGroup.add(currentLine)
+                sketchSolveGroup.add(line)
               } else {
-                scene.add(currentLine)
+                scene.add(line)
               }
-            } else if (currentLine) {
-              // Update existing line: dispose old geometry and create new one
+              self.send({
+                type: 'set trim line',
+                line,
+              })
+            } else if (updatedContext.trimCurrentLine) {
+              // Update existing line
               const positions: number[] = []
-              for (const point of points) {
+              for (const point of newPoints) {
                 positions.push(point.x, point.y, point.z)
               }
-              const oldGeom = currentLine.geometry
+              const oldGeom = updatedContext.trimCurrentLine.geometry
               const newGeom = new LineGeometry()
               newGeom.setPositions(positions)
-              currentLine.geometry = newGeom
+              updatedContext.trimCurrentLine.geometry = newGeom
               oldGeom.dispose()
             }
-
-            lastPoint2D = [x, y]
           }
         },
         onAreaSelectEnd: async () => {
+          // Get current state from snapshot
+          const snapshot = self.getSnapshot()
+          const currentContext = snapshot.context
+
+          // If trim was cancelled or points were cleared, don't perform trim
+          if (
+            currentContext.trimIsCancelled ||
+            currentContext.trimPoints.length === 0
+          ) {
+            // Clean up the preview line
+            if (currentContext.trimCurrentLine) {
+              const scene = currentContext.sceneInfra.scene
+              const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+              if (
+                sketchSolveGroup &&
+                sketchSolveGroup.children.includes(
+                  currentContext.trimCurrentLine
+                )
+              ) {
+                sketchSolveGroup.remove(currentContext.trimCurrentLine)
+              } else {
+                scene.remove(currentContext.trimCurrentLine)
+              }
+              currentContext.trimCurrentLine.geometry.dispose()
+              currentContext.trimCurrentLine.material.dispose()
+            }
+            self.send({
+              type: 'clear trim state',
+            })
+            return
+          }
+
           const onAreaSelectEndHandler = createOnAreaSelectEndCallback({
             getContextData: () => {
               // current context must be got at at execution time, else it will be stale in the closure
@@ -153,35 +269,107 @@ export const machine = setup({
           })
 
           // Convert Vector3[] to Coords2d[] for the trim flow
-          await onAreaSelectEndHandler(points.map((p) => [p.x, p.y]))
+          await onAreaSelectEndHandler(
+            currentContext.trimPoints.map((p) => [p.x, p.y])
+          )
 
           // Clean up the preview line
-          if (currentLine) {
-            // Remove from the group it was added to
-            const sketchSolveGroup = getSketchSolveGroup()
+          if (currentContext.trimCurrentLine) {
+            const scene = currentContext.sceneInfra.scene
+            const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
             if (
               sketchSolveGroup &&
-              sketchSolveGroup.children.includes(currentLine)
+              sketchSolveGroup.children.includes(currentContext.trimCurrentLine)
             ) {
-              sketchSolveGroup.remove(currentLine)
+              sketchSolveGroup.remove(currentContext.trimCurrentLine)
             } else {
-              scene.remove(currentLine)
+              scene.remove(currentContext.trimCurrentLine)
             }
-            currentLine.geometry.dispose()
-            currentLine.material.dispose()
-            currentLine = null
-            points = []
-            lastPoint2D = null
+            currentContext.trimCurrentLine.geometry.dispose()
+            currentContext.trimCurrentLine.material.dispose()
           }
+
+          // Clear state after trim completes
+          self.send({
+            type: 'clear trim state',
+          })
         },
       })
     },
+    'reset trim state': assign(({ event }) => {
+      if (event.type !== 'reset trim state') return {}
+      const [x, y] = event.startPoint
+      return {
+        trimPoints: [new Vector3(x, y, 0)],
+        trimIsCancelled: false,
+        trimLastPoint2D: [x, y],
+        trimCurrentLine: null,
+      }
+    }),
+    'add trim point': assign(({ event }) => {
+      if (event.type !== 'add trim point') return {}
+      const [x, y] = event.point
+      return {
+        trimPoints: event.points,
+        trimLastPoint2D: [x, y],
+      }
+    }),
+    'set trim line': assign(({ event }) => {
+      if (event.type !== 'set trim line') return {}
+      return {
+        trimCurrentLine: event.line,
+      }
+    }),
+    'clear trim state': assign(() => ({
+      trimPoints: [],
+      trimIsCancelled: false,
+      trimLastPoint2D: null,
+      trimCurrentLine: null,
+    })),
     'remove area select listener': ({ context }) => {
       context.sceneInfra.setCallbacks({
         onAreaSelectStart: () => {},
         onAreaSelect: () => {},
         onAreaSelectEnd: () => {},
       })
+
+      // Clean up any existing trim preview line when the tool is unequipped
+      if (context.trimCurrentLine) {
+        const scene = context.sceneInfra.scene
+        const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        if (
+          sketchSolveGroup &&
+          sketchSolveGroup.children.includes(context.trimCurrentLine)
+        ) {
+          sketchSolveGroup.remove(context.trimCurrentLine)
+        } else {
+          scene.remove(context.trimCurrentLine)
+        }
+        context.trimCurrentLine.geometry.dispose()
+        context.trimCurrentLine.material.dispose()
+      } else {
+        // Fallback: manually find and remove the line
+        const scene = context.sceneInfra.scene
+        const sketchSolveGroup = scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        const groupToSearch =
+          sketchSolveGroup instanceof Group ? sketchSolveGroup : scene
+
+        const trimLine = groupToSearch.getObjectByName('trim-tool-preview')
+        if (trimLine instanceof Line2) {
+          if (
+            sketchSolveGroup &&
+            sketchSolveGroup.children.includes(trimLine)
+          ) {
+            sketchSolveGroup.remove(trimLine)
+          } else if (scene.children.includes(trimLine)) {
+            scene.remove(trimLine)
+          } else if (trimLine.parent) {
+            trimLine.parent.remove(trimLine)
+          }
+          trimLine.geometry.dispose()
+          trimLine.material.dispose()
+        }
+      }
     },
   },
 }).createMachine({
@@ -191,6 +379,10 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     sceneGraphDelta: input.sceneGraphDelta,
+    trimPoints: [],
+    trimIsCancelled: false,
+    trimLastPoint2D: null,
+    trimCurrentLine: null,
   }),
   id: TOOL_ID,
   initial: 'active',
@@ -203,10 +395,29 @@ export const machine = setup({
     active: {
       entry: 'add area select listener',
       on: {
-        escape: {
-          target: '#Trim tool.unequipping',
-          description: 'ESC unequips the tool',
+        'reset trim state': {
+          actions: 'reset trim state',
         },
+        'add trim point': {
+          actions: 'add trim point',
+        },
+        'set trim line': {
+          actions: 'set trim line',
+        },
+        'clear trim state': {
+          actions: 'clear trim state',
+        },
+        escape: [
+          {
+            guard: 'has active trim line',
+            actions: 'cancel trim line',
+            description: 'ESC cancels the trim line if one is being drawn',
+          },
+          {
+            target: '#Trim tool.unequipping',
+            description: 'ESC unequips the tool if no trim line is active',
+          },
+        ],
       },
     },
     unequipping: {
