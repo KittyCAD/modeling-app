@@ -73,7 +73,17 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true, vec![ExportAction::Step, ExportAction::Gltf]).await;
+
+    // Skip GLTF export for models that currently crash the exporter, see
+    // https://github.com/KittyCAD/format/issues/812
+    let exports = if dir_path.ends_with("kcl-samples/saturn-v")
+        || dir_path.ends_with("kcl-samples/gridfinity-bins-stacking-lip")
+    {
+        vec![ExportAction::Step]
+    } else {
+        vec![ExportAction::Step, ExportAction::Gltf]
+    };
+    super::execute_test(&t, true, exports).await;
 }
 
 #[test]
