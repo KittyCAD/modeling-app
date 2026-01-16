@@ -24,7 +24,7 @@ test.describe(
       },
       {
         name: 'split',
-        code: 'split(extrude001, tools = extrude006, merge = true)',
+        code: 'split([extrude001, extrude006], merge = true)',
       },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {

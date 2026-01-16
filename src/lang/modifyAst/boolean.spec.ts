@@ -252,14 +252,13 @@ profile002 = startProfile(sketch002, at = [-8.55, 7.53])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = .1)`
-      const expectedNewLine = `split001 = split(extrude001, tools = extrude002, merge = true)`
-      const targetIds = [0]
-      const toolIds = [1]
+      const expectedNewLine = `split001 = split([extrude001, extrude002], merge = true)`
+      const targetIds = [0, 1]
+      const toolIds: number[] = []
       const {
         ast,
         artifactGraph,
         solids: targets,
-        tools,
       } = await getSolidsAndTools(
         code,
         targetIds,
@@ -271,7 +270,6 @@ extrude002 = extrude(profile002, length = .1)`
         ast,
         artifactGraph,
         targets,
-        tools,
         merge: true,
         wasmInstance: instanceInThisFile,
       })
