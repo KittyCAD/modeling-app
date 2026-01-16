@@ -4,7 +4,7 @@ import {
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { type SnapshotFrom, waitFor } from 'xstate'
+import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
@@ -29,13 +29,6 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import {
-  commandBarActor,
-  getLayout,
-  setLayout,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
@@ -47,6 +40,8 @@ import {
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { useSingletons } from '@src/lib/singletons'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -70,6 +65,7 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
@@ -89,6 +85,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
 }
 
 export function useDismiss() {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const send = settingsActor.send
   const navigate = useNavigate()
@@ -275,6 +272,7 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  * depending on the platform and the state of the user's code.
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
+  const { systemIOActor } = useSingletons()
   // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
@@ -352,6 +350,7 @@ export function needsToOnboard(
 }
 
 export function onDismissOnboardingInvite() {
+  const { settingsActor } = useSingletons()
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -579,6 +578,7 @@ export function useOnboardingPanes(
   onMount: DefaultLayoutPaneID[] | undefined = [],
   onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
+  const { getLayout, setLayout } = useSingletons()
   useEffect(() => {
     setLayout(
       setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
@@ -593,7 +593,7 @@ export function useOnboardingPanes(
 }
 
 export function isModelingCmdGroupReady(
-  state: SnapshotFrom<typeof commandBarActor>
+  state: SnapshotFrom<ActorRefFrom<typeof commandBarMachine>>
 ) {
   // Ensure that the modeling command group is available
   if (
@@ -612,6 +612,7 @@ export function useOnModelingCmdGroupReadyOnce(
   callback: () => void,
   deps: React.DependencyList
 ) {
+  const { commandBarActor } = useSingletons()
   const [isReadyOnce, setReadyOnce] = useState(false)
 
   // Set up a subscription to the command bar actor's
