@@ -2,11 +2,12 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 
 export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
+  const { commandBarActor } = useSingletons()
   return (
     <Menu>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
