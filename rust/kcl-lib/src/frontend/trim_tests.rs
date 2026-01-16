@@ -53,6 +53,62 @@ sketch(on = YZ) {
             }
         }
     }
+    #[tokio::test]
+    async fn test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment() {
+        // This test mirrors: "Case 1: trim line2 from [-2, -2] to [-2, 2] - should trim left side (start)"
+        // from the TypeScript test file
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = sketch2::line(start = [var -5.1mm, var 0.75mm], end = [var 4.01mm, var 0.68mm])
+  line3 = sketch2::line(start = [var 4.26mm, var -3.44mm], end = [var 4.33mm, var 3.61mm])
+  line4 = sketch2::line(start = [var -0.9mm, var 0.43mm], end = [var -1.28mm, var -3.04mm])
+  sketch2::coincident([line2.start, line1])
+  sketch2::coincident([line4.start, line2])
+  sketch2::coincident([line2.end, line3])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.18, y: 4.92 }, Coords2d { x: -4.23, y: -5.15 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(result) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = sketch2::line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+  line3 = sketch2::line(start = [var 4.03mm, var -3.44mm], end = [var 4mm, var 3.61mm])
+  line4 = sketch2::line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
+  sketch2::coincident([line2.end, line3])
+  sketch2::coincident([line2.start, line4.start])
+}
+"#;
+
+                // Normalize both strings for comparison (trim whitespace)
+                let result_normalized = result.kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
 
     #[tokio::test]
     async fn test_trim_line2_right_side() {

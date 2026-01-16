@@ -2462,6 +2462,45 @@ pub fn trim_strategy(
         constraint_ids
     };
 
+    // Helper to find point-segment coincident constraints on an endpoint (using native types)
+    // Returns constraint IDs
+    let find_point_segment_coincident_constraint_ids = |endpoint_point_id: ObjectId| -> Vec<ObjectId> {
+        let mut constraint_ids = Vec::new();
+        for obj in objects {
+            let ObjectKind::Constraint { constraint } = &obj.kind else {
+                continue;
+            };
+
+            let Constraint::Coincident(coincident) = constraint else {
+                continue;
+            };
+
+            // Check if this constraint involves the endpoint
+            if !coincident.segments.contains(&endpoint_point_id) {
+                continue;
+            }
+
+            // Find the other entity
+            let other_segment_id = coincident.segments.iter().find_map(|seg_id| {
+                if *seg_id != endpoint_point_id {
+                    Some(*seg_id)
+                } else {
+                    None
+                }
+            });
+
+            if let Some(other_id) = other_segment_id
+                && let Some(other_obj) = objects.iter().find(|o| o.id == other_id)
+            {
+                // Check if other is a segment (not a point) - this is a point-segment constraint
+                if matches!(&other_obj.kind, ObjectKind::Segment { segment } if !matches!(segment, Segment::Point(_))) {
+                    constraint_ids.push(obj.id);
+                }
+            }
+        }
+        constraint_ids
+    };
+
     // Cut tail: one side intersects, one is endpoint
     if left_side_needs_tail_cut || right_side_needs_tail_cut {
         let side = if left_side_needs_tail_cut {
@@ -2548,9 +2587,12 @@ pub fn trim_strategy(
             None
         };
 
-        // Find point-point constraints to delete
+        // Find point-point and point-segment constraints to delete
         let coincident_end_constraint_to_delete_ids = if let Some(point_id) = endpoint_point_id {
-            find_point_point_coincident_constraints(point_id)
+            let mut constraint_ids = find_point_point_coincident_constraints(point_id);
+            // Also find point-segment constraints where the point is the endpoint being trimmed
+            constraint_ids.extend(find_point_segment_coincident_constraint_ids(point_id));
+            constraint_ids
         } else {
             Vec::new()
         };
