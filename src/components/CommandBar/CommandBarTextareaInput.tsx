@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 function CommandBarTextareaInput({
   arg,
@@ -17,6 +17,7 @@ function CommandBarTextareaInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const { commandBarActor, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const formRef = useRef<HTMLFormElement>(null)
