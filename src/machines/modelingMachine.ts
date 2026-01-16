@@ -3655,7 +3655,7 @@ export const modelingMachine = setup({
           wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+          return Promise.reject(result)
         }
         await updateModelingState(
           result.modifiedAst,
@@ -3696,7 +3696,7 @@ export const modelingMachine = setup({
           wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+          return Promise.reject(result)
         }
         await updateModelingState(
           result.modifiedAst,
