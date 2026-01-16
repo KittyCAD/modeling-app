@@ -422,12 +422,8 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
 
-        // Import trim functions from kcl-lib
-        use kcl_lib::front::{
-            execute_trim_operations_simple, get_next_trim_coords, get_trim_spawn_terminations, trim_strategy,
-            Coords2d as Coords2dCore, NextTrimResult as NextTrimResultCore, TrimTermination as TrimTerminationCore,
-            TrimTerminations as TrimTerminationsCore,
-        };
+        // Import trim function from kcl-lib
+        use kcl_lib::front::{execute_trim_loop_with_context, Coords2d as Coords2dCore};
 
         // Find the actual sketch object ID from the scene graph
         // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch
@@ -450,183 +446,51 @@ impl Context {
             .await
             .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
 
-        // Use native Rust types directly - no serialization needed!
-        // Track the current scene graph delta so we can access its objects
-        let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
-
         // Convert WASM Coords2d to core Coords2d for kcl-lib functions
         let points_core: Vec<Coords2dCore> = points
             .iter()
             .map(|c| kcl_lib::front::Coords2d { x: c.x, y: c.y })
             .collect();
 
-        // Run the trim loop
-        let mut start_index = 0;
-        let max_iterations = 1000;
-        let mut iteration_count = 0;
-        // Use the types from the return value of execute_mock
-        let mut last_result: Option<(kcl_lib::front::SourceDelta, kcl_lib::front::SceneGraphDelta)> = Some((
-            kcl_lib::front::SourceDelta { text: String::new() },
+        // Execute the trim loop using the shared function from kcl-lib
+        // This replaces ~140 lines of duplicated loop logic
+        let (source_delta, mut scene_graph_delta) = match execute_trim_loop_with_context(
+            &points_core,
             initial_scene_graph_delta,
-        ));
-        let mut invalidates_ids = false;
-        let mut operations_performed = false;
-
-        while start_index < points_core.len().saturating_sub(1) && iteration_count < max_iterations {
-            iteration_count += 1;
-
-            // Get next trim result - use objects from current scene graph
-            let next_trim_result_core =
-                get_next_trim_coords(&points_core, start_index, &current_scene_graph_delta.new_graph.objects);
-
-            match &next_trim_result_core {
-                NextTrimResultCore::NoTrimSpawn { next_index } => {
-                    let old_start_index = start_index;
-                    start_index = *next_index;
-
-                    // Fail-safe: if nextIndex didn't advance, force it to advance
-                    if start_index <= old_start_index {
-                        start_index = old_start_index + 1;
-                    }
-
-                    // Early exit if we've reached the end
-                    if start_index >= points_core.len().saturating_sub(1) {
-                        break;
-                    }
-                    continue;
-                }
-                NextTrimResultCore::TrimSpawn {
-                    trim_spawn_seg_id,
-                    next_index,
-                    ..
-                } => {
-                    // Get terminations - use objects from current scene graph
-                    let terminations_core = match get_trim_spawn_terminations(
-                        *trim_spawn_seg_id,
-                        &points_core,
-                        &current_scene_graph_delta.new_graph.objects,
-                    ) {
-                        Ok(terms) => terms,
-                        Err(e) => {
-                            eprintln!("Error getting trim spawn terminations: {}", e);
-                            let old_start_index = start_index;
-                            start_index = *next_index;
-                            if start_index <= old_start_index {
-                                start_index = old_start_index + 1;
-                            }
-                            continue;
-                        }
-                    };
-
-                    // Get trim strategy - use objects from current scene graph
-                    let trim_spawn_segment = current_scene_graph_delta
-                        .new_graph
-                        .objects
-                        .iter()
-                        .find(|obj| obj.id == *trim_spawn_seg_id)
-                        .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id.0))?;
-
-                    let strategy_core = match trim_strategy(
-                        *trim_spawn_seg_id,
-                        trim_spawn_segment,
-                        &terminations_core.left_side,
-                        &terminations_core.right_side,
-                        &current_scene_graph_delta.new_graph.objects,
-                    ) {
-                        Ok(ops) => ops,
-                        Err(e) => {
-                            eprintln!("Error determining trim strategy: {}", e);
-                            let old_start_index = start_index;
-                            start_index = *next_index;
-                            if start_index <= old_start_index {
-                                start_index = old_start_index + 1;
-                            }
-                            continue;
-                        }
-                    };
-
-                    // Use core types directly - no need for WASM wrapper since we're only pattern matching
-                    let strategy = strategy_core;
-
-                    // Execute operations using the shared function from kcl-lib
-                    // This avoids duplicating ~1000 lines of operation execution logic
-                    let operation_result = execute_trim_operations_simple(
-                        strategy.clone(),
-                        &current_scene_graph_delta,
-                        &mut *guard,
-                        &ctx,
-                        version,
-                        actual_sketch_id,
-                    )
-                    .await;
-
-                    // Check if we deleted a segment (for fail-safe logic later)
-                    let was_deleted = strategy
-                        .iter()
-                        .any(|op| matches!(op, kcl_lib::front::TrimOperation::SimpleTrim { .. }));
-
-                    match operation_result {
-                        Ok((source_delta, scene_graph_delta)) => {
-                            last_result = Some((source_delta, scene_graph_delta.clone()));
-                            invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
-                            operations_performed = true;
-
-                            // Update current scene graph delta - no serialization needed!
-                            current_scene_graph_delta = scene_graph_delta;
-                        }
-                        Err(e) => {
-                            eprintln!("Error executing trim operations: {:?}", e);
-                            // Continue to next segment instead of failing completely
-                            // Some operations can fail without breaking the trim
-                        }
-                    }
-
-                    // Move to next segment (or re-check same segment if deletion occurred)
-                    let old_start_index = start_index;
-                    start_index = match &next_trim_result_core {
-                        NextTrimResultCore::TrimSpawn { next_index, .. } => *next_index,
-                        NextTrimResultCore::NoTrimSpawn { .. } => {
-                            // Should not happen here
-                            break;
-                        }
-                    };
-
-                    // Fail-safe: if nextIndex didn't advance and we didn't delete, force it to advance
-                    if start_index <= old_start_index {
-                        if !was_deleted {
-                            start_index = old_start_index + 1;
-                        }
-                    }
-                }
-            }
-        }
-
-        if iteration_count >= max_iterations {
-            eprintln!("ERROR: Reached max iterations ({}). Breaking loop.", max_iterations);
-        }
-
-        // Return the last result or execute mock to get current state
-        let (source_delta, mut scene_graph_delta) = if let Some((sd, sgd)) = last_result {
-            // If source_delta is empty, it means no operations were executed
-            // In this case, we should return the original source code unchanged, not an empty string
-            if sd.text.is_empty() {
-                // Get the current source code by executing mock, which returns the unchanged source
+            &mut *guard,
+            &ctx,
+            version,
+            actual_sketch_id,
+        )
+        .await
+        {
+            Ok(result) => result,
+            Err(e) => {
+                // If the trim loop returns an error (e.g., no operations executed),
+                // execute mock to get the current state and return that
+                eprintln!("Trim loop returned error: {}", e);
                 guard
                     .execute_mock(&ctx, version, actual_sketch_id)
                     .await
                     .map_err(|e| format!("Failed to execute mock: {:?}", e))?
-            } else {
-                (sd, sgd)
             }
-        } else {
+        };
+
+        // Track if any operations were performed (for return value)
+        // If source_delta is empty, it means no operations were executed
+        let operations_performed = !source_delta.text.is_empty();
+
+        // If source_delta is empty, it means no operations were executed
+        // In this case, we should return the original source code unchanged, not an empty string
+        let (source_delta, scene_graph_delta) = if source_delta.text.is_empty() {
+            // Get the current source code by executing mock, which returns the unchanged source
             guard
                 .execute_mock(&ctx, version, actual_sketch_id)
                 .await
                 .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+        } else {
+            (source_delta, scene_graph_delta)
         };
-
-        // Set invalidates_ids if any operation invalidated IDs
-        scene_graph_delta.invalidates_ids = invalidates_ids;
 
         // Return both kclSource and sceneGraphDelta
         #[derive(serde::Serialize)]

@@ -1968,7 +1968,7 @@ pub async fn execute_trim_flow(
 /// Execute the trim loop with a context struct that provides access to FrontendState.
 /// This is a convenience wrapper that inlines the loop to avoid borrow checker issues with closures.
 /// The core loop logic is duplicated here, but this allows direct access to frontend and ctx.
-async fn execute_trim_loop_with_context(
+pub async fn execute_trim_loop_with_context(
     points: &[Coords2d],
     initial_scene_graph_delta: crate::frontend::api::SceneGraphDelta,
     frontend: &mut crate::frontend::FrontendState,
