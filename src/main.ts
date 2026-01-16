@@ -43,10 +43,12 @@ import {
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { globalAgent } from 'https'
+import { getCACertificates } from 'node:tls'
 
-// If we're on Windows, pull the local system TLS CAs in
-require('win-ca')
 console.log('process.versions', process.versions)
+// Pull the local system TLS CAs in (like with win-ca in the past)
+globalAgent.options.ca = getCACertificates('system')
 
 let mainWindow: BrowserWindow | null = null
 /** All Electron windows will share this WASM module */
