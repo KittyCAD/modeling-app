@@ -76,15 +76,11 @@ async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
 
     // Skip GLTF export for models that currently crash the exporter, see
     // https://github.com/KittyCAD/format/issues/812
-    let ignored_samples = [
-        "saturn-v",
-        "gridfinity-bins-stacking-lip",
-        "kcl_test_execute_internal_mcmaster_carr_samples_1371_n_28",
-        "kcl_test_execute_internal_mcmaster_carr_samples_4424_a_516",
-    ];
+    let ignored_samples = ["saturn-v", "gridfinity-bins-stacking-lip"];
     let ignore = ignored_samples
         .iter()
-        .any(|name| dir_path.ends_with(format!("kcl-samples/{name}")));
+        .any(|name| dir_path.ends_with(format!("kcl-samples/{name}")))
+        || dir_path.to_string_lossy().contains("internal");
     let exports = if ignore {
         vec![ExportAction::Step]
     } else {
@@ -132,7 +128,8 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         .unwrap();
         let model_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_MODEL_NAME);
         if model_file.exists() {
-            std::fs::rename(model_file, public_model_dir.join(format!("{}.glb", &tests.name))).unwrap();
+            let dst = public_model_dir.join(format!("{}.glb", &tests.name));
+            fs_err::rename(model_file, dst).unwrap();
         } else {
             eprintln!("WARNING: Missing model for test {}", tests.name);
         }
