@@ -14,7 +14,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -34,6 +33,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { useSingletons } from '@src/lib/singletons'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -64,6 +64,7 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function Welcome() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
@@ -105,6 +106,7 @@ function Welcome() {
 }
 
 function Scene() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -236,6 +238,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'fan-housing.kcl'
@@ -369,6 +372,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the text-to-cad button if it's present
@@ -410,6 +414,7 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
+  const { commandBarActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
@@ -481,6 +486,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
