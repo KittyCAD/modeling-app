@@ -115,6 +115,8 @@ pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -838,6 +840,7 @@ fn artifacts_to_update(
                 id,
                 path_ids: Vec::new(),
                 code_ref,
+                consumed: false,
             })]);
         }
         ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
@@ -877,10 +880,12 @@ fn artifacts_to_update(
                         Some(Artifact::Plane(Plane { path_ids, .. })) => path_ids.clone(),
                         _ => Vec::new(),
                     };
+                    // Create an entirely new plane
                     return Ok(vec![Artifact::Plane(Plane {
                         id: entity_id.into(),
                         path_ids,
                         code_ref,
+                        consumed: false,
                     })]);
                 }
             }
@@ -912,6 +917,8 @@ fn artifacts_to_update(
                     id: (*current_plane_id).into(),
                     path_ids: vec![id],
                     code_ref: plane_code_ref,
+                    // A plane is "consumed" as soon as it has been used by a path
+                    consumed: true,
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
