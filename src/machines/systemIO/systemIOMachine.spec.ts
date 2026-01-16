@@ -30,7 +30,7 @@ beforeEach(async () => {
 
 describe('systemIOMachine - XState', () => {
   describe('desktop', () => {
-    describe('when initializied', () => {
+    describe('when initialized', () => {
       it('should contain the default context values', () => {
         const actor = createActor(systemIOMachineDesktop, {
           input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
