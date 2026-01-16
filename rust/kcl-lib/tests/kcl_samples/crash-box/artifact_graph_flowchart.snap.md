@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[968, 1102, 0]"]
+    2["Path<br>[968, 1102, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     3["Segment<br>[1108, 1190, 0]"]
       %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -16,7 +16,7 @@ flowchart LR
     8[Solid2d]
   end
   subgraph path26 [Path]
-    26["Path<br>[2282, 2325, 0]"]
+    26["Path<br>[2282, 2325, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     27["Segment<br>[2331, 2402, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -31,14 +31,14 @@ flowchart LR
     32[Solid2d]
   end
   subgraph path50 [Path]
-    50["Path<br>[3592, 3717, 0]"]
+    50["Path<br>[3592, 3717, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     51["Segment<br>[3592, 3717, 0]"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     52[Solid2d]
   end
   subgraph path53 [Path]
-    53["Path<br>[3737, 3861, 0]"]
+    53["Path<br>[3737, 3861, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     54["Segment<br>[3737, 3861, 0]"]
       %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -46,7 +46,7 @@ flowchart LR
   end
   1["Plane<br>[927, 944, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["Sweep Extrusion<br>[1562, 1623, 0]"]
+  9["Sweep Extrusion<br>[1562, 1623, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10[Wall]
     %% face_code_ref=Missing NodePath
@@ -72,7 +72,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   25["Plane<br>[2249, 2267, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  33["Sweep Extrusion<br>[2768, 2879, 0]"]
+  33["Sweep Extrusion<br>[2768, 2879, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   34[Wall]
     %% face_code_ref=Missing NodePath
@@ -96,9 +96,9 @@ flowchart LR
   47["SweepEdge Adjacent"]
   48["EdgeCut Fillet<br>[2945, 3093, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  49["CompositeSolid Subtract<br>[3257, 3299, 0]"]
+  49["CompositeSolid Subtract<br>[3257, 3299, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  56["Sweep Extrusion<br>[3960, 4030, 0]"]
+  56["Sweep Extrusion<br>[3960, 4030, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   57[Wall]
     %% face_code_ref=Missing NodePath
@@ -108,7 +108,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   60["SweepEdge Opposite"]
   61["SweepEdge Adjacent"]
-  62["Sweep Extrusion<br>[3960, 4030, 0]"]
+  62["Sweep Extrusion<br>[3960, 4030, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   63[Wall]
     %% face_code_ref=Missing NodePath
@@ -118,7 +118,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   66["SweepEdge Opposite"]
   67["SweepEdge Adjacent"]
-  68["CompositeSolid Subtract<br>[4099, 4148, 0]"]
+  68["CompositeSolid Subtract<br>[4099, 4148, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   69["StartSketchOnFace<br>[3526, 3573, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
