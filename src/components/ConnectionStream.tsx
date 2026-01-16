@@ -1,13 +1,8 @@
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import {
-  engineCommandManager,
-  kclManager,
-  useSettings,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { sceneInfra } from '@src/lib/singletons'
 import { btnName } from '@src/lib/cameraControls'
 import { err, reportRejection } from '@src/lib/trap'
 import Loading from '@src/components/Loading'
@@ -41,6 +36,8 @@ const TIME_TO_CONNECT = 30_000
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {
+  const { engineCommandManager, kclManager, sceneInfra, useSettings } =
+    useSingletons()
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
