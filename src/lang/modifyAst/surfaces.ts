@@ -12,9 +12,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
 /**
- * Adds flatness GD&T annotation(s) to the AST.
- * Creates one gdt::flatness call for each selected face.
- * Always adds annotations at the end of the AST body.
+ * Adds a flipSurface call to the AST.
  *
  * @param ast - The AST to modify
  * @param artifactGraph - The artifact graph for face lookups
@@ -41,7 +39,7 @@ export function addFlipSurface({
 
   // 2. Prepare unlabeled arguments
   if (surface.graphSelections.length !== 1) {
-    return new Error('Extrude "to" argument must have exactly one selection.')
+    return new Error('flipSurface surface must have exactly one selection.')
   }
 
   const lastChildLookup = true
