@@ -203,6 +203,8 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -508,6 +510,7 @@ impl Plane {
             return Some(new);
         };
         merge_ids(&mut self.path_ids, new.path_ids);
+        self.consumed = new.consumed;
 
         None
     }
@@ -1075,6 +1078,7 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
+                    consumed: false,
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
