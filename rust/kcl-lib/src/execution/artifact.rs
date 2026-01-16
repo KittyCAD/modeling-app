@@ -572,6 +572,7 @@ impl Helix {
         let Artifact::Helix(new) = new else {
             return Some(new);
         };
+        merge_opt_id(&mut self.axis_id, new.axis_id);
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
 
         None
@@ -1393,6 +1394,16 @@ fn artifacts_to_update(
             } else {
                 // TODO: Handle other types like SweepEdge.
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelix(cmd) => {
+            let cylinder_id = ArtifactId::new(cmd.cylinder_id);
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: Some(cylinder_id),
+                code_ref,
+                sweep_id: None,
+            })];
             return Ok(return_arr);
         }
         ModelingCmd::EntityMakeHelixFromParams(_) => {
