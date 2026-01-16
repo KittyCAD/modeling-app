@@ -9,7 +9,7 @@ vi.mock('@src/lib/singletons', () => {
   const wasmInstancePromise = vi.importMock(
     '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
   )
-  return {
+  const singletons = {
     engineCommandManager: {
       modelingSend: mockModelingSend,
       wasmInstancePromise,
@@ -24,6 +24,10 @@ vi.mock('@src/lib/singletons', () => {
     },
     commandBarActor: { send: vi.fn() },
     useCommandBarState: () => ({ context: { argumentsToSubmit: {} } }),
+  }
+  return {
+    singletons,
+    useSingletons: () => singletons,
   }
 })
 
@@ -64,11 +68,11 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const { engineCommandManager, kclManager } = await import(
-        '@src/lib/singletons'
+      const { singletons } = await import('@src/lib/singletons')
+      const wasmInstance = await singletons.kclManager.wasmInstancePromise
+      const mockModelingSend = vi.mocked(
+        singletons.engineCommandManager.modelingSend
       )
-      const wasmInstance = await kclManager.wasmInstancePromise
-      const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
 
@@ -90,11 +94,11 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
-      const { engineCommandManager, kclManager } = await import(
-        '@src/lib/singletons'
+      const { singletons } = await import('@src/lib/singletons')
+      const wasmInstance = await singletons.kclManager.wasmInstancePromise
+      const mockModelingSend = vi.mocked(
+        singletons.engineCommandManager.modelingSend
       )
-      const wasmInstance = await kclManager.wasmInstancePromise
-      const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(false)
 
@@ -112,11 +116,11 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
-      const { engineCommandManager, kclManager } = await import(
-        '@src/lib/singletons'
+      const { singletons } = await import('@src/lib/singletons')
+      const wasmInstance = await singletons.kclManager.wasmInstancePromise
+      const mockModelingSend = vi.mocked(
+        singletons.engineCommandManager.modelingSend
       )
-      const wasmInstance = await kclManager.wasmInstancePromise
-      const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg() // No argument = undefined
 
@@ -134,11 +138,11 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should send clear selection command only once on mount', async () => {
-      const { engineCommandManager, kclManager } = await import(
-        '@src/lib/singletons'
+      const { singletons } = await import('@src/lib/singletons')
+      const wasmInstance = await singletons.kclManager.wasmInstancePromise
+      const mockModelingSend = vi.mocked(
+        singletons.engineCommandManager.modelingSend
       )
-      const wasmInstance = await kclManager.wasmInstancePromise
-      const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
 
@@ -171,11 +175,11 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should set hasClearedSelection state after clearing', async () => {
-      const { engineCommandManager, kclManager } = await import(
-        '@src/lib/singletons'
+      const { singletons } = await import('@src/lib/singletons')
+      const wasmInstance = await singletons.kclManager.wasmInstancePromise
+      const mockModelingSend = vi.mocked(
+        singletons.engineCommandManager.modelingSend
       )
-      const wasmInstance = await kclManager.wasmInstancePromise
-      const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
 
