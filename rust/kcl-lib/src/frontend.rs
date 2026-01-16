@@ -385,8 +385,145 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
-        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
+
+        // Preprocess segments into a final_edits vector to handle if segments contains:
+        // - edit start point of line1 (as SegmentCtor::Point)
+        // - edit end point of line1 (as SegmentCtor::Point)
+        //
+        // This would result in only the end point to be updated because edit_point() clones line1's ctor from
+        // scene_graph, but this is still the old ctor because self.scene_graph is only updated after the loop finishes.
+        //
+        // To fix this, and other cases when the same point is edited from multiple elements in the segments Vec
+        // we apply all edits in order to final_edits in a way that owned point edits result in line edits,
+        // so the above example would result in a single line1 edit:
+        // - the first start point edit creates a new line edit entry in final_edits
+        // - the second end point edit finds this line edit and mutates the end position only.
+        //
+        // The result is that segments are flattened into a single Vec of edits by their owners, later edits overriding earlier ones
+        // Note: this is a Vec so complexity is O(n^2), if segments can be large we can introduce a HashMap.
+        let mut final_edits: Vec<ExistingSegmentCtor> = Vec::new();
+
         for segment in segments {
+            let segment_id = segment.id;
+            match segment.ctor {
+                SegmentCtor::Point(ctor) => {
+                    // Find the owner, if any (point -> line / arc)
+                    if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
+                        && let ObjectKind::Segment { segment } = &segment_object.kind
+                        && let Segment::Point(point) = segment
+                        && let Some(owner_id) = point.owner
+                        && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
+                        && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
+                    {
+                        match owner_segment {
+                            Segment::Line(line) if line.start == segment_id || line.end == segment_id => {
+                                if let Some(SegmentCtor::Line(line_ctor)) = final_edits
+                                    .iter_mut()
+                                    .find(|edit| edit.id == owner_id)
+                                    .map(|edit| &mut edit.ctor)
+                                {
+                                    // Line owner is already in final_edits -> apply this point edit
+                                    if line.start == segment_id {
+                                        line_ctor.start = ctor.position;
+                                    } else {
+                                        line_ctor.end = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
+                                    // Line owner is not in final_edits yet -> create it
+                                    let mut line_ctor = line_ctor.clone();
+                                    if line.start == segment_id {
+                                        line_ctor.start = ctor.position;
+                                    } else {
+                                        line_ctor.end = ctor.position;
+                                    }
+                                    final_edits.push(ExistingSegmentCtor {
+                                        id: owner_id,
+                                        ctor: SegmentCtor::Line(line_ctor),
+                                    });
+                                } else {
+                                    // This should never run..
+                                    return Err(Error {
+                                        msg: format!("Internal: Line does not have line ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
+                            Segment::Arc(arc)
+                                if arc.start == segment_id || arc.end == segment_id || arc.center == segment_id =>
+                            {
+                                if let Some(SegmentCtor::Arc(arc_ctor)) = final_edits
+                                    .iter_mut()
+                                    .find(|edit| edit.id == owner_id)
+                                    .map(|edit| &mut edit.ctor)
+                                {
+                                    if arc.start == segment_id {
+                                        arc_ctor.start = ctor.position;
+                                    } else if arc.end == segment_id {
+                                        arc_ctor.end = ctor.position;
+                                    } else {
+                                        arc_ctor.center = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
+                                    let mut arc_ctor = arc_ctor.clone();
+                                    if arc.start == segment_id {
+                                        arc_ctor.start = ctor.position;
+                                    } else if arc.end == segment_id {
+                                        arc_ctor.end = ctor.position;
+                                    } else {
+                                        arc_ctor.center = ctor.position;
+                                    }
+                                    final_edits.push(ExistingSegmentCtor {
+                                        id: owner_id,
+                                        ctor: SegmentCtor::Arc(arc_ctor),
+                                    });
+                                } else {
+                                    return Err(Error {
+                                        msg: format!("Internal: Arc does not have arc ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    // No owner, it's an individual point
+                    final_edits.push(ExistingSegmentCtor {
+                        id: segment_id,
+                        ctor: SegmentCtor::Point(ctor),
+                    });
+                }
+                SegmentCtor::Line(ctor) => {
+                    if let Some(edit) = final_edits.iter_mut().find(|edit| edit.id == segment_id) {
+                        edit.ctor = SegmentCtor::Line(ctor);
+                    } else {
+                        final_edits.push(ExistingSegmentCtor {
+                            id: segment_id,
+                            ctor: SegmentCtor::Line(ctor),
+                        });
+                    }
+                }
+                SegmentCtor::Arc(ctor) => {
+                    if let Some(edit) = final_edits.iter_mut().find(|edit| edit.id == segment_id) {
+                        edit.ctor = SegmentCtor::Arc(ctor);
+                    } else {
+                        final_edits.push(ExistingSegmentCtor {
+                            id: segment_id,
+                            ctor: SegmentCtor::Arc(ctor),
+                        });
+                    }
+                }
+                other_ctor => {
+                    final_edits.push(ExistingSegmentCtor {
+                        id: segment_id,
+                        ctor: other_ctor,
+                    });
+                }
+            }
+        }
+
+        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(final_edits.len(), Default::default());
+        for segment in final_edits {
             segment_ids_edited.insert(segment.id);
             match segment.ctor {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
