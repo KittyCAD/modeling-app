@@ -3,11 +3,13 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { useSingletons } from '@src/lib/singletons'
 import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
+  const { commandBarActor, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const {
     context: { argumentsToSubmit, selectedCommand, reviewValidationError },
@@ -42,6 +44,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
+        if (!arg) return
         commandBarActor.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
@@ -65,9 +68,13 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     })
   }
 
-  const availableOptionalArgs = useMemo(() => {
+  const availableOptionalArgs = useMemo<
+    Record<string, CommandArgument<unknown>> | undefined
+  >(() => {
     if (!selectedCommand?.args) return undefined
-    const s = { ...selectedCommand.args }
+    const s = {
+      ...selectedCommand.args,
+    } as Record<string, CommandArgument<unknown>>
     for (const [name, arg] of Object.entries(s)) {
       const { isHidden, isRequired, value } = evaluateCommandBarArg(
         name,
