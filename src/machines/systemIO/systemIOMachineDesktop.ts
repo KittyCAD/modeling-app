@@ -240,6 +240,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          redirect: boolean
         }
       }) => {
         if (!window.electron) {
@@ -277,6 +278,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
+          redirect: input.redirect,
         }
       }
     ),
