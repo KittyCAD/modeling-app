@@ -8,7 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -27,6 +27,7 @@ function CommandArgOptionInput({
   placeholder?: string
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
+  const { commandBarActor, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const resolvedOptions = useMemo(
     () =>
