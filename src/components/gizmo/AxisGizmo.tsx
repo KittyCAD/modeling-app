@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
@@ -24,6 +24,7 @@ import { reportRejection } from '@src/lib/trap'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 
 export default function AxisGizmo() {
+  const { sceneInfra, useSettings } = useSingletons()
   const { state: modelingState } = useModelingContext()
   const settings = useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)
