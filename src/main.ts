@@ -46,6 +46,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
+console.log('process.versions', process.versions)
 
 let mainWindow: BrowserWindow | null = null
 /** All Electron windows will share this WASM module */
