@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import {
-  commandBarActor,
-  rustContext,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -94,6 +89,8 @@ function CommandBarVector2DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
+  const { commandBarActor, kclManager, rustContext, useCommandBarState } =
+    useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
