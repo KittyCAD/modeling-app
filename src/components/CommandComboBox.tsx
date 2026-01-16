@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({
@@ -17,6 +17,7 @@ function CommandComboBox({
 }) {
   const [query, setQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState<typeof options>()
+  const { commandBarActor } = useSingletons()
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
