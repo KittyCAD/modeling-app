@@ -356,7 +356,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
-  test('can delete an individual constraint and the sketch block from the feature tree', async ({
+  test('can delete individual constraints and the sketch block from the feature tree', async ({
     page,
     context,
     homePage,
@@ -371,6 +371,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 sketch(on = XY) {
   line1 = sketch2::line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
   sketch2::horizontal(line1)
+  line2 = sketch2::line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
+  sketch2::coincident([line2.start, line1.end])
 }`
       await context.addInitScript(async (code) => {
         localStorage.setItem('persistCode', code)
@@ -379,10 +381,10 @@ sketch(on = XY) {
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
       await editor.expectEditor.toContain('sketch(on')
+      await toolbar.openFeatureTreePane()
     })
 
-    await test.step('Delete constraint from feature tree and verify code updates', async () => {
-      await toolbar.openFeatureTreePane()
+    await test.step('Delete first constraint from feature tree and verify code updates', async () => {
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
@@ -391,6 +393,19 @@ sketch(on = XY) {
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch2::horizontal(line1)')
+    })
+
+    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+      const op = await toolbar.getFeatureTreeOperation(
+        'Coincident Constraint',
+        0
+      )
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(
+        'sketch2::coincident([line2.start, line1.end])'
+      )
     })
 
     await test.step('Delete sketch block from feature tree and verify code updates', async () => {
