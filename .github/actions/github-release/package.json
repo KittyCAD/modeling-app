@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "main": "main.js",
   "dependencies": {
-    "@actions/core": "^1.6",
+    "@actions/core": "^2.0",
     "@actions/github": "^6.0",
-    "glob": "^11.0.1"
+    "glob": "^13.0.0"
   }
 }

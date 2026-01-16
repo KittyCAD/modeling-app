@@ -39,7 +39,6 @@ patternLinear3d(
 ```kcl
 // / Pattern using a named axis.
 
-
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 2])
@@ -68,7 +67,6 @@ example = extrude(exampleSketch, length = 1)
 
 ```kcl
 // / Pattern using a raw axis.
-
 
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -115,7 +113,7 @@ thing2 = startSketchOn(case, face = END)
   |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
-  // We pass in the "case" here since we want to pattern the whole sketch.
+// We pass in the "case" here since we want to pattern the whole sketch.
 // And the case was the base of the sketch.
 patternLinear3d(
   case,

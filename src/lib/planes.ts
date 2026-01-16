@@ -20,6 +20,7 @@ export function defaultPlaneStrToKey(
     case '-YZ':
       return 'negYz'
     default:
+      const _exhaustiveCheck: never = plane
       return new Error(`Invalid plane string: ${plane}`)
   }
 }

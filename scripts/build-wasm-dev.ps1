@@ -6,15 +6,13 @@ $PSNativeCommandUseErrorActionPreference = $true
 if (Test-Path rust/kcl-wasm-lib/pkg) {
     rm -Recurse -Force rust/kcl-wasm-lib/pkg
 }
-mkdir -p rust/kcl-wasm-lib/pkg
+New-Item -ItemType Directory -Force -Path rust/kcl-wasm-lib/pkg | Out-Null
 if (Test-Path rust/kcl-lib/bindings) {
     rm -Recurse -Force rust/kcl-lib/bindings
 }
 
 cd rust
-$env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg
-$env:RUSTFLAGS=''
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 

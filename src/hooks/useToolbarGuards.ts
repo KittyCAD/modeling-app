@@ -1,29 +1,32 @@
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
 import {
   SetVarNameModal,
   createSetVarNameModal,
 } from '@src/components/SetVarNameModal'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useKclContext } from '@src/lang/KclProvider'
 import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
-export function useConvertToVariable(range?: SourceRange) {
-  const { ast } = useKclContext()
+export function useConvertToVariable(
+  kclManager: KclManager,
+  range?: SourceRange
+) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const ast = kclManager.astSignal.value
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
 
   useEffect(() => {
-    editorManager.convertToVariableEnabled = enable
-  }, [enable])
+    kclManager.convertToVariableEnabled = enable
+  }, [enable, kclManager])
 
   useEffect(() => {
     // Return early if there are no selection ranges for whatever reason
@@ -34,7 +37,8 @@ export function useConvertToVariable(range?: SourceRange) {
       parsed,
       range ||
         context.selectionRanges.graphSelections?.[0]?.codeRef?.range ||
-        []
+        [],
+      wasmInstance
     )
     if (trap(meta)) return
 
@@ -61,14 +65,15 @@ export function useConvertToVariable(range?: SourceRange) {
           ast,
           kclManager.variables,
           range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
-          variableName
+          variableName,
+          wasmInstance
         )
 
       await kclManager.updateAst(_modifiedAst, true)
 
-      const newCode = recast(_modifiedAst)
+      const newCode = recast(_modifiedAst, await kclManager.wasmInstancePromise)
       if (err(newCode)) return
-      codeManager.updateCodeEditor(newCode)
+      kclManager.updateCodeEditor(newCode)
 
       return pathToReplacedNode
     } catch (e) {
@@ -76,7 +81,7 @@ export function useConvertToVariable(range?: SourceRange) {
     }
   }
 
-  editorManager.convertToVariableCallback = toSync(handleClick, reportRejection)
+  kclManager.convertToVariableCallback = toSync(handleClick, reportRejection)
 
   return { enable, handleClick }
 }

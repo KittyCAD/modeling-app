@@ -8,7 +8,11 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { kclManager, engineCommandManager } from '@src/lib/singletons'
+import {
+  kclManager,
+  engineCommandManager,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
@@ -17,6 +21,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -24,10 +29,12 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
+  wasmInstance,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  wasmInstance: ModuleType
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
@@ -38,7 +45,7 @@ export default function CommandBarSelectionMixedInput({
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(selection)
+    return getSelectionCountByType(kclManager.ast, selection)
   }, [selection])
 
   // Coerce selections to bodies if this argument requires bodies
@@ -132,24 +139,30 @@ export default function CommandBarSelectionMixedInput({
     if (arg.selectionFilter && hasCoercedSelections) {
       // Batch the filter change with selection restoration
       // This is critical for body-only commands where we've coerced face/edge selections to bodies
-      setSelectionFilter(
-        arg.selectionFilter,
+      setSelectionFilter({
+        filter: arg.selectionFilter,
         engineCommandManager,
-        selection,
-        handleSelectionBatch
-      )
+        kclManager,
+        sceneEntitiesManager,
+        selectionsToRestore: selection,
+        handleSelectionBatchFn: handleSelectionBatch,
+        wasmInstance,
+      })
     }
     return () => {
       if (arg.selectionFilter && hasCoercedSelections) {
         // Restore default filter with selections on cleanup
-        setSelectionFilterToDefault(
+        setSelectionFilterToDefault({
           engineCommandManager,
-          selection,
-          handleSelectionBatch
-        )
+          kclManager,
+          sceneEntitiesManager,
+          selectionsToRestore: selection,
+          handleSelectionBatchFn: handleSelectionBatch,
+          wasmInstance,
+        })
       }
     }
-  }, [arg.selectionFilter, selection, hasCoercedSelections])
+  }, [arg.selectionFilter, selection, hasCoercedSelections, wasmInstance])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)
@@ -215,7 +228,8 @@ export default function CommandBarSelectionMixedInput({
       >
         {canSubmitSelection &&
         (selection.graphSelections.length || selection.otherSelections.length)
-          ? getSelectionTypeDisplayText(selection) + ' selected'
+          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
+            ' selected'
           : 'Select code/objects, or skip'}
 
         {showSceneSelection && (

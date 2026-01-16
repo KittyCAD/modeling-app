@@ -1,6 +1,7 @@
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
 import type fs from 'node:fs/promises'
+import type { Stats } from 'fs'
 import type path from 'path'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
@@ -53,8 +54,7 @@ export interface IElectronAPI {
   exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
-  // TODO: Use a real return type.
-  stat: (path: string) => Promise<any>
+  stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
@@ -64,6 +64,11 @@ export interface IElectronAPI {
   join: typeof path.join
   sep: typeof path.sep
   copy: typeof fs.cp
+  // No such thing as fs.mv, but our function will use fs.cp as a fallback
+  move: (
+    source: string | URL,
+    destination: string | URL
+  ) => Promise<void | Error>
   rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
@@ -95,6 +100,7 @@ export interface IElectronAPI {
     callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
+  getPathUserData: () => Promise<string>
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any

@@ -3,17 +3,19 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { locateVariableWithCallOrPipe } from '@src/lang/queryAst'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function deleteNodeInExtrudePipe(
   ast: Node<Program>,
-  node: PathToNode
+  node: PathToNode,
+  wasmInstance: ModuleType
 ): Error | undefined {
   const pipeIndex = node.findIndex(([_, type]) => type === 'PipeExpression') + 1
   if (!(node[pipeIndex][0] && typeof node[pipeIndex][0] === 'number')) {
     return new Error("Couldn't find node to delete in ast")
   }
 
-  const lookup = locateVariableWithCallOrPipe(ast, node)
+  const lookup = locateVariableWithCallOrPipe(ast, node, wasmInstance)
   if (err(lookup)) {
     return lookup
   }

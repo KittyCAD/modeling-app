@@ -207,8 +207,6 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// create a sketch for the body of the gingerbread man"
         ],
         "start": 0,
@@ -1507,8 +1505,6 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// create the body"
         ],
         "start": 0,
@@ -1572,7 +1568,32 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,
@@ -1595,6 +1616,18 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
           "value": {
             "type": "blockComment",
             "value": "A gingerbread man cookie cutter is a charming kitchen tool designed in the iconic silhouette of a little person. Typically crafted from metal (often tin or stainless steel) or durable plastic, this cookie cutter features the distinctive outline of a stylized human figure with a round head, a simple torso, and extended arms and legs. The cutter's edges are sharp enough to cleanly slice through cookie dough but blunt enough to be handled safely.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

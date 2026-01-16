@@ -8,9 +8,53 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Editor tests', () => {
+type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
+  page: Page
+}
+
+async function runMainAxisSelectionTest(
+  plane: 'XZ' | '-XZ',
+  { page, homePage, toolbar, scene }: MainAxisTestFixtures
+) {
+  const persistCode = `sketch002 = startSketchOn(${plane})
+profile002 = startProfile(sketch002, at = [-1.0, 0])
+  |> xLine(length = 2.0)`
+
+  await page.addInitScript(async (code) => {
+    localStorage.setItem('persistCode', code)
+  }, persistCode)
+
+  const width = 1200
+  const height = 800
+  const viewportSize = { width, height }
+  await page.setBodyDimensions(viewportSize)
+
+  await homePage.goToModelingScene()
+
+  const u = await getUtils(page)
+  await u.waitForPageLoad()
+
+  await toolbar.editSketch(0)
+
+  await page.waitForTimeout(1000)
+  await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+  await page.waitForTimeout(1000)
+
+  const clickCoords = await scene.convertPagePositionToStream(0.6, 0.5, 'ratio')
+  await page.mouse.click(clickCoords.x, clickCoords.y)
+
+  await page.waitForTimeout(1000)
+
+  const element = page.locator('[data-overlay-index="1"]')
+  await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+}
+
+test.describe('Editor tests', { tag: '@desktop' }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -626,10 +670,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await scene.connectionEstablished()
 
-    // Wait for highlighting to kick in, a good proxy that the LSP is ready.
-    await expect
-      .poll(() => page.evaluate(() => document.querySelector('.ͼj') !== null))
-      .toBe(true)
+    // Wait for the linter diagnostics to populate, a good proxy that the LSP is ready.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // Expect the signature help to NOT be visible
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
@@ -651,9 +693,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     )
 
     // Make sure the tooltip goes away after a timeout.
-    await page.waitForTimeout(12000)
-
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible({
+      timeout: 15_000,
+    })
   })
 
   test('if you write kcl with lint errors you get lints', async ({
@@ -1062,14 +1104,13 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
@@ -1182,42 +1223,43 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await editor.expectEditor.toContain(ogCode, { shouldNormalise: true })
   })
 
-  test(
-    `Can import a local OBJ file`,
-    { tag: '@desktop' },
-    async ({ page, context, scene, cmdBar }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'cube')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cube.obj'),
-          join(bracketDir, 'cube.obj')
-        )
-        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
-      })
+  test(`Can import a local OBJ file`, async ({
+    page,
+    context,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = join(dir, 'cube')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.obj'),
+        join(bracketDir, 'cube.obj')
+      )
+      await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+    })
 
-      const viewportSize = { width: 1200, height: 500 }
-      await page.setBodyDimensions(viewportSize)
+    const viewportSize = { width: 1200, height: 500 }
+    await page.setBodyDimensions(viewportSize)
 
-      // Locators and constants
-      const u = await getUtils(page)
-      const projectLink = page.getByRole('link', { name: 'cube' })
-      const errorIndicators = page.locator('.cm-lint-marker-error')
+    // Locators and constants
+    const u = await getUtils(page)
+    const projectLink = page.getByRole('link', { name: 'cube' })
+    const errorIndicators = page.locator('.cm-lint-marker-error')
 
-      await test.step(`Open the empty file`, async () => {
-        await projectLink.click()
-        await scene.settled(cmdBar)
-      })
-      await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
-        await page.waitForTimeout(800)
-      })
-      await test.step(`Verify that we see no errors`, async () => {
-        await scene.settled(cmdBar)
-        await expect(errorIndicators).toHaveCount(0)
-      })
-    }
-  )
+    await test.step(`Open the empty file`, async () => {
+      await projectLink.click()
+      await scene.settled(cmdBar)
+    })
+    await test.step(`Write the import function line`, async () => {
+      await u.codeLocator.fill(`import 'cube.obj'\ncube`)
+      await page.waitForTimeout(800)
+    })
+    await test.step(`Verify that we see no errors`, async () => {
+      await scene.settled(cmdBar)
+      await expect(errorIndicators).toHaveCount(0)
+    })
+  })
 
   test('Rectangle tool panning with middle click', async ({
     page,
@@ -1270,52 +1312,32 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   })
 
-  test('Can select lines on the main axis', async ({
+  test('Can select lines on the main axis (XZ)', async ({
     page,
     homePage,
     toolbar,
     scene,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-  profile001 = startProfile(sketch001, at = [100.00, 100.0])
-    |> yLine(length = -100.0)
-    |> xLine(length = 200.0)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-      )
+    await runMainAxisSelectionTest('XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
     })
+  })
 
-    const width = 1200
-    const height = 800
-    const viewportSize = { width, height }
-    await page.setBodyDimensions(viewportSize)
-
-    await homePage.goToModelingScene()
-
-    const u = await getUtils(page)
-    await u.waitForPageLoad()
-
-    await toolbar.editSketch(0)
-
-    await page.waitForTimeout(1000)
-    await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-    // Click on the bottom segment that lies on the x axis
-    const clickCoords = await scene.convertPagePositionToStream(
-      0.85,
-      0.5,
-      'ratio'
-    )
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-
-    await page.waitForTimeout(1000)
-
-    // Verify segment is selected (you can check for visual indicators or state)
-    const element = page.locator('[data-overlay-index="2"]')
-    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+  test('Can select lines on the main axis (-XZ)', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+  }) => {
+    await runMainAxisSelectionTest('-XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
+    })
   })
 
   test(`Only show axis planes when there are no errors`, async ({
@@ -1459,5 +1481,89 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     const toast2 = page.getByText('Core dump completed')
     await expect(toast2).toBeVisible()
+  })
+})
+
+test('Undo/redo recovers deleted files interleaved with code edits', async ({
+  context,
+  page,
+  homePage,
+  toolbar,
+  editor,
+}) => {
+  await context.folderSetupFn(async (dir) => {
+    const projectDir = join(dir, 'History Project')
+    await fsp.mkdir(projectDir, { recursive: true })
+    await fsp.copyFile(
+      executorInputPath('cylinder.kcl'),
+      join(projectDir, 'main.kcl')
+    )
+    await fsp.copyFile(
+      executorInputPath('basic_fillet_cube_end.kcl'),
+      join(projectDir, 'fileToDelete.kcl')
+    )
+  })
+
+  const u = await getUtils(page)
+  const fileToDelete = u.locatorFile('fileToDelete.kcl')
+  const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+  const deleteConfirmation = page.getByTestId('delete-confirmation')
+  const archivedToast = page.getByText('archived successfully')
+  const restoredToast = page.getByText('restored successfully')
+  const undoButton = page.getByRole('button', { name: 'arrow turn left' })
+  const redoButton = page.getByRole('button', { name: 'arrow turn right' })
+
+  await test.step('Open project and edit main.kcl', async () => {
+    await homePage.openProject('History Project')
+    await editor.openPane()
+    await editor.expectEditor.toContain('extrude')
+    await editor.codeContent.focus()
+    await page.keyboard.type('\ninterleaveA = 1')
+  })
+
+  await test.step('Delete another file without navigating away', async () => {
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await expect(fileToDelete).toBeVisible()
+    await fileToDelete.click({ button: 'right' })
+    await deleteMenuItem.click()
+    await deleteConfirmation.click()
+    await expect(fileToDelete).not.toBeAttached()
+    await expect(archivedToast).toBeVisible()
+  })
+
+  await test.step('Edit code again, then undo back through the delete', async () => {
+    await editor.codeContent.focus()
+    await page.keyboard.type('\ninterleaveB = 2')
+
+    await undoButton.click()
+    await expect(u.codeLocator).not.toContainText('interleaveB = 2')
+    await expect(u.codeLocator).toContainText('interleaveA = 1')
+
+    do {
+      await undoButton.click()
+      await page.waitForTimeout(100)
+    } while (
+      !(await fileToDelete.isVisible()) &&
+      !(await undoButton.isDisabled())
+    )
+
+    await expect(restoredToast).toBeVisible()
+
+    await undoButton.click()
+    await expect(u.codeLocator).not.toContainText('interleaveA = 1')
+  })
+
+  await test.step('Navigate to file and verify it is not empty', async () => {
+    await toolbar.openFile('fileToDelete.kcl')
+    await expect(editor.codeContent).toContainText('fillet')
+    await toolbar.openFile('main.kcl')
+    await expect(editor.codeContent).not.toContainText('fillet')
+  })
+
+  await test.step('Redo re-applies the delete', async () => {
+    await page.waitForTimeout(1_000)
+    await redoButton.click()
+
+    await expect(fileToDelete).not.toBeAttached()
   })
 })

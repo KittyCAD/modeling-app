@@ -3,7 +3,7 @@ import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Selection } from '@src/machines/modelingSharedTypes'
@@ -23,6 +23,7 @@ import {
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -112,8 +113,6 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -121,6 +120,7 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -128,12 +128,7 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithFillet)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
@@ -154,8 +149,6 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -163,6 +156,7 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -189,12 +183,7 @@ fillet001 = fillet(
   ],
   radius = 1,
 )`)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a basic fillet call with tag on sweepEdge', async () => {
@@ -209,8 +198,6 @@ fillet001 = fillet(
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -219,6 +206,7 @@ fillet001 = fillet(
         selection,
         radius,
         tag: 'myTag',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -240,12 +228,7 @@ fillet001 = fillet(
   tag = $myTag,
 )`
       )
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should edit a basic fillet call on sweepEdge', async () => {
@@ -261,8 +244,6 @@ fillet001 = fillet(
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const radius = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -271,6 +252,7 @@ fillet001 = fillet(
         selection,
         radius,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -280,12 +262,7 @@ fillet001 = fillet(
       expect(newCode).toContain(
         extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
       )
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should edit a piped fillet call on sweepEdge', async () => {
@@ -317,8 +294,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       ]
       const radius = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -327,6 +302,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         selection,
         radius,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -334,12 +310,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add fillet calls on two bodies with one edge selected on each', async () => {
@@ -373,8 +344,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -383,6 +352,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -395,12 +365,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       expect(newCode).toContain('fillet001 = fillet(extrude001')
       expect(newCode).toContain('fillet002 = fillet(extrude002')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a fillet call to revolve', async () => {
@@ -419,8 +384,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const radius = (await stringToKclExpression(
         '0.5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -429,6 +392,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -441,12 +405,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       expect(newCode).toContain('fillet001 = fillet(revolve001')
       expect(newCode).toContain('radius = 0.5')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
 
@@ -463,8 +422,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -472,6 +429,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -479,12 +437,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithChamfer)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a basic chamfer call on a sweepEdge and a segment', async () => {
@@ -505,8 +458,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -514,6 +465,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -540,12 +492,7 @@ chamfer001 = chamfer(
   ],
   length = 1,
 )`)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a chamfer call on sweepEdge with two lengths', async () => {
@@ -560,14 +507,10 @@ chamfer001 = chamfer(
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const secondLength = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -576,6 +519,7 @@ chamfer001 = chamfer(
         selection,
         length,
         secondLength,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -595,12 +539,7 @@ chamfer001 = chamfer(
   length = 1,
   secondLength = 1.1,
 )`)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a chamfer call on sweepEdge with one length and one angle, and a tag', async () => {
@@ -615,14 +554,10 @@ chamfer001 = chamfer(
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const angle = (await stringToKclExpression(
         '46deg',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -632,6 +567,7 @@ chamfer001 = chamfer(
         length,
         angle,
         tag: 'myChamferTag',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -652,12 +588,7 @@ chamfer001 = chamfer(
   angle = 46deg,
   tag = $myChamferTag,
 )`)
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should edit a basic chamfer call on sweepEdge', async () => {
@@ -673,8 +604,6 @@ chamfer001 = chamfer(
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const length = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -683,6 +612,7 @@ chamfer001 = chamfer(
         selection,
         length,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -692,12 +622,7 @@ chamfer001 = chamfer(
       expect(newCode).toContain(
         extrudedTriangleWithChamfer.replace('length = 1', 'length = 1.1')
       )
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add chamfer calls on two bodies with one edge selected on each', async () => {
@@ -731,8 +656,6 @@ chamfer001 = chamfer(
 
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -741,6 +664,7 @@ chamfer001 = chamfer(
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -753,12 +677,7 @@ chamfer001 = chamfer(
       expect(newCode).toContain('chamfer001 = chamfer(extrude001')
       expect(newCode).toContain('chamfer002 = chamfer(extrude002')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a chamfer call to revolve', async () => {
@@ -777,8 +696,6 @@ chamfer001 = chamfer(
 
       const length = (await stringToKclExpression(
         '0.5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -787,6 +704,7 @@ chamfer001 = chamfer(
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -799,12 +717,7 @@ chamfer001 = chamfer(
       expect(newCode).toContain('chamfer001 = chamfer(revolve001')
       expect(newCode).toContain('length = 0.5')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
 
@@ -843,7 +756,7 @@ chamfer001 = chamfer(
     }
 
     // delete edge treatment
-    const result = await deleteEdgeTreatment(ast, selection)
+    const result = await deleteEdgeTreatment(ast, selection, instanceInThisFile)
     if (err(result)) {
       expect(result).toContain(expectedCode)
       return result
@@ -1182,7 +1095,11 @@ revolve001 = revolve(
           }
 
           // delete edge treatment
-          const result = await deleteEdgeTreatment(ast, selection)
+          const result = await deleteEdgeTreatment(
+            ast,
+            selection,
+            instanceInThisFile
+          )
           if (err(result)) {
             throw result
           }
@@ -1244,7 +1161,11 @@ revolve001 = revolve(`
           }
 
           // delete edge treatment
-          const result = await deleteEdgeTreatment(ast, selection)
+          const result = await deleteEdgeTreatment(
+            ast,
+            selection,
+            instanceInThisFile
+          )
           if (err(result)) {
             throw result
           }

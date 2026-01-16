@@ -10,7 +10,8 @@ import {
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { KclManager } from '@src/lang/KclSingleton'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -79,10 +80,11 @@ describe('boolean', () => {
         artifactGraph,
         solids,
         tools,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, rustContext)
       return recast(result.modifiedAst, instance)
     }
 

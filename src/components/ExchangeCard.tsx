@@ -4,20 +4,19 @@ import { Thinking } from '@src/components/Thinking'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/machines/mlEphantManagerMachine2'
+} from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
   useEffect,
-  useRef,
   useState,
   type ReactNode,
   type ComponentProps,
+  useMemo,
 } from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape } from '@ts-stack/markdown'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -254,16 +253,9 @@ export const RequestCard = (props: RequestCardProps) => {
 }
 
 export const Delta = (props: { children: ReactNode }) => {
-  const ref = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    if (ref.current === null) return
-    ref.current.scrollIntoView()
-  }, [])
-
   return (
     <span className="animate-delta-in" style={{ opacity: 0 }}>
       {props.children}
-      <span ref={ref}></span>
     </span>
   )
 }
@@ -273,13 +265,6 @@ type ResponsesCardProp = {
   deltasAggregated: Exchange['deltasAggregated']
 }
 
-const MarkedOptions = {
-  gfm: true,
-  breaks: true,
-  sanitize: true,
-  escape,
-}
-
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
     <div className="text-rose-400 flex flex-row gap-1 items-start">
@@ -287,15 +272,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
       />
-      <span
-        className="parsed-markdown"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.maybeError?.error.detail, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+      <MarkdownText text={props.maybeError?.error.detail} />
     </div>
   ) : null
 
@@ -322,18 +299,14 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
-  const deltasAggregatedMarkdown =
-    props.deltasAggregated !== '' ? (
-      <span
-        className="parsed-markdown whitespace-normal"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.deltasAggregated, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+  const deltasAggregatedMarkdown = useMemo(() => {
+    return props.deltasAggregated !== '' ? (
+      <MarkdownText
+        text={props.deltasAggregated}
+        className="whitespace-normal"
+      />
     ) : null
+  }, [props.deltasAggregated])
 
   return (
     <ChatBubble
@@ -358,7 +331,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
-  const cssCard = `flex flex-col p-2 gap-2 justify-between
+  const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
   `
 

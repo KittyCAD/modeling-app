@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -9,7 +9,13 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneInfra,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -26,6 +32,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -40,7 +47,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand()
+    } = createNamedViewsCommand(engineCommandManager)
 
     const commands = [
       createNamedViewCommand,
@@ -108,7 +115,13 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
+  const cb = modelingMenuCallbackMostActions(
+    settings,
+    navigate,
+    filePath,
+    engineCommandManager,
+    sceneInfra
+  )
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
@@ -144,15 +157,19 @@ export const ModelingPageProvider = ({
     return kclCommands({
       authToken: token ?? '',
       projectData,
+      kclManager,
       settings: {
         defaultUnit:
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
+      rustContext,
+      systemIOActor,
+      wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [codeManager, kclManager, project, file])
+  }, [kclManager, project, file])
 
   useEffect(() => {
     commandBarActor.send({
@@ -166,7 +183,7 @@ export const ModelingPageProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return <div>{children}</div>

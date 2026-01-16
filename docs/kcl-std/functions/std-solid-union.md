@@ -33,7 +33,6 @@ union(
 ```kcl
 // Union two cubes using the stdlib functions.
 
-
 fn cube(center, size) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
@@ -70,7 +69,6 @@ unionedPart = union([part001, part002])
 // Union two cubes using operators.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)
@@ -110,7 +108,6 @@ unionedPart = part001 + part002
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
 
-
 fn cube(center, size) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
@@ -125,8 +122,8 @@ part001 = cube(center = [0, 0], size = 10)
 part002 = cube(center = [7, 3], size = 5)
   |> translate(z = 1)
 
-  // This is the equivalent of: union([part001, part002])
-  // Programmers will understand `|` as a union operation, but mechanical engineers
+// This is the equivalent of: union([part001, part002])
+// Programmers will understand `|` as a union operation, but mechanical engineers
 // will understand `+`, we made both work.
 unionedPart = part001 | part002
 

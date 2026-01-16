@@ -55,16 +55,40 @@ fn recast_body(
 ) {
     let indentation = options.get_indentation(indentation_level);
 
-    if non_code_meta
+    let has_non_newline_start_node = non_code_meta
         .start_nodes
         .iter()
-        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
-    {
-        for start in &non_code_meta.start_nodes {
-            let noncode_recast = start.recast(options, indentation_level);
-            buf.push_str(&noncode_recast);
+        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+    if has_non_newline_start_node {
+        let mut pending_newline = false;
+        for start_node in &non_code_meta.start_nodes {
+            match start_node.value {
+                NonCodeValue::NewLine => pending_newline = true,
+                _ => {
+                    if pending_newline {
+                        // If the previous emission already ended with '\n', only add one more.
+                        if buf.ends_with('\n') {
+                            buf.push('\n');
+                        } else {
+                            buf.push_str("\n\n");
+                        }
+                        pending_newline = false;
+                    }
+                    let noncode_recast = start_node.recast(options, indentation_level);
+                    buf.push_str(&noncode_recast);
+                }
+            }
+        }
+        // Handle any trailing newlines that weren't flushed yet.
+        if pending_newline {
+            if buf.ends_with('\n') {
+                buf.push('\n');
+            } else {
+                buf.push_str("\n\n");
+            }
         }
     }
+
     for attr in inner_attrs {
         options.write_indentation(buf, indentation_level);
         attr.recast(buf, options, indentation_level);
@@ -156,7 +180,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -183,19 +207,6 @@ impl Node<NonCodeNode> {
                     }
                 }
             },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{add_start_new_line}{indentation}//\n")
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
@@ -281,7 +292,7 @@ impl ImportStatement {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(crate) enum ExprContext {
     Pipe,
-    Decl,
+    FnDecl,
     Other,
 }
 
@@ -293,7 +304,7 @@ impl Expr {
         indentation_level: usize,
         mut ctxt: ExprContext,
     ) {
-        let is_decl = matches!(ctxt, ExprContext::Decl);
+        let is_decl = matches!(ctxt, ExprContext::FnDecl);
         if is_decl {
             // Just because this expression is being bound to a variable, doesn't mean that every child
             // expression is being bound. So, reset the expression context if necessary.
@@ -312,6 +323,10 @@ impl Expr {
             Expr::FunctionExpression(func_exp) => {
                 if !is_decl {
                     buf.push_str("fn");
+                    if let Some(name) = &func_exp.name {
+                        buf.push(' ');
+                        buf.push_str(&name.name);
+                    }
                 }
                 func_exp.recast(buf, options, indentation_level);
             }
@@ -513,9 +528,9 @@ impl VariableDeclaration {
             ItemVisibility::Export => buf.push_str("export "),
         };
 
-        let (keyword, eq) = match self.kind {
-            VariableKind::Fn => ("fn ", ""),
-            VariableKind::Const => ("", " = "),
+        let (keyword, eq, ctxt) = match self.kind {
+            VariableKind::Fn => ("fn ", "", ExprContext::FnDecl),
+            VariableKind::Const => ("", " = ", ExprContext::Other),
         };
         buf.push_str(keyword);
         buf.push_str(&self.declaration.id.name);
@@ -529,7 +544,7 @@ impl VariableDeclaration {
         let mut tmp_buf = String::new();
         self.declaration
             .init
-            .recast(&mut tmp_buf, options, indentation_level, ExprContext::Decl);
+            .recast(&mut tmp_buf, options, indentation_level, ctxt);
         buf.push_str(tmp_buf.trim_start());
     }
 }
@@ -950,6 +965,10 @@ impl Node<PipeExpression> {
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
+                    if let NonCodeValue::NewLine = val.value {
+                        buf.push('\n');
+                        continue;
+                    }
                     // TODO: Remove allocation here by switching val.recast to accept buf.
                     let formatted = if val.end == self.end {
                         val.recast(options, indentation_level)
@@ -960,7 +979,9 @@ impl Node<PipeExpression> {
                             .trim_end_matches('\n')
                             .to_string()
                     };
-                    if let NonCodeValue::BlockComment { .. } = val.value {
+                    if let NonCodeValue::BlockComment { .. } = val.value
+                        && !buf.ends_with('\n')
+                    {
                         buf.push('\n');
                     }
                     buf.push_str(&formatted);
@@ -3208,6 +3229,23 @@ fn function001() {
   extrude002 = extrude()
 }\n";
 
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn no_weird_extra_lines() {
+        // Regression test, this used to insert a lot of new lines
+        // between the initial comment and the @settings.
+        let code = "\
+// Initial comment
+
+@settings(defaultLengthUnit = mm)
+
+x = 1
+";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;

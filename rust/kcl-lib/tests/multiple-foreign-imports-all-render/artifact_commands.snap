@@ -15878,6 +15878,16 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
         ],
         "format": {
           "type": "step",
+          "coords": {
+            "forward": {
+              "axis": "z",
+              "direction": "positive"
+            },
+            "up": {
+              "axis": "y",
+              "direction": "positive"
+            }
+          },
           "split_closed_faces": false
         }
       }

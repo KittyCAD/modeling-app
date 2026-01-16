@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import {
   Outlet,
@@ -28,9 +28,11 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
-  codeManager,
+  kclManager,
   engineCommandManager,
   rustContext,
+  systemIOActor,
+  settingsActor,
 } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -41,6 +43,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import Loading from '@src/components/Loading'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -71,18 +74,31 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader,
+        loader: fileLoader({
+          kclManager,
+          rustContext,
+          systemIOActor,
+          settingsActor,
+        }),
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
         element: (
           <ModelingPageProvider>
-            <ModelingMachineProvider>
-              <CoreDump />
-              <Outlet />
-              <App />
-              <CommandBar />
-            </ModelingMachineProvider>
+            <Suspense
+              fallback={
+                <div className="absolute inset-0 grid place-content-center">
+                  <Loading>Loading Design Studio...</Loading>
+                </div>
+              }
+            >
+              <ModelingMachineProvider>
+                <CoreDump />
+                <Outlet />
+                <App />
+                <CommandBar />
+              </ModelingMachineProvider>
+            </Suspense>
           </ModelingPageProvider>
         ),
         children: [
@@ -122,7 +138,7 @@ const router = createRouter([
           </>
         ),
         id: PATHS.HOME,
-        loader: homeLoader,
+        loader: homeLoader({ settingsActor }),
         children: [
           {
             index: true,
@@ -162,7 +178,7 @@ const router = createRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  const networkStatus = useNetworkStatus()
+  const networkStatus = useNetworkStatus(engineCommandManager)
 
   return (
     <NetworkContext.Provider value={networkStatus}>
@@ -175,33 +191,32 @@ function CoreDump() {
   const token = useToken()
   const coreDumpManager = useMemo(
     () =>
-      new CoreDumpManager(
-        engineCommandManager,
-        codeManager,
-        rustContext,
-        token
-      ),
+      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
-  useHotkeyWrapper(['mod + shift + period'], () => {
-    toast
-      .promise(
-        coreDump(coreDumpManager, true),
-        {
-          loading: 'Starting core dump...',
-          success: 'Core dump completed successfully',
-          error: 'Error while exporting core dump',
-        },
-        {
-          success: {
-            // Note: this extended duration is especially important for Playwright e2e testing
-            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-            duration: 6000,
+  useHotkeyWrapper(
+    ['mod + shift + period'],
+    () => {
+      toast
+        .promise(
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
+          {
+            loading: 'Starting core dump...',
+            success: 'Core dump completed successfully',
+            error: 'Error while exporting core dump',
           },
-        }
-      )
-      .catch(reportRejection)
-  })
+          {
+            success: {
+              // Note: this extended duration is especially important for Playwright e2e testing
+              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+              duration: 6000,
+            },
+          }
+        )
+        .catch(reportRejection)
+    },
+    kclManager
+  )
   return null
 }

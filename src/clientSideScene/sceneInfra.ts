@@ -1,5 +1,6 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
+import type { Intersection, Object3D } from 'three'
+import { Group } from 'three'
 import {
   AmbientLight,
   Color,
@@ -13,6 +14,7 @@ import {
   WebGLRenderer,
 } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
@@ -33,52 +35,60 @@ import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
-import { getAngle, getLength, throttle } from '@src/lib/utils'
+import { getAngle, getLength } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
+interface IntersectionData {
+  twoD: Vector2
+  threeD: Vector3
+}
+
 export interface OnMouseEnterLeaveArgs {
-  selected: Object3D<Object3DEventMap>
+  selected: Object3D
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
-  intersectionPoint?: {
-    twoD?: Vector2
-    threeD?: Vector3
-  }
+  intersectionPoint?: Partial<IntersectionData>
+  /** Whether area select is currently active */
+  isAreaSelectActive?: boolean
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  intersectionPoint: IntersectionData
+  intersects: Intersection[]
+}
+
+interface OnDragEndCallbackArgs extends OnMouseEnterLeaveArgs {
+  intersects: Intersection[]
 }
 
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint?: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersectionPoint?: IntersectionData
+  intersects: Intersection[]
+  selected?: Object3D
+  wasmInstance: ModuleType
 }
 
 export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersectionPoint: IntersectionData
+  intersects: Intersection[]
+  selected?: Object3D
+}
+
+export interface OnAreaSelectCallbackArgs {
+  mouseEvent: MouseEvent
+  startPoint: IntersectionData
+  currentPoint: IntersectionData
+  intersects: Intersection[]
 }
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
@@ -88,31 +98,38 @@ export interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 
 export class SceneInfra {
-  static instance: SceneInfra
   readonly scene: Scene
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
+  private readonly wasmInstancePromise: Promise<ModuleType>
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
+    () => {}
+  onAreaSelectCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
+  onAreaSelectEndCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
-    onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
+    onDragEnd?: (arg: OnDragEndCallbackArgs) => Voidish
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
+    onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
+    onAreaSelect?: (arg: OnAreaSelectCallbackArgs) => Voidish
+    onAreaSelectEnd?: (arg: OnAreaSelectCallbackArgs) => Voidish
   }) => {
     this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
     this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
@@ -121,6 +138,12 @@ export class SceneInfra {
     this.onClickCallback = callbacks.onClick || this.onClickCallback
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
+    this.onAreaSelectStartCallback =
+      callbacks.onAreaSelectStart || this.onAreaSelectStartCallback
+    this.onAreaSelectCallback =
+      callbacks.onAreaSelect || this.onAreaSelectCallback
+    this.onAreaSelectEndCallback =
+      callbacks.onAreaSelectEnd || this.onAreaSelectEndCallback
     this.selected = null // following selections between callbacks being set is too tricky
   }
 
@@ -173,15 +196,16 @@ export class SceneInfra {
       onClick: () => {},
       onMouseEnter: () => {},
       onMouseLeave: () => {},
+      onAreaSelectStart: () => {},
+      onAreaSelect: () => {},
+      onAreaSelectEnd: () => {},
     })
   }
 
   modelingSend: SendType = (() => {}) as any
-  throttledModelingSend: any = (() => {}) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
-    this.throttledModelingSend = throttle(send, 100)
   }
 
   overlayTimeout = 0
@@ -273,21 +297,37 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | Object3D<Object3DEventMap> = null
+  hoveredObject: null | Object3D = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: Object3D<Object3DEventMap>
+    object: Object3D
     hasBeenDragged: boolean
   } | null = null
+  areaSelect: {
+    mouseDownVector: Vector2
+    startPoint: {
+      twoD: Vector2
+      threeD: Vector3
+    }
+    hasBeenDragged: boolean
+  } | null = null
+
+  get isAreaSelectActive(): boolean {
+    return this.areaSelect !== null && this.areaSelect.hasBeenDragged
+  }
   private isRenderingPaused = false
   private lastFrameTime = 0
   private animationFrameId = -1
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    wasmInitPromise: Promise<ModuleType>
+  ) {
+    this.wasmInstancePromise = wasmInitPromise
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -337,8 +377,6 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
-
-    SceneInfra.instance = this
   }
 
   // Called after canvas is attached to the DOM and on each resize.
@@ -391,11 +429,13 @@ export class SceneInfra {
     }
   }
 
-  dispose = () => {
-    // Dispose of scene resources, renderer, and controls
-    this.renderer.dispose()
-    // Dispose of any other resources like geometries, materials, textures
-  }
+  // Note this was never getting called, SceneInfra is created once and never disposed.
+  // dispose = () => {
+  //   // Dispose of scene resources, renderer, and controls
+  //   this.renderer.forceContextLoss()
+  //   this.renderer.dispose()
+  //   // Dispose of any other resources like geometries, materials, textures
+  // }
 
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
@@ -410,7 +450,7 @@ export class SceneInfra {
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
-    intersection: Intersection<Object3D<Object3DEventMap>>
+    intersection: Intersection
   } | null => {
     // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
@@ -423,14 +463,19 @@ export class SceneInfra {
       this.scene.children,
       true
     )
-    if (!planeIntersects.length) return null
+    if (!planeIntersects.length) {
+      return null
+    }
 
     // Find the intersection with the raycastable (or sketch) plane
     const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!raycastablePlaneIntersection)
-      return { intersection: planeIntersects[0] }
+    if (!raycastablePlaneIntersection) {
+      return {
+        intersection: planeIntersects[0],
+      }
+    }
     const planePosition = raycastablePlaneIntersection.object.position
     const inversePlaneQuaternion =
       raycastablePlaneIntersection.object.quaternion.clone().invert()
@@ -499,7 +544,22 @@ export class SceneInfra {
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
-        // this is where we could fire a onDragStart event
+        // Fire onDragStart event when drag threshold is first exceeded
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onDragStartCallback({
+            mouseEvent,
+            intersectionPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+            selected: this.selected.object,
+          })
+        }
       }
       if (
         this.selected.hasBeenDragged &&
@@ -520,6 +580,48 @@ export class SceneInfra {
         this.updateMouseState({
           type: 'isDragging',
           on: selected.object,
+        })
+      }
+    } else if (this.areaSelect) {
+      // Handle area select drag
+      const hasBeenDragged = !vec2WithinDistance(
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.areaSelect.mouseDownVector),
+        10 // Drag threshold in pixels
+      )
+      if (!this.areaSelect.hasBeenDragged && hasBeenDragged) {
+        this.areaSelect.hasBeenDragged = true
+        // Fire onAreaSelectStart event when drag threshold is first exceeded
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onAreaSelectStartCallback({
+            mouseEvent,
+            startPoint: this.areaSelect.startPoint,
+            currentPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+          })
+        }
+      }
+      if (
+        this.areaSelect.hasBeenDragged &&
+        planeIntersectPoint &&
+        planeIntersectPoint.twoD &&
+        planeIntersectPoint.threeD
+      ) {
+        await this.onAreaSelectCallback({
+          mouseEvent,
+          startPoint: this.areaSelect.startPoint,
+          currentPoint: {
+            twoD: planeIntersectPoint.twoD,
+            threeD: planeIntersectPoint.threeD,
+          },
+          intersects,
         })
       }
     } else if (
@@ -554,6 +656,7 @@ export class SceneInfra {
               selected: hoveredObj,
               mouseEvent: mouseEvent,
               intersectionPoint,
+              isAreaSelectActive: this.isAreaSelectActive,
             })
           }
           this.hoveredObject = firstIntersectObject
@@ -561,6 +664,7 @@ export class SceneInfra {
             selected: this.hoveredObject,
             mouseEvent: mouseEvent,
             intersectionPoint,
+            isAreaSelectActive: this.isAreaSelectActive,
           })
           this.updateMouseState({
             type: 'isHovering',
@@ -574,6 +678,7 @@ export class SceneInfra {
           await this.onMouseLeave({
             selected: hoveredObj,
             mouseEvent: mouseEvent,
+            isAreaSelectActive: this.isAreaSelectActive,
           })
           if (!this.selected) this.updateMouseState({ type: 'idle' })
         }
@@ -592,19 +697,11 @@ export class SceneInfra {
     }
   }
 
-  raycastRing = (
-    pixelRadius = 8,
-    rayRingCount = 32
-  ): Intersection<Object3D<Object3DEventMap>>[] => {
+  raycastRing = (pixelRadius = 8, rayRingCount = 32): Intersection[] => {
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersectionsMap = new Map<
-      Object3D,
-      Intersection<Object3D<Object3DEventMap>>
-    >()
+    const intersectionsMap = new Map<Object3D, Intersection>()
 
-    const updateIntersectionsMap = (
-      intersections: Intersection<Object3D<Object3DEventMap>>[]
-    ) => {
+    const updateIntersectionsMap = (intersections: Intersection[]) => {
       intersections.forEach((intersection) => {
         const existingIntersection = intersectionsMap.get(intersection.object)
         if (
@@ -644,9 +741,15 @@ export class SceneInfra {
     }
 
     // Convert the map values to an array and sort by distance
-    return Array.from(intersectionsMap.values()).sort(
-      (a, b) => a.distance - b.distance
-    )
+    return Array.from(intersectionsMap.values()).sort((a, b) => {
+      // Deprioritize axis selection to allow selecting segments that lie on axes
+      const aIsAxis = isAxisObject(a.object)
+      const bIsAxis = isAxisObject(b.object)
+      if (aIsAxis && !bIsAxis) return 1
+      if (!aIsAxis && bIsAxis) return -1
+      // Otherwise sort by distance
+      return a.distance - b.distance
+    })
   }
 
   updateMouseState(mouseState: MouseState) {
@@ -655,12 +758,97 @@ export class SceneInfra {
     this.modelingSend({ type: 'Set mouse state', data: mouseState })
   }
 
+  /**
+   * Helper function to find a CSS2DObject (point segment) under the cursor
+   * Returns the CSS2DObject and its parent Group if found
+   */
+  private findCSS2DObjectUnderCursor(
+    event: MouseEvent
+  ): { css2dObject: CSS2DObject; parentGroup: Group } | null {
+    const el = document.elementFromPoint(
+      event.clientX,
+      event.clientY
+    ) as HTMLElement | null
+    if (!el) return null
+
+    // Traverse up the DOM to find the element with segment_id
+    let cur: HTMLElement | null = el
+    while (cur) {
+      const idAttr = cur.dataset?.segment_id
+      if (idAttr && !Number.isNaN(Number(idAttr))) {
+        // Found the element, now find the CSS2DObject in the scene
+        // CSS2DObjects are in SKETCH_SOLVE_GROUP, so search there first for efficiency
+        const segmentId = Number(idAttr)
+        const findCSS2DObject = (object: Object3D): CSS2DObject | null => {
+          if (object instanceof CSS2DObject) {
+            // Match by element reference or by segment_id in the element's dataset
+            if (
+              object.element === cur ||
+              (object.element instanceof HTMLElement &&
+                object.element.dataset.segment_id === idAttr)
+            ) {
+              return object
+            }
+          }
+          for (const child of object.children) {
+            const found = findCSS2DObject(child)
+            if (found) return found
+          }
+          return null
+        }
+
+        // Try SKETCH_SOLVE_GROUP first (where point segments are)
+        const sketchSolveGroup = this.scene.getObjectByName('sketchSolveGroup')
+        let css2dObject: CSS2DObject | null = null
+        if (sketchSolveGroup) {
+          css2dObject = findCSS2DObject(sketchSolveGroup)
+        }
+
+        // Fallback to searching entire scene if not found in SKETCH_SOLVE_GROUP
+        if (!css2dObject) {
+          css2dObject = findCSS2DObject(this.scene)
+        }
+
+        if (css2dObject && css2dObject.parent instanceof Group) {
+          // Verify the parent Group's name matches the segment_id
+          const parentGroupId = Number(css2dObject.parent.name)
+          if (!Number.isNaN(parentGroupId) && parentGroupId === segmentId) {
+            return {
+              css2dObject,
+              parentGroup: css2dObject.parent,
+            }
+          }
+        }
+        break
+      }
+      cur = cur.parentElement
+    }
+    return null
+  }
+
   onMouseDown = (event: MouseEvent) => {
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersect = this.raycastRing()[0]
 
+    // Always check for CSS2DObject first (point segments) since they're rendered on top
+    // and should take priority over three.js objects
+    const css2dResult = this.findCSS2DObjectUnderCursor(event)
+    if (css2dResult) {
+      // Use the parent Group as the selected object so drag handling works
+      this.selected = {
+        mouseDownVector,
+        object: css2dResult.parentGroup,
+        hasBeenDragged: false,
+      }
+      // Prevent default to ensure drag works properly
+      // This prevents any default browser drag behavior that might interfere
+      event.preventDefault()
+      return
+    }
+
+    // No CSS2DObject found, check for three.js objects
+    const intersect = this.raycastRing()[0]
     if (intersect) {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
@@ -671,24 +859,45 @@ export class SceneInfra {
           }
         : null
     }
+
+    // If nothing was selected, initialize area select
+    if (!this.selected) {
+      const planeIntersectPoint = this.getPlaneIntersectPoint()
+      if (
+        planeIntersectPoint &&
+        planeIntersectPoint.twoD &&
+        planeIntersectPoint.threeD
+      ) {
+        this.areaSelect = {
+          mouseDownVector,
+          startPoint: {
+            twoD: planeIntersectPoint.twoD.clone(),
+            threeD: planeIntersectPoint.threeD.clone(),
+          },
+          hasBeenDragged: false,
+        }
+      }
+    }
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    const wasmInstance = await this.wasmInstancePromise
     this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // TODO do the types properly here
         await this.onDragEndCallback({
-          intersectionPoint: {
-            twoD: planeIntersectPoint?.twoD as any,
-            threeD: planeIntersectPoint?.threeD as any,
-          },
+          intersectionPoint: planeIntersectPoint
+            ? {
+                twoD: planeIntersectPoint?.twoD,
+                threeD: planeIntersectPoint?.threeD,
+              }
+            : undefined,
           intersects,
           mouseEvent,
-          selected: this.selected as any,
+          selected: this.selected.object,
         })
         if (intersects.length) {
           this.updateMouseState({
@@ -710,17 +919,56 @@ export class SceneInfra {
           },
           intersects,
           selected: this.selected.object,
+          wasmInstance,
         })
       } else if (planeIntersectPoint) {
         await this.onClickCallback({
           mouseEvent,
           intersects,
+          wasmInstance,
         })
       } else {
-        await this.onClickCallback({ mouseEvent, intersects })
+        await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
+    } else if (this.areaSelect) {
+      // Handle area select end
+      if (this.areaSelect.hasBeenDragged) {
+        // Fire onAreaSelectEnd callback
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onAreaSelectEndCallback({
+            mouseEvent,
+            startPoint: this.areaSelect.startPoint,
+            currentPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+          })
+        }
+      } else {
+        // If area select didn't drag, treat as a click on empty space
+        if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
+          await this.onClickCallback({
+            mouseEvent,
+            intersectionPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+            wasmInstance,
+          })
+        } else {
+          await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
+        }
+      }
+      // Clear the area select state
+      this.areaSelect = null
     } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
       await this.onClickCallback({
         mouseEvent,
@@ -729,9 +977,10 @@ export class SceneInfra {
           threeD: planeIntersectPoint.threeD,
         },
         intersects,
+        wasmInstance,
       })
     } else {
-      await this.onClickCallback({ mouseEvent, intersects })
+      await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
     }
   }
   updateOtherSelectionColors = (otherSelections: NonCodeSelection[]) => {
@@ -780,6 +1029,11 @@ export class SceneInfra {
   resumeRendering() {
     this.isRenderingPaused = false
   }
+}
+
+function isAxisObject(object: Object3D | undefined): boolean {
+  if (!object) return false
+  return object.name === X_AXIS || object.name === Y_AXIS
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

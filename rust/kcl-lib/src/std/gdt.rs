@@ -13,11 +13,11 @@ use crate::{
     errors::KclErrorDetails,
     exec::KclValue,
     execution::{
-        GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
+        ControlFlowKind, GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
     parsing::ast::types as ast,
-    std::{Args, args::TyF64, sketch::make_sketch_plane_from_orientation},
+    std::{Args, args::TyF64, sketch::ensure_sketch_plane_in_engine},
 };
 
 /// Bundle of common GD&T annotation style arguments.
@@ -76,62 +76,57 @@ async fn inner_datum(
             vec![args.source_range],
         ))
     })?;
-    let frame_plane = if let Some(plane) = frame_plane {
+    let mut frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
-        // Create it in the engine.
-        let engine_plane =
-            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
-        engine_plane.id
-    } else {
-        frame_plane.id
-    };
+    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
-            ModelingCmd::from(mcmd::NewAnnotation {
-                options: AnnotationOptions {
-                    text: None,
-                    line_ends: None,
-                    line_width: None,
-                    color: None,
-                    position: None,
-                    dimension: None,
-                    feature_control: Some(AnnotationFeatureControl {
-                        entity_id: face_id,
-                        // Point to the center of the face.
-                        entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                        leader_type: AnnotationLineEnd::Dot,
+            ModelingCmd::from(
+                mcmd::NewAnnotation::builder()
+                    .options(AnnotationOptions {
+                        text: None,
+                        line_ends: None,
+                        line_width: None,
+                        color: None,
+                        position: None,
                         dimension: None,
-                        control_frame: None,
-                        defined_datum: Some(name_char),
-                        prefix: None,
-                        suffix: None,
-                        plane_id: frame_plane_id,
-                        offset: if let Some(offset) = &frame_position {
-                            KPoint2d {
-                                x: offset[0].to_mm(),
-                                y: offset[1].to_mm(),
-                            }
-                        } else {
-                            KPoint2d { x: 100.0, y: 100.0 }
-                        },
-                        precision: 0,
-                        font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                        font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
-                    }),
-                    feature_tag: None,
-                },
-                clobber: false,
-                annotation_type: AnnotationType::T3D,
-            }),
+                        feature_control: Some(AnnotationFeatureControl {
+                            entity_id: face_id,
+                            // Point to the center of the face.
+                            entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                            leader_type: AnnotationLineEnd::Dot,
+                            dimension: None,
+                            control_frame: None,
+                            defined_datum: Some(name_char),
+                            prefix: None,
+                            suffix: None,
+                            plane_id: frame_plane.id,
+                            offset: if let Some(offset) = &frame_position {
+                                KPoint2d {
+                                    x: offset[0].to_mm(),
+                                    y: offset[1].to_mm(),
+                                }
+                            } else {
+                                KPoint2d { x: 100.0, y: 100.0 }
+                            },
+                            precision: 0,
+                            font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
+                            font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
+                        }),
+                        feature_tag: None,
+                    })
+                    .clobber(false)
+                    .annotation_type(AnnotationType::T3D)
+                    .build(),
+            ),
         )
         .await?;
     Ok(GdtAnnotation {
@@ -195,20 +190,13 @@ async fn inner_flatness(
         // The default precision.
         3
     };
-    let frame_plane = if let Some(plane) = frame_plane {
+    let mut frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
-        // Create it in the engine.
-        let engine_plane =
-            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
-        engine_plane.id
-    } else {
-        frame_plane.id
-    };
+    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
@@ -217,50 +205,56 @@ async fn inner_flatness(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
-                ModelingCmd::from(mcmd::NewAnnotation {
-                    options: AnnotationOptions {
-                        text: None,
-                        line_ends: None,
-                        line_width: None,
-                        color: None,
-                        position: None,
-                        dimension: None,
-                        feature_control: Some(AnnotationFeatureControl {
-                            entity_id: face_id,
-                            // Point to the center of the face.
-                            entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                            leader_type: AnnotationLineEnd::Dot,
+                ModelingCmd::from(
+                    mcmd::NewAnnotation::builder()
+                        .options(AnnotationOptions {
+                            text: None,
+                            line_ends: None,
+                            line_width: None,
+                            color: None,
+                            position: None,
                             dimension: None,
-                            control_frame: Some(AnnotationMbdControlFrame {
-                                symbol: MbdSymbol::Flatness,
-                                diameter_symbol: None,
-                                tolerance: tolerance.to_mm(),
-                                modifier: None,
-                                primary_datum: None,
-                                secondary_datum: None,
-                                tertiary_datum: None,
+                            feature_control: Some(AnnotationFeatureControl {
+                                entity_id: face_id,
+                                // Point to the center of the face.
+                                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                                leader_type: AnnotationLineEnd::Dot,
+                                dimension: None,
+                                control_frame: Some(AnnotationMbdControlFrame {
+                                    symbol: MbdSymbol::Flatness,
+                                    diameter_symbol: None,
+                                    tolerance: tolerance.to_mm(),
+                                    modifier: None,
+                                    primary_datum: None,
+                                    secondary_datum: None,
+                                    tertiary_datum: None,
+                                }),
+                                defined_datum: None,
+                                prefix: None,
+                                suffix: None,
+                                plane_id: frame_plane.id,
+                                offset: if let Some(offset) = &frame_position {
+                                    KPoint2d {
+                                        x: offset[0].to_mm(),
+                                        y: offset[1].to_mm(),
+                                    }
+                                } else {
+                                    KPoint2d { x: 100.0, y: 100.0 }
+                                },
+                                precision,
+                                font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
+                                font_point_size: style
+                                    .font_point_size
+                                    .as_ref()
+                                    .map(|n| n.n.round() as u32)
+                                    .unwrap_or(36),
                             }),
-                            defined_datum: None,
-                            prefix: None,
-                            suffix: None,
-                            plane_id: frame_plane_id,
-                            offset: if let Some(offset) = &frame_position {
-                                KPoint2d {
-                                    x: offset[0].to_mm(),
-                                    y: offset[1].to_mm(),
-                                }
-                            } else {
-                                KPoint2d { x: 100.0, y: 100.0 }
-                            },
-                            precision,
-                            font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                            font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
-                        }),
-                        feature_tag: None,
-                    },
-                    clobber: false,
-                    annotation_type: AnnotationType::T3D,
-                }),
+                            feature_tag: None,
+                        })
+                        .clobber(false)
+                        .annotation_type(AnnotationType::T3D)
+                        .build(),
+                ),
             )
             .await?;
         annotations.push(GdtAnnotation {
@@ -280,6 +274,17 @@ async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclE
         .ctx
         .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
         .await?;
+    let plane_value = match plane_value.control {
+        ControlFlowKind::Continue => plane_value.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside plane value is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![args.source_range],
+            )));
+        }
+    };
     Ok(plane_value
         .as_plane()
         .ok_or_else(|| {

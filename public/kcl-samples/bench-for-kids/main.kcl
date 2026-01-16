@@ -1,8 +1,6 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
-
-
-
+// Categories: Maker
 
 @settings(defaultLengthUnit = cm)
 
@@ -78,6 +76,7 @@ allFourLegs = patternLinear3d(
   |> patternLinear3d(instances = 2, distance = legChassisLength, axis = [0, 1, 0])
 
 // EARS (two small cylinders, tilted sideways slightly)
+
 
 earHeight = 20
 earRadius = legRadius * 0.9

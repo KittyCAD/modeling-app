@@ -29,14 +29,14 @@ import {
   offsetToPos,
   posToOffset,
 } from '@kittycad/codemirror-lsp-client'
-import { editorManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 
 import type { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
 import type { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
 import type { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
 import type { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
+import type { KclManager } from '@src/lang/KclManager'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)
@@ -192,11 +192,13 @@ const completionDecoration = StateField.define<CompletionState>({
 // A view plugin that requests completions from the server after a delay
 export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
+  /** This extension must carry around a reference to our manager singleton class, which is injected */
+  private kclManager: KclManager
   private lastPos: number = 0
 
   private queuedUids: string[] = []
 
-  private _deffererUserSelect = deferExecution(() => {
+  private _deffererUserSelect = deferredCallback(() => {
     this.rejectSuggestionCommand()
   }, changesDelay)
 
@@ -207,14 +209,16 @@ export class CompletionRequester implements PluginValue {
 
   constructor(
     readonly view: EditorView,
-    client: LanguageServerClient
+    client: LanguageServerClient,
+    kclManager: KclManager
   ) {
     this.client = client
+    this.kclManager = kclManager
   }
 
   update(viewUpdate: ViewUpdate) {
     // Make sure we are in a state where we can request completions.
-    if (!editorManager.copilotEnabled) {
+    if (!this.kclManager.copilotEnabled) {
       return
     }
 
@@ -570,10 +574,14 @@ export class CompletionRequester implements PluginValue {
   }
 }
 
-export const copilotPlugin = (options: LanguageServerOptions): Extension => {
+export const copilotPlugin = (
+  options: LanguageServerOptions,
+  kclManager: KclManager
+): Extension => {
   let plugin: CompletionRequester | null = null
   const completionPlugin = ViewPlugin.define(
-    (view) => (plugin = new CompletionRequester(view, options.client))
+    (view) =>
+      (plugin = new CompletionRequester(view, options.client, kclManager))
   )
 
   const domHandlers = EditorView.domEventHandlers({

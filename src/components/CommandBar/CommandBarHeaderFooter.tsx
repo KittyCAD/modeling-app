@@ -12,7 +12,11 @@ import type {
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -180,8 +184,12 @@ function CommandBarHeaderFooter({
                       {argValue ? (
                         arg.inputType === 'selection' ||
                         arg.inputType === 'selectionMixed' ? (
-                          getSelectionTypeDisplayText(argValue as Selections)
-                        ) : arg.inputType === 'kcl' ? (
+                          getSelectionTypeDisplayText(
+                            kclManager.astSignal.value,
+                            argValue as Selections
+                          )
+                        ) : arg.inputType === 'kcl' &&
+                          (argValue as KclCommandValue).valueCalculated ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,
                             4
@@ -327,7 +335,7 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       tabIndex={0}
       data-testid="command-bar-continue"
       iconEnd={{
-        icon: 'arrowRight',
+        icon: 'arrowShortRight',
         bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
@@ -351,7 +359,7 @@ function StepBackButton({
       tabIndex={0}
       data-testid="command-bar-step-back"
       iconStart={{
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}

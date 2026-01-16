@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -7,11 +7,12 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { codeToIdSelections } from '@src/lib/selections'
-import { editorManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
@@ -20,7 +21,7 @@ export function AstExplorer() {
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
-  const _node = getNodeFromPath(kclManager.ast, pathToNode)
+  const _node = getNodeFromPath(kclManager.ast, pathToNode, wasmInstance)
   if (trap(_node)) return
   const node = _node
 
@@ -52,7 +53,7 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(_e) => {
-          editorManager.setHighlightRange([defaultSourceRange()])
+          kclManager.setHighlightRange([defaultSourceRange()])
         }}
       >
         <pre className="text-xs">
@@ -123,16 +124,12 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        editorManager.setHighlightRange([
-          topLevelRange(obj?.start || 0, obj.end),
-        ])
+        kclManager.setHighlightRange([topLevelRange(obj?.start || 0, obj.end)])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([
-          topLevelRange(obj?.start || 0, obj.end),
-        ])
+        kclManager.setHighlightRange([topLevelRange(obj?.start || 0, obj.end)])
       }}
       onClick={(e) => {
         const range = topLevelRange(obj?.start || 0, obj.end || 0)

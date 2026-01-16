@@ -5,9 +5,10 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
-        annotations,
+        BodyType, ExecState, ExecutorContext, KclValue, KclValueControlFlow, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
+        control_continue,
         kcl_value::{FunctionBody, FunctionSource},
         memory,
         types::RuntimeType,
@@ -17,6 +18,8 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
+    /// Name of the function these args are being passed into.
+    pub fn_name: Option<String>,
     /// Unlabeled keyword args. Currently only the first formal arg can be unlabeled.
     /// If the argument was a local variable, then the first element of the tuple is its name
     /// which may be used to treat this arg as a labelled arg.
@@ -54,8 +57,10 @@ impl Args<Sugary> {
         source_range: SourceRange,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
+        fn_name: Option<String>,
     ) -> Args<Sugary> {
         Args {
+            fn_name,
             labeled,
             unlabeled,
             source_range,
@@ -79,8 +84,9 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext) -> Args {
+    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
         Args {
+            fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
@@ -123,7 +129,11 @@ impl Arg {
 
 impl Node<CallExpressionKw> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
@@ -146,9 +156,10 @@ impl Node<CallExpressionKw> {
         if let Some(ref arg_expr) = self.unlabeled {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
 
             let label = arg_expr.ident_name().map(str::to_owned);
 
@@ -158,9 +169,10 @@ impl Node<CallExpressionKw> {
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
             let arg = Arg::new(value, source_range);
             match &arg_expr.label {
                 Some(l) => {
@@ -172,7 +184,14 @@ impl Node<CallExpressionKw> {
             }
         }
 
-        let args = Args::new(fn_args, unlabeled, callsite, exec_state, ctx.clone());
+        let args = Args::new(
+            fn_args,
+            unlabeled,
+            callsite,
+            exec_state,
+            ctx.clone(),
+            Some(fn_name.name.name.clone()),
+        );
 
         let return_value = fn_src
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
@@ -205,14 +224,30 @@ impl Node<CallExpressionKw> {
 }
 
 impl FunctionSource {
-    pub async fn call_kw(
+    pub(crate) async fn call_kw(
         &self,
         fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
         args: Args<Sugary>,
         callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        exec_state.inc_call_stack_size(callsite)?;
+
+        let result = self.inner_call_kw(fn_name, exec_state, ctx, args, callsite).await;
+
+        exec_state.dec_call_stack_size(callsite)?;
+        result
+    }
+
+    async fn inner_call_kw(
+        &self,
+        fn_name: Option<String>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
                 CompilationError::err(
@@ -328,7 +363,7 @@ impl FunctionSource {
         // Do not early return via ? or something until we've
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
-        let mut result = match &self.body {
+        let result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
@@ -339,12 +374,20 @@ impl FunctionSource {
 
                 ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
                     .await
-                    .map(|_| {
+                    .map(|cf| {
+                        if let Some(cf) = cf
+                            && cf.is_some_return()
+                        {
+                            return Some(cf);
+                        }
+                        // Ignore the block's value and extract the return value
+                        // from memory.
                         exec_state
                             .stack()
                             .get(memory::RETURN_NAME, self.ast.as_source_range())
                             .ok()
                             .cloned()
+                            .map(KclValue::continue_)
                     })
             }
         };
@@ -366,13 +409,25 @@ impl FunctionSource {
             }
         }
 
+        let mut result = match result {
+            Ok(Some(value)) => {
+                if value.is_some_return() {
+                    return Ok(Some(value));
+                } else {
+                    Ok(Some(value.into_value()))
+                }
+            }
+            Ok(None) => Ok(None),
+            Err(e) => Err(e),
+        };
+
         if self.is_std
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
         }
 
-        coerce_result_type(result, self, exec_state)
+        coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
     }
 }
 
@@ -540,7 +595,12 @@ fn type_check_params_kw(
     mut args: Args<Sugary>,
     exec_state: &mut ExecState,
 ) -> Result<Args<Desugared>, KclError> {
-    let mut result = Args::new_no_args(args.source_range, args.ctx);
+    let fn_name = fn_name.or(args.fn_name.as_deref());
+    let mut result = Args::new_no_args(
+        args.source_range,
+        args.ctx,
+        fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
+    );
 
     // If it's possible the input arg was meant to be labelled and we probably don't want to use
     // it as the input arg, then treat it as labelled.
@@ -934,6 +994,7 @@ mod test {
         ] {
             // Run each test.
             let func_expr = Node::no_src(FunctionExpression {
+                name: None,
                 params,
                 body: Program::empty(),
                 return_type: None,
@@ -965,6 +1026,7 @@ mod test {
             exec_state.mod_local.stack = Stack::new_for_tests();
 
             let args = Args {
+                fn_name: Some("test".to_owned()),
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),
@@ -994,6 +1056,20 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
             err.message(),
             "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn map_closure_error_mentions_fn_name() {
+        let program = r#"
+arr = ["hello"]
+map(array = arr, f = fn(@item: number) { return item })
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+        assert!(
+            err.message().contains("map closure"),
+            "expected map closure errors to include the closure name, got: {}",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

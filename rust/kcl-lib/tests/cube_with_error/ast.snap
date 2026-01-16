@@ -1202,6 +1202,14 @@ description: Result of parsing cube_with_error.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "cube",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -1387,8 +1395,6 @@ description: Result of parsing cube_with_error.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Error, after creating meaningful output."
         ],
         "start": 0,
@@ -1402,6 +1408,18 @@ description: Result of parsing cube_with_error.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
           {
             "commentStart": 0,
             "end": 0,

@@ -216,6 +216,7 @@ impl<T> From<&BoxNode<T>> for SourceRange {
 pub type BoxNode<T> = Box<Node<T>>;
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
+pub type NodeRefMut<'a, T> = &'a mut Node<T>;
 
 /// A way to abstract over blocks of code.
 pub trait CodeBlock {
@@ -405,11 +406,21 @@ impl Node<Program> {
         Ok(new_program)
     }
 
+    /// Return a new program with the experimental features warning level
+    /// changed.
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
+        new_program.set_experimental_features(warning_level);
+
+        Ok(new_program)
+    }
+
+    /// Set the experimental features warning level in place.
+    pub(crate) fn set_experimental_features(&mut self, warning_level: Option<WarningLevel>) {
         let mut found = false;
-        for node in &mut new_program.inner_attrs {
+        for node in &mut self.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
+                // TODO: Should we remove it if warning_level is None?
                 if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
@@ -433,10 +444,8 @@ impl Node<Program> {
                 );
             }
 
-            new_program.inner_attrs.push(settings);
+            self.inner_attrs.push(settings);
         }
-
-        Ok(new_program)
     }
 
     /// Returns true if the given KCL is empty or only contains settings that
@@ -1259,6 +1268,33 @@ impl Expr {
             _ => None,
         }
     }
+
+    /// If we have a named function expression, return the name being declared.
+    /// This is a purely lexical check to handle the fact that we copy the fn
+    /// variable declaration name to the function expression name while parsing.
+    pub fn fn_declaring_name(&self) -> Option<&str> {
+        match self {
+            Expr::Literal(_) => None,
+            Expr::Name(_) => None,
+            Expr::TagDeclarator(_) => None,
+            Expr::BinaryExpression(_) => None,
+            Expr::FunctionExpression(func) => func.name.as_ref().map(|name| name.name.as_str()),
+            Expr::CallExpressionKw(_) => None,
+            Expr::PipeExpression(_) => None,
+            Expr::PipeSubstitution(_) => None,
+            Expr::ArrayExpression(_) => None,
+            Expr::ArrayRangeExpression(_) => None,
+            Expr::ObjectExpression(_) => None,
+            Expr::MemberExpression(_) => None,
+            Expr::UnaryExpression(_) => None,
+            Expr::IfExpression(_) => None,
+            Expr::LabelledExpression(node) => node.expr.fn_declaring_name(),
+            Expr::AscribedExpression(node) => node.expr.fn_declaring_name(),
+            Expr::SketchBlock(_) => None,
+            Expr::SketchVar(_) => None,
+            Expr::None(_) => None,
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {
@@ -1350,6 +1386,10 @@ pub struct SketchBlock {
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
 
+    /// Transient field to indicate whether the sketch block is being edited.
+    #[serde(skip)]
+    pub is_being_edited: bool,
+
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
@@ -1364,6 +1404,11 @@ impl SketchBlock {
     /// Iterate over all arguments.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
         self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
+    }
+
+    /// Iterate over all arguments.
+    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
+        self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg))
     }
 
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -1609,18 +1654,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
@@ -1672,19 +1715,13 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesn't have a new line above it.
-    /// If it did it would be a `NewLineBlockComment`.
+    /// This is always the case.
     BlockComment {
         value: String,
         style: CommentStyle,
     },
-    /// A block comment that has a new line above it.
-    /// The user explicitly added a new line above the block comment.
-    NewLineBlockComment {
-        value: String,
-        style: CommentStyle,
-    },
     // A new line like `\n\n` NOT a new line like `\n`.
+    // i.e. an empty line, not just the ending of a non-empty line.
     // This is also not a comment.
     NewLine,
 }
@@ -1732,6 +1769,36 @@ impl NonCodeMeta {
                 .filter(|node| node.is_comment())
                 .any(|node| node.contains(pos))
         })
+    }
+
+    /// The source range of a comment node should start at a '/', because both
+    /// styles of comments (// line comments and /* block comments */) start
+    /// with a /.
+    /// If a comment does NOT start with a /, that likely indicates an off-by-one
+    /// error, or some other kindof inaccurate source range. This is bad, because the
+    /// LSP won't offer suggestions if it thinks the user is in a comment.
+    /// So inaccurate comment start/ends could cause disabling autocompletion.
+    pub fn comment_start_is_accurate(&self, str: &[u8]) -> bool {
+        for nodes in self.non_code_nodes.values() {
+            for node in nodes {
+                match node.inner.value {
+                    NonCodeValue::InlineComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::BlockComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::NewLine => {}
+                }
+            }
+        }
+        true
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
@@ -2131,14 +2198,14 @@ impl Node<CallExpressionKw> {
 }
 
 impl CallExpressionKw {
-    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
-        Ok(Node::no_src(Self {
+    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Node<Self> {
+        Node::no_src(Self {
             callee: Name::new(name),
             unlabeled,
             arguments,
             digest: None,
             non_code_meta: Default::default(),
-        }))
+        })
     }
 
     /// Iterate over all arguments (labeled or not)
@@ -2147,6 +2214,14 @@ impl CallExpressionKw {
             .iter()
             .map(|e| (None, e))
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
+    }
+
+    /// Iterate over all arguments (labeled or not)
+    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
+        self.unlabeled
+            .iter_mut()
+            .map(|e| (None, e))
+            .chain(self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg)))
     }
 
     pub fn num_arguments(&self) -> usize {
@@ -2514,6 +2589,19 @@ impl Literal {
             value,
             digest: None,
         })
+    }
+}
+
+impl From<NumericLiteral> for Literal {
+    fn from(n: NumericLiteral) -> Self {
+        Literal {
+            value: LiteralValue::Number {
+                value: n.value,
+                suffix: n.suffix,
+            },
+            raw: n.raw,
+            digest: n.digest,
+        }
     }
 }
 
@@ -3262,6 +3350,10 @@ pub enum UnaryOperator {
     #[serde(rename = "!")]
     #[display("!")]
     Not,
+    /// Identity for numbers.
+    #[serde(rename = "+")]
+    #[display("+")]
+    Plus,
 }
 
 impl UnaryOperator {
@@ -3269,6 +3361,7 @@ impl UnaryOperator {
         match self {
             UnaryOperator::Neg => *b"neg",
             UnaryOperator::Not => *b"not",
+            UnaryOperator::Plus => *b"pls",
         }
     }
 }
@@ -3652,6 +3745,8 @@ fn return_true() -> bool {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<Node<Identifier>>,
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
     #[serde(skip)]
@@ -3689,6 +3784,7 @@ impl FunctionExpression {
         &self,
     ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
+            name: _,
             params,
             body: _,
             digest: _,
@@ -3759,6 +3855,7 @@ impl FunctionExpression {
     pub fn dummy() -> Box<Node<Self>> {
         Box::new(Node::new(
             FunctionExpression {
+                name: None,
                 params: Vec::new(),
                 body: Node::new(Program::default(), 0, 0, ModuleId::default()),
                 return_type: None,
@@ -4301,6 +4398,7 @@ cylinder = startSketchOn(-XZ)
                 "no params",
                 (0..=0),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![],
                     body: Program::empty(),
                     return_type: None,
@@ -4311,6 +4409,7 @@ cylinder = startSketchOn(-XZ)
                 "all required params",
                 (1..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4330,6 +4429,7 @@ cylinder = startSketchOn(-XZ)
                 "all optional params",
                 (0..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4349,6 +4449,7 @@ cylinder = startSketchOn(-XZ)
                 "mixed params",
                 (1..=2),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![
                         Parameter {
                             identifier: Node::no_src(Identifier {

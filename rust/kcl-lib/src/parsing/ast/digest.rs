@@ -4,7 +4,7 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
     BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralValue, MemberExpression, Name, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
+    Literal, LiteralValue, MemberExpression, Name, Node, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
     PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchVar, TagDeclarator,
     Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
@@ -12,7 +12,40 @@ use crate::parsing::ast::types::{
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
+/// Macro to implement `compute_digest` for AST nodes. If you update this, you
+/// probably want to update the no_attrs version as well.
 macro_rules! compute_digest {
+    (|$slf:ident, $hasher:ident| $body:block) => {
+        /// Compute a digest over the AST node.
+        pub fn compute_digest(&mut self) -> Digest {
+            if let Some(node_digest) = self.digest {
+                return node_digest;
+            }
+
+            let mut $hasher = Sha256::new();
+
+            #[allow(unused_mut)]
+            let mut $slf = self;
+            for attr in &mut $slf.outer_attrs {
+                $hasher.update(attr.compute_digest());
+            }
+
+            $hasher.update(std::any::type_name::<Self>());
+
+            $body
+
+            let node_digest: Digest = $hasher.finalize().into();
+            $slf.digest = Some(node_digest);
+            node_digest
+        }
+    };
+}
+
+/// Macro to implement `compute_digest` for AST nodes without outer attributes.
+/// You should always prefer the version with attributes, unless the AST node
+/// type *never* has them. If you update this, you probably want to update the
+/// attrs version as well.
+macro_rules! compute_digest_no_attrs {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
         pub fn compute_digest(&mut self) -> Digest {
@@ -36,7 +69,7 @@ macro_rules! compute_digest {
     };
 }
 
-impl ImportItem {
+impl Node<ImportItem> {
     compute_digest!(|slf, hasher| {
         let name = slf.name.name.as_bytes();
         hasher.update(name.len().to_ne_bytes());
@@ -50,7 +83,7 @@ impl ImportItem {
     });
 }
 
-impl ImportStatement {
+impl Node<ImportStatement> {
     compute_digest!(|slf, hasher| {
         match &mut slf.selector {
             ImportSelector::List { items } => {
@@ -73,7 +106,7 @@ impl ImportStatement {
     });
 }
 
-impl Program {
+impl Node<Program> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.body.len().to_ne_bytes());
         for body_item in slf.body.iter_mut() {
@@ -88,7 +121,7 @@ impl Program {
     });
 }
 
-impl Annotation {
+impl Node<Annotation> {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
         if let Some(name) = &mut self.name {
@@ -232,7 +265,7 @@ impl PrimitiveType {
 }
 
 impl FunctionType {
-    compute_digest!(|slf, hasher| {
+    compute_digest_no_attrs!(|slf, hasher| {
         if let Some(u) = &mut slf.unnamed_arg {
             hasher.update(u.compute_digest());
         }
@@ -247,7 +280,7 @@ impl FunctionType {
 }
 
 impl Parameter {
-    compute_digest!(|slf, hasher| {
+    compute_digest_no_attrs!(|slf, hasher| {
         hasher.update(slf.identifier.compute_digest());
         match &mut slf.param_type {
             Some(arg) => {
@@ -266,14 +299,19 @@ impl Parameter {
     });
 }
 
-impl KclNone {
+impl Node<KclNone> {
     compute_digest!(|slf, hasher| {
         hasher.update(b"KclNone");
     });
 }
 
-impl FunctionExpression {
+impl Node<FunctionExpression> {
     compute_digest!(|slf, hasher| {
+        if let Some(name) = &mut slf.name {
+            hasher.update(name.compute_digest());
+        } else {
+            hasher.update(b"FunctionExpression::name::None");
+        }
         hasher.update(slf.params.len().to_ne_bytes());
         for param in slf.params.iter_mut() {
             hasher.update(param.compute_digest());
@@ -291,19 +329,19 @@ impl FunctionExpression {
     });
 }
 
-impl ReturnStatement {
+impl Node<ReturnStatement> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.argument.compute_digest());
     });
 }
 
-impl ExpressionStatement {
+impl Node<ExpressionStatement> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expression.compute_digest());
     });
 }
 
-impl VariableDeclaration {
+impl Node<VariableDeclaration> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.declaration.compute_digest());
         hasher.update(slf.visibility.digestable_id());
@@ -311,7 +349,7 @@ impl VariableDeclaration {
     });
 }
 
-impl TypeDeclaration {
+impl Node<TypeDeclaration> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.name.compute_digest());
         if let Some(args) = &mut slf.args {
@@ -344,7 +382,7 @@ impl ItemVisibility {
     }
 }
 
-impl VariableDeclarator {
+impl Node<VariableDeclarator> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.id.compute_digest());
         hasher.update(slf.init.compute_digest());
@@ -359,7 +397,7 @@ impl NumericLiteral {
     }
 }
 
-impl Literal {
+impl Node<Literal> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.value.digestable_id());
     });
@@ -385,7 +423,7 @@ impl LiteralValue {
     }
 }
 
-impl Identifier {
+impl Node<Identifier> {
     compute_digest!(|slf, hasher| {
         let name = slf.name.as_bytes();
         hasher.update(name.len().to_ne_bytes());
@@ -393,7 +431,7 @@ impl Identifier {
     });
 }
 
-impl Name {
+impl Node<Name> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.name.compute_digest());
         for p in &mut slf.path {
@@ -404,7 +442,7 @@ impl Name {
         }
     });
 }
-impl TagDeclarator {
+impl Node<TagDeclarator> {
     compute_digest!(|slf, hasher| {
         let name = slf.name.as_bytes();
         hasher.update(name.len().to_ne_bytes());
@@ -412,13 +450,13 @@ impl TagDeclarator {
     });
 }
 
-impl PipeSubstitution {
+impl Node<PipeSubstitution> {
     compute_digest!(|slf, hasher| {
         hasher.update(b"PipeSubstitution");
     });
 }
 
-impl ArrayExpression {
+impl Node<ArrayExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.elements.len().to_ne_bytes());
         for value in slf.elements.iter_mut() {
@@ -427,7 +465,7 @@ impl ArrayExpression {
     });
 }
 
-impl ArrayRangeExpression {
+impl Node<ArrayRangeExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.start_element.compute_digest());
         hasher.update(slf.end_element.compute_digest());
@@ -435,7 +473,7 @@ impl ArrayRangeExpression {
     });
 }
 
-impl ObjectExpression {
+impl Node<ObjectExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.properties.len().to_ne_bytes());
         for prop in slf.properties.iter_mut() {
@@ -444,14 +482,14 @@ impl ObjectExpression {
     });
 }
 
-impl ObjectProperty {
+impl Node<ObjectProperty> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.key.compute_digest());
         hasher.update(slf.value.compute_digest());
     });
 }
 
-impl MemberExpression {
+impl Node<MemberExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.object.compute_digest());
         hasher.update(slf.property.compute_digest());
@@ -459,7 +497,7 @@ impl MemberExpression {
     });
 }
 
-impl BinaryExpression {
+impl Node<BinaryExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.operator.digestable_id());
         hasher.update(slf.left.compute_digest());
@@ -467,28 +505,28 @@ impl BinaryExpression {
     });
 }
 
-impl UnaryExpression {
+impl Node<UnaryExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.operator.digestable_id());
         hasher.update(slf.argument.compute_digest());
     });
 }
 
-impl LabelledExpression {
+impl Node<LabelledExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.label.compute_digest());
     });
 }
 
-impl AscribedExpression {
+impl Node<AscribedExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.ty.compute_digest());
     });
 }
 
-impl PipeExpression {
+impl Node<PipeExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.body.len().to_ne_bytes());
         for value in slf.body.iter_mut() {
@@ -497,7 +535,7 @@ impl PipeExpression {
     });
 }
 
-impl CallExpressionKw {
+impl Node<CallExpressionKw> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.callee.compute_digest());
         if let Some(ref mut unlabeled) = slf.unlabeled {
@@ -515,7 +553,7 @@ impl CallExpressionKw {
     });
 }
 
-impl IfExpression {
+impl Node<IfExpression> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.cond.compute_digest());
         hasher.update(slf.then_val.compute_digest());
@@ -525,14 +563,14 @@ impl IfExpression {
         hasher.update(slf.final_else.compute_digest());
     });
 }
-impl ElseIf {
+impl Node<ElseIf> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.cond.compute_digest());
         hasher.update(slf.then_val.compute_digest());
     });
 }
 
-impl SketchBlock {
+impl Node<SketchBlock> {
     compute_digest!(|slf, hasher| {
         for argument in &mut slf.arguments {
             if let Some(l) = &mut argument.label {
@@ -541,10 +579,11 @@ impl SketchBlock {
             hasher.update(argument.arg.compute_digest());
         }
         hasher.update(slf.body.compute_digest());
+        hasher.update(if slf.is_being_edited { [1] } else { [0] });
     });
 }
 
-impl Block {
+impl Node<Block> {
     compute_digest!(|slf, hasher| {
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
@@ -552,7 +591,7 @@ impl Block {
     });
 }
 
-impl SketchVar {
+impl Node<SketchVar> {
     compute_digest!(|slf, hasher| {
         if let Some(initial) = &slf.initial {
             hasher.update(initial.digestable_id());

@@ -26,6 +26,7 @@ import {
   isExtensionAnImportExtension,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -63,8 +64,6 @@ it('can execute parsed AST', async () => {
   expect(pResult.program).not.toEqual(null)
   const execState = await enginelessExecutor(
     pResult.program as Node<Program>,
-    undefined,
-    undefined,
     rustContextInThisFile
   )
   expect(err(execState)).toEqual(false)

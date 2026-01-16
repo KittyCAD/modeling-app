@@ -28,7 +28,7 @@ export default function AxisGizmo() {
   const settings = useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
+  const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
 
@@ -117,6 +117,7 @@ export default function AxisGizmo() {
     renderer.render(scene, camera)
 
     return () => {
+      renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
       sceneInfra.camControls.cameraChange.remove(animate)
@@ -245,7 +246,7 @@ const quaternionsEqual = (
 
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
+  raycasterIntersect: MutableRefObject<Intersection | null>,
   sceneInfra: SceneInfra,
   disableOrbitRef: MutableRefObject<boolean>,
   doRayCast: (mouse: Vector2) => void,
@@ -286,7 +287,7 @@ const updateRayCaster = (
   raycaster: Raycaster,
   mouse: Vector2,
   camera: Camera,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
+  raycasterIntersect: MutableRefObject<Intersection | null>,
   renderer: WebGLRenderer,
   scene: Scene
 ) => {

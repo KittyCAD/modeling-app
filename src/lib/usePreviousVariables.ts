@@ -1,15 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useKclContext } from '@src/lang/KclProvider'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
-import { kclManager } from '@src/lib/singletons'
+import type { Program, VariableMap } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export function usePreviousVariables() {
-  const { variables, code } = useKclContext()
+export function usePreviousVariables({
+  code,
+  ast,
+  variables,
+  wasmInstance,
+}: {
+  code: string
+  ast: Program
+  variables: VariableMap
+  wasmInstance: ModuleType
+}) {
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.graphSelections[0]?.codeRef
-    ?.range || [code.length, code.length]
+  const selectionFromContext =
+    context.selectionRanges.graphSelections[0]?.codeRef?.range
+  const selectionRange = useMemo(
+    () => selectionFromContext || [code.length, code.length],
+    [selectionFromContext, code]
+  )
   const [previousVariablesInfo, setPreviousVariablesInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
   >({
@@ -21,13 +34,14 @@ export function usePreviousVariables() {
   useEffect(() => {
     if (!variables || !selectionRange) return
     const varInfo = findAllPreviousVariables(
-      kclManager.ast,
-      kclManager.variables,
-      selectionRange
+      ast,
+      variables,
+      selectionRange,
+      wasmInstance
     )
     setPreviousVariablesInfo(varInfo)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.ast, kclManager.variables, selectionRange])
+  }, [ast, variables, selectionRange])
 
   return previousVariablesInfo
 }

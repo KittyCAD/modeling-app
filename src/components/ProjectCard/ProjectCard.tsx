@@ -65,7 +65,9 @@ function ProjectCard({
       )
       if (await fsManager.exists(projectImagePath)) {
         const imageData = await fsManager.readFile(projectImagePath)
-        const blob = new Blob([imageData], { type: 'image/png' })
+        const blob = new Blob([new Uint8Array(imageData)], {
+          type: 'image/png',
+        })
         const imageUrl = URL.createObjectURL(blob)
 
         if (blob.size > 0) {
@@ -157,8 +159,8 @@ function ProjectCard({
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             <span data-testid="project-edit-date">
-              {project.metadata && project.metadata.modified
-                ? getDisplayedTime(parseInt(project.metadata.modified))
+              {project.metadata?.modified
+                ? getDisplayedTime(project.metadata.modified)
                 : 'never'}
             </span>
           </span>

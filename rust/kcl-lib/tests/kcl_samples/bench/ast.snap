@@ -54,8 +54,6 @@ description: Result of parsing bench.kcl
           "filename": "bench-parts.kcl"
         },
         "preComments": [
-          "",
-          "",
           "// Import various constants and functions from our library"
         ],
         "selector": {
@@ -297,8 +295,6 @@ description: Result of parsing bench.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the dividers, these hold the seat and back slats"
         ],
         "start": 0,
@@ -740,8 +736,6 @@ description: Result of parsing bench.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the connectors to join the dividers"
         ],
         "start": 0,
@@ -990,8 +984,6 @@ description: Result of parsing bench.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the seat slats"
         ],
         "start": 0,
@@ -1240,8 +1232,6 @@ description: Result of parsing bench.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the back slats"
         ],
         "start": 0,
@@ -1349,8 +1339,6 @@ description: Result of parsing bench.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the arm rests"
         ],
         "start": 0,
@@ -1489,6 +1477,7 @@ description: Result of parsing bench.kcl
         "preComments": [
           "// Bench",
           "// This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units in millimeters (mm)"
@@ -1562,7 +1551,80 @@ description: Result of parsing bench.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

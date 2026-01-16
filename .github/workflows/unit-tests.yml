@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: 0 * * * * # hourly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -18,39 +20,26 @@ permissions:
 jobs:
   npm-build-wasm:
     uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
-    # TODO: Remove unit test dependency on Wasm binary
-    needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
           tool: wasm-pack
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-
-      - name: Copy prepared wasm
-        run: |
-          ls -R prepared-wasm
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
-          mkdir rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
-
-      - name: Copy prepared ts-rs bindings
-        run: |
-          ls -R prepared-ts-rs-bindings
-          mkdir rust/kcl-lib/bindings
-          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: npm run test:unit
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
@@ -68,15 +57,15 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
           tool: wasm-pack
 
@@ -96,8 +85,18 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
+      - name: Track start
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration
+          CI_STEP: start
+
       - name: npm run test:integration
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        if: ${{ github.event_name != 'release' }}
         run: |-
           xvfb-run -a npm run test:integration || true # let TAB determine failure
           .github/ci-cd-scripts/upload-results.sh
@@ -108,3 +107,14 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: integration
+
+      - name: Track teardown
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration
+          CI_STEP: teardown

@@ -56,13 +56,17 @@ macro_rules! eprint {
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
+pub mod collections;
 mod coredump;
 mod docs;
 mod engine;
 mod errors;
 mod execution;
 mod fmt;
+mod frontend;
 mod fs;
+#[cfg(feature = "artifact-graph")]
+pub(crate) mod id;
 pub mod lint;
 mod log;
 mod lsp;
@@ -90,8 +94,8 @@ pub use errors::{
     ReportWithOutputs,
 };
 pub use execution::{
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
-    typed_path::TypedPath,
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
+    clear_mem_cache, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
@@ -112,7 +116,7 @@ pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
-        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
         annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
@@ -137,13 +141,31 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
+    pub use crate::std::utils::{
+        TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm, untyped_point_to_unit,
+    };
 }
 
 pub mod pretty {
     pub use crate::{
         fmt::{format_number_literal, format_number_value, human_display_number},
         parsing::token::NumericSuffix,
+    };
+}
+
+pub mod front {
+    pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
+    pub use crate::frontend::{
+        FrontendState,
+        api::{
+            Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
+            Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
+        },
+        sketch::{
+            Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
+            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment,
+            SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
+        },
     };
 }
 

@@ -1,0 +1,16 @@
+# This workflow is maintained by the security team. Please do not change or remove this file.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+name: Security
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  checks: read
+jobs:
+  security:
+    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@main
+    secrets: inherit

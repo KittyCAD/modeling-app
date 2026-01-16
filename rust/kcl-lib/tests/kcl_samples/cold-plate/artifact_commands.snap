@@ -360,7 +360,8 @@ description: Artifact commands cold-plate.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1073,7 +1074,8 @@ description: Artifact commands cold-plate.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

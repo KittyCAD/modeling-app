@@ -971,8 +971,6 @@ description: Result of parsing i-beam.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length"
         ],
         "start": 0,
@@ -998,6 +996,7 @@ description: Result of parsing i-beam.kcl
         "preComments": [
           "// I-beam",
           "// A structural metal beam with an I shaped cross section. Often used in construction and architecture",
+          "// Categories: Construction",
           "",
           "",
           "// Set units"
@@ -1071,7 +1070,20 @@ description: Result of parsing i-beam.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

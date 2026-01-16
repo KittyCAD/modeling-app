@@ -189,6 +189,8 @@ description: Variables in memory after executing truss-structure.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -196,7 +198,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -402,6 +403,8 @@ description: Variables in memory after executing truss-structure.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -409,7 +412,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -462,13 +464,14 @@ description: Variables in memory after executing truss-structure.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -513,10 +516,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 698,
-                "end": 709,
+                "commentStart": 723,
+                "end": 734,
                 "moduleId": 0,
-                "start": 698,
+                "start": 723,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -534,10 +537,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 798,
-                "end": 805,
+                "commentStart": 823,
+                "end": 830,
                 "moduleId": 0,
-                "start": 798,
+                "start": 823,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -548,10 +551,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 884,
-                "end": 891,
+                "commentStart": 909,
+                "end": 916,
                 "moduleId": 0,
-                "start": 884,
+                "start": 909,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -579,10 +582,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 698,
-                  "end": 709,
+                  "commentStart": 723,
+                  "end": 734,
                   "moduleId": 0,
-                  "start": 698,
+                  "start": 723,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -620,10 +623,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 798,
-                  "end": 805,
+                  "commentStart": 823,
+                  "end": 830,
                   "moduleId": 0,
-                  "start": 798,
+                  "start": 823,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -644,10 +647,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 884,
-                  "end": 891,
+                  "commentStart": 909,
+                  "end": 916,
                   "moduleId": 0,
-                  "start": 884,
+                  "start": 909,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -679,6 +682,8 @@ description: Variables in memory after executing truss-structure.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -686,7 +691,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -758,10 +762,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 698,
-                "end": 709,
+                "commentStart": 723,
+                "end": 734,
                 "moduleId": 0,
-                "start": 698,
+                "start": 723,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -779,10 +783,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 798,
-                "end": 805,
+                "commentStart": 823,
+                "end": 830,
                 "moduleId": 0,
-                "start": 798,
+                "start": 823,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -793,10 +797,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 884,
-                "end": 891,
+                "commentStart": 909,
+                "end": 916,
                 "moduleId": 0,
-                "start": 884,
+                "start": 909,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -824,10 +828,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 698,
-                  "end": 709,
+                  "commentStart": 723,
+                  "end": 734,
                   "moduleId": 0,
-                  "start": 698,
+                  "start": 723,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -865,10 +869,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 798,
-                  "end": 805,
+                  "commentStart": 823,
+                  "end": 830,
                   "moduleId": 0,
-                  "start": 798,
+                  "start": 823,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -889,10 +893,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 884,
-                  "end": 891,
+                  "commentStart": 909,
+                  "end": 916,
                   "moduleId": 0,
-                  "start": 884,
+                  "start": 909,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -924,6 +928,8 @@ description: Variables in memory after executing truss-structure.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -931,7 +937,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1003,10 +1008,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 698,
-                "end": 709,
+                "commentStart": 723,
+                "end": 734,
                 "moduleId": 0,
-                "start": 698,
+                "start": 723,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -1024,10 +1029,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 798,
-                "end": 805,
+                "commentStart": 823,
+                "end": 830,
                 "moduleId": 0,
-                "start": 798,
+                "start": 823,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -1038,10 +1043,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 884,
-                "end": 891,
+                "commentStart": 909,
+                "end": 916,
                 "moduleId": 0,
-                "start": 884,
+                "start": 909,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -1069,10 +1074,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 698,
-                  "end": 709,
+                  "commentStart": 723,
+                  "end": 734,
                   "moduleId": 0,
-                  "start": 698,
+                  "start": 723,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -1110,10 +1115,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 798,
-                  "end": 805,
+                  "commentStart": 823,
+                  "end": 830,
                   "moduleId": 0,
-                  "start": 798,
+                  "start": 823,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -1134,10 +1139,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 884,
-                  "end": 891,
+                  "commentStart": 909,
+                  "end": 916,
                   "moduleId": 0,
-                  "start": 884,
+                  "start": 909,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -1169,6 +1174,8 @@ description: Variables in memory after executing truss-structure.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1176,7 +1183,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1350,6 +1356,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1357,7 +1365,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1408,13 +1415,14 @@ description: Variables in memory after executing truss-structure.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 2.54,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1547,6 +1555,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1554,7 +1564,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1687,6 +1696,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1694,7 +1705,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1813,6 +1823,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1820,7 +1832,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1882,10 +1893,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 698,
-            "end": 709,
+            "commentStart": 723,
+            "end": 734,
             "moduleId": 0,
-            "start": 698,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -1903,10 +1914,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 798,
-            "end": 805,
+            "commentStart": 823,
+            "end": 830,
             "moduleId": 0,
-            "start": 798,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -1917,10 +1928,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 884,
-            "end": 891,
+            "commentStart": 909,
+            "end": 916,
             "moduleId": 0,
-            "start": 884,
+            "start": 909,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -1948,10 +1959,10 @@ description: Variables in memory after executing truss-structure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 698,
-              "end": 709,
+              "commentStart": 723,
+              "end": 734,
               "moduleId": 0,
-              "start": 698,
+              "start": 723,
               "type": "TagDeclarator",
               "value": "bottomFace"
             },
@@ -1989,10 +2000,10 @@ description: Variables in memory after executing truss-structure.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 798,
-              "end": 805,
+              "commentStart": 823,
+              "end": 830,
               "moduleId": 0,
-              "start": 798,
+              "start": 823,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -2013,10 +2024,10 @@ description: Variables in memory after executing truss-structure.kcl
               39.978459489299915
             ],
             "tag": {
-              "commentStart": 884,
-              "end": 891,
+              "commentStart": 909,
+              "end": 916,
               "moduleId": 0,
-              "start": 884,
+              "start": 909,
               "type": "TagDeclarator",
               "value": "tag002"
             },
@@ -2048,6 +2059,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2055,7 +2068,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2131,10 +2143,10 @@ description: Variables in memory after executing truss-structure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 698,
-            "end": 709,
+            "commentStart": 723,
+            "end": 734,
             "moduleId": 0,
-            "start": 698,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -2172,10 +2184,10 @@ description: Variables in memory after executing truss-structure.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 798,
-            "end": 805,
+            "commentStart": 823,
+            "end": 830,
             "moduleId": 0,
-            "start": 798,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2196,10 +2208,10 @@ description: Variables in memory after executing truss-structure.kcl
             39.978459489299915
           ],
           "tag": {
-            "commentStart": 884,
-            "end": 891,
+            "commentStart": 909,
+            "end": 916,
             "moduleId": 0,
-            "start": 884,
+            "start": 909,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -2231,6 +2243,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2238,7 +2252,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2371,6 +2384,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2378,7 +2393,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2497,6 +2511,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2504,7 +2520,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2561,10 +2576,10 @@ description: Variables in memory after executing truss-structure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 698,
-            "end": 709,
+            "commentStart": 723,
+            "end": 734,
             "moduleId": 0,
-            "start": 698,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -2602,10 +2617,10 @@ description: Variables in memory after executing truss-structure.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 798,
-            "end": 805,
+            "commentStart": 823,
+            "end": 830,
             "moduleId": 0,
-            "start": 798,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2626,10 +2641,10 @@ description: Variables in memory after executing truss-structure.kcl
             39.978459489299915
           ],
           "tag": {
-            "commentStart": 884,
-            "end": 891,
+            "commentStart": 909,
+            "end": 916,
             "moduleId": 0,
-            "start": 884,
+            "start": 909,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -2731,6 +2746,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2738,7 +2755,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2905,6 +2921,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2912,7 +2930,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3031,6 +3048,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 2.54,
           "y": 0.0,
@@ -3038,7 +3057,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3157,6 +3175,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 2.54,
           "y": 0.0,
@@ -3164,7 +3184,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3283,6 +3302,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3290,7 +3311,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -3409,6 +3429,8 @@ description: Variables in memory after executing truss-structure.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3416,7 +3438,6 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -3462,13 +3483,14 @@ description: Variables in memory after executing truss-structure.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": -1.0,
@@ -3494,13 +3516,14 @@ description: Variables in memory after executing truss-structure.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 2.54,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3633,6 +3656,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 2.54,
             "y": 0.0,
@@ -3640,7 +3665,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3798,6 +3822,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 2.54,
             "y": 0.0,
@@ -3805,7 +3831,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3891,10 +3916,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 698,
-            "end": 709,
+            "commentStart": 723,
+            "end": 734,
             "moduleId": 0,
-            "start": 698,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -3912,10 +3937,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 798,
-            "end": 805,
+            "commentStart": 823,
+            "end": 830,
             "moduleId": 0,
-            "start": 798,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -3926,10 +3951,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 884,
-            "end": 891,
+            "commentStart": 909,
+            "end": 916,
             "moduleId": 0,
-            "start": 884,
+            "start": 909,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -3957,10 +3982,10 @@ description: Variables in memory after executing truss-structure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 698,
-              "end": 709,
+              "commentStart": 723,
+              "end": 734,
               "moduleId": 0,
-              "start": 698,
+              "start": 723,
               "type": "TagDeclarator",
               "value": "bottomFace"
             },
@@ -3998,10 +4023,10 @@ description: Variables in memory after executing truss-structure.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 798,
-              "end": 805,
+              "commentStart": 823,
+              "end": 830,
               "moduleId": 0,
-              "start": 798,
+              "start": 823,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -4022,10 +4047,10 @@ description: Variables in memory after executing truss-structure.kcl
               39.978459489299915
             ],
             "tag": {
-              "commentStart": 884,
-              "end": 891,
+              "commentStart": 909,
+              "end": 916,
               "moduleId": 0,
-              "start": 884,
+              "start": 909,
               "type": "TagDeclarator",
               "value": "tag002"
             },
@@ -4057,6 +4082,8 @@ description: Variables in memory after executing truss-structure.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4064,7 +4091,6 @@ description: Variables in memory after executing truss-structure.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4129,13 +4155,14 @@ description: Variables in memory after executing truss-structure.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,

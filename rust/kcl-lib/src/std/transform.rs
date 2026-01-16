@@ -104,24 +104,26 @@ async fn inner_scale(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        scale: Some(transform_by(
-                            Point3d {
-                                x: x.unwrap_or(1.0),
-                                y: y.unwrap_or(1.0),
-                                z: z.unwrap_or(1.0),
-                            },
-                            false,
-                            !is_global,
-                            origin,
-                        )),
-                        translate: None,
-                        rotate_rpy: None,
-                        rotate_angle_axis: None,
-                    }],
-                }),
+                ModelingCmd::from(
+                    mcmd::SetObjectTransform::builder()
+                        .object_id(object_id)
+                        .transforms(vec![shared::ComponentTransform {
+                            scale: Some(transform_by(
+                                Point3d {
+                                    x: x.unwrap_or(1.0),
+                                    y: y.unwrap_or(1.0),
+                                    z: z.unwrap_or(1.0),
+                                },
+                                false,
+                                !is_global,
+                                origin,
+                            )),
+                            translate: None,
+                            rotate_rpy: None,
+                            rotate_angle_axis: None,
+                        }])
+                        .build(),
+                ),
             )
             .await?;
     }
@@ -206,29 +208,27 @@ async fn inner_translate(
         Some(OriginType::Local)
     };
 
+    let translation = shared::Point3d {
+        x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+    };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        translate: Some(transform_by(
-                            shared::Point3d {
-                                x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                                y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                                z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                            },
-                            false,
-                            !is_global,
-                            origin,
-                        )),
-                        scale: None,
-                        rotate_rpy: None,
-                        rotate_angle_axis: None,
-                    }],
-                }),
+                ModelingCmd::from(
+                    mcmd::SetObjectTransform::builder()
+                        .object_id(object_id)
+                        .transforms(vec![shared::ComponentTransform {
+                            translate: Some(transform_by(translation, false, !is_global, origin)),
+                            scale: None,
+                            rotate_rpy: None,
+                            rotate_angle_axis: None,
+                        }])
+                        .build(),
+                ),
             )
             .await?;
     }
@@ -403,25 +403,27 @@ async fn inner_rotate(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::SetObjectTransform {
-                        object_id,
-                        transforms: vec![shared::ComponentTransform {
-                            rotate_angle_axis: Some(transform_by(
-                                shared::Point4d {
-                                    x: axis[0],
-                                    y: axis[1],
-                                    z: axis[2],
-                                    w: angle,
-                                },
-                                false,
-                                !global.unwrap_or(false),
-                                origin,
-                            )),
-                            scale: None,
-                            rotate_rpy: None,
-                            translate: None,
-                        }],
-                    }),
+                    ModelingCmd::from(
+                        mcmd::SetObjectTransform::builder()
+                            .object_id(object_id)
+                            .transforms(vec![shared::ComponentTransform {
+                                rotate_angle_axis: Some(transform_by(
+                                    shared::Point4d {
+                                        x: axis[0],
+                                        y: axis[1],
+                                        z: axis[2],
+                                        w: angle,
+                                    },
+                                    false,
+                                    !global.unwrap_or(false),
+                                    origin,
+                                )),
+                                scale: None,
+                                rotate_rpy: None,
+                                translate: None,
+                            }])
+                            .build(),
+                    ),
                 )
                 .await?;
         } else {
@@ -429,24 +431,26 @@ async fn inner_rotate(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::SetObjectTransform {
-                        object_id,
-                        transforms: vec![shared::ComponentTransform {
-                            rotate_rpy: Some(transform_by(
-                                shared::Point3d {
-                                    x: roll.unwrap_or(0.0),
-                                    y: pitch.unwrap_or(0.0),
-                                    z: yaw.unwrap_or(0.0),
-                                },
-                                false,
-                                !global.unwrap_or(false),
-                                origin,
-                            )),
-                            scale: None,
-                            rotate_angle_axis: None,
-                            translate: None,
-                        }],
-                    }),
+                    ModelingCmd::from(
+                        mcmd::SetObjectTransform::builder()
+                            .object_id(object_id)
+                            .transforms(vec![shared::ComponentTransform {
+                                rotate_rpy: Some(transform_by(
+                                    shared::Point3d {
+                                        x: roll.unwrap_or(0.0),
+                                        y: pitch.unwrap_or(0.0),
+                                        z: yaw.unwrap_or(0.0),
+                                    },
+                                    false,
+                                    !global.unwrap_or(false),
+                                    origin,
+                                )),
+                                scale: None,
+                                rotate_angle_axis: None,
+                                translate: None,
+                            }])
+                            .build(),
+                    ),
                 )
                 .await?;
         }

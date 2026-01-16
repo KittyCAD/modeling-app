@@ -138,6 +138,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -145,7 +147,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -233,13 +234,14 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.6866666666666666,
         "y": 0.6035533905932737,
         "z": 1.603553390593274,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.00000000000000005551115123125783,
@@ -328,6 +330,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -335,7 +339,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -405,13 +408,14 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -465,6 +469,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.6866666666666666,
           "y": 0.6035533905932737,
@@ -472,7 +478,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.00000000000000005551115123125783,

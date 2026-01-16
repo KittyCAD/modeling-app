@@ -6,7 +6,7 @@ import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -49,11 +49,11 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -252,13 +252,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
@@ -268,7 +268,7 @@ test.describe('Command bar tests', () => {
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'length',
     })
@@ -775,33 +775,4 @@ export exported = 2`,
       })
     }
   )
-
-  test('Text-to-CAD command can be closed with escape while in prompt', async ({
-    page,
-    homePage,
-    cmdBar,
-  }) => {
-    await homePage.expectState({
-      projectCards: [],
-      sortBy: 'last-modified-desc',
-    })
-    await homePage.textToCadBtn.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Create Project using Text-to-CAD',
-      currentArgKey: 'prompt',
-      currentArgValue: '',
-      headerArguments: {
-        Method: 'New project',
-        NewProjectName: 'untitled',
-        Prompt: '',
-      },
-      highlightedHeaderArg: 'prompt',
-    })
-    await page.keyboard.press('Escape')
-    await cmdBar.toBeClosed()
-    await cmdBar.expectState({
-      stage: 'commandBarClosed',
-    })
-  })
 })

@@ -1,7 +1,6 @@
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
@@ -64,7 +63,8 @@ export type Paths<T, D extends number = 10> = [D] extends [never]
   : T extends object
     ? {
         [K in keyof T]-?: K extends string | number
-          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+          ? // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+            `${K}` | Join<K, Paths<T[K], Prev[D]>>
           : never
       }[keyof T]
     : ''
@@ -134,7 +134,6 @@ export type AppMachineEvent =
   | { type: AppMachineEventType.ResetLayout }
 
 export type AppMachineContext = {
-  codeManager: CodeManager
   kclManager: KclManager
   engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
@@ -142,7 +141,7 @@ export type AppMachineContext = {
   authActor?: ActorRefFrom<typeof authMachine>
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
   layout: Layout
 }

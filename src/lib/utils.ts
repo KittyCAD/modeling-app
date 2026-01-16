@@ -1,6 +1,5 @@
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
-import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -141,6 +140,42 @@ export function normaliseAngle(angle: number): number {
   return result > 180 ? result - 360 : result
 }
 
+/**
+ * Computes the directed angular distance from startAngle to endAngle
+ * in radians, going either CCW or CW.
+ *
+ * Notes:
+ * - If startAngle === endAngle, the result is 0 for both directions (not 2π).
+ * - Inputs are typically within [-π, π], but any value work,
+ *
+ * @param startAngle - Start angle in radians.
+ * @param endAngle - End angle in radians.
+ * @param ccw - If true, measure the CCW distance from start to end. If false, measure CW.
+ * @returns Angular distance in radians in the range [0, 2π).
+ *
+ * @example
+ * getAngleDiff(0, Math.PI / 2, true)  => Math.PI / 2
+ * getAngleDiff(0, Math.PI / 2, false) => 3 * Math.PI / 2
+ * getAngleDiff(0.1, -0.1, true)       => 2 * Math.PI - 0.2
+ * getAngleDiff(0.1, -0.1, false)      => 0.2
+ * getAngleDiff(-0.1, 0.1, true)       => 0.2
+ */
+export function getAngleDiff(
+  startAngle: number,
+  endAngle: number,
+  ccw: boolean
+) {
+  const TWO_PI = Math.PI * 2
+
+  let d = endAngle - startAngle
+
+  // Wrap into [0, 2π)
+  d = ((d % TWO_PI) + TWO_PI) % TWO_PI
+
+  // If going CW, take the other way around (but still wrap into [0, 2π))
+  return ccw ? d : (TWO_PI - d) % TWO_PI
+}
+
 export function throttle<T>(
   func: (args: T) => any,
   wait: number
@@ -170,7 +205,7 @@ export function throttle<T>(
 }
 
 // takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
-export function deferExecution<T>(func: (args: T) => any, wait: number) {
+export function deferredCallback<T>(func: (args: T) => any, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | null
   let latestArgs: T
 
@@ -309,6 +344,19 @@ export function isReducedMotion(): boolean {
     // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
     window.matchMedia('(prefers-reduced-motion)').matches
   )
+}
+
+/**
+ * Get the list of delete key names for the current platform.
+ * Backspace only on macOS as Windows and Linux have dedicated Delete key.
+ * `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
+ *
+ * @returns Array of key names that should be treated as delete keys for the current platform
+ */
+export function getDeleteKeys(): string[] {
+  return platform() === 'macos'
+    ? ['backspace', 'delete', 'del']
+    : ['delete', 'del']
 }
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
@@ -499,35 +547,18 @@ export function capitaliseFC(str: string): string {
  * @param buffer - The binary buffer containing the UUID bytes.
  * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
  */
-export function binaryToUuid(
-  binaryData: Buffer | Uint8Array | BSONBinary | string
-): string {
+export function binaryToUuid(binaryData: Buffer | Uint8Array | string): string {
   if (typeof binaryData === 'string') {
     return binaryData
   }
 
   let buffer: Uint8Array
 
-  // Handle MongoDB BSON Binary object
-  if (
-    binaryData &&
-    '_bsontype' in binaryData &&
-    binaryData._bsontype === 'Binary'
-  ) {
-    // Extract the buffer from the BSON Binary object
-    buffer = binaryData.buffer
-  }
-  // Handle case where buffer property exists (some MongoDB drivers structure)
-  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
-    buffer = binaryData.buffer
-  }
   // Handle direct Buffer or Uint8Array
-  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+  if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
     buffer = binaryData
   } else {
-    console.error(
-      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
-    )
+    console.error('Invalid input type: expected Uint8Array')
     return ''
   }
 

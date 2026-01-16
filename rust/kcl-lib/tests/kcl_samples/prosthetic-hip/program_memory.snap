@@ -173,6 +173,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -180,7 +182,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -406,6 +407,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -413,7 +416,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -480,10 +482,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "tag": {
-              "commentStart": 1925,
-              "end": 1931,
+              "commentStart": 1948,
+              "end": 1954,
               "moduleId": 0,
-              "start": 1925,
+              "start": 1948,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -598,6 +600,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -605,7 +609,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -669,10 +672,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 394,
-            "end": 400,
+            "commentStart": 417,
+            "end": 423,
             "moduleId": 0,
-            "start": 394,
+            "start": 417,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -728,10 +731,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 394,
-              "end": 400,
+              "commentStart": 417,
+              "end": 423,
               "moduleId": 0,
-              "start": 394,
+              "start": 417,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -846,6 +849,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -853,7 +858,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1201,6 +1205,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1208,7 +1214,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1354,10 +1359,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 394,
-            "end": 400,
+            "commentStart": 417,
+            "end": 423,
             "moduleId": 0,
-            "start": 394,
+            "start": 417,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1472,6 +1477,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1479,7 +1486,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1542,10 +1548,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "tag": {
-            "commentStart": 891,
-            "end": 897,
+            "commentStart": 914,
+            "end": 920,
             "moduleId": 0,
-            "start": 891,
+            "start": 914,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1660,6 +1666,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1667,7 +1675,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1730,10 +1737,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "tag": {
-            "commentStart": 1383,
-            "end": 1389,
+            "commentStart": 1406,
+            "end": 1412,
             "moduleId": 0,
-            "start": 1383,
+            "start": 1406,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1848,6 +1855,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1855,7 +1864,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1918,10 +1926,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "tag": {
-            "commentStart": 1925,
-            "end": 1931,
+            "commentStart": 1948,
+            "end": 1954,
             "moduleId": 0,
-            "start": 1925,
+            "start": 1948,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2036,6 +2044,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2043,7 +2053,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2106,10 +2115,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2471,
-            "end": 2477,
+            "commentStart": 2494,
+            "end": 2500,
             "moduleId": 0,
-            "start": 2471,
+            "start": 2494,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2224,6 +2233,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2231,7 +2242,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2294,10 +2304,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 3014,
-            "end": 3020,
+            "commentStart": 3037,
+            "end": 3043,
             "moduleId": 0,
-            "start": 3014,
+            "start": 3037,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -2412,6 +2422,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2419,7 +2431,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2478,10 +2489,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3014,
-            "end": 3020,
+            "commentStart": 3037,
+            "end": 3043,
             "moduleId": 0,
-            "start": 3014,
+            "start": 3037,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -2537,10 +2548,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 3014,
-              "end": 3020,
+              "commentStart": 3037,
+              "end": 3043,
               "moduleId": 0,
-              "start": 3014,
+              "start": 3037,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -2655,6 +2666,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2662,7 +2675,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

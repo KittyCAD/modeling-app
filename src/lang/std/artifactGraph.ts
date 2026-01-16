@@ -532,6 +532,25 @@ function getPlaneFromStartSketchOnPlane(
   return plane
 }
 
+// TODO: stubbed out for now.
+function getPlaneFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  // If the sketch block is on a default plane, planeId will be null/undefined
+  if (!sketchBlock.planeId) {
+    return new Error(
+      'Sketch block is on a default plane, which is not in the artifact graph'
+    )
+  }
+  // Get the plane artifact (could be plane, wall, or cap)
+  const plane = getArtifactOfTypes(
+    { key: sketchBlock.planeId, types: ['plane', 'wall', 'cap'] },
+    graph
+  )
+  return plane
+}
+
 export function getPlaneFromArtifact(
   artifact: Artifact | undefined,
   graph: ArtifactGraph
@@ -556,6 +575,9 @@ export function getPlaneFromArtifact(
     return getPlaneFromStartSketchOnFace(artifact, graph)
   if (artifact.type === 'startSketchOnPlane')
     return getPlaneFromStartSketchOnPlane(artifact, graph)
+  if (artifact.type === 'sketchBlock') {
+    return getPlaneFromSketchBlock(artifact, graph)
+  }
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 
@@ -692,15 +714,24 @@ export function getArtifactFromRange(
   range: SourceRange,
   artifactGraph: ArtifactGraph
 ): Artifact | null {
+  let firstCandidate: Artifact | null = null
   for (const artifact of artifactGraph.values()) {
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
         codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
-      if (match) return artifact
+      if (match) {
+        // Favor the first sketch block artifact since multiple artifacts may be
+        // created here.
+        if (artifact.type === 'sketchBlock') {
+          return artifact
+        }
+        firstCandidate = firstCandidate ?? artifact
+      }
     }
   }
-  return null
+  // Fallback to the first candidate or null if it wasn't found.
+  return firstCandidate
 }
 
 export function getFaceCodeRef(

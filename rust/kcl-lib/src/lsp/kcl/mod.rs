@@ -253,10 +253,17 @@ impl Backend {
                 }),
                 deprecated: None,
                 preselect: None,
-                sort_text: None,
-                filter_text: None,
-                insert_text: None,
-                insert_text_format: None,
+                sort_text: Some(arg_name.to_owned()),
+                filter_text: Some(arg_name.to_owned()),
+                insert_text: {
+                    // let snippet = "${0:x}";
+                    if let Some(snippet) = arg_data.props.get_autocomplete_snippet(0).map(|(_i, snippet)| snippet) {
+                        Some(snippet)
+                    } else {
+                        Some(format!("{arg_name} = "))
+                    }
+                },
+                insert_text_format: Some(InsertTextFormat::SNIPPET),
                 insert_text_mode: None,
                 text_edit: None,
                 additional_text_edits: None,
@@ -1776,12 +1783,13 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    std::cmp::min(char_position, code.len() - 1)
+    let end_of_file = if code.is_empty() { 0 } else { code.len() - 1 };
+    std::cmp::min(char_position, end_of_file)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let mem = cache::read_old_memory().await?;
-    let value = mem.0.get(name, SourceRange::default()).ok()?;
+    let value = mem.stack.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
 }
@@ -1828,5 +1836,13 @@ return 42"#;
         let position = Position::new(1, 8);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 19);
+    }
+
+    #[test]
+    fn test_position_to_char_empty() {
+        let code = r#""#;
+        let position = Position::new(0, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 0);
     }
 }

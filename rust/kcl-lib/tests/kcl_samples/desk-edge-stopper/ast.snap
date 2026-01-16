@@ -88,8 +88,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define U-Profile",
           "// Depth of the U-profile. Defines how far the stopper wraps over the desk edge. Measured from front to back. Deeper depth increases grip and stability"
         ],
@@ -131,8 +129,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Inner width of the U-profile. Must match the thickness of the desk, plus a small tolerance (~0.5 mm) to slide on snugly without being too tight."
         ],
         "start": 0,
@@ -173,8 +169,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Height of the vertical wall that blocks objects from falling. This part rises above the desk surface. Typically between 20–50 mm depending on what you want to stop."
         ],
         "start": 0,
@@ -215,8 +209,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// A uniform wall thickness is used across all parts for modeling simplicity; for 3D printing, a relatively thick value (around 1/4 to 1/6 of the profile size, min 5mm) ensures strength and reliable fabrication."
         ],
         "start": 0,
@@ -338,8 +330,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Total vertical height of the guard from base to top of the stopper wall"
         ],
         "start": 0,
@@ -412,8 +402,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Total front-to-back depth of the guard, including wall thickness, measured from the desk-facing surface to the outermost back face"
         ],
         "start": 0,
@@ -454,8 +442,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────────────",
           "// HOLE PARAMETERS",
           "// ───────────────",
@@ -501,8 +487,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Distance from desk edge to screw hole center; here set to 13 mm. Best positioned near the middle of the upper U-profile surface to reduce risk of cracking."
         ],
         "start": 0,
@@ -615,8 +599,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Diameter and radius of each hole"
         ],
         "start": 0,
@@ -748,8 +730,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Offset to the profile ends for outermost holes. Should be around one-sixth of the length."
         ],
         "start": 0,
@@ -844,8 +824,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The spacing between the first and last screw holes equals the total guard length minus two side offsets."
         ],
         "start": 0,
@@ -940,8 +918,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Spacing between holes is calculated by dividing the span (first to last hole) by the number of gaps between them, which is one less than the total hole count."
         ],
         "start": 0,
@@ -1935,6 +1911,16 @@ description: Result of parsing desk-edge-stopper.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "Upper face of the U-profile — this part rests flat on the tabletop",
                       "style": "line"
@@ -1942,6 +1928,16 @@ description: Result of parsing desk-edge-stopper.kcl
                   }
                 ],
                 "3": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -1963,6 +1959,16 @@ description: Result of parsing desk-edge-stopper.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "Outside side of the upper face of the U-profile — side facing the ceiling",
                       "style": "line"
@@ -1970,6 +1976,16 @@ description: Result of parsing desk-edge-stopper.kcl
                   }
                 ],
                 "5": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -1991,6 +2007,16 @@ description: Result of parsing desk-edge-stopper.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "Front face of the whole guard (wall + u-profile)",
                       "style": "line"
@@ -2005,6 +2031,16 @@ description: Result of parsing desk-edge-stopper.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "Bottom face of the whole guard (wall + u-profile)",
                       "style": "line"
@@ -2012,6 +2048,16 @@ description: Result of parsing desk-edge-stopper.kcl
                   }
                 ],
                 "9": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -2236,8 +2282,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────────────",
           "// MOUNTING METHOD",
           "// ───────────────",
@@ -2592,8 +2636,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Hole pattern runs along the Y axis of the sketch, which corresponds to the length of the guard along the desk edge. X points into the desk."
         ],
         "start": 0,
@@ -3073,8 +3115,6 @@ description: Result of parsing desk-edge-stopper.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────",
           "// FILLETS",
           "// ───────",
@@ -3144,6 +3184,150 @@ description: Result of parsing desk-edge-stopper.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "14": [
           {
             "commentStart": 0,
@@ -3152,7 +3336,17 @@ description: Result of parsing desk-edge-stopper.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "───────────",
               "style": "line"
             }
@@ -3225,6 +3419,42 @@ description: Result of parsing desk-edge-stopper.kcl
               "type": "newLine"
             }
           }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
         ]
       },
       "startNodes": [
@@ -3249,6 +3479,18 @@ description: Result of parsing desk-edge-stopper.kcl
           "value": {
             "type": "blockComment",
             "value": "3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

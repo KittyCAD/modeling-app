@@ -193,6 +193,7 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -216,6 +217,7 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -239,6 +241,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -265,6 +268,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -310,7 +314,9 @@ async fn import_and_snapshot_views(
         .spawn(async move {
             let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
             import(&ctx, filepaths, format).await?;
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -331,7 +337,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
         .send_modeling_cmd(
             Uuid::new_v4().into(),
             Default::default(),
-            &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles { files, format }),
+            &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles::builder().files(files).format(format).build()),
         )
         .await?;
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
@@ -376,7 +382,10 @@ async fn execute_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -443,7 +452,10 @@ async fn execute_code_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -468,7 +480,7 @@ async fn take_snaps(
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         } else {
-            let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric { padding: 0.0 });
+            let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric::builder().padding(0.0).build());
             ctx.engine
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
@@ -485,11 +497,13 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
-                object_ids: Default::default(),
-                padding,
-                animated: false,
-            }),
+            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(
+                kittycad_modeling_cmds::ZoomToFit::builder()
+                    .padding(padding)
+                    .animated(false)
+                    .object_ids(Default::default())
+                    .build(),
+            ),
         )
         .await?;
 
@@ -499,9 +513,11 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(kittycad_modeling_cmds::TakeSnapshot {
-                format: image_format.into(),
-            }),
+            &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(
+                kittycad_modeling_cmds::TakeSnapshot::builder()
+                    .format(image_format.into())
+                    .build(),
+            ),
         )
         .await?;
 
@@ -549,12 +565,17 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                        entity_ids: vec![],
-                        format: get_output_format(&export_format, units.into()),
-                    }),
+                    &kittycad_modeling_cmds::ModelingCmd::Export(
+                        kittycad_modeling_cmds::Export::builder()
+                            .entity_ids(vec![])
+                            .format(get_output_format(&export_format, units.into()))
+                            .build(),
+                    ),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -597,12 +618,17 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                        entity_ids: vec![],
-                        format: get_output_format(&export_format, units.into()),
-                    }),
+                    &kittycad_modeling_cmds::ModelingCmd::Export(
+                        kittycad_modeling_cmds::Export::builder()
+                            .entity_ids(vec![])
+                            .format(get_output_format(&export_format, units.into()))
+                            .build(),
+                    ),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(

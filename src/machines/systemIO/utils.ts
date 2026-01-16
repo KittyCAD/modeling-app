@@ -6,6 +6,7 @@ import { joinOSPaths } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
@@ -25,6 +26,7 @@ export enum SystemIOMachineActors {
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
   renameFolder = 'renameFolder',
   renameFile = 'renameFile',
   deleteFileOrFolder = 'delete file or folder',
@@ -33,7 +35,9 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  moveRecursiveAndNavigate = 'move recursive and navigate',
   copyRecursive = 'copy recursive',
+  moveRecursive = 'move recursive',
   getMlEphantConversations = 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
 }
@@ -52,6 +56,7 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
+  bulkCreateAndDeletingKCLFilesAndNavigateToFile = 'bulk create and deleting kcl files and navigate to file',
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
   renamingFile = 'renamingFile',
@@ -62,6 +67,8 @@ export enum SystemIOMachineStates {
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
   copyingRecursive = 'copying recursive',
+  movingRecursive = 'moving recursive',
+  movingRecursiveAndNavigate = 'moving recursive and navigate',
   gettingMlEphantConversations = 'getting ml-ephant conversations',
   savingMlEphantConversations = 'saving ml-ephant conversations',
 }
@@ -92,6 +99,9 @@ export enum SystemIOMachineEvents {
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
     'bulk create kcl files and navigate to file',
+  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
+  done_bulkCreateAndDeleteKCLFilesAndNavigateToFile = donePrefix +
+    'bulk create and delete kcl files and navigate to file',
   renameFolder = 'rename folder',
   renameFile = 'rename file',
   deleteFileOrFolder = 'delete file or folder',
@@ -107,6 +117,9 @@ export enum SystemIOMachineEvents {
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
   copyRecursive = 'copy recursive',
+  moveRecursive = 'move recursive',
+  moveRecursiveAndNavigate = 'move recursive and navigate',
+  done_moveRecursiveAndNavigate = donePrefix + 'move recursive and navigate',
   getMlEphantConversations = 'get ml-ephant conversations',
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
@@ -134,7 +147,11 @@ export enum SystemIOMachineGuards {
 
 export const NO_PROJECT_DIRECTORY = ''
 
-export type SystemIOContext = {
+export type SystemIOInput = {
+  wasmInstancePromise: Promise<ModuleType>
+}
+
+export type SystemIOContext = SystemIOInput & {
   /** Only store folders under the projectDirectory, do not maintain folders outside this directory */
   folders: Project[]
   /** For this machines runtime, this is the default string when creating a project
@@ -314,7 +331,7 @@ export const collectProjectFiles = async (args: {
     const MB20 = 2 ** 20 * 20
     if (uploadSize > MB20) {
       toast.error(
-        'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
+        'Your project exceeds 20Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
       )
     }
   }

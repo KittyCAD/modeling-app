@@ -8,6 +8,9 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const defaultSelectionFilter: EntityType[] = [
   'face',
@@ -18,31 +21,63 @@ export const defaultSelectionFilter: EntityType[] = [
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */
-export function setSelectionFilterToDefault(
-  engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections,
+export function setSelectionFilterToDefault({
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  selectionsToRestore,
+  handleSelectionBatchFn,
+  wasmInstance,
+}: {
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
+  selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
-) {
+  wasmInstance: ModuleType
+}) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(
-    defaultSelectionFilter,
+  setSelectionFilter({
+    filter: defaultSelectionFilter,
     engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
     selectionsToRestore,
-    handleSelectionBatchFn
-  )
+    handleSelectionBatchFn,
+    wasmInstance,
+  })
 }
 
 /** TODO: This function is not synchronous but is currently treated as such */
-export function setSelectionFilter(
-  filter: EntityType[],
-  engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections,
+export function setSelectionFilter({
+  filter,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  selectionsToRestore,
+  handleSelectionBatchFn,
+  wasmInstance,
+}: {
+  filter: EntityType[]
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
+  selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
-) {
+  wasmInstance: ModuleType
+}) {
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatchFn
       ? handleSelectionBatchFn({
           selections: selectionsToRestore,
+          artifactGraph: kclManager.artifactGraph,
+          code: kclManager.code,
+          ast: kclManager.ast,
+          systemDeps: {
+            sceneEntitiesManager,
+            engineCommandManager,
+            wasmInstance,
+          },
         })
       : { engineEvents: undefined }
 

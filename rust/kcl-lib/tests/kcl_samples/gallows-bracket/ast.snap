@@ -326,8 +326,6 @@ description: Result of parsing gallows-bracket.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Drawings recommend 450mm spacing"
         ],
         "start": 0,
@@ -1175,6 +1173,18 @@ description: Result of parsing gallows-bracket.kcl
             }
           }
         ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "6": [
           {
             "commentStart": 0,
@@ -1222,6 +1232,18 @@ description: Result of parsing gallows-bracket.kcl
           "value": {
             "type": "blockComment",
             "value": "A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Construction",
             "style": "line"
           }
         },

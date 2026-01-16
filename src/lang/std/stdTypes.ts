@@ -12,7 +12,10 @@ import type {
 } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import type { Coords2d } from '@src/lang/util'
-import type { LineInputsType } from '@src/lang/std/sketchcombos'
+import type {
+  ConstrainInfoType,
+  LineInputsType,
+} from '@src/lang/std/sketchcombos'
 import type {
   BinaryPart,
   CallExpressionKw,
@@ -36,6 +39,7 @@ export interface ModifyAstBase {
 export interface AddTagInfo {
   node: Node<Program>
   pathToNode: PathToNode
+  wasmInstance: ModuleType
 }
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a
@@ -103,11 +107,12 @@ export interface addCall extends ModifyAstBase {
     xAxis?: boolean
     yAxis?: boolean
   }
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }
 
 interface updateArgs extends ModifyAstBase {
   input: SegmentInputs
+  wasmInstance: ModuleType
 }
 
 export type InputArgKeys =
@@ -262,7 +267,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   tag?: Node<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {
@@ -272,12 +277,7 @@ export type TransformInfo = {
 
 export interface ConstrainInfo {
   stdLibFnName: ToolTip
-  type:
-    | LineInputsType
-    | 'vertical'
-    | 'horizontal'
-    | 'tangentialWithPrevious'
-    | 'radius'
+  type: ConstrainInfoType
   isConstrained: boolean
   sourceRange: SourceRange
   pathToNode: PathToNode

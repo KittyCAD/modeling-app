@@ -406,8 +406,6 @@ description: Result of parsing telemetry-antenna.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 2D cross-sectional profile of the part that will later be revolved"
         ],
         "start": 0,
@@ -1798,25 +1796,6 @@ description: Result of parsing telemetry-antenna.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "19": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Revolution about y-axis of earlier profile",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1950,6 +1929,9 @@ description: Result of parsing telemetry-antenna.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Revolution about y-axis of earlier profile"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2373,6 +2355,14 @@ description: Result of parsing telemetry-antenna.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "countersink",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2399,8 +2389,6 @@ description: Result of parsing telemetry-antenna.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Function to create a countersunk hole"
         ],
         "start": 0,
@@ -2468,8 +2456,6 @@ description: Result of parsing telemetry-antenna.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// PCD converted to radius for positioning the holes"
         ],
         "start": 0,
@@ -2548,8 +2534,6 @@ description: Result of parsing telemetry-antenna.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 6 countersunk holes using the countersink function"
         ],
         "start": 0,
@@ -3191,6 +3175,7 @@ description: Result of parsing telemetry-antenna.kcl
         "preComments": [
           "// Aircraft telemetry antenna plate",
           "// Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.",
+          "// Categories: Aerospace",
           "",
           "",
           "// Set units"
@@ -3238,6 +3223,66 @@ description: Result of parsing telemetry-antenna.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
           {
             "commentStart": 0,
             "end": 0,

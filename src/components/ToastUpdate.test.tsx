@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 
 import { ToastUpdate } from '@src/components/ToastUpdate'
 
@@ -176,6 +176,6 @@ describe('ToastUpdate tests', () => {
 
     expect(zooDev).toHaveAttribute('href', 'https://zoo.dev/')
     expect(zooDev).toHaveAttribute('target', '_blank')
-    expect(zooDev).toHaveAttribute('onClick')
+    expect(zooDev).toHaveAttribute('data-safe-link')
   })
 })

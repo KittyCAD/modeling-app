@@ -922,8 +922,6 @@ description: Result of parsing enclosure.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model a box with base enclosure dimensions"
         ],
         "start": 0,
@@ -1405,13 +1403,9 @@ description: Result of parsing enclosure.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Apply a shell to the enclosure base to create the internal storage",
-                      "style": "line"
+                      "type": "newLine"
                     }
-                  }
-                ],
-                "2": [
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -1419,8 +1413,18 @@ description: Result of parsing enclosure.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Define a function to create the internal structure to secure a fastener at each corner",
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Apply a shell to the enclosure base to create the internal storage",
                       "style": "line"
                     }
                   }
@@ -2214,8 +2218,6 @@ description: Result of parsing enclosure.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Create a pillar with a fasterner hole at the center"
                   ],
                   "start": 0,
@@ -2379,6 +2381,18 @@ description: Result of parsing enclosure.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "2": [
                     {
                       "commentStart": 0,
@@ -2399,6 +2413,14 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "function001",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2424,6 +2446,9 @@ description: Result of parsing enclosure.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Define a function to create the internal structure to secure a fastener at each corner"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2603,8 +2628,6 @@ description: Result of parsing enclosure.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the internal pillar at each corner"
         ],
         "start": 0,
@@ -5263,8 +5286,6 @@ description: Result of parsing enclosure.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define lid position and outer surface"
         ],
         "start": 0,
@@ -5640,25 +5661,6 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Define lid inner and sealing surfaces",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -7958,6 +7960,9 @@ description: Result of parsing enclosure.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Define lid inner and sealing surfaces"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8365,6 +8370,7 @@ description: Result of parsing enclosure.kcl
         "preComments": [
           "// Enclosure",
           "// An enclosure body and sealing lid for storing items",
+          "// Categories: Computer Hardware, Maker",
           "",
           "",
           "// Set units"
@@ -8438,7 +8444,68 @@ description: Result of parsing enclosure.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

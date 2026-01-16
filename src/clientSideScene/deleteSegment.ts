@@ -26,12 +26,11 @@ import {
 } from '@src/lib/selections'
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteSegmentsOrProfiles({
   pathToNodes,
@@ -42,16 +41,15 @@ export async function deleteSegmentsOrProfiles({
   sketchDetails: SketchDetails | null
   dependencies: {
     kclManager: KclManager
-    codeManager: CodeManager
-    wasmInstance?: ModuleType
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
     sceneInfra: SceneInfra
   }
 }) {
   let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
+  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
   const dependentRanges = pathToNodes.flatMap((pathToNode) =>
-    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode)
+    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode, wasmInstance)
   )
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -69,18 +67,19 @@ export async function deleteSegmentsOrProfiles({
     dependentRanges,
     modifiedAst,
     dependencies.kclManager.variables,
-    dependencies.codeManager.code,
+    dependencies.kclManager.code,
     pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
-    transformAstSketchLines
+    transformAstSketchLines,
+    await dependencies.kclManager.wasmInstancePromise
   )
   if (err(modifiedAst)) {
     return Promise.reject(modifiedAst)
   }
 
-  const newCode = recast(modifiedAst, dependencies.wasmInstance)
-  const pResult = parse(newCode, dependencies.wasmInstance)
+  const newCode = recast(modifiedAst, wasmInstance)
+  const pResult = parse(newCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
@@ -101,7 +100,8 @@ export async function deleteSegmentsOrProfiles({
   sketchDetails = updateSketchDetails(
     modifiedAst,
     testExecute.execState.artifactGraph,
-    sketchDetails
+    sketchDetails,
+    await dependencies.kclManager.wasmInstancePromise
   )
 
   await dependencies.sceneEntitiesManager.updateAstAndRejigSketch(
@@ -113,8 +113,7 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails.yAxis,
     sketchDetails.origin,
     getEventForSegmentSelection,
-    updateExtraSegments,
-    dependencies.wasmInstance
+    updateExtraSegments
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths
@@ -134,7 +133,8 @@ export async function deleteSegmentsOrProfiles({
 function updateSketchDetails(
   modifiedAst: Node<Program>,
   artifactGraph: ArtifactGraph,
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails,
+  wasmInstance: ModuleType
 ): SketchDetails {
   const planeNodePath = stringifyPathToNode(sketchDetails.planeNodePath)
   let planeArtifact = artifactGraph.values().find((artifact) => {
@@ -162,6 +162,7 @@ function updateSketchDetails(
     const entryNode = getNodeFromPath(
       modifiedAst,
       sketchEntryNodePath,
+      wasmInstance,
       undefined,
       undefined,
       true

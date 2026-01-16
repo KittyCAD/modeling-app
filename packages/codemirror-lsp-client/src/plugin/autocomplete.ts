@@ -98,8 +98,7 @@ export default function lspAutocompleteExt(
 
 export function getCompletionTriggerKind(
   context: CompletionContext,
-  triggerCharacters: string[],
-  matchBeforePattern?: RegExp
+  triggerCharacters: string[]
 ): {
   triggerKind: CompletionTriggerKind
   triggerCharacter?: string
@@ -118,14 +117,6 @@ export function getCompletionTriggerKind(
   if (!explicit && isTriggerChar) {
     triggerKind = CompletionTriggerKind.TriggerCharacter
     triggerCharacter = prevChar
-  }
-  // For manual invocation, only show completions when typing
-  // Use the provided pattern or default to words, dots, commas, or slashes
-  if (
-    triggerKind === CompletionTriggerKind.Invoked &&
-    !context.matchBefore(matchBeforePattern || /(\w+|\w+\.|\/|,)$/)
-  ) {
-    return null
   }
 
   return { triggerKind, triggerCharacter }

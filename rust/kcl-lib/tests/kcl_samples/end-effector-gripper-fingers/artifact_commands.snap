@@ -1506,7 +1506,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -1589,7 +1590,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -1671,7 +1673,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -1975,7 +1978,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2364,7 +2368,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2421,7 +2426,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2478,7 +2484,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2535,7 +2542,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2995,7 +3003,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3478,7 +3487,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 80.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3640,7 +3650,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3777,7 +3788,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3914,7 +3926,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4051,7 +4064,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4411,7 +4425,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -4808,7 +4823,8 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

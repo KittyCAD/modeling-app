@@ -15,10 +15,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 677,
-            "end": 698,
+            "commentStart": 720,
+            "end": 741,
             "moduleId": 0,
-            "start": 677,
+            "start": 720,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 786,
-            "end": 807,
+            "commentStart": 829,
+            "end": 850,
             "moduleId": 0,
-            "start": 786,
+            "start": 829,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -43,10 +43,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 909,
-            "end": 930,
+            "commentStart": 952,
+            "end": 973,
             "moduleId": 0,
-            "start": 909,
+            "start": 952,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -57,10 +57,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1000,
-            "end": 1021,
+            "commentStart": 1043,
+            "end": 1064,
             "moduleId": 0,
-            "start": 1000,
+            "start": 1043,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -81,10 +81,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 677,
-              "end": 698,
+              "commentStart": 720,
+              "end": 741,
               "moduleId": 0,
-              "start": 677,
+              "start": 720,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -105,10 +105,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 786,
-              "end": 807,
+              "commentStart": 829,
+              "end": 850,
               "moduleId": 0,
-              "start": 786,
+              "start": 829,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -129,10 +129,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 909,
-              "end": 930,
+              "commentStart": 952,
+              "end": 973,
               "moduleId": 0,
-              "start": 909,
+              "start": 952,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -153,10 +153,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 1000,
-              "end": 1021,
+              "commentStart": 1043,
+              "end": 1064,
               "moduleId": 0,
-              "start": 1000,
+              "start": 1043,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -171,6 +171,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -178,7 +180,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -258,10 +259,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 677,
-            "end": 698,
+            "commentStart": 720,
+            "end": 741,
             "moduleId": 0,
-            "start": 677,
+            "start": 720,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -282,10 +283,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 786,
-            "end": 807,
+            "commentStart": 829,
+            "end": 850,
             "moduleId": 0,
-            "start": 786,
+            "start": 829,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -306,10 +307,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 909,
-            "end": 930,
+            "commentStart": 952,
+            "end": 973,
             "moduleId": 0,
-            "start": 909,
+            "start": 952,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -330,10 +331,10 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 1000,
-            "end": 1021,
+            "commentStart": 1043,
+            "end": 1064,
             "moduleId": 0,
-            "start": 1000,
+            "start": 1043,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -348,6 +349,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -355,7 +358,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

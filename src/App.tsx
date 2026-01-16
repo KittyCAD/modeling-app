@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useSelector } from '@xstate/react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -28,6 +29,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
@@ -37,8 +39,7 @@ import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
   billingActor,
-  codeManager,
-  editorManager,
+  systemIOActor,
   getSettings,
   kclManager,
   useLayout,
@@ -56,14 +57,23 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
+import {
+  defaultLayout,
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  LayoutRootNode,
+} from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
-  MlEphantManagerTransitions2,
-} from '@src/machines/mlEphantManagerMachine2'
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
+import { useSignalEffect } from '@preact/signals-react'
+import { UnitsMenu } from '@src/components/UnitsMenu'
+import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -73,8 +83,8 @@ if (window.electron) {
 
 export function App() {
   const { state: modelingState } = useModelingContext()
-  useQueryParamEffects()
-  const { project, file } = useLoaderData() as IndexLoaderData
+  useQueryParamEffects(kclManager)
+  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -84,29 +94,44 @@ export function App() {
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = project?.name || null
-  const projectPath = project?.path || null
+  const projectName = loaderData.project?.name || null
+  const projectPath = loaderData.project?.path || null
+
+  // ZOOKEEPER BEHAVIOR EXCEPTION
+  // Only fires on state changes, to deal with Zookeeper control.
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+  useEffect(() => {
+    if (systemIOState !== 'idle') return
+    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
+      return
+    void kclManager.executeCode()
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+  }, [systemIOState])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen({ name: projectName, path: projectPath }, file || null)
-  }, [onProjectOpen, projectName, projectPath, file])
+    onProjectOpen(
+      { name: projectName, path: projectPath },
+      loaderData.file || null
+    )
+  }, [onProjectOpen, projectName, projectPath, loaderData.file])
 
   useEffect(() => {
     // Clear conversation
     mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions2.ConversationClose,
+      type: MlEphantManagerTransitions.ConversationClose,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
 
-  useHotKeyListener()
+  useHotKeyListener(kclManager)
 
   const settings = useSettings()
   const authToken = useToken()
@@ -119,23 +144,30 @@ export function App() {
   // with the wrapper.
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
-    editorManager.undo()
+    kclManager.undo()
   })
   useHotkeys('mod+shift+z', (e) => {
     e.preventDefault()
-    editorManager.redo()
+    kclManager.redo()
   })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + PATHS.SETTINGS),
+    () => {
+      void navigate(filePath + PATHS.SETTINGS)
+    },
+    kclManager,
     {
       splitKey: '|',
     }
   )
 
-  useHotkeyWrapper(['mod + s'], () => {
-    toast.success('Your work is auto-saved in real-time')
-  })
+  useHotkeyWrapper(
+    ['mod + s'],
+    () => {
+      toast.success('Your work is auto-saved in real-time')
+    },
+    kclManager
+  )
 
   useEngineConnectionSubscriptions()
 
@@ -172,7 +204,6 @@ export function App() {
           TutorialRequestToast({
             onboardingStatus: settings.app.onboardingStatus.current,
             navigate,
-            codeManager,
             kclManager,
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
@@ -194,8 +225,14 @@ export function App() {
     authToken,
   ])
 
-  useEffect(() => {
-    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+  // This is, at time of writing, the only spot we need @preact/signals-react,
+  // because we can't use the core `effect()` function for this signal, because
+  // it is initially set to `true`, and will break the web app.
+  // TODO: get the loading pattern of KclManager in order so that it's for real available,
+  // then you might be able to uninstall this package and stick to just using signals-core.
+  useSignalEffect(() => {
+    const needsWasmInitFailedToast =
+      !isDesktop() && kclManager.wasmInitFailedSignal.value
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
@@ -212,7 +249,7 @@ export function App() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.wasmInitFailed])
+  })
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -225,22 +262,64 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
+
+  const experimentalFeaturesLevel =
+    kclManager.fileSettings.experimentalFeatures ??
+    DEFAULT_EXPERIMENTAL_FEATURES
+  const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
+    experimentalFeaturesLevel.type !== 'Deny'
+      ? [
+          {
+            id: 'experimental-features',
+            component: ExperimentalFeaturesMenu,
+          },
+        ]
+      : []
+
+  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
+    () =>
+      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+        ? [
+            {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
+            },
+          ]
+        : [],
+    [layout]
+  )
+
+  const undoRedoButtons = useMemo(
+    () => (
+      <UndoRedoButtons
+        data-testid="app-header-undo-redo"
+        kclManager={kclManager}
+        className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+      />
+    ),
+    []
+  )
+
+  const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
+    (x) => {
+      if ('useNotifications' in x) {
+        const obj = x.useNotifications?.()
+        return obj !== undefined && Boolean(obj.value)
+      }
+      return false
+    }
+  )
+
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={{ project, file }}
+            project={loaderData}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
-            projectMenuChildren={
-              <UndoRedoButtons
-                data-testid="app-header-undo-redo"
-                editorManager={editorManager}
-                className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
-              />
-            }
+            projectMenuChildren={undoRedoButtons}
           >
             <CommandBarOpenButton />
             <ShareButton />
@@ -254,6 +333,9 @@ export function App() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            showDebugPanel={settings.app.showDebugPanel.current}
+            notifications={notifications}
+            artifactGraph={kclManager.artifactGraph}
           />
         </section>
         <StatusBar
@@ -284,12 +366,19 @@ export function App() {
               element: 'text',
               label:
                 getSelectionTypeDisplayText(
+                  kclManager.astSignal.value,
                   modelingState.context.selectionRanges
                 ) ?? 'No selection',
               toolTip: {
                 children: 'Currently selected geometry',
               },
             },
+            {
+              id: 'units',
+              component: UnitsMenu,
+            },
+            ...experimentalFeaturesLocalStatusBarItems,
+            ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
         />

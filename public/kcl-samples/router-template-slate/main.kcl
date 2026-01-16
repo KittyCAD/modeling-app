@@ -1,5 +1,6 @@
 // Router Template for a Slate
 // A guide for routing a slate for a cross bar.
+// Categories: Construction
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

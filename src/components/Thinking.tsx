@@ -1,13 +1,11 @@
 import ms from 'ms'
 
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
-
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 interface IRowCollapse {
   fn: () => void
@@ -106,12 +104,6 @@ export const KclDocs = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -126,15 +118,7 @@ export const KclDocs = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -145,12 +129,6 @@ export const FeatureTreeOutline = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -165,15 +143,7 @@ export const FeatureTreeOutline = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -353,13 +323,6 @@ export const NothingInParticular = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-    unescape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -372,15 +335,7 @@ export const NothingInParticular = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -578,19 +533,16 @@ export const Thinking = (props: {
     if (props.onlyShowImmediateThought === true) {
       return
     }
-    if (refViewFull.current === null) {
-      return
-    }
-    const c = refViewFull.current.children
-    if (c.length === 0) {
-      return
-    }
 
-    setTimeout(() => {
-      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-      setTimeout(() => {
-        if (refViewFull.current === null) return
-        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+    // Always autoscroll to the bottom of the reasoning view
+    requestAnimationFrame(() => {
+      if (refViewFull.current === null) {
+        return
+      }
+
+      refViewFull.current.scrollTo({
+        top: refViewFull.current.scrollHeight,
+        behavior: 'smooth',
       })
     })
   }, [reasoningThoughts.length, props.onlyShowImmediateThought])
@@ -632,6 +584,7 @@ export const Thinking = (props: {
 
   const ViewFull = (
     <div
+      data-testid="ml-response-thinking-view"
       ref={refViewFull}
       style={{ maxHeight: '20lh' }}
       className="select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"

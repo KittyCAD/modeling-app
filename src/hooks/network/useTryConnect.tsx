@@ -2,19 +2,22 @@ import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
-  codeManager,
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
+import {
   engineCommandManager,
   kclManager,
   rustContext,
-  sceneInfra,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import toast from 'react-hot-toast'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -50,7 +53,6 @@ const attemptToConnectToEngine = async ({
         if (!authToken) {
           return reject('authToken is missing on connection initialization')
         }
-
         if (engineCommandManager.started) {
           return reject('engine is already started. You cannot start again')
         }
@@ -111,20 +113,24 @@ const attemptToConnectToEngine = async ({
   return connection
 }
 
-const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
-  const settings = await jsAppSettings()
+const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
+  sceneInfra,
+  settingsActor,
+}: { sceneInfra: SceneInfra; settingsActor: SettingsActorType }) => {
+  const providedSettings = getSettingsFromActorContext(settingsActor)
+  const settings = await jsAppSettings(providedSettings)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'rustContext.clearSceneAndBustCache()',
     metadata: {
       jsAppSettings: settings,
-      filePath: codeManager.currentFilePath || undefined,
+      filePath: kclManager.currentFilePath || undefined,
     },
   })
   // Bust the cache always! A new connection has been made. The engine has no previous state
   await rustContext.clearSceneAndBustCache(
     settings,
-    codeManager.currentFilePath || undefined
+    kclManager.currentFilePath || undefined
   )
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
@@ -139,7 +145,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
   if (sceneInfra.camControls.oldCameraState) {
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
   } else {
-    await resetCameraPosition()
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -170,6 +180,7 @@ async function tryConnecting({
   timeToConnect,
   settings,
   setShowManualConnect,
+  sceneInfra,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -181,6 +192,7 @@ async function tryConnecting({
   timeToConnect: number
   settings: SettingsViaQueryString
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
+  sceneInfra: SceneInfra
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -209,7 +221,27 @@ async function tryConnecting({
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
-          await setupSceneAndExecuteCodeAfterOpenedEngineConnection()
+          await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
+            sceneInfra,
+            settingsActor: rustContext.settingsActor,
+          })
+
+          /**
+           * Attempt is a longer lifecycle promise that cannot be interrupted directly from external code.
+           * It can break if a user disconnects their internet during this attempt process. We need to check by
+           * the time it gets to this line did someone disconnect the engine, if they did, throw an error to exit this attempt.
+           */
+          if (
+            engineCommandManager.started === false &&
+            engineCommandManager.connection === undefined
+          ) {
+            // This attempt needs to throw an error to use the internal logic for retry for the next attempt.
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw new Error(
+              'engine disconnected before it finished the attempt'
+            )
+          }
+
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0

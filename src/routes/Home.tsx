@@ -12,7 +12,6 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import { BillingDialog } from '@kittycad/react-shared'
-import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -28,7 +27,6 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -37,7 +35,6 @@ import type { Project } from '@src/lib/project'
 import {
   authActor,
   billingActor,
-  codeManager,
   commandBarActor,
   kclManager,
   systemIOActor,
@@ -77,14 +74,14 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  useQueryParamEffects()
+  useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -150,13 +147,13 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -180,18 +177,6 @@ const Home = () => {
           groupId: 'application',
         },
       })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'newProject',
-            newProjectName: settings.projects.defaultProjectName.current,
-          },
-        },
-      })
     }
   }
   useMenuListener(cb)
@@ -207,7 +192,9 @@ const Home = () => {
   })
   useHotkeys(
     isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(PATHS.HOME + PATHS.SETTINGS),
+    () => {
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
+    },
     {
       splitKey: '|',
     }
@@ -245,7 +232,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      codeManager,
                       kclManager,
                     }).catch(reportRejection)
                   }}
@@ -303,42 +289,6 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'Text-to-CAD',
-                      argDefaultValues: {
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
-                      },
-                    },
-                  })
-                }
-                className={sidebarButtonClasses}
-                iconStart={{
-                  icon: 'sparkles',
-                  bgClassName: '!bg-transparent rounded-sm',
-                }}
-                data-testid="home-text-to-cad"
-              >
-                Generate with Text-to-CAD
-                <Tooltip position="bottom-left">
-                  <div className="text-sm flex flex-col max-w-xs">
-                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-                      <CustomIcon name="beaker" className="w-4 h-4" />
-                      <span>Experimental</span>
-                    </div>
-                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
-                  </div>
-                </Tooltip>
-              </ActionButton>
-            </li>
-            <li className="contents">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  commandBarActor.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
@@ -365,7 +315,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>

@@ -31,6 +31,68 @@ base_unit = "in"
 
 
 
+#### app
+
+The settings for the Design Studio.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### allow_orbit_in_sketch_mode
+
+When the user is idle, and this is true, the stream will be torn down.
+
+
+**Default:** None
+
+##### named_views
+
+Settings that affect the behavior of the command bar.
+
+
+**Default:** None
+
+##### onboarding_status
+
+The onboarding status of the app.
+
+
+**Default:** None
+
+##### show_debug_panel
+
+Whether to show the debug panel, which lets you see various states of the app to aid in development.
+
+
+**Default:** None
+
+##### stream_idle_mode
+
+When the user is idle, and this is true, the stream will be torn down.
+
+
+**Default:** None
+
+
+#### command_bar
+
+Settings that affect the behavior of the command bar.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### include_settings
+
+Whether to include settings in the command bar.
+
+
+**Default:** None
+
+
 #### meta
 
 Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
@@ -43,58 +105,6 @@ This setting has the following nested options:
 ##### id
 
 
-
-
-**Default:** None
-
-##### enable_zookeeper
-
-Enable the conversational agent in Text-to-CAD for this project.
-
-
-**Default:** None
-
-
-#### app
-
-The settings for the Design Studio.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### onboarding_status
-
-The onboarding status of the app.
-
-
-**Default:** None
-
-##### stream_idle_mode
-
-When the user is idle, and this is true, the stream will be torn down.
-
-
-**Default:** None
-
-##### allow_orbit_in_sketch_mode
-
-When the user is idle, and this is true, the stream will be torn down.
-
-
-**Default:** None
-
-##### show_debug_panel
-
-Whether to show the debug panel, which lets you see various states of the app to aid in development.
-
-
-**Default:** None
-
-##### named_views
-
-Settings that affect the behavior of the command bar.
 
 
 **Default:** None
@@ -116,13 +126,6 @@ The default unit to use in modeling dimensions.
 
 **Default:** None
 
-##### highlight_edges
-
-Highlight edges of 3D objects?
-
-
-**Default:** None
-
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -137,9 +140,9 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 **Default:** None
 
-##### snap_to_grid
+##### highlight_edges
 
-When enabled, tools like line, rectangle, etc. will snap to the grid.
+Highlight edges of 3D objects?
 
 
 **Default:** None
@@ -154,6 +157,13 @@ The space between major grid lines, specified in the current unit.
 ##### minor_grids_per_major
 
 The number of minor grid lines per major grid line.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
 
 
 **Default:** None
@@ -175,13 +185,6 @@ Settings that affect the behavior of the KCL text editor.
 
 This setting has the following nested options:
 
-##### text_wrapping
-
-Whether to wrap text in the editor or overflow with scroll.
-
-
-**Default:** None
-
 ##### blinking_cursor
 
 Whether to make the cursor blink in the editor.
@@ -189,19 +192,9 @@ Whether to make the cursor blink in the editor.
 
 **Default:** None
 
+##### text_wrapping
 
-#### command_bar
-
-Settings that affect the behavior of the command bar.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### include_settings
-
-Whether to include settings in the command bar.
+Whether to wrap text in the editor or overflow with scroll.
 
 
 **Default:** None

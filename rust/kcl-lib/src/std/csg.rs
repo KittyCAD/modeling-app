@@ -5,7 +5,7 @@ use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
-    output::{BooleanIntersection, BooleanSubtract, BooleanUnion},
+    output::{self as mout, BooleanIntersection, BooleanSubtract, BooleanUnion},
     websocket::OkWebSocketResponseData,
 };
 
@@ -57,10 +57,12 @@ pub(crate) async fn inner_union(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanUnion {
-                solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanUnion::builder()
+                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -75,9 +77,13 @@ pub(crate) async fn inner_union(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)
@@ -124,10 +130,12 @@ pub(crate) async fn inner_intersect(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanIntersection {
-                solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanIntersection::builder()
+                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -142,9 +150,13 @@ pub(crate) async fn inner_intersect(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)
@@ -187,11 +199,13 @@ pub(crate) async fn inner_subtract(
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
-            ModelingCmd::from(mcmd::BooleanSubtract {
-                target_ids: solids.iter().map(|s| s.id).collect(),
-                tool_ids: tools.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-            }),
+            ModelingCmd::from(
+                mcmd::BooleanSubtract::builder()
+                    .target_ids(solids.iter().map(|s| s.id).collect())
+                    .tool_ids(tools.iter().map(|s| s.id).collect())
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
         )
         .await?;
 
@@ -206,9 +220,99 @@ pub(crate) async fn inner_subtract(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
+    }
+
+    Ok(new_solids)
+}
+
+/// Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.
+pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let targets: Vec<Solid> = args.get_unlabeled_kw_arg("targets", &RuntimeType::solids(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tools: Option<Vec<Solid>> = args.get_kw_arg_opt("tools", &RuntimeType::solids(), exec_state)?;
+    let tools = tools.unwrap_or_default();
+    let merge: bool = args.get_kw_arg("merge", &RuntimeType::bool(), exec_state)?;
+
+    if !merge {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Zoo currently only supports merge = true for split".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut bodies = Vec::with_capacity(targets.len() + tools.len());
+    bodies.extend(targets);
+    bodies.extend(tools);
+    if bodies.len() < 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "At least two bodies are required for an Imprint operation.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let body = inner_imprint(bodies, tolerance, exec_state, args).await?;
+    Ok(body.into())
+}
+
+pub(crate) async fn inner_imprint(
+    bodies: Vec<Solid>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    let body_out_id = exec_state.next_uuid();
+
+    let mut body = bodies[0].clone();
+    body.set_id(body_out_id);
+    let mut new_solids = vec![body.clone()];
+
+    if args.ctx.no_engine_commands().await {
+        return Ok(new_solids);
+    }
+
+    // Flush the fillets for the solids.
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &bodies)
+        .await?;
+
+    let body_ids = bodies.iter().map(|body| body.id).collect();
+    let result = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
+            ModelingCmd::from(
+                mcmd::BooleanImprint::builder()
+                    .body_ids(body_ids)
+                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BooleanImprint(mout::BooleanImprint { extra_solid_ids }),
+    } = result
+    else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "Failed to get the result of the Imprint operation.".to_string(),
+            vec![args.source_range],
+        )));
+    };
+
+    // If we have more solids, set those as well.
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == body_out_id {
+            continue;
+        }
+        let mut new_solid = body.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)

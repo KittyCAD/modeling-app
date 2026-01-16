@@ -1,6 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Onboarding tests', () => {
+test.describe('Onboarding tests', { tag: '@desktop' }, () => {
   test('Desktop onboarding flow works', async ({
     page,
     homePage,
@@ -8,9 +8,7 @@ test.describe('Onboarding tests', () => {
     editor,
     tronApp,
   }) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     // Because our default test settings have the onboardingStatus set to 'dismissed',
     // we must set it to empty for the tests where we want to see the onboarding UI.

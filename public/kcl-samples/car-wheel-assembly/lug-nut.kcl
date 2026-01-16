@@ -5,29 +5,26 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
-import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "parameters.kcl"
+import * from "parameters.kcl"
 
 customPlane = {
-  origin = { x = lugSpacing / 2, y = -30mm, z = 0 },
+  origin = {
+    x = lugSpacing / 2,
+    y = (-tBell - 0.85) * 25.4,
+    z = 0
+  },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = -1, z = 0 }
 }
 
-fn lug(plane, length, diameter) {
-  lugSketch = startSketchOn(customPlane)
-    |> startProfile(at = [0 + diameter / 2, 0])
-    |> angledLine(angle = 70, lengthY = lugHeadLength)
-    |> xLine(endAbsolute = lugDiameter / 2)
-    |> yLine(endAbsolute = lugLength)
-    |> tangentialArc(angle = 90deg, radius = 3mm)
-    |> xLine(endAbsolute = 0 + .001, tag = $c1)
-    |> yLine(endAbsolute = lugThreadDepth)
-    |> xLine(endAbsolute = lugThreadDiameter)
-    |> yLine(endAbsolute = 0)
-    |> close()
-    |> revolve(axis = Y)
-    |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
-  return lugSketch
-}
-
-lugNut = lug(plane = customPlane, length = lugLength, diameter = lugDiameter)
+lugNut = startSketchOn(customPlane)
+  |> startProfile(at = [0 + lugDiameter / 2, 0])
+  |> yLine(length = lugLength)
+  |> tangentialArc(angle = 90deg, radius = 3mm)
+  |> xLine(endAbsolute = 0, tag = $c1)
+  |> yLine(endAbsolute = lugLength * 0.6)
+  |> xLine(length = segLen(c1))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y)
+  |> appearance(color = "#ededed", metalness = 70, roughness = 30)

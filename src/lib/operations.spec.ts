@@ -18,6 +18,7 @@ import {
   getOperationVariableName,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
+import { expect, describe, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -216,7 +217,7 @@ describe('operations.test.ts', () => {
       op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
 
       const program = assertParse(code, instance)
-      const variableName = getOperationVariableName(op, program)
+      const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBe('myVar')
     })
     it('finds the variable name inside a function with simple assignment', async () => {
@@ -234,7 +235,7 @@ describe('operations.test.ts', () => {
       op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
 
       const program = assertParse(code, instance)
-      const variableName = getOperationVariableName(op, program)
+      const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBe('myVar')
     })
     it("finds the variable name when it's the last in a pipeline", async () => {
@@ -250,7 +251,7 @@ describe('operations.test.ts', () => {
       op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
 
       const program = assertParse(code, instance)
-      const variableName = getOperationVariableName(op, program)
+      const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBe('myVar')
     })
     it("finds nothing when it's not the last in a pipeline", async () => {
@@ -267,7 +268,7 @@ describe('operations.test.ts', () => {
       op.nodePath = await buildNodePath(code, 'stdLibFn()', instance)
 
       const program = assertParse(code, instance)
-      const variableName = getOperationVariableName(op, program)
+      const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBeUndefined()
     })
   })

@@ -25,10 +25,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 901,
-            "end": 907,
+            "commentStart": 922,
+            "end": 928,
             "moduleId": 0,
-            "start": 901,
+            "start": 922,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -39,10 +39,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 980,
-            "end": 992,
+            "commentStart": 1001,
+            "end": 1013,
             "moduleId": 0,
-            "start": 980,
+            "start": 1001,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -69,10 +69,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 901,
-              "end": 907,
+              "commentStart": 922,
+              "end": 928,
               "moduleId": 0,
-              "start": 901,
+              "start": 922,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -87,6 +87,8 @@ description: Variables in memory after executing clock.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -94,7 +96,6 @@ description: Variables in memory after executing clock.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -171,13 +172,14 @@ description: Variables in memory after executing clock.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -219,10 +221,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1324,
-            "end": 1330,
+            "commentStart": 1345,
+            "end": 1351,
             "moduleId": 0,
-            "start": 1324,
+            "start": 1345,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -233,10 +235,10 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1524,
-            "end": 1534,
+            "commentStart": 1545,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1524,
+            "start": 1545,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -263,10 +265,10 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 1324,
-              "end": 1330,
+              "commentStart": 1345,
+              "end": 1351,
               "moduleId": 0,
-              "start": 1324,
+              "start": 1345,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -282,6 +284,7 @@ description: Variables in memory after executing clock.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -305,10 +308,10 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 901,
-                  "end": 907,
+                  "commentStart": 922,
+                  "end": 928,
                   "moduleId": 0,
-                  "start": 901,
+                  "start": 922,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -319,10 +322,10 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 980,
-                  "end": 992,
+                  "commentStart": 1001,
+                  "end": 1013,
                   "moduleId": 0,
-                  "start": 980,
+                  "start": 1001,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -349,10 +352,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 901,
-                    "end": 907,
+                    "commentStart": 922,
+                    "end": 928,
                     "moduleId": 0,
-                    "start": 901,
+                    "start": 922,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -367,6 +370,8 @@ description: Variables in memory after executing clock.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -374,7 +379,6 @@ description: Variables in memory after executing clock.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -504,6 +508,7 @@ description: Variables in memory after executing clock.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -527,10 +532,10 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 901,
-              "end": 907,
+              "commentStart": 922,
+              "end": 928,
               "moduleId": 0,
-              "start": 901,
+              "start": 922,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -541,10 +546,10 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 980,
-              "end": 992,
+              "commentStart": 1001,
+              "end": 1013,
               "moduleId": 0,
-              "start": 980,
+              "start": 1001,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -571,10 +576,10 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 901,
-                "end": 907,
+                "commentStart": 922,
+                "end": 928,
                 "moduleId": 0,
-                "start": 901,
+                "start": 922,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -589,6 +594,8 @@ description: Variables in memory after executing clock.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -596,7 +603,6 @@ description: Variables in memory after executing clock.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -1524,10 +1530,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 901,
-            "end": 907,
+            "commentStart": 922,
+            "end": 928,
             "moduleId": 0,
-            "start": 901,
+            "start": 922,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1542,6 +1548,8 @@ description: Variables in memory after executing clock.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1549,7 +1557,6 @@ description: Variables in memory after executing clock.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1622,10 +1629,10 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 1324,
-            "end": 1330,
+            "commentStart": 1345,
+            "end": 1351,
             "moduleId": 0,
-            "start": 1324,
+            "start": 1345,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1641,6 +1648,7 @@ description: Variables in memory after executing clock.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -1664,10 +1672,10 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 901,
-                "end": 907,
+                "commentStart": 922,
+                "end": 928,
                 "moduleId": 0,
-                "start": 901,
+                "start": 922,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1678,10 +1686,10 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 980,
-                "end": 992,
+                "commentStart": 1001,
+                "end": 1013,
                 "moduleId": 0,
-                "start": 980,
+                "start": 1001,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -1708,10 +1716,10 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 901,
-                  "end": 907,
+                  "commentStart": 922,
+                  "end": 928,
                   "moduleId": 0,
-                  "start": 901,
+                  "start": 922,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1726,6 +1734,8 @@ description: Variables in memory after executing clock.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1733,7 +1743,6 @@ description: Variables in memory after executing clock.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1871,6 +1880,7 @@ description: Variables in memory after executing clock.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -1894,10 +1904,10 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 901,
-                "end": 907,
+                "commentStart": 922,
+                "end": 928,
                 "moduleId": 0,
-                "start": 901,
+                "start": 922,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1908,10 +1918,10 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 980,
-                "end": 992,
+                "commentStart": 1001,
+                "end": 1013,
                 "moduleId": 0,
-                "start": 980,
+                "start": 1001,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -1938,10 +1948,10 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 901,
-                  "end": 907,
+                  "commentStart": 922,
+                  "end": 928,
                   "moduleId": 0,
-                  "start": 901,
+                  "start": 922,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1956,6 +1966,8 @@ description: Variables in memory after executing clock.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1963,7 +1975,6 @@ description: Variables in memory after executing clock.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2181,6 +2192,7 @@ description: Variables in memory after executing clock.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 31,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -2204,10 +2216,10 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 901,
-                  "end": 907,
+                  "commentStart": 922,
+                  "end": 928,
                   "moduleId": 0,
-                  "start": 901,
+                  "start": 922,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2218,10 +2230,10 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 980,
-                  "end": 992,
+                  "commentStart": 1001,
+                  "end": 1013,
                   "moduleId": 0,
-                  "start": 980,
+                  "start": 1001,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -2248,10 +2260,10 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 901,
-                    "end": 907,
+                    "commentStart": 922,
+                    "end": 928,
                     "moduleId": 0,
-                    "start": 901,
+                    "start": 922,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2266,6 +2278,8 @@ description: Variables in memory after executing clock.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2273,7 +2287,6 @@ description: Variables in memory after executing clock.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2434,10 +2447,10 @@ description: Variables in memory after executing clock.kcl
             7.054165456091913
           ],
           "tag": {
-            "commentStart": 9960,
-            "end": 9967,
+            "commentStart": 9981,
+            "end": 9988,
             "moduleId": 0,
-            "start": 9960,
+            "start": 9981,
             "type": "TagDeclarator",
             "value": "seg004"
           },
@@ -2458,10 +2471,10 @@ description: Variables in memory after executing clock.kcl
             19.554165456091912
           ],
           "tag": {
-            "commentStart": 10139,
-            "end": 10146,
+            "commentStart": 10160,
+            "end": 10167,
             "moduleId": 0,
-            "start": 10139,
+            "start": 10160,
             "type": "TagDeclarator",
             "value": "seg002"
           },
@@ -2527,6 +2540,8 @@ description: Variables in memory after executing clock.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 29,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2534,7 +2549,6 @@ description: Variables in memory after executing clock.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2618,6 +2632,8 @@ description: Variables in memory after executing clock.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 29,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2625,7 +2641,6 @@ description: Variables in memory after executing clock.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2728,10 +2743,10 @@ description: Variables in memory after executing clock.kcl
             -119.46453889126977
           ],
           "tag": {
-            "commentStart": 11448,
-            "end": 11455,
+            "commentStart": 11469,
+            "end": 11476,
             "moduleId": 0,
-            "start": 11448,
+            "start": 11469,
             "type": "TagDeclarator",
             "value": "seg003"
           },
@@ -2752,10 +2767,10 @@ description: Variables in memory after executing clock.kcl
             -120.77114468211543
           ],
           "tag": {
-            "commentStart": 11635,
-            "end": 11642,
+            "commentStart": 11656,
+            "end": 11663,
             "moduleId": 0,
-            "start": 11635,
+            "start": 11656,
             "type": "TagDeclarator",
             "value": "seg005"
           },
@@ -2821,6 +2836,8 @@ description: Variables in memory after executing clock.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 30,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2828,7 +2845,6 @@ description: Variables in memory after executing clock.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2912,6 +2928,8 @@ description: Variables in memory after executing clock.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 30,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2919,7 +2937,6 @@ description: Variables in memory after executing clock.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3031,6 +3048,7 @@ description: Variables in memory after executing clock.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 31,
       "value": "start",
       "xAxis": {
         "x": 1.0,
@@ -3054,10 +3072,10 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 901,
-              "end": 907,
+              "commentStart": 922,
+              "end": 928,
               "moduleId": 0,
-              "start": 901,
+              "start": 922,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3068,10 +3086,10 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 980,
-              "end": 992,
+              "commentStart": 1001,
+              "end": 1013,
               "moduleId": 0,
-              "start": 980,
+              "start": 1001,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -3098,10 +3116,10 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 901,
-                "end": 907,
+                "commentStart": 922,
+                "end": 928,
                 "moduleId": 0,
-                "start": 901,
+                "start": 922,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -3116,6 +3134,8 @@ description: Variables in memory after executing clock.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -3123,7 +3143,6 @@ description: Variables in memory after executing clock.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -3202,13 +3221,14 @@ description: Variables in memory after executing clock.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 29,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 55.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3234,13 +3254,14 @@ description: Variables in memory after executing clock.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 30,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

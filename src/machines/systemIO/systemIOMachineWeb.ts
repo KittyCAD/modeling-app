@@ -7,6 +7,7 @@ import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsU
 import { err } from '@src/lib/trap'
 import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
@@ -29,11 +30,14 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
+        const wasmInstance = await input.wasmInstancePromise
         // Browser version doesn't navigate, just overwrites the current file
         // clearImportSearchParams()
-        const projectSettings = readLocalStorageProjectSettingsFile()
+        const projectSettings =
+          readLocalStorageProjectSettingsFile(wasmInstance)
         if (err(projectSettings)) {
           return Promise.reject(
             'Unable to read project settings from local storage'
@@ -42,12 +46,13 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         const codeToWrite = newKclFile(
           input.requestedCode,
           projectSettings?.settings?.modeling?.base_unit ||
-            DEFAULT_DEFAULT_LENGTH_UNIT
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          wasmInstance
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
-        input.rootContext.codeManager.updateCodeStateEditor(codeToWrite)
-        await input.rootContext.codeManager.writeToFile()
-        await input.rootContext.kclManager.executeCode()
+        input.rootContext.kclManager.updateCodeEditor(codeToWrite, {
+          shouldExecute: true,
+        })
 
         // Needed for zoom_to_fit to work until #6545 is fixed:
         // https://github.com/KittyCAD/modeling-app/issues/6545

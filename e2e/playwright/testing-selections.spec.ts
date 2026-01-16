@@ -2,7 +2,7 @@ import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing selections', () => {
+test.describe('Testing selections', { tag: '@desktop' }, () => {
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
     editor,
@@ -370,7 +370,7 @@ test.describe('Testing selections', () => {
     })
 
     await test.step('Right click on bracket sample leads to the right place in code', async () => {
-      await expect(line).not.toBeVisible()
+      await expect(line).not.toBeInViewport()
       await clickCenter()
       await expect(page.getByText('1 face')).toBeVisible()
       await clickCenter({ shouldRightClick: true })

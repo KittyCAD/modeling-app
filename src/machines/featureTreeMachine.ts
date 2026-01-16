@@ -13,9 +13,11 @@ import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
-import { kclManager } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { err } from '@src/lib/trap'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 type FeatureTreeEvent =
   | {
@@ -56,7 +58,6 @@ type FeatureTreeEvent =
     }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
-  | { type: 'selected' }
   | { type: 'done' }
   | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
   | { type: 'xstate.error.actor.prepareDeleteCommand'; error: Error }
@@ -64,9 +65,11 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
+  rustContext: RustContext
+  kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
+  commandBarActor: CommandBarActorType
 }
-
-export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
 
 export const featureTreeMachine = setup({
   types: {
@@ -83,7 +86,7 @@ export const featureTreeMachine = setup({
         input,
       }: {
         input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
+          commandBarSend: CommandBarActorType['send']
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -108,6 +111,11 @@ export const featureTreeMachine = setup({
         input: {
           artifact: Artifact | undefined
           targetSourceRange: SourceRange | undefined
+          systemDeps: {
+            kclManager: KclManager
+            rustContext: RustContext
+            sceneEntitiesManager: SceneEntities
+          }
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -118,7 +126,7 @@ export const featureTreeMachine = setup({
           }
 
           const pathToNode = getNodePathFromSourceRange(
-            kclManager.ast,
+            input.systemDeps.kclManager.ast,
             targetSourceRange
           )
           const selection = {
@@ -128,7 +136,7 @@ export const featureTreeMachine = setup({
             },
             artifact,
           }
-          deleteSelectionPromise(selection)
+          deleteSelectionPromise({ selection, systemDeps: input.systemDeps })
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -180,8 +188,7 @@ export const featureTreeMachine = setup({
         },
 
         selectOperation: {
-          target: 'selecting',
-          actions: 'saveTargetSourceRange',
+          actions: ['saveTargetSourceRange', 'sendSelectionEvent'],
         },
 
         enterEditFlow: {
@@ -245,16 +252,6 @@ export const featureTreeMachine = setup({
 
     goingToKclSource: {
       states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'done',
-            },
-          },
-
-          entry: ['sendSelectionEvent'],
-        },
-
         done: {
           entry: ['clearContext'],
           always: '#featureTree.idle',
@@ -262,7 +259,10 @@ export const featureTreeMachine = setup({
 
         openingCodePane: {
           on: {
-            codePaneOpened: 'selecting',
+            codePaneOpened: {
+              target: 'done',
+              actions: ['sendSelectionEvent'],
+            },
           },
 
           entry: 'openCodePane',
@@ -273,31 +273,15 @@ export const featureTreeMachine = setup({
     },
 
     selecting: {
-      states: {
-        selecting: {
-          on: {
-            selected: 'done',
-          },
-
-          entry: 'sendSelectionEvent',
-        },
-
-        done: {
-          always: '#featureTree.idle',
-          entry: 'clearContext',
-        },
-      },
-
-      initial: 'selecting',
+      always: '#featureTree.idle',
+      entry: 'sendSelectionEvent',
+      exit: 'clearContext',
     },
 
     enteringTranslateFlow: {
       states: {
         enteringTranslateFlow: {
-          on: {
-            selected: 'done',
-          },
-
+          always: 'done',
           entry: 'sendTranslateCommand',
         },
 
@@ -313,10 +297,7 @@ export const featureTreeMachine = setup({
     enteringRotateFlow: {
       states: {
         enteringRotateFlow: {
-          on: {
-            selected: 'done',
-          },
-
+          always: 'done',
           entry: 'sendRotateCommand',
         },
 
@@ -332,10 +313,7 @@ export const featureTreeMachine = setup({
     enteringScaleFlow: {
       states: {
         enteringScaleFlow: {
-          on: {
-            selected: 'done',
-          },
-
+          always: 'done',
           entry: 'sendScaleCommand',
         },
 
@@ -351,10 +329,6 @@ export const featureTreeMachine = setup({
     enteringCloneFlow: {
       states: {
         enteringCloneFlow: {
-          on: {
-            selected: 'done',
-          },
-
           entry: 'sendCloneCommand',
         },
 
@@ -370,11 +344,8 @@ export const featureTreeMachine = setup({
     enteringAppearanceFlow: {
       states: {
         enteringAppearanceFlow: {
-          on: {
-            selected: 'done',
-          },
-
           entry: 'sendAppearanceCommand',
+          always: 'done',
         },
 
         done: {
@@ -388,15 +359,6 @@ export const featureTreeMachine = setup({
 
     enteringEditFlow: {
       states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareEditCommand',
-              reenter: true,
-            },
-          },
-        },
-
         done: {
           always: '#featureTree.idle',
         },
@@ -408,14 +370,17 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    kclManager.artifactGraph
+                    context.kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
                 operation: context.currentOperation!,
                 artifact,
-                commandBarSend: commandBarActor.send,
+                commandBarSend: context.commandBarActor.send,
+                rustContext: context.rustContext,
+                code: context.kclManager.code,
+                artifactGraph: context.kclManager.artifactGraph,
               }
             },
             onDone: {
@@ -435,22 +400,13 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'selecting',
+      initial: 'prepareEditCommand',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],
     },
 
     deletingOperation: {
       states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'deletingSelection',
-              reenter: true,
-            },
-          },
-        },
-
         done: {
           always: '#featureTree.idle',
         },
@@ -462,12 +418,17 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    kclManager.artifactGraph
+                    context.kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
                 artifact,
                 targetSourceRange: context.targetSourceRange,
+                systemDeps: {
+                  kclManager: context.kclManager,
+                  rustContext: context.rustContext,
+                  sceneEntitiesManager: context.sceneEntitiesManager,
+                },
               }
             },
             onDone: {
@@ -487,21 +448,13 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'selecting',
+      initial: 'deletingSelection',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],
     },
 
     goingToError: {
       states: {
-        openingCodePane: {
-          entry: 'openCodePane',
-
-          on: {
-            codePaneOpened: 'done',
-          },
-        },
-
         done: {
           entry: 'scrollToError',
 
@@ -509,7 +462,8 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'openingCodePane',
+      initial: 'goingToError',
+      entry: ['openCodePane'],
     },
   },
 

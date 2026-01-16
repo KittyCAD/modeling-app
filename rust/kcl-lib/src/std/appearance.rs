@@ -112,13 +112,15 @@ async fn inner_appearance(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                    object_id: solid_id,
-                    color,
-                    metalness: metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0,
-                    roughness: roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0,
-                    ambient_occlusion: 0.0,
-                }),
+                ModelingCmd::from(
+                    mcmd::ObjectSetMaterialParamsPbr::builder()
+                        .object_id(solid_id)
+                        .color(color)
+                        .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
+                        .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
+                        .ambient_occlusion(0.0)
+                        .build(),
+                ),
             )
             .await?;
 

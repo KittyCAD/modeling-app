@@ -18,7 +18,6 @@
       "vite/client",
       "@types/wicg-file-system-access",
       "node",
-      "mocha",
       "@lezer/generator"
     ],
     "target": "esnext",
@@ -43,6 +42,7 @@
     "node_modules",
     "./*.grammar",
     "vite.config.ts",
+    "forge.config.ts",
     ".vscode-test",
     "rust/kcl-wasm-lib/pkg/**"
   ],

@@ -1,5 +1,8 @@
 import { Spinner } from '@src/components/Spinner'
-import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
+import {
+  ONBOARDING_PROJECT_NAME,
+  SEARCH_PARAM_ML_PROMPT_KEY,
+} from '@src/lib/constants'
 import {
   modifiedFanHousingBrowser,
   modifiedParametersDesktop,
@@ -25,7 +28,11 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
+import {
+  type RouteObject,
+  useRouteLoaderData,
+  useSearchParams,
+} from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 type DesktopOnboardingRoute = RouteObject & {
@@ -158,7 +165,7 @@ function Toolbar() {
 
 function TextToCad() {
   // Highlight the text-to-cad button if it's present
-  useOnboardingHighlight('command-bar-open-button')
+  useOnboardingHighlight('ttc-pane-button')
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -166,20 +173,20 @@ function TextToCad() {
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-24">
       <OnboardingCard>
-        <h1 className="text-xl font-bold">Text-to-CAD</h1>
+        <h1 className="text-xl font-bold">Zookeeper</h1>
         <p className="my-4">
-          You can find Text-to-CAD in the command palette. This allows you to
-          write up a description of what you want, and our AI will generate the
-          CAD for you. Text-to-CAD is currently in an experimental stage. We are
+          You can find Zookeeper in the right sidebar. This allows you to write
+          up a description of what you want, and our AI will generate the CAD
+          for you. Zookeeper is currently in an experimental stage. We are
           improving it every day.
         </p>
         <p className="my-4">
-          Our free plan includes a limited number of Text-to-CAD generations
-          each month. Upgrade to a paid plan for additional credits. Pro and Org
-          plans come with unlimited Text-to-CAD generations.
+          Our free plan includes a limited number of Zookeeper generations each
+          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
-          Let’s walk through an example of how to use Text-to-CAD.
+          Let’s walk through an example of how to use Zookeeper.
         </p>
         <OnboardingButtons
           currentSlug="/desktop/text-to-cad"
@@ -193,28 +200,19 @@ function TextToCad() {
 function TextToCadPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/text-to-cad-prompt'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const [searchParams, setSearchParams] = useSearchParams()
   const prompt =
     'Design a fan housing for a CPU cooler for a 120mm diameter fan with four holes for retaining clips'
 
-  // Ensure panes are closed
-  useOnboardingPanes()
+  // Ensure panes are closed except TTC
+  useOnboardingPanes([DefaultLayoutPaneID.TTC])
 
-  // Enter the text-to-cad flow with a prebaked prompt
+  // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'application',
-        name: 'Text-to-CAD',
-        argDefaultValues: {
-          method: 'existingProject',
-          projectName: loaderData?.project?.name,
-          prompt,
-        },
-      },
-    })
-  }, [loaderData?.project?.name])
+    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
+    setSearchParams(searchParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
 
   // Make it so submitting the command just advances the onboarding
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
@@ -222,12 +220,10 @@ function TextToCadPrompt() {
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
-        <h1 className="text-xl font-bold">Text-to-CAD prompt</h1>
+        <h1 className="text-xl font-bold">Zookeeper prompt</h1>
         <p className="my-4">
-          When you click the Text-to-CAD button, it opens the command palette to
-          where you can input a text prompt. To save you a Text-to-CAD
-          generation credit, we are going to use a pre-rolled Text-to-CAD prompt
-          for this example. Click next to see an example of what Text-to-CAD can
+          To save you money, we are going to use a pre-rolled Zookeeper prompt
+          for this example. Click next to see an example of what Zookeeper can
           generate.
         </p>
         <OnboardingButtons
@@ -270,9 +266,8 @@ function FeatureTreePane() {
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
-          This is an example of the generated CAD model using Text-to-CAD. We
-          skipped the real generation for this tutorial, but normally you'll be
-          asked to approve the generation first.
+          This is an example of the generated CAD model using Zookeeper. We
+          skipped the real generation for this tutorial.
         </p>
         <p className="my-4">
           To the left are the panes. We have opened the feature tree pane for
@@ -376,9 +371,10 @@ function OtherPanes() {
 function PromptToEdit() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
+  // Highlight the text-to-cad button if it's present
+  useOnboardingHighlight('ttc-pane-button')
 
+  // Open the text-to-cad pane
   // navigate to the main assembly file
   useEffect(() => {
     systemIOActor.send({
@@ -397,15 +393,12 @@ function PromptToEdit() {
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
       <OnboardingCard className="col-start-3 col-span-2">
-        <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
+        <h1 className="text-xl font-bold">Modify with Zookeeper</h1>
         <p className="my-4">
-          Text-to-CAD not only can <strong>create</strong> a part, but also{' '}
-          <strong>modify</strong> an existing part. In the right toolbar, you’ll
-          see a “Text-to-CAD” pane. Once clicked, you’ll be able to describe the
-          change you want for your part, and our AI will generate the change.
-          Once again, this will cost <strong>one credit per minute</strong> it
-          took to generate, but as mentioned before, most calls are typically
-          under one minute.
+          Zookeeper not only can <strong>create</strong> a part, but also{' '}
+          <strong>modify</strong> an existing part. Still in the right sidebar,
+          under the “Zookeeper” pane, you’ll be able to describe the change you
+          want for your part, and our AI will generate the change. minute.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -426,18 +419,11 @@ function PromptToEditPrompt() {
   useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // Fill in the prompt if available
+  const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
-    const promptInput = document.querySelector(
-      `[data-testid="ml-ephant-conversation-input"]`
-    )
-    if (promptInput === null) {
-      console.error(
-        `Expected promptInput is not present in onboarding step '${thisOnboardingStatus}'`
-      )
-      return
-    }
-
-    promptInput.textContent = prompt
+    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
+    setSearchParams(searchParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   // Enter the prompt-to-edit flow with a prebaked prompt
@@ -468,7 +454,7 @@ function PromptToEditPrompt() {
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
-        <h1 className="text-xl font-bold">Modify with Text-to-CAD prompt</h1>
+        <h1 className="text-xl font-bold">Modify with Zookeeper</h1>
         {!isReady && (
           <p className="absolute top-0 right-0 m-4 w-fit flex items-center py-1 px-2 rounded bg-chalkboard-20 dark:bg-chalkboard-80">
             <Spinner className="w-5 h-5 inline-block mr-2" />
@@ -476,14 +462,14 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          We are going to use Text-to-CAD to modify multiple files at once!
-          Let’s update the housing and fan together.
+          We are going to use Zookeeper to modify multiple files at once! Let’s
+          update the housing and fan together.
         </p>
         <p className="my-4">
-          To save you a credit, we are using a pre-rolled Text-to-CAD prompt to
-          edit your existing fan housing. You can see the prompt in the window
-          above. Click next to see an example of what modifying with Text-to-CAD
-          would look like.
+          To save you money, we are using a pre-rolled Zookeeper prompt to edit
+          your existing fan housing. You can see the prompt in the window above.
+          Click next to see an example of what modifying with Zookeeper would
+          look like.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -533,18 +519,17 @@ function PromptToEditResult() {
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Result</h1>
         <p className="my-4">
-          This is an example of an edit that Text-to-CAD can make for you. We
-          skipped the real generation for this tutorial, but normally you'll be
-          asked to approve the generation first.
+          This is an example of an edit that Zookeeper can make for you. We
+          skipped the real generation for this tutorial.
         </p>
         <p className="my-4">
-          Text-to-CAD will make changes across files in your project, so if you
+          Zookeeper will make changes across files in your project, so if you
           have named parameters in another file that need to change to complete
           your request, it is smart enough to go find their source and change
           them.
         </p>
         <p className="my-4">
-          All of our Text-to-CAD capabilities are experimental, so please report
+          All of our Zookeeper capabilities are experimental, so please report
           any issues to us and stay tuned for updates! We are working on it
           every day.
         </p>

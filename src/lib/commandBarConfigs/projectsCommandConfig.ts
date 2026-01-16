@@ -35,7 +35,7 @@ export function createProjectCommands({
   }
 
   const openProjectCommand: Command = {
-    icon: 'arrowRight',
+    icon: 'folder',
     name: 'Open project',
     displayName: `Open project`,
     description: 'Open a project',

@@ -19,7 +19,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
+        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
         fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -154,11 +154,13 @@ async fn send_pattern_transform<T: GeometryTrait>(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: if use_original { solid.original_id() } else { solid.id() },
-                transform: Default::default(),
-                transforms,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityLinearPatternTransform::builder()
+                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .transform(Default::default())
+                    .transforms(transforms)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -209,6 +211,7 @@ async fn make_transform<T: GeometryTrait>(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("transform closure".to_owned()),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
@@ -222,6 +225,19 @@ async fn make_transform<T: GeometryTrait>(
             source_ranges.clone(),
         ))
     })?;
+
+    let transform_fn_return = match transform_fn_return.control {
+        ControlFlowKind::Continue => transform_fn_return.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside pattern transform function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
+
     let transforms = match transform_fn_return {
         KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
@@ -451,7 +467,8 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
@@ -479,11 +496,13 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_tuple_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
@@ -511,6 +530,7 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 }
 
@@ -935,22 +955,24 @@ async fn pattern_circular(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::EntityCircularPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: if data.use_original() {
-                    geometry.original_id()
-                } else {
-                    geometry.id()
-                },
-                center: kcmc::shared::Point3d {
-                    x: LengthUnit(center[0]),
-                    y: LengthUnit(center[1]),
-                    z: LengthUnit(center[2]),
-                },
-                num_repetitions,
-                arc_degrees: data.arc_degrees().unwrap_or(360.0),
-                rotate_duplicates: data.rotate_duplicates().unwrap_or(true),
-            }),
+            ModelingCmd::from(
+                mcmd::EntityCircularPattern::builder()
+                    .axis(kcmc::shared::Point3d::from(data.axis()))
+                    .entity_id(if data.use_original() {
+                        geometry.original_id()
+                    } else {
+                        geometry.id()
+                    })
+                    .center(kcmc::shared::Point3d {
+                        x: LengthUnit(center[0]),
+                        y: LengthUnit(center[1]),
+                        z: LengthUnit(center[2]),
+                    })
+                    .num_repetitions(num_repetitions)
+                    .arc_degrees(data.arc_degrees().unwrap_or(360.0))
+                    .rotate_duplicates(data.rotate_duplicates().unwrap_or(true))
+                    .build(),
+            ),
         )
         .await?;
 

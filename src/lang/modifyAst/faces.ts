@@ -57,12 +57,14 @@ export function addShell({
   faces,
   thickness,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   faces: Selections
   thickness: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -81,6 +83,7 @@ export function addShell({
     faces,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup
   )
@@ -107,6 +110,7 @@ export function addShell({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -139,6 +143,7 @@ export function addHole({
   holeBottom,
   drillPointAngle,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -155,6 +160,7 @@ export function addHole({
   holeBottom: HoleBottom
   drillPointAngle?: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -171,6 +177,7 @@ export function addHole({
     face,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     ['compositeSolid', 'sweep']
@@ -266,7 +273,7 @@ export function addHole({
     return new Error('Unsupported hole type or missing parameters')
   }
 
-  let cutAtExpr = createPoint2dExpression(cutAt)
+  let cutAtExpr = createPoint2dExpression(cutAt, wasmInstance)
   if (err(cutAtExpr)) return cutAtExpr
 
   const call = createCallExpressionStdLibKw(
@@ -362,6 +369,7 @@ export function addHole({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -376,7 +384,7 @@ export function addHole({
 // Util functions for hole edit flows
 export async function retrieveHoleBodyArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeBody: HoleBody | undefined
@@ -402,9 +410,7 @@ export async function retrieveHoleBodyArgs(
     if (err(depthStr)) return depthStr
     const depthResult = await stringToKclExpression(
       depthStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(depthResult) || 'errors' in depthResult) {
       return new Error("Couldn't retrieve blindDepth argument")
@@ -419,9 +425,7 @@ export async function retrieveHoleBodyArgs(
     if (err(diameterStr)) return diameterStr
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve diameter argument")
@@ -438,7 +442,7 @@ export async function retrieveHoleBodyArgs(
 
 export async function retrieveHoleBottomArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeBottom: HoleBottom | undefined
@@ -464,9 +468,7 @@ export async function retrieveHoleBottomArgs(
       if (err(angleStr)) return angleStr
       const angleResult = await stringToKclExpression(
         angleStr,
-        false,
-        instance,
-        providedRustContext
+        providedRustContext!
       )
       if (err(angleResult) || 'errors' in angleResult) {
         return new Error("Couldn't retrieve drillBitAngle argument")
@@ -484,7 +486,7 @@ export async function retrieveHoleBottomArgs(
 
 export async function retrieveHoleTypeArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeType: HoleType | undefined
@@ -529,9 +531,7 @@ export async function retrieveHoleTypeArgs(
     if (err(depthStr)) return depthStr
     const depthResult = await stringToKclExpression(
       depthStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(depthResult) || 'errors' in depthResult) {
       return new Error("Couldn't retrieve depth argument")
@@ -546,9 +546,7 @@ export async function retrieveHoleTypeArgs(
     if (err(diameterStr)) return diameterStr
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve counterboreDiameter argument")
@@ -570,9 +568,7 @@ export async function retrieveHoleTypeArgs(
     if (err(angleStr)) return angleStr
     const angleResult = await stringToKclExpression(
       angleStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(angleResult) || 'errors' in angleResult) {
       return new Error("Couldn't retrieve countersinkAngle argument")
@@ -589,9 +585,7 @@ export async function retrieveHoleTypeArgs(
     }
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      false,
-      instance,
-      providedRustContext
+      providedRustContext!
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve countersinkDiameter argument")
@@ -619,6 +613,7 @@ export function addOffsetPlane({
   plane,
   offset,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -626,6 +621,7 @@ export function addOffsetPlane({
   plane: Selections
   offset: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -649,6 +645,7 @@ export function addOffsetPlane({
       plane,
       artifactGraph,
       modifiedAst,
+      wasmInstance,
       mNodeToEdit
     )
     if (err(result)) {
@@ -660,7 +657,7 @@ export function addOffsetPlane({
       createLabeledArg('face', facesExpr),
     ])
   } else {
-    planeExpr = getSelectedPlaneAsNode(plane, variables)
+    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
     if (!planeExpr) {
       return new Error('No plane found in the selection')
     }
@@ -683,6 +680,7 @@ export function addOffsetPlane({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -699,7 +697,8 @@ export function addOffsetPlane({
 function getFacesExprsFromSelection(
   ast: Node<Program>,
   faces: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ) {
   return faces.graphSelections.flatMap((face) => {
     if (!face.artifact) {
@@ -708,7 +707,7 @@ function getFacesExprsFromSelection(
     }
     const artifact = face.artifact
     if (artifact.type === 'cap') {
-      return createLiteral(artifact.subType)
+      return createLiteral(artifact.subType, wasmInstance)
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
       let targetArtifact: Artifact | undefined
       let edgeCutMeta: EdgeCutInfo | null = null
@@ -726,12 +725,13 @@ function getFacesExprsFromSelection(
         targetArtifact = segmentArtifact
       } else {
         targetArtifact = artifact
-        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
+        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
       }
 
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
         targetArtifact.codeRef.pathToNode,
+        wasmInstance,
         edgeCutMeta
       )
       if (err(tagResult)) {
@@ -918,6 +918,7 @@ export function buildSolidsAndFacesExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
+  wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   lastChildLookup = true,
   artifactTypeFilter: Array<Artifact['type']> = ['sweep']
@@ -941,6 +942,7 @@ export function buildSolidsAndFacesExprs(
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     nodeToEdit,
     lastChildLookup,
     artifactGraph,
@@ -955,7 +957,8 @@ export function buildSolidsAndFacesExprs(
   const facesExprs = getFacesExprsFromSelection(
     modifiedAst,
     faces,
-    artifactGraph
+    artifactGraph,
+    wasmInstance
   )
   const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {

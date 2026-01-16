@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
@@ -12,7 +12,15 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getLayout, sceneInfra, settingsActor } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  getLayout,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+  settingsActor,
+} from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
@@ -22,6 +30,8 @@ import {
   getOpenPanes,
   setOpenPanes,
 } from '@src/lib/layout'
+
+const systemDeps = { sceneInfra, engineCommandManager, settingsActor }
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -69,7 +79,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition().catch(reportRejection)
+          resetCameraPosition(systemDeps).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
@@ -143,7 +153,13 @@ export function useViewControlMenuItems() {
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current
+              modelingState.context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
+              }
             )
           }
         }}
@@ -186,7 +202,7 @@ export function useViewControlMenuItems() {
   return menuItems
 }
 
-export function ViewControlContextMenu({
+export const ViewControlContextMenu = memo(function ViewControlContextMenu({
   menuTargetElement: wrapperRef,
   ...props
 }: ContextMenuProps) {
@@ -199,4 +215,4 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
-}
+})

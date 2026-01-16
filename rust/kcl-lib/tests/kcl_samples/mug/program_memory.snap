@@ -142,6 +142,8 @@ description: Variables in memory after executing mug.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 26.666666666666668,
             "y": 0.0,
@@ -149,7 +151,6 @@ description: Variables in memory after executing mug.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -277,10 +278,10 @@ description: Variables in memory after executing mug.kcl
             74.7546519737157
           ],
           "tag": {
-            "commentStart": 1465,
-            "end": 1471,
+            "commentStart": 1486,
+            "end": 1492,
             "moduleId": 0,
-            "start": 1465,
+            "start": 1486,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -312,6 +313,8 @@ description: Variables in memory after executing mug.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -319,7 +322,6 @@ description: Variables in memory after executing mug.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -364,7 +366,7 @@ description: Variables in memory after executing mug.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "handleThickness": {
@@ -738,6 +740,8 @@ description: Variables in memory after executing mug.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -745,7 +749,6 @@ description: Variables in memory after executing mug.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1114,6 +1117,8 @@ description: Variables in memory after executing mug.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1121,7 +1126,6 @@ description: Variables in memory after executing mug.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

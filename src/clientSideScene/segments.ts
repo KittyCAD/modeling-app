@@ -92,7 +92,7 @@ import type {
 import toast from 'react-hot-toast'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
@@ -110,7 +110,7 @@ interface CreateSegmentArgs {
   selection?: Selections
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }
 
 interface UpdateSegmentArgs {
@@ -119,7 +119,7 @@ interface UpdateSegmentArgs {
   group: Group
   sceneInfra: SceneInfra
   scale?: number
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }
 
 interface CreateSegmentResult {
@@ -203,6 +203,7 @@ class StraightSegment implements SegmentUtils {
       callExpName,
       baseColor,
       selection,
+      wasmInstance,
     }
 
     // All segment types get an extra segment handle,
@@ -223,6 +224,7 @@ class StraightSegment implements SegmentUtils {
         sceneInfra,
         commandBarActor,
         kclManager,
+        wasmInstance,
       })
       segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
@@ -245,6 +247,7 @@ class StraightSegment implements SegmentUtils {
       group: segmentGroup,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -610,6 +613,7 @@ class CircleSegment implements SegmentUtils {
     sceneInfra,
     commandBarActor,
     kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -656,6 +660,7 @@ class CircleSegment implements SegmentUtils {
       sceneInfra,
       commandBarActor,
       kclManager,
+      wasmInstance,
     })
 
     arcMesh.userData.type = meshType
@@ -688,6 +693,7 @@ class CircleSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -855,6 +861,7 @@ class CircleThreePointSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    wasmInstance,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -930,6 +937,7 @@ class CircleThreePointSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1074,6 +1082,7 @@ class ArcSegment implements SegmentUtils {
     sceneInfra,
     commandBarActor,
     kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -1116,6 +1125,7 @@ class ArcSegment implements SegmentUtils {
       sceneInfra,
       commandBarActor,
       kclManager,
+      wasmInstance,
     })
 
     const grey = 0xaaaaaa
@@ -1171,6 +1181,7 @@ class ArcSegment implements SegmentUtils {
       sceneInfra,
       commandBarActor,
       kclManager,
+      wasmInstance,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
 
@@ -1210,6 +1221,7 @@ class ArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1433,6 +1445,7 @@ class ThreePointArcSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    wasmInstance,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -1515,6 +1528,7 @@ class ThreePointArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1787,6 +1801,7 @@ function createLengthIndicator({
   sceneInfra,
   commandBarActor,
   kclManager,
+  wasmInstance,
 }: {
   from: Coords2d
   to: Coords2d
@@ -1795,6 +1810,7 @@ function createLengthIndicator({
   sceneInfra: SceneInfra
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
+  wasmInstance: ModuleType
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
@@ -1831,7 +1847,8 @@ function createLengthIndicator({
         graphSelections: [selection.graphSelections[0]],
       },
       angleOrLength: 'setLength',
-      kclManager: kclManager,
+      kclManager,
+      wasmInstance,
     })
     if (err(canConstrainLength) || !canConstrainLength.enabled) {
       toast.error(
@@ -1900,16 +1917,6 @@ export function createArcGeometry({
     !ccw,
     0
   )
-  const arcEnd = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    endAngle,
-    startAngle,
-    ccw,
-    0
-  )
 
   const shape = createLineShape(scale)
   if (!isDashed) {
@@ -1950,6 +1957,16 @@ export function createArcGeometry({
     })
   }
 
+  const arcEnd = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    endAngle,
+    startAngle,
+    ccw,
+    0
+  )
   // Create dashes at the start of the arc
   for (let i = 0; i < dashesAtEachEnd; i++) {
     const t = i / totalDashes

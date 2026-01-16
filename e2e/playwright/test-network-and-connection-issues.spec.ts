@@ -1,7 +1,7 @@
 import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Test network related behaviors', () => {
+test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
@@ -204,7 +204,7 @@ test.describe('Test network related behaviors', () => {
 
   test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
-    { tag: ['@desktop', '@skipLocalEngine'] },
+    { tag: '@skipLocalEngine' },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
@@ -212,9 +212,7 @@ test.describe('Test network related behaviors', () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await tronApp.cleanProjectDir({
         app: {

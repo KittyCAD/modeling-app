@@ -45,8 +45,6 @@ import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
-const FRAMES_TO_ANIMATE_IN = 30
-const ORTHOGRAPHIC_MAGIC_FOV = 4
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
 // Partial declaration; the front/back/left/right are handled differently.
@@ -176,10 +174,10 @@ export class CameraControls {
     }
   }
 
-  handleStart = () => {
+  private handleStart = () => {
     this._isCamMovingCallback(true, false)
   }
-  handleEnd = () => {
+  private handleEnd = () => {
     this._isCamMovingCallback(false, false)
   }
 
@@ -306,12 +304,9 @@ export class CameraControls {
     type CallBackParam = Parameters<
       (
         | Subscription<
-            | 'default_camera_zoom'
-            | 'camera_drag_end'
-            | 'default_camera_get_settings'
-            | 'zoom_to_fit'
+            'camera_drag_end' | 'default_camera_get_settings' | 'zoom_to_fit'
           >
-        | UnreliableSubscription<'camera_drag_move'>
+        | UnreliableSubscription<'camera_drag_move' | 'default_camera_zoom'>
       )['callback']
     >[0]
 
@@ -374,7 +369,7 @@ export class CameraControls {
         event: 'camera_drag_end',
         callback: cb,
       })
-      this.engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeToUnreliable({
         event: 'default_camera_zoom',
         callback: cb,
       })
@@ -660,7 +655,7 @@ export class CameraControls {
 
     return this.camera
   }
-  _usePerspectiveCamera = () => {
+  private _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     this.camera = this.createPerspectiveCamera()
@@ -899,7 +894,7 @@ export class CameraControls {
     this.camera.updateMatrixWorld()
   }
 
-  async getCameraView(): Promise<CameraViewState | Error> {
+  private async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -936,7 +931,7 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
-  async setCameraViewAlongZ(direction: StandardView) {
+  private async setCameraViewAlongZ(direction: StandardView) {
     // Sets the camera view along the Z axis, giving us a top-down or bottom-up view.
     // The approach first retrieves current camera setup, then alters pivot params,
     // ultimately preserving other camera settings, e.g., ortho vs. perspective projection.
@@ -1166,8 +1161,7 @@ export class CameraControls {
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
-    duration = 500,
-    toOrthographic = true
+    duration = 500
   ): Promise<void> {
     if (this.syncDirection === 'engineToClient')
       console.warn(
@@ -1176,15 +1170,13 @@ export class CameraControls {
     await this._tweenCameraToQuaternion(
       targetQuaternion,
       targetPosition,
-      duration,
-      toOrthographic
+      duration
     )
   }
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
-    duration = 500,
-    toOrthographic = false
+    duration = 500
   ): Promise<void> {
     return new Promise((resolve) => {
       const camera = this.camera
@@ -1228,11 +1220,9 @@ export class CameraControls {
       }
 
       const onComplete = async () => {
-        if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.9999)
-          this.useOrthographicCamera()
-        } else if (toOrthographic) {
-          await this.animateToOrthographic()
+        if (isReducedMotion()) {
+          // Even if there is no animation we need to call cameraAtTime so camera values are updated
+          cameraAtTime(1)
         }
         this.enableRotate = false
         this._isCamMovingCallback(false, true)
@@ -1242,93 +1232,16 @@ export class CameraControls {
       if (isReducedMotion()) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
-        return
+      } else {
+        new TWEEN.Tween({ t: 0 })
+          .to({ t: tweenEnd }, duration)
+          .easing(TWEEN.Easing.Quadratic.InOut)
+          .onUpdate(({ t }) => cameraAtTime(t))
+          .onComplete(toSync(onComplete, reportRejection))
+          .start()
       }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, duration)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(toSync(onComplete, reportRejection))
-        .start()
     })
   }
-
-  animateToOrthographic = () =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient')
-        console.warn(
-          'animate To Orthographic not design to work with engineToClient syncDirection.'
-        )
-      this.isFovAnimationInProgress = true
-      let currentFov = this.lastPerspectiveFov
-      this.perspectiveFovBeforeOrtho = currentFov
-
-      const targetFov = ORTHOGRAPHIC_MAGIC_FOV
-      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 10
-
-      const animateFovChange = () => {
-        if (this.camera instanceof PerspectiveCamera) {
-          if (this.camera.fov > targetFov) {
-            // Decrease the FOV
-            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
-            this.camera.updateProjectionMatrix()
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.dollyZoom(currentFov)
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else if (frameWaitOnFinish > 0) {
-            frameWaitOnFinish--
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else {
-            // Once the target FOV is reached, switch to the orthographic camera
-            // Needs to wait a couple frames after the FOV animation is complete
-            this.useOrthographicCamera()
-            this.isFovAnimationInProgress = false
-            resolve(true)
-          }
-        }
-      }
-
-      animateFovChange() // Start the animation
-    })
-  animateToPerspective = (targetCamUp = new Vector3(0, 0, 1)) =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient') {
-        console.warn(
-          'animate To Perspective not design to work with engineToClient syncDirection.'
-        )
-      }
-      this.isFovAnimationInProgress = true
-      const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-      this.lastPerspectiveFov = ORTHOGRAPHIC_MAGIC_FOV
-      let currentFov = ORTHOGRAPHIC_MAGIC_FOV
-      const initialCameraUp = this.camera.up.clone()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.usePerspectiveCamera()
-      const tempVec = new Vector3()
-
-      const cameraAtTime = (t: number) => {
-        currentFov =
-          this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
-        const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
-        this.camera.up.copy(currentUp)
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.dollyZoom(currentFov)
-      }
-
-      const onComplete = () => {
-        this.isFovAnimationInProgress = false
-        resolve(true)
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: 1 }, isReducedMotion() ? 50 : FRAMES_TO_ANIMATE_IN * 16) // Assuming 60fps, hence 16ms per frame
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
-        .start()
-    })
 
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
@@ -1444,7 +1357,7 @@ export class CameraControls {
    *
    * TODO: Add support for sketch mode touch camera movements
    */
-  setUpTouchControls = (domElement: HTMLCanvasElement) => {
+  private setUpTouchControls = (domElement: HTMLCanvasElement) => {
     /** Amount in px needed to pan before recognizer runs */
     const panDistanceThreshold = 3
     /** Amount in scale delta needed to pinch before recognizer runs */

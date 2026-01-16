@@ -4,12 +4,12 @@ import {
 } from '@src/lib/constants'
 import {
   billingActor,
-  mlEphantManagerActor,
+  engineCommandManager,
   systemIOActor,
   useSettings,
   useToken,
 } from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
   useProjectIdToConversationId,
@@ -45,24 +45,13 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useClearQueryParams()
 
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    mlEphantManagerActor2,
     billingActor,
     token,
-    (prompt, promptMeta) => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.createKCLFile,
-        data: {
-          requestedProjectName: promptMeta.project.name,
-          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
-          requestedFileNameWithExtension:
-            promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
-        },
-      })
-    },
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -81,12 +70,7 @@ export function SystemIOMachineLogicListenerWeb() {
     }
   )
 
-  useProjectIdToConversationId(
-    mlEphantManagerActor,
-    mlEphantManagerActor2,
-    systemIOActor,
-    settings
-  )
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   return null
 }

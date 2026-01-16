@@ -2474,7 +2474,27 @@ description: Result of parsing t-slot-rectangle.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch",
                                 "style": "line"
                               }
@@ -2488,7 +2508,27 @@ description: Result of parsing t-slot-rectangle.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Sketch a dimensioned hole in the center of the profile",
                                 "style": "line"
                               }
@@ -2502,7 +2542,27 @@ description: Result of parsing t-slot-rectangle.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
-                                "type": "newLineBlockComment",
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "blockComment",
                                 "value": "Scale the entire sketch by a factor of the rail height, then extrude",
                                 "style": "line"
                               }
@@ -2581,6 +2641,14 @@ description: Result of parsing t-slot-rectangle.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "railTslot",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2923,33 +2991,12 @@ description: Result of parsing t-slot-rectangle.kcl
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
-          "nonCodeMeta": {
-            "nonCodeNodes": {
-              "2": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "NonCodeNode",
-                  "value": {
-                    "type": "newLineBlockComment",
-                    "value": "Generate a pair of rails along the Y direction",
-                    "style": "line"
-                  }
-                }
-              ]
-            },
-            "startNodes": []
-          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Generate a pair of rails along the X direction"
         ],
         "start": 0,
@@ -3270,6 +3317,9 @@ description: Result of parsing t-slot-rectangle.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Generate a pair of rails along the Y direction"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3293,6 +3343,7 @@ description: Result of parsing t-slot-rectangle.kcl
         "preComments": [
           "// T-Slotted Rectangle Frame",
           "// A rectangular frame made up of T-slotted rails",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"
@@ -3368,6 +3419,30 @@ description: Result of parsing t-slot-rectangle.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
           {
             "commentStart": 0,
             "end": 0,

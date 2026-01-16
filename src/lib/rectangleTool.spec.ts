@@ -1,4 +1,4 @@
-import { expect } from 'vitest'
+import { expect, describe, test } from 'vitest'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
@@ -36,11 +36,8 @@ profile001 = startProfile(at = [120.37, 162.76])
       const _node = getNodeFromPath<VariableDeclaration>(
         ast,
         sketchPathToNode || [],
-        'VariableDeclaration',
-        undefined,
-        undefined,
-        undefined,
-        instance
+        instance,
+        'VariableDeclaration'
       )
       if (trap(_node)) return
       const sketchInit = _node.node?.declaration.init

@@ -120,9 +120,28 @@ export type SimpleLayout = BaseLayout & {
 }
 export type Layout = SimpleLayout | SplitLayout | PaneLayout
 
+type LayoutVersion = `v${number}`
+
 /** add more fields as needed */
 export type LayoutWithMetadata = {
-  version: 'v1'
+  version: LayoutVersion
   /** We don't know if this is valid yet */
   layout: Layout
 }
+
+export type LayoutMigrationMap = Map<string, LayoutMigration>
+
+export type LayoutMigration = {
+  newVersion: string
+  transformationSets: LayoutTransformationSet[]
+}
+
+type LayoutTransformationSet = {
+  /** A matcher to either match on all (if `true`) or some layout nodes */
+  matcher: LayoutMatcher
+  /** The transformations to apply to the matched layout node */
+  transformations: LayoutTransformation[]
+}
+
+export type LayoutMatcher = true | ((l: Layout) => boolean)
+export type LayoutTransformation = (l: Layout) => null | Layout

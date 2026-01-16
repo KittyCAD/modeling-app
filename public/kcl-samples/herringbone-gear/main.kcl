@@ -1,5 +1,6 @@
 // Herringbone Gear
 // A herringbone, or double-helical gear, is a cylindrical gear type with angled teeth in opposing directions. This allows the quietness and smoothness of a helical gear, without applying a directional load while turning
+// Categories: Automotive, Aerospace
 
 // Set units
 @settings(defaultLengthUnit = mm)

@@ -24,7 +24,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import {
   appActor,
-  codeManager,
   kclManager,
   settingsActor,
   useSettings,
@@ -73,13 +72,12 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        codeManager,
         kclManager,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
       if (!isDesktop()) {
-        navigate('..')
+        void navigate('..')
       }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)
@@ -105,11 +103,8 @@ export const AllSettingsFields = forwardRef(
                   {decamelize(category, { separator: ' ' })}
                 </h2>
                 {Object.entries(categorySettings)
-                  .filter(
-                    // Filter out settings that don't have a Component or inputType
-                    // or are hidden on the current level or the current platform
-                    (item: [string, Setting<unknown>]) =>
-                      shouldShowSettingInput(item[1], searchParamTab)
+                  .filter((item: [string, Setting<unknown>]) =>
+                    shouldShowSettingInput(item[1], searchParamTab)
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting

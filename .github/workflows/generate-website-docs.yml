@@ -19,7 +19,7 @@ jobs:
     name: generate-website-docs
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
@@ -28,12 +28,12 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
       # Checkout the docs repo since we will want to update the files there.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: 'kittycad/documentation'
           path: 'documentation'
           token: ${{ steps.app-token.outputs.token }}
-      - name: move docs to docs
+      - name: Update docs
         shell: bash
         run: |
           mkdir -p documentation/content/pages/docs/kcl/
@@ -47,7 +47,7 @@ jobs:
           mv -f rust/kcl-lib/tests/outputs documentation/content/kcl-test-outputs
           # We don't need the README
           rm documentation/content/pages/docs/kcl-std/README.md
-      - name: move kcl-samples
+      - name: Update samples
         shell: bash
         run: |
           mkdir -p documentation/content/pages/docs/kcl-samples
@@ -55,26 +55,23 @@ jobs:
           rm -rf documentation/content/pages/docs/kcl-samples/*
           # move new
           mv -f public/kcl-samples/* documentation/content/pages/docs/kcl-samples/
-      - name: commit the changes in the docs repo
+      - name: Commit changes
         shell: bash
         run: |
           cd documentation
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
-          git commit -am "YOYO NEW KCL DOCS!!" || exit 0
+          git commit --all --message "Update KCL docs" || exit 0
           git fetch origin
-          git rebase origin/main || exit 0
+          git rebase origin/main
           export NEW_BRANCH="update-kcl-docs"
-          git checkout -b "$NEW_BRANCH"
-          git push -f origin "$NEW_BRANCH"
+          git switch --create "$NEW_BRANCH"
+          git push --force origin "$NEW_BRANCH"
           gh pr create --title "Update KCL docs" \
-              --body "Updating the generated kcl docs cc @jessfraz @franknoirot merge this" \
+              --body "Applies the latest changes from: ${{ github.server_url }}/${{ github.repository }} cc @KittyCAD/kcl" \
               --head "$NEW_BRANCH" \
-              --reviewer jessfraz \
-              --reviewer irev-dev \
-              --reviewer franknoirot \
-              --base main || true
+              --base main || echo "PR already exists, updated via force push"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 

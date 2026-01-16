@@ -6,7 +6,7 @@ import {
   getThemeColorForEngine,
   Themes,
 } from '@src/lib/theme'
-import { withWebSocketURL } from '@src/lib/withBaseURL'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   IEventListenerTracked,
   ManagerTearDown,
@@ -35,8 +35,6 @@ import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type CodeManager from '@src/lang/codeManager'
-import { BSON } from 'bson'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -47,10 +45,11 @@ import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
+  DEFAULT_BACKFACE_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -61,11 +60,6 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
-
-type RawFileWithBinary = {
-  name: string
-  contents: Uint8Array | number[]
-}
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -95,7 +89,6 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   sceneInfra: SceneInfra | undefined
-  codeManager: CodeManager | undefined
   kclManager: KclManager | undefined
 
   // Circular dependency that is why it can be undefined
@@ -107,13 +100,14 @@ export class ConnectionManager extends EventTarget {
     height: 256,
   }
   settings: SettingsViaQueryString = {
-    pool: null,
     theme: Themes.Dark,
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
     cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
     cameraOrbit: 'spherical',
+    //TODO: get this from user land
+    backfaceColor: DEFAULT_BACKFACE_COLOR,
   }
 
   subscriptions: {
@@ -149,13 +143,13 @@ export class ConnectionManager extends EventTarget {
     } else {
       // Gotcha: This runs in testing environments
       this.settings = {
-        pool: null,
         theme: Themes.Dark,
         highlightEdges: true,
         enableSSAO: true,
         showScaleGrid: false,
         cameraProjection: 'perspective',
         cameraOrbit: 'spherical',
+        backfaceColor: DEFAULT_BACKFACE_COLOR,
       }
     }
   }
@@ -353,8 +347,8 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       rustContext: this.rustContext,
       settings: this.settings,
-      jsAppSettings: await jsAppSettings(),
-      path: this.codeManager?.currentFilePath || '',
+      jsAppSettings: await jsAppSettings(this.rustContext.settingsActor),
+      path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
@@ -399,9 +393,8 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
-    const url = withWebSocketURL(
-      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}${pool}`
+    const url = withKittycadWebSocketURL(
+      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
   }
@@ -495,6 +488,80 @@ export class ConnectionManager extends EventTarget {
       type: 'darkModeMatcher',
     })
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  /** Set the edge highlighting setting in the engine, with debug logging */
+  async setHighlightEdges(shouldHighlight: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldHighlight,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
+  }
+
+  /** Set the "show scale grid" setting in the engine, with debug logging */
+  async setShowScaleGrid(shouldShowGrid: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldShowGrid,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
   }
 
   async sendSceneCommand(
@@ -633,6 +700,17 @@ export class ConnectionManager extends EventTarget {
       reject(value)
       isSettled = true
     }
+
+    if (this.pendingCommands[id]) {
+      const duplicateCommandMessage =
+        'You are attempting to send the same command twice. Rejecting this attempt.'
+      console.error(duplicateCommandMessage)
+      console.error(message)
+      console.error(new Error().stack)
+      reject(duplicateCommandMessage)
+      return promise
+    }
+
     this.pendingCommands[id] = {
       resolve: wrappedResolved,
       reject: wrappedReject,
@@ -693,38 +771,16 @@ export class ConnectionManager extends EventTarget {
       try {
         message = msgpackDecode(binaryData) as WebSocketResponse
       } catch (msgpackError) {
-        try {
-          message = BSON.deserialize(binaryData) as WebSocketResponse
-        } catch (bsonError) {
-          console.error(
-            'handleMessage: failed to deserialize binary websocket message',
-            { msgpackError, bsonError }
-          )
-        }
+        console.error(
+          'handleMessage: failed to deserialize binary websocket message',
+          { msgpackError }
+        )
       }
       // The request id comes back as binary and we want to get the uuid
       // string from that.
 
       if (message?.request_id) {
         message.request_id = binaryToUuid(message.request_id)
-      }
-      // TODO: remove this hack once we only use MsgPack as it will be unnecessary after BSON is removed
-      if (message && 'resp' in message && message.resp?.type === 'export') {
-        const files = message.resp.data?.files
-        if (isArray(files)) {
-          for (const file of files) {
-            const contents = file.contents as unknown
-            if (
-              contents &&
-              typeof contents === 'object' &&
-              (contents as { _bsontype?: string })._bsontype === 'Binary' &&
-              (contents as { buffer?: unknown }).buffer instanceof Uint8Array
-            ) {
-              const typedFile = file as RawFileWithBinary
-              typedFile.contents = (contents as { buffer: Uint8Array }).buffer
-            }
-          }
-        }
       }
     } else {
       message = JSON.parse(event.data)

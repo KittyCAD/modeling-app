@@ -7,7 +7,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -31,7 +31,6 @@ export function HelpMenu() {
     const props = {
       onboardingStatus: onboardingStartPath,
       navigate,
-      codeManager,
       kclManager,
     }
     acceptOnboarding(props).catch((reason) =>
@@ -132,7 +131,7 @@ export function HelpMenu() {
                 const targetPath = location.pathname.includes(PATHS.FILE)
                   ? filePath + PATHS.SETTINGS_KEYBINDINGS
                   : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-                navigate(targetPath)
+                void navigate(targetPath)
               }}
               data-testid="keybindings-button"
             >

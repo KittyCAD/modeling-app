@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -9,12 +9,17 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { Marked } from '@ts-stack/markdown'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -28,13 +33,14 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(selection)
+    return getSelectionCountByType(kclManager.astSignal.value, selection)
   }, [selection])
   const isArgRequired =
     arg.required instanceof Function
@@ -60,7 +66,13 @@ function CommandBarSelectionInput({
     return () => {
       toSync(() => {
         const promises = [
-          new Promise(() => kclManager.setSelectionFilterToDefault(selection)),
+          new Promise(() =>
+            kclManager.setSelectionFilterToDefault(
+              sceneEntitiesManager,
+              wasmInstance,
+              selection
+            )
+          ),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
@@ -144,10 +156,20 @@ function CommandBarSelectionInput({
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.setSelectionFilterToDefault(selection)
+    arg.selectionFilter &&
+      kclManager.setSelectionFilter(
+        arg.selectionFilter,
+        sceneEntitiesManager,
+        wasmInstance
+      )
+    return () =>
+      kclManager.setSelectionFilterToDefault(
+        sceneEntitiesManager,
+        wasmInstance,
+        selection
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [arg.selectionFilter])
+  }, [arg.selectionFilter, wasmInstance])
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
@@ -158,7 +180,8 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(selection) + ' selected'
+          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
+            ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
@@ -184,6 +207,17 @@ function CommandBarSelectionInput({
           value={JSON.stringify(selection || {})}
         />
       </label>
+      {arg.description && (
+        <div
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(arg.description, {
+              gfm: true,
+              breaks: true,
+            }),
+          }}
+        />
+      )}
     </form>
   )
 }

@@ -134,13 +134,14 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 5,
       "origin": {
         "x": -19.0881,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -199,10 +200,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 506,
-            "end": 512,
+            "commentStart": 527,
+            "end": 533,
             "moduleId": 0,
-            "start": 506,
+            "start": 527,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -227,10 +228,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 651,
-            "end": 657,
+            "commentStart": 672,
+            "end": 678,
             "moduleId": 0,
-            "start": 651,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -275,10 +276,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 506,
-              "end": 512,
+              "commentStart": 527,
+              "end": 533,
               "moduleId": 0,
-              "start": 506,
+              "start": 527,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -333,10 +334,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 651,
-              "end": 657,
+              "commentStart": 672,
+              "end": 678,
               "moduleId": 0,
-              "start": 651,
+              "start": 672,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -368,6 +369,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -375,7 +378,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -640,6 +642,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -670,10 +673,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 506,
-                  "end": 512,
+                  "commentStart": 527,
+                  "end": 533,
                   "moduleId": 0,
-                  "start": 506,
+                  "start": 527,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -698,10 +701,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 651,
-                  "end": 657,
+                  "commentStart": 672,
+                  "end": 678,
                   "moduleId": 0,
-                  "start": 651,
+                  "start": 672,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -746,10 +749,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 506,
-                    "end": 512,
+                    "commentStart": 527,
+                    "end": 533,
                     "moduleId": 0,
-                    "start": 506,
+                    "start": 527,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -804,10 +807,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 651,
-                    "end": 657,
+                    "commentStart": 672,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 651,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -839,6 +842,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -846,7 +851,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1138,6 +1142,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1168,10 +1173,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 506,
-                  "end": 512,
+                  "commentStart": 527,
+                  "end": 533,
                   "moduleId": 0,
-                  "start": 506,
+                  "start": 527,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1196,10 +1201,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 651,
-                  "end": 657,
+                  "commentStart": 672,
+                  "end": 678,
                   "moduleId": 0,
-                  "start": 651,
+                  "start": 672,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1244,10 +1249,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 506,
-                    "end": 512,
+                    "commentStart": 527,
+                    "end": 533,
                     "moduleId": 0,
-                    "start": 506,
+                    "start": 527,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1302,10 +1307,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 651,
-                    "end": 657,
+                    "commentStart": 672,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 651,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1337,6 +1342,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1344,7 +1351,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1575,6 +1581,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1582,7 +1590,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1675,6 +1682,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -1834,6 +1842,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 3,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1841,7 +1851,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2029,6 +2038,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2036,7 +2047,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2194,6 +2204,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2201,7 +2213,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2359,6 +2370,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2366,7 +2379,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2524,6 +2536,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2531,7 +2545,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2689,6 +2702,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2696,7 +2711,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2854,6 +2868,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -2861,7 +2877,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3019,6 +3034,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3026,7 +3043,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3184,6 +3200,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3191,7 +3209,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3349,6 +3366,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3356,7 +3375,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3514,6 +3532,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3521,7 +3541,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3679,6 +3698,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3686,7 +3707,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3844,6 +3864,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -3851,7 +3873,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4009,6 +4030,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4016,7 +4039,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4174,6 +4196,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4181,7 +4205,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4339,6 +4362,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4346,7 +4371,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4504,6 +4528,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4511,7 +4537,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4669,6 +4694,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4676,7 +4703,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4834,6 +4860,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -4841,7 +4869,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4999,6 +5026,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5006,7 +5035,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5164,6 +5192,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5171,7 +5201,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5329,6 +5358,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5336,7 +5367,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5494,6 +5524,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5501,7 +5533,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5659,6 +5690,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5666,7 +5699,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5824,6 +5856,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5831,7 +5865,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5989,6 +6022,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -5996,7 +6031,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6154,6 +6188,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6161,7 +6197,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6319,6 +6354,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6326,7 +6363,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6484,6 +6520,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6491,7 +6529,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6649,6 +6686,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6656,7 +6695,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6814,6 +6852,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6821,7 +6861,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6979,6 +7018,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -6986,7 +7027,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7144,6 +7184,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -7151,7 +7193,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7309,6 +7350,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -7316,7 +7359,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7474,6 +7516,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -7481,7 +7525,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7639,6 +7682,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -7646,7 +7691,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7804,6 +7848,8 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 5,
               "origin": {
                 "x": -19.0881,
                 "y": 0.0,
@@ -7811,7 +7857,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,

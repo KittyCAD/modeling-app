@@ -1,7 +1,7 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use serde::Serialize;
 
@@ -85,13 +85,17 @@ async fn inner_sweep(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(mcmd::Sweep {
-                    target: sketch.id.into(),
-                    trajectory,
-                    sectional: sectional.unwrap_or(false),
-                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-                    relative_to,
-                }),
+                ModelingCmd::from(
+                    mcmd::Sweep::builder()
+                        .target(sketch.id.into())
+                        .trajectory(trajectory)
+                        .sectional(sectional.unwrap_or(false))
+                        .tolerance(LengthUnit(
+                            tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        ))
+                        .relative_to(relative_to)
+                        .build(),
+                ),
             )
             .await?;
 
@@ -109,6 +113,7 @@ async fn inner_sweep(
                 &args,
                 None,
                 None,
+                BodyType::Solid, // TODO: Support surface sweep
             )
             .await?,
         );
@@ -118,10 +123,12 @@ async fn inner_sweep(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::ObjectVisible {
-                object_id: trajectory.into(),
-                hidden: true,
-            }),
+            ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .object_id(trajectory.into())
+                    .hidden(true)
+                    .build(),
+            ),
         )
         .await?;
 

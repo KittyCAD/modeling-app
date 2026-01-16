@@ -322,30 +322,28 @@ fn count_in(target: char, s: &str) -> usize {
     s.chars().filter(|&c| c == target).count()
 }
 
-/// Matches all four cases of NonCodeValue
+/// Matches all cases of NonCodeValue.
 fn non_code_node(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
-    /// Matches one case of NonCodeValue
-    /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
+    /// Matches one case of NonCodeValue, where an empty line may precede a comment.
     fn non_code_node_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
         let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
+        if has_empty_line {
+            return Ok(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                leading_whitespace.start,
+                leading_whitespace.end,
+                leading_whitespace.module_id,
+            ));
+        }
         non_code_node_no_leading_whitespace
             .verify_map(|node: Node<NonCodeNode>| match node.inner.value {
-                NonCodeValue::BlockComment { value, style } => Some(Node::new(
-                    NonCodeNode {
-                        value: if has_empty_line {
-                            NonCodeValue::NewLineBlockComment { value, style }
-                        } else {
-                            NonCodeValue::BlockComment { value, style }
-                        },
-                        digest: None,
-                    },
-                    leading_whitespace.start,
-                    node.end + 1,
-                    node.module_id,
-                )),
+                NonCodeValue::BlockComment { .. } => Some(node),
                 _ => None,
             })
             .context(expected("a comment or whitespace"))
@@ -490,7 +488,7 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
             alt((labelled_fn_call, if_expr.map(Expr::IfExpression))),
         ),
         // After the expression.
-        repeat(0.., noncode_just_after_code),
+        repeat(0.., noncode_just_after_pipe_code),
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
         1..,
@@ -511,9 +509,11 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
         }
         values.push(code);
         code_count += 1;
-        for nc in noncode_after {
-            max_noncode_end = nc.end.max(max_noncode_end);
-            non_code_meta.insert(code_count, nc);
+        for nc_group in noncode_after {
+            for nc in nc_group {
+                max_noncode_end = nc.end.max(max_noncode_end);
+                non_code_meta.insert(code_count, nc);
+            }
         }
     }
     Ok(Expr::PipeExpression(Node::boxed(
@@ -564,9 +564,22 @@ fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
     .parse_next(i)
 }
 
+fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Operator && token.value == "+" {
+            Some(token)
+        } else {
+            None
+        }
+    })
+    .context(expected("a plus sign `+`"))
+    .parse_next(i)
+}
+
 /// Numeric literal with suffix and optional leading negative sign.
 fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let negative_token = opt(minus_sign).parse_next(i)?;
+    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
+    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
     let (value, suffix, number_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -585,14 +598,14 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    let start = negative_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
+    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
     Ok(Node::new(
         NumericLiteral {
-            value: if negative_token.is_some() { -value } else { value },
+            value: if is_negative { -value } else { value },
             suffix,
             raw: format!(
                 "{}{}",
-                negative_token.map(|t| t.value).unwrap_or_default(),
+                prefix_token.map(|t| t.value).unwrap_or_default(),
                 number_token.value
             ),
             digest: None,
@@ -1488,7 +1501,11 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let result = function_decl.parse_next(i)?;
+    let name = opt(binding_name).parse_next(i)?;
+    ignore_whitespace(i);
+    let mut result = function_decl.parse_next(i)?;
+    // Make the function expression aware of its name.
+    result.name = name;
     if fn_tok.is_none() {
         let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
@@ -1521,6 +1538,7 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     let end = close.end;
     let result = Node::new(
         FunctionExpression {
+            name: None,
             params,
             body: body.into(),
             return_type,
@@ -1626,6 +1644,7 @@ fn build_member_expression(object: Expr, mut members: Vec<(Expr, usize, bool)>) 
 /// Find a noncode node which occurs just after a body item,
 /// such that if the noncode item is a comment, it might be an inline comment.
 fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
+    let checkpoint = i.checkpoint();
     let ws = opt(whitespace).parse_next(i)?;
 
     // What is the preceding whitespace like?
@@ -1638,27 +1657,15 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>>
         (false, false)
     };
 
+    if has_empty_line {
+        i.reset(&checkpoint);
+        return Err(ErrMode::Backtrack(ContextError::default()));
+    }
+
     // Look for a non-code node (e.g. comment)
     let nc = non_code_node_no_leading_whitespace
         .map(|nc| {
-            if has_empty_line {
-                // There's an empty line between the body item and the comment,
-                // This means the comment is a NewLineBlockComment!
-                let value = match nc.inner.value {
-                    // Change block comments to inline, as discussed above
-                    NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
-                    // Other variants don't need to change.
-                    x @ NonCodeValue::InlineComment { .. } => x,
-                    x @ NonCodeValue::NewLineBlockComment { .. } => x,
-                    x @ NonCodeValue::NewLine => x,
-                };
-                Node::new(
-                    NonCodeNode { value, ..nc.inner },
-                    nc.start.saturating_sub(1),
-                    nc.end,
-                    nc.module_id,
-                )
-            } else if has_newline {
+            if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
             } else {
@@ -1669,15 +1676,78 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>>
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
                     x @ NonCodeValue::InlineComment { .. } => x,
-                    x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
         })
-        .map(|nc| Node::new(nc.inner, nc.start.saturating_sub(1), nc.end, nc.module_id))
+        .map(|nc| Node::new(nc.inner, nc.start, nc.end, nc.module_id))
         .parse_next(i)?;
     Ok(nc)
+}
+
+/// Find noncode after a pipe expression step, allowing empty lines to be preserved.
+fn noncode_just_after_pipe_code(i: &mut TokenSlice) -> ModalResult<Vec<Node<NonCodeNode>>> {
+    let checkpoint = i.checkpoint();
+    let mut nodes = Vec::new();
+    loop {
+        let ws = opt(whitespace).parse_next(i)?;
+        let (newline_count, ws_start, ws_end, ws_module_id) = if let Some(ref ws) = ws {
+            let newline_count = ws.iter().map(|token| count_in('\n', &token.value)).sum::<usize>();
+            let ws_start = ws.first();
+            let ws_end = ws.last();
+            (
+                newline_count,
+                ws_start.map(|tok| tok.start),
+                ws_end.map(|tok| tok.end),
+                ws_start.map(|tok| tok.module_id),
+            )
+        } else {
+            (0, None, None, None)
+        };
+
+        match non_code_node_no_leading_whitespace.parse_next(i) {
+            Ok(nc) => {
+                for _ in 0..newline_count {
+                    if let (Some(start), Some(end), Some(module_id)) = (ws_start, ws_end, ws_module_id) {
+                        nodes.push(Node::new(
+                            NonCodeNode {
+                                value: NonCodeValue::NewLine,
+                                digest: None,
+                            },
+                            start,
+                            end,
+                            module_id,
+                        ));
+                    }
+                }
+                let value = match nc.inner.value {
+                    NonCodeValue::BlockComment { value, style } if newline_count == 0 => {
+                        NonCodeValue::InlineComment { value, style }
+                    }
+                    x => x,
+                };
+                nodes.push(Node::new(
+                    NonCodeNode { value, ..nc.inner },
+                    nc.start,
+                    nc.end,
+                    nc.module_id,
+                ));
+                continue;
+            }
+            Err(ErrMode::Backtrack(_)) => {
+                break;
+            }
+            Err(e) => return Err(e),
+        }
+    }
+
+    if nodes.is_empty() || peek(pipe_surrounded_by_whitespace).parse_next(i).is_err() {
+        i.reset(&checkpoint);
+        Err(ErrMode::Backtrack(ContextError::default()))
+    } else {
+        Ok(nodes)
+    }
 }
 
 // the large_enum_variant lint below introduces a LOT of code complexity in a
@@ -1832,25 +1902,36 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     let mut end = 0;
     let mut start = leading_whitespace_start;
 
+    trait CommentStart {
+        fn comment_start(&self) -> usize;
+    }
+
+    impl CommentStart for BodyItem {
+        fn comment_start(&self) -> usize {
+            self.start()
+        }
+    }
+
+    impl<T> CommentStart for Node<T> {
+        #[allow(clippy::misnamed_getters)]
+        fn comment_start(&self) -> usize {
+            self.start
+        }
+    }
+
     macro_rules! handle_pending_non_code {
         ($node: ident) => {
             if !pending_non_code.is_empty() {
-                let start = pending_non_code[0].start;
                 let force_disoc = matches!(
                     &pending_non_code.last().unwrap().inner.value,
                     NonCodeValue::NewLine
                 );
                 let mut comments = Vec::new();
+                let mut comment_start = None;
                 for nc in pending_non_code {
                     match nc.inner.value {
                         NonCodeValue::BlockComment { value, style } if !force_disoc => {
-                            comments.push(style.render_comment(&value));
-                        }
-                        NonCodeValue::NewLineBlockComment { value, style } if !force_disoc => {
-                            if comments.is_empty() && nc.start != 0 {
-                                comments.push(String::new());
-                                comments.push(String::new());
-                            }
+                            comment_start.get_or_insert(nc.start);
                             comments.push(style.render_comment(&value));
                         }
                         NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
@@ -1866,6 +1947,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                         }
                     }
                 }
+                let start = comment_start.unwrap_or_else(|| $node.comment_start());
                 $node.set_comments(comments, start);
                 pending_non_code = Vec::new();
             }
@@ -2413,10 +2495,10 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
-        (*kind, token.start, token.end)
+    let (kind, mut start) = if let Some((kind, token)) = &decl_token {
+        (*kind, token.start)
     } else {
-        (VariableKind::Const, id.start, id.end)
+        (VariableKind::Const, id.start)
     };
     if let Some(token) = visibility_token {
         start = token.start;
@@ -2430,6 +2512,11 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             ignore_whitespace(i);
 
             let val = function_decl
+                .map(|mut func| {
+                    // Make the function expression aware of its name.
+                    func.name = Some(id.clone());
+                    func
+                })
                 .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
@@ -2449,13 +2536,23 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             let val = expression
                 .try_map(|val| {
-                    // Function bodies can be used if and only if declaring a function.
-                    // Check the 'if' direction:
+                    // Check if declaring a variable where the value is a
+                    // function expression, e.g. `f = fn() {}`. If so, suggest
+                    // using `fn f() {}` instead.
                     if matches!(val, Expr::FunctionExpression(_)) {
-                        return Err(CompilationError::fatal(
-                            SourceRange::new(start, dec_end, id.module_id),
-                            format!("Expected a `fn` variable kind, found: `{kind}`"),
-                        ));
+                        let fn_end = val.start();
+                        ParseContext::warn(
+                            CompilationError::err(
+                                SourceRange::new(start, fn_end, id.module_id),
+                                "Define a function with `fn name()` instead of assigning the function to a variable",
+                            )
+                            .with_suggestion(
+                                format!("Use `fn {}`", &id.name),
+                                format!("fn {}", &id.name),
+                                Some(SourceRange::new(start, fn_end, id.module_id)),
+                                Tag::None,
+                            ),
+                        );
                     }
                     Ok(val)
                 })
@@ -2758,6 +2855,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
+            TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
             TokenType::Operator => Err(CompilationError::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
@@ -3426,6 +3524,17 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
             ));
         }
+        let on_arg = arguments
+            .iter()
+            .find(|arg| arg.label.as_ref().map(|l| l.name == "on").unwrap_or(false));
+        if let Some(on_arg) = on_arg
+            && !matches!(&on_arg.arg, Expr::Name(_))
+        {
+            ParseContext::err(CompilationError::err(
+                SourceRange::from(&on_arg.arg),
+                "The `on` argument to a sketch block must be a variable name or identifier. If you need a more complex expression, assign it to a variable first.",
+            ));
+        }
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
             end,
@@ -3436,6 +3545,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             inner: SketchBlock {
                 arguments,
                 body,
+                is_being_edited: false,
                 non_code_meta,
                 digest: None,
             },
@@ -3665,6 +3775,23 @@ mod tests {
             "Error message is: `{}`",
             err.message,
         );
+    }
+
+    #[test]
+    fn test_if_is_in_comment_again() {
+        let code = r#"x = 4
+e
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is 'e' and then a newline.
+        assert_eq!(code.chars().nth(6), Some('e'));
+        assert!(!ast.in_comment(6));
+        assert_eq!(code.chars().nth(7), Some('\n'));
+        assert!(!ast.in_comment(7));
+        // The whole line should be a comment.
+        assert_eq!(code.chars().nth(8), Some('/'));
+        assert!(ast.in_comment(8));
     }
 
     #[test]
@@ -4031,7 +4158,7 @@ mySk1 = startSketchOn(XY)
                         },
                         digest: None,
                     },
-                    57,
+                    58,
                     79,
                     module_id,
                 ),
@@ -4266,7 +4393,7 @@ mySk1 = startSketchOn(XY)
         for (i, (test_program, expected)) in [
             (
                 "//hi",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hi".to_owned(),
@@ -4277,11 +4404,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     4,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/*hello*/",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4292,11 +4419,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     9,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/* hello */",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4307,11 +4434,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     11,
                     module_id,
-                ),
+                )],
             ),
             (
                 "/* \nhello */",
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4322,12 +4449,11 @@ mySk1 = startSketchOn(XY)
                     0,
                     12,
                     module_id,
-                ),
+                )],
             ),
             (
-                "
-                /* hello */",
-                Node::new(
+                "\n/* hello */",
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -4335,51 +4461,69 @@ mySk1 = startSketchOn(XY)
                         },
                         digest: None,
                     },
-                    0,
-                    29,
+                    1,
+                    12,
                     module_id,
-                ),
+                )],
             ),
             (
                 // Empty line with trailing whitespace
-                "
-  
-                /* hello */",
-                Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLineBlockComment {
-                            value: "hello".to_owned(),
-                            style: CommentStyle::Block,
+                "\n  \n/* hello */",
+                vec![
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::NewLine,
+                            digest: None,
                         },
-                        digest: None,
-                    },
-                    0,
-                    32,
-                    module_id,
-                ),
+                        0,
+                        4,
+                        module_id,
+                    ),
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::BlockComment {
+                                value: "hello".to_owned(),
+                                style: CommentStyle::Block,
+                            },
+                            digest: None,
+                        },
+                        4,
+                        15,
+                        module_id,
+                    ),
+                ],
             ),
             (
                 // Empty line, no trailing whitespace
-                "
-
-                /* hello */",
-                Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLineBlockComment {
-                            value: "hello".to_owned(),
-                            style: CommentStyle::Block,
+                "\n\n/* hello */",
+                vec![
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::NewLine,
+                            digest: None,
                         },
-                        digest: None,
-                    },
-                    0,
-                    30,
-                    module_id,
-                ),
+                        0,
+                        2,
+                        module_id,
+                    ),
+                    Node::new(
+                        NonCodeNode {
+                            value: NonCodeValue::BlockComment {
+                                value: "hello".to_owned(),
+                                style: CommentStyle::Block,
+                            },
+                            digest: None,
+                        },
+                        2,
+                        13,
+                        module_id,
+                    ),
+                ],
             ),
             (
                 r#"/* block
                     comment */"#,
-                Node::new(
+                vec![Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "block\n                    comment".to_owned(),
@@ -4390,17 +4534,20 @@ mySk1 = startSketchOn(XY)
                     0,
                     39,
                     module_id,
-                ),
+                )],
             ),
         ]
         .into_iter()
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-            let actual = non_code_node.parse(tokens.as_slice());
-            assert!(actual.is_ok(), "could not parse test {i}: {actual:#?}");
-            let actual = actual.unwrap();
-            assert_eq!(actual, expected, "failed test {i}");
+            let mut slice = tokens.as_slice();
+            for (index, expected_node) in expected.into_iter().enumerate() {
+                let actual = non_code_node.parse_next(&mut slice);
+                assert!(actual.is_ok(), "could not parse test {i}.{index}: {actual:#?}");
+                let actual = actual.unwrap();
+                assert_eq!(actual, expected_node, "failed test {i}.{index}");
+            }
         }
     }
 
@@ -4907,15 +5054,6 @@ e
     }
 
     #[test]
-    fn test_parse_weird_lots_of_slashes() {
-        assert_err_contains(
-            r#"J///////////o//+///////////P++++*++++++P///////˟
-++4"#,
-            "Unexpected token: +",
-        );
-    }
-
-    #[test]
     fn test_optional_param_order() {
         for (i, (params, expect_ok)) in [
             (
@@ -5001,6 +5139,30 @@ e
             let actual = optional_after_required(&params);
             assert_eq!(actual.is_ok(), expect_ok, "failed test {i}");
         }
+    }
+
+    #[test]
+    fn function_defined_with_var() {
+        let code = r#"
+        foo = fn(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
+    }
+
+    #[test]
+    fn function_defined_with_var_and_recursive_name() {
+        let code = r#"
+        foo = fn bar(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
     }
 
     #[test]
@@ -5872,6 +6034,56 @@ bar = 1
                 MustFail { err, was_fatal: false }
             }
         }
+    }
+
+    #[test]
+    fn is_comment_boundary_right() {
+        let program_source = r#"dog = 42
+
+// nice
+"#;
+        let module_id = crate::ModuleId::default();
+        let tokens = crate::parsing::token::lex(program_source, module_id).unwrap();
+        ParseContext::init();
+        let program = match program.parse(tokens.as_slice()) {
+            Ok(x) => x,
+            Err(e) => panic!("could not parse test: {e:?}"),
+        };
+
+        // Find the comment, i.e. `// nice`
+        let comment = program.non_code_meta.non_code_nodes.get(&0).unwrap();
+        let comment = comment
+            .iter()
+            .find(|node| matches!(node.value, NonCodeValue::BlockComment { .. }))
+            .expect("expected a block comment node");
+        assert_eq!(
+            comment.value,
+            NonCodeValue::BlockComment {
+                value: "nice".to_owned(),
+                style: CommentStyle::Line
+            }
+        );
+
+        // The comment should start at the first / in `// nice`,
+        // as that is where the comment actually starts.
+        let comment_starts_at = program_source.as_bytes()[comment.start] as char;
+        let comment_ends_at = program_source.as_bytes()[comment.end] as char;
+        assert_eq!(comment_starts_at, '/');
+        assert_eq!(comment_ends_at, '\n');
+    }
+
+    #[test]
+    fn test_if_is_in_comment() {
+        let code = r#"x = 4
+
+// hewwo"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        // First line is chars 0 to 5 (inclusive).
+        // Second line (an empty line) is just char 6, '\n'.
+        // It is not a comment. It is a newline.
+        assert!(!ast.in_comment(6));
+        // The following line should be a comment.
+        assert!(ast.in_comment(7));
     }
 
     #[test]

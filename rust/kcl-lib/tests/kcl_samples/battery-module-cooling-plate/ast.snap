@@ -164,8 +164,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define at least 3 coolings per side"
         ],
         "start": 0,
@@ -206,8 +204,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// thickness of the channels"
         ],
         "start": 0,
@@ -312,8 +308,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// depth of the channels"
         ],
         "start": 0,
@@ -381,8 +375,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// connector dimensions"
         ],
         "start": 0,
@@ -423,8 +415,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// widths for the cooling sketch channels"
         ],
         "start": 0,
@@ -854,8 +844,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// compute the width of the sketches side by side"
         ],
         "start": 0,
@@ -997,8 +985,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// compute the offset to the edge of the base plate"
         ],
         "start": 0,
@@ -1179,8 +1165,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// dimensions of the plate"
         ],
         "start": 0,
@@ -1376,8 +1360,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// initial sketch positions"
         ],
         "start": 0,
@@ -1545,8 +1527,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// compute the offset to the edge of the base plate"
         ],
         "start": 0,
@@ -1831,6 +1811,14 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "getOverlap",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -1999,8 +1987,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// index the margins for the lengths of the cooling sketches"
         ],
         "start": 0,
@@ -2148,8 +2134,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Dimensions for the mounting holes"
         ],
         "start": 0,
@@ -2963,25 +2947,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "6": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Get extruded END face of the base plate to sketch on",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2994,8 +2959,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the base plate to be cut"
         ],
         "start": 0,
@@ -3096,6 +3059,9 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Get extruded END face of the base plate to sketch on"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4837,6 +4803,14 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "coolingSketch",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -6395,6 +6369,14 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "coolingSketchNoArms",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -6850,6 +6832,14 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "drawCoolingSketch",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -7604,6 +7594,14 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "drawCoolingSketchFlipped",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -7968,8 +7966,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create mounting holes"
         ],
         "start": 0,
@@ -9011,25 +9007,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Draw one half of the cooling sketchs",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -9183,6 +9160,9 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Draw one half of the cooling sketchs"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -9731,25 +9711,6 @@ description: Result of parsing battery-module-cooling-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "3": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Extend the ends of the cooling sketch",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -10285,6 +10246,9 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Extend the ends of the cooling sketch"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -11138,6 +11102,7 @@ description: Result of parsing battery-module-cooling-plate.kcl
         "preComments": [
           "// Battery Module Cooling Plates",
           "// A battery module cooling plate is a thermal management component used in battery packs—particularly in electric vehicles (EVs), energy storage systems, and other high-power applications—to regulate the temperature of individual battery cells or entire modules.",
+          "// Categories: Automotive",
           "",
           "",
           "// Define units"
@@ -11184,7 +11149,127 @@ description: Result of parsing battery-module-cooling-plate.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
           {
             "commentStart": 0,
             "end": 0,
@@ -11209,6 +11294,54 @@ description: Result of parsing battery-module-cooling-plate.kcl
           }
         ],
         "22": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "23": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "27": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "28": [
           {
             "commentStart": 0,
             "end": 0,
@@ -11257,6 +11390,42 @@ description: Result of parsing battery-module-cooling-plate.kcl
           }
         ],
         "32": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "33": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "37": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "40": [
           {
             "commentStart": 0,
             "end": 0,

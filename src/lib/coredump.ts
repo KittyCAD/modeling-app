@@ -2,8 +2,7 @@ import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
-
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
@@ -36,24 +35,24 @@ import { EngineDebugger } from '@src/lib/debugger'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: ConnectionManager
-  codeManager: CodeManager
+  kclManager: KclManager
   rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
   constructor(
     engineCommandManager: ConnectionManager,
-    codeManager: CodeManager,
+    kclManager: KclManager,
     rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.codeManager = codeManager
+    this.kclManager = kclManager
     this.rustContext = rustContext
     this.token = token
   }
 
-  // Get the token.
+  // Get the token
   authToken(): string {
     if (!this.token) {
       throw new Error('Token not set')
@@ -61,26 +60,22 @@ export class CoreDumpManager {
     return this.token
   }
 
-  // Get the base url.
+  // Get the base URL
   baseApiUrl(): string {
     return this.baseUrl
   }
 
-  // Get the version of the app from the package.json.
+  // Get the version of the app from the package.json
   version(): string {
     return APP_VERSION
   }
 
+  // Get the KCL code related this session
   kclCode(): string {
-    return this.codeManager.code
+    return this.kclManager.code
   }
 
-  // Get the backend pool we've requested.
-  pool(): string {
-    return this.engineCommandManager.settings.pool || ''
-  }
-
-  // Get the os information.
+  // Get the OS information
   getOsInfo(): string {
     if (window.electron) {
       const osinfo: OsInfo = {
@@ -316,6 +311,37 @@ export class CoreDumpManager {
           ;(clientState.kcl_manager as any).wasmInitFailed =
             kclManager.wasmInitFailed
         }
+
+        const kclManagerSkipKeys = [
+          'camControls',
+          'engineCommandManager',
+          'wasmInstancePromise',
+          'singletons',
+        ]
+        const kclManagerKeys = Object.keys(kclManager)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof kclManager[entry] !== 'function' &&
+              !isPrivateMethod(entry) &&
+              !kclManagerSkipKeys.includes(entry)
+            )
+          })
+
+        debugLog('CoreDump: KCL Manager keys', kclManagerKeys)
+        kclManagerKeys.forEach((key: string) => {
+          debugLog('CoreDump: KCL Manager', key, kclManager[key])
+          try {
+            ;(clientState.editor_manager as any)[key] = structuredClone(
+              kclManager[key]
+            )
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse KCL Manager ' + key + ' data due to ',
+              error
+            )
+          }
+        })
       }
 
       // Scene Infra - globalThis?.window?.sceneInfra
@@ -323,7 +349,7 @@ export class CoreDumpManager {
       debugLog('CoreDump: Scene Infra', sceneInfra)
 
       if (sceneInfra) {
-        const sceneInfraSkipKeys = ['camControls']
+        const sceneInfraSkipKeys = ['camControls', 'wasmInstancePromise']
         const sceneInfraKeys = Object.keys(sceneInfra)
           .sort()
           .filter((entry) => {
@@ -346,7 +372,6 @@ export class CoreDumpManager {
           }
         })
       }
-
       // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
       const sceneEntitiesManager = (globalThis?.window as any)
         ?.sceneEntitiesManager
@@ -373,40 +398,6 @@ export class CoreDumpManager {
               })
             )
         }
-      }
-
-      // Editor Manager - globalThis?.window?.editorManager
-      const editorManager = (globalThis?.window as any)?.editorManager
-      debugLog('CoreDump: editorManager', editorManager)
-
-      if (editorManager) {
-        const editorManagerSkipKeys = ['camControls']
-        const editorManagerKeys = Object.keys(editorManager)
-          .sort()
-          .filter((entry) => {
-            return (
-              typeof editorManager[entry] !== 'function' &&
-              !isPrivateMethod(entry) &&
-              !editorManagerSkipKeys.includes(entry)
-            )
-          })
-
-        debugLog('CoreDump: Editor Manager keys', editorManagerKeys)
-        editorManagerKeys.forEach((key: string) => {
-          debugLog('CoreDump: Editor Manager', key, editorManager[key])
-          try {
-            ;(clientState.editor_manager as any)[key] = structuredClone(
-              editorManager[key]
-            )
-          } catch (error) {
-            console.error(
-              'CoreDump: unable to parse Editor Manager ' +
-                key +
-                ' data due to ',
-              error
-            )
-          }
-        })
       }
 
       // enableMousePositionLogs - Not coredumped

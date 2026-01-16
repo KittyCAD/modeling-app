@@ -12,6 +12,7 @@ use crate::{
         memory::Stack,
         state::{self as exec_state, ModuleInfoMap},
     },
+    front::Object,
     parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
 };
@@ -20,7 +21,7 @@ lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
     static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
     // The last successful run's memory. Not cleared after an unsuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
+    static ref PREV_MEMORY: Arc<RwLock<Option<SketchModeState>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
@@ -34,12 +35,12 @@ pub(super) async fn write_old_ast(old_state: GlobalState) {
     *old_ast = Some(old_state);
 }
 
-pub(crate) async fn read_old_memory() -> Option<(Stack, ModuleInfoMap)> {
+pub(crate) async fn read_old_memory() -> Option<SketchModeState> {
     let old_mem = PREV_MEMORY.read().await;
     old_mem.clone()
 }
 
-pub(crate) async fn write_old_memory(mem: (Stack, ModuleInfoMap)) {
+pub(crate) async fn write_old_memory(mem: SketchModeState) {
     let mut old_mem = PREV_MEMORY.write().await;
     *old_mem = Some(mem);
 }
@@ -111,6 +112,12 @@ impl GlobalState {
             operations: self.exec_state.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: self.exec_state.root_module_artifacts.scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             errors: self.exec_state.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -126,6 +133,18 @@ pub(super) struct ModuleState {
     pub(super) exec_state: exec_state::ModuleState,
     /// The memory env for the module.
     pub(super) result_env: EnvironmentRef,
+}
+
+/// Cached state for sketch mode.
+#[derive(Debug, Clone)]
+pub(crate) struct SketchModeState {
+    /// The stack of the main module.
+    pub stack: Stack,
+    /// The module info map.
+    pub module_infos: ModuleInfoMap,
+    /// The scene objects.
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub scene_objects: Vec<Object>,
 }
 
 /// The result of a cache check.
@@ -213,7 +232,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         };
     }
 
-    // Check if the annotations are different.
+    // Check if the block annotations like @settings() are different.
     if !old_ast
         .inner_attrs
         .iter()
@@ -372,6 +391,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -417,6 +437,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -462,6 +483,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -511,6 +533,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     // Changing the grid settings with the exact same file should NOT bust the cache.
@@ -548,6 +571,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
@@ -621,6 +645,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the units settings using an annotation with the exact same file
@@ -659,6 +684,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     // Removing the units settings using an annotation, when it was non-default
@@ -697,6 +723,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -763,6 +790,7 @@ extrude(profile001, length = 100)"#
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -847,5 +875,79 @@ extrude(profile001, length = 100)
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_added_outer_attribute() {
+        let old_code = r#"import "tests/inputs/cube.step"
+"#;
+        let new_code = r#"@(coords = opengl)
+import "tests/inputs/cube.step"
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: false,
+                program: new_program.ast,
+            }
+        );
+        exec_ctxt.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_different_outer_attribute() {
+        let old_code = r#"@(coords = vulkan)
+import "tests/inputs/cube.step"
+"#;
+        let new_code = r#"@(coords = opengl)
+import "tests/inputs/cube.step"
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: false,
+                program: new_program.ast,
+            }
+        );
+        exec_ctxt.close().await;
     }
 }

@@ -9,37 +9,139 @@ import {
   constructPath,
   copyPasteSourceAndTarget,
   flattenProject,
+  isExternalFileDrag,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { useKclContext } from '@src/lang/KclProvider'
+import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
+  getEXTNoPeriod,
   getEXTWithPeriod,
   getParentAbsolutePath,
+  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
+  toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
+import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { showWarningToast } from '@src/components/ToastWarning'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
   entry: FileExplorerEntry
 ): boolean => {
   return rows[entry.key]
+}
+
+const handleExternalDragEvent = (e: React.DragEvent): boolean => {
+  if (!isExternalFileDrag(e)) {
+    return false
+  }
+  e.preventDefault()
+  e.stopPropagation()
+  return true
+}
+
+const getDropTargetPath = (
+  target: FileExplorerEntry | null,
+  projectPath: string
+): string => {
+  if (!target) {
+    // If dropping on the root, use the project root
+    return projectPath
+  }
+  if (target.children !== null) {
+    // If dropping on a folder, use that folder
+    return target.path
+  }
+  // If dropping on a file, use its parent directory
+  return getParentAbsolutePath(target.path)
+}
+
+const readAllDirectoryEntriesRecursively = async (
+  dirEntry: FileSystemDirectoryEntry
+): Promise<FileSystemEntry[]> => {
+  const directoryReader = dirEntry.createReader()
+  const entries: FileSystemEntry[] = []
+  let readEntries = await new Promise<FileSystemEntry[]>((resolve) =>
+    directoryReader.readEntries(resolve)
+  )
+  while (readEntries.length > 0) {
+    entries.push(...readEntries)
+    readEntries = await new Promise<FileSystemEntry[]>((resolve) =>
+      directoryReader.readEntries(resolve)
+    )
+  }
+  return entries
+}
+
+const isFileSupportedForImport = (
+  fileName: string,
+  wasmInstance: ModuleType
+): boolean => {
+  const extension = getEXTNoPeriod(fileName)
+  if (!extension) return false
+  const supportedExtensions = relevantFileExtensions(wasmInstance)
+  return isExtensionARelevantExtension(extension, supportedExtensions)
+}
+
+const collectDroppedFiles = async (
+  entry: FileSystemEntry,
+  basePath: string,
+  wasmInstance: ModuleType
+): Promise<{
+  supported: { file: File; relativePath: string }[]
+  unsupported: string[]
+}> => {
+  const supported: { file: File; relativePath: string }[] = []
+  const unsupported: string[] = []
+
+  if (entry.isFile) {
+    const fileEntry = entry as FileSystemFileEntry
+    const file = await new Promise<File>((resolve, reject) =>
+      fileEntry.file(resolve, reject)
+    )
+    if (isFileSupportedForImport(file.name, wasmInstance)) {
+      supported.push({ file, relativePath: basePath })
+    } else {
+      unsupported.push(joinOSPaths(basePath, file.name))
+    }
+  } else if (entry.isDirectory) {
+    const entries = await readAllDirectoryEntriesRecursively(
+      entry as FileSystemDirectoryEntry
+    )
+    const newBasePath = basePath
+      ? joinOSPaths(basePath, entry.name)
+      : entry.name
+
+    for (const childEntry of entries) {
+      const result = await collectDroppedFiles(
+        childEntry,
+        newBasePath,
+        wasmInstance
+      )
+      supported.push(...result.supported)
+      unsupported.push(...result.unsupported)
+    }
+  }
+
+  return { supported, unsupported }
 }
 
 /**
@@ -53,6 +155,7 @@ const isFileExplorerEntryOpened = (
  *
  */
 export const ProjectExplorer = ({
+  wasmInstance,
   project,
   file,
   createFilePressed,
@@ -65,6 +168,7 @@ export const ProjectExplorer = ({
   canNavigate,
   overrideApplicationProjectDirectory,
 }: {
+  wasmInstance: ModuleType
   project: Project
   file: FileEntry | undefined
   createFilePressed: number
@@ -77,7 +181,7 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { errors } = useKclContext()
+  const errors = kclManager.errorsSignal.value
   const settings = useSettings()
   const applicationProjectDirectory = settings.app.projectDirectory.current
 
@@ -114,6 +218,12 @@ export const ProjectExplorer = ({
 
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
+
+  // External file drag and drop state
+  const [isExternalDragOver, setIsExternalDragOver] = useState<boolean>(false)
+  const [dragOverTarget, setDragOverTarget] =
+    useState<FileExplorerEntry | null>(null)
+  const externalDragCounter = useRef<number>(0)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -207,6 +317,135 @@ export const ProjectExplorer = ({
     setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
   }
+
+  const handleExternalFileDrop = useCallback(
+    async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
+      if (readOnly || !window.electron) return
+
+      const supportedFiles: { file: File; relativePath: string }[] = []
+      const unsupportedFiles: string[] = []
+
+      // Collect all entries/files synchronously first
+      // DataTransferItemList becomes invalid after async operations
+      const entries: FileSystemEntry[] = []
+      const fallbackFiles: File[] = []
+      const failedEntryNames: string[] = []
+
+      const items = Array.from(dataTransfer.items)
+      for (const item of items) {
+        if (item.kind !== 'file') {
+          continue
+        }
+
+        const entry = item.webkitGetAsEntry?.()
+        if (entry) {
+          entries.push(entry)
+        } else {
+          const file = item.getAsFile()
+          if (file) {
+            fallbackFiles.push(file)
+          }
+        }
+      }
+
+      // Now process entries asynchronously
+      for (const entry of entries) {
+        try {
+          const result = await collectDroppedFiles(entry, '', wasmInstance)
+          supportedFiles.push(...result.supported)
+          unsupportedFiles.push(...result.unsupported)
+        } catch (e) {
+          console.error('Failed to collect dropped files:', entry?.name, e)
+          failedEntryNames.push(entry?.name || 'dropped item')
+        }
+      }
+      if (failedEntryNames.length > 0) {
+        const maxToShow = 3
+        const shown = failedEntryNames.slice(0, maxToShow).join(', ')
+        const remaining = failedEntryNames.length - maxToShow
+        const message =
+          remaining > 0
+            ? `Failed to import ${failedEntryNames.length} items (${shown}, and ${remaining} more).`
+            : `Failed to import ${failedEntryNames.length} items (${shown}).`
+        toast.error(message)
+      }
+
+      // Process fallback files (browsers without webkitGetAsEntry support)
+      for (const file of fallbackFiles) {
+        if (isFileSupportedForImport(file.name, wasmInstance)) {
+          supportedFiles.push({ file, relativePath: '' })
+        } else {
+          unsupportedFiles.push(file.name)
+        }
+      }
+
+      if (unsupportedFiles.length > 0) {
+        const maxToShow = 5
+        const fileList = unsupportedFiles.slice(0, maxToShow).join(', ')
+        const remaining = unsupportedFiles.length - maxToShow
+        const fileListMessage =
+          remaining > 0 ? `${fileList}, and ${remaining} more` : fileList
+        showWarningToast(fileListMessage, {
+          title: `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}:`,
+        })
+      }
+
+      // Copy supported files to the target directory
+      if (supportedFiles.length > 0) {
+        const targetPath = getDropTargetPath(target, project.path)
+        const createdDirs = new Set<string>()
+
+        for (const { file, relativePath } of supportedFiles) {
+          try {
+            // Create parent directories if needed
+            if (relativePath) {
+              const fullDirPath = joinOSPaths(targetPath, relativePath)
+              if (!createdDirs.has(fullDirPath)) {
+                await window.electron.mkdir(fullDirPath, { recursive: true })
+                createdDirs.add(fullDirPath)
+              }
+            }
+
+            const arrayBuffer = await file.arrayBuffer()
+            const destinationPath = relativePath
+              ? joinOSPaths(targetPath, relativePath, file.name)
+              : joinOSPaths(targetPath, file.name)
+            await window.electron.writeFile(
+              destinationPath,
+              new Uint8Array(arrayBuffer)
+            )
+          } catch (e) {
+            console.error('Failed to copy file:', file.name, e)
+            toast.error(`Failed to import ${file.name}`)
+          }
+        }
+
+        // Open the target folder so the user can see the imported files
+        if (target?.children) {
+          const newOpenedRows = { ...openedRowsRef.current }
+          newOpenedRows[target.key] = true
+          setOpenedRows(newOpenedRows)
+        }
+
+        // Refresh the explorer to show the new files
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+
+        toast.success(
+          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}`
+        )
+      }
+    },
+    [readOnly, project.path, wasmInstance]
+  )
+
+  const handleDragOverTarget = useCallback(
+    (entry: FileExplorerEntry | null) => {
+      setDragOverTarget(entry)
+    },
+    []
+  )
 
   useEffect(() => {
     /**
@@ -315,20 +554,58 @@ export const ProjectExplorer = ({
               file?.path?.startsWith(child.path) && canNavigate
 
             if (shouldWeNavigate && file && file.path) {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
-                data: {
-                  requestedPath: child.path,
-                  requestedProjectName: project.name,
-                },
-              })
+              const src = child.path
+              toArchivePath(src)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                      requestedProjectName: project.name,
+                    },
+                  })
+                  kclManager.addGlobalHistoryEvent(
+                    fsArchiveFile({
+                      src,
+                      target,
+                      requestedProjectName: project.name,
+                    })
+                  )
+                })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             } else {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolder,
-                data: {
-                  requestedPath: child.path,
-                },
-              })
+              const src = child.path
+              toArchivePath(src)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursive,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                    },
+                  })
+                  kclManager.addGlobalHistoryEvent(
+                    fsArchiveFile({
+                      src,
+                      target,
+                      requestedProjectName: project.name,
+                    })
+                  )
+                })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             }
           },
           onOpenInNewWindow: () => {
@@ -407,13 +684,21 @@ export const ProjectExplorer = ({
                 '-copy-'
               )
               if (result && result.src && result.target) {
+                const { src, target } = result
                 systemIOActor.send({
-                  type: SystemIOMachineEvents.copyRecursive,
+                  type: SystemIOMachineEvents.moveRecursive,
                   data: {
-                    src: result.src,
-                    target: result.target,
+                    src,
+                    target,
                   },
                 })
+                kclManager.addGlobalHistoryEvent(
+                  fsMoveFile({
+                    src,
+                    target,
+                    requestedProjectName: project.name,
+                  })
+                )
               } else {
                 toast.error('Failed to copy and paste the result is null')
               }
@@ -484,7 +769,8 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
+                        overrideApplicationProjectDirectory ||
+                          applicationProjectDirectory
                       )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -537,7 +823,8 @@ export const ProjectExplorer = ({
                   getParentAbsolutePath(row.path),
                   fileNameForcedWithOriginalExt
                 ),
-                applicationProjectDirectory
+                overrideApplicationProjectDirectory ||
+                  applicationProjectDirectory
               )
 
               if (row.isFake) {
@@ -552,13 +839,14 @@ export const ProjectExplorer = ({
                     },
                   })
                 } else {
+                  const requestedAbsolutePath = joinOSPaths(
+                    getParentAbsolutePath(row.path),
+                    fileNameForcedWithOriginalExt
+                  )
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        fileNameForcedWithOriginalExt
-                      ),
+                      requestedAbsolutePath,
                     },
                   })
                 }
@@ -780,13 +1068,36 @@ export const ProjectExplorer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  // Compute which entry should be highlighted for external drag
+  const getHighlightedEntry = useCallback((): FileExplorerEntry | null => {
+    if (!isExternalDragOver || !dragOverTarget) return null
+    // If dragging over a folder, highlight that folder
+    if (dragOverTarget.children !== null) {
+      return dragOverTarget
+    }
+    // If dragging over a file, highlight its parent folder
+    const parentPath = dragOverTarget.parentPath
+    const parentEntry = rowsToRender.find(
+      (row) => row.key === parentPath && row.children !== null
+    )
+    return parentEntry || null
+  }, [isExternalDragOver, dragOverTarget, rowsToRender])
+
+  const highlightedEntry = getHighlightedEntry()
+
   return (
     <div
       className="h-full relative overflow-y-auto overflow-x-hidden"
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`overflow-auto absolute pb-12 inset-0 transition-all duration-150 ${
+          activeIndex === -1 ? 'border-sky-500' : ''
+        } ${
+          isExternalDragOver && !highlightedEntry
+            ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/5'
+            : ''
+        }`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"
@@ -798,6 +1109,37 @@ export const ProjectExplorer = ({
             setSelectedRowWrapper(null)
           }
         }}
+        onDragEnter={(e) => {
+          if (handleExternalDragEvent(e)) {
+            externalDragCounter.current++
+            setIsExternalDragOver(true)
+          }
+        }}
+        onDragOver={(e) => {
+          if (handleExternalDragEvent(e)) {
+            e.dataTransfer.dropEffect = 'copy'
+          }
+        }}
+        onDragLeave={(e) => {
+          if (handleExternalDragEvent(e)) {
+            externalDragCounter.current--
+            if (externalDragCounter.current <= 0) {
+              externalDragCounter.current = 0
+              setIsExternalDragOver(false)
+              setDragOverTarget(null)
+            }
+          }
+        }}
+        onDrop={(e) => {
+          if (handleExternalDragEvent(e)) {
+            externalDragCounter.current = 0
+            setIsExternalDragOver(false)
+            if (e.dataTransfer.items.length > 0) {
+              void handleExternalFileDrop(e.dataTransfer, dragOverTarget)
+            }
+            setDragOverTarget(null)
+          }
+        }}
       >
         {project && (
           <FileExplorer
@@ -806,7 +1148,10 @@ export const ProjectExplorer = ({
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
             isCopying={isCopying}
-          ></FileExplorer>
+            isExternalDragOver={isExternalDragOver}
+            highlightedEntry={highlightedEntry}
+            onExternalDragOverRow={handleDragOverTarget}
+          />
         )}
       </div>
     </div>

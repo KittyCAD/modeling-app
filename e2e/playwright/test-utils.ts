@@ -5,11 +5,7 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import {
-  IS_PLAYWRIGHT_KEY,
-  COOKIE_NAME_PREFIX,
-  LAYOUT_PERSIST_PREFIX,
-} from '@src/lib/constants'
+import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -34,7 +30,11 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import { type LayoutWithMetadata, setOpenPanes } from '@src/lib/layout'
+import {
+  type LayoutWithMetadata,
+  setOpenPanes,
+  getLayoutPersistKey,
+} from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 
 const toNormalizedCode = (text: string) => {
@@ -161,12 +161,12 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // editorManager is available on the window object.
+    // kclManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager.getEditorView().dispatch({
+    kclManager.editorView.dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager.getEditorView().docView.length,
+        anchor: kclManager.editorView.docView.length,
       },
       scrollIntoView: true,
     })
@@ -539,7 +539,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return toNormalizedCode(text)
     },
 
-    async editorTextMatches(code: string) {
+    async editorTextMatches(this: void, code: string) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
@@ -672,7 +672,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
             localStorage.setItem(layoutName, layoutPayload)
           },
           {
-            layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+            layoutName: getLayoutPersistKey(),
             layoutPayload: JSON.stringify({
               version: 'v1',
               layout: setOpenPanes(
@@ -825,12 +825,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByRole('option', {
+    const exportCommand = page.getByRole('option', {
       name: 'floppy disk arrow Export',
     })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
+    await expect(exportCommand.first()).toBeVisible()
+    await exportCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
@@ -956,7 +955,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+      layoutName: getLayoutPersistKey(),
       layoutPayload: playwrightLayoutConfig,
     }
   )

@@ -1,88 +1,91 @@
-import type { MlCopilotServerMessage } from '@kittycad/lib'
-import { connectReasoningStream } from '@src/lib/reasoningWs'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import ms from 'ms'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import type {
+  MlCopilotClientMessage,
+  MlCopilotServerMessage,
+  MlCopilotMode,
+} from '@kittycad/lib'
+import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
 
-import { getKclVersion } from '@src/lib/kclVersion'
-import { err } from '@src/lib/trap'
 import { S, transitions } from '@src/machines/utils'
-import { isArray } from '@src/lib/utils'
+import { getKclVersion } from '@src/lib/kclVersion'
+
+import { Socket } from '@src/lib/socket'
+
+// Uncomment and switch WebSocket below with this MockSocket for development.
+// import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { FileEntry, Project } from '@src/lib/project'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 
-import type { Prompt } from '@src/lib/prompt'
-import { PromptType } from '@src/lib/prompt'
+import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
-import { textToCadPromptFeedback } from '@src/lib/textToCad'
-import {
-  getTextToCadCreateResult,
-  submitTextToCadCreateRequest,
-  textToCadMlConversations,
-  textToCadMlPromptsBelongingToConversation,
-} from '@src/lib/textToCadCore'
-import type { ConversationResultsPage } from '@kittycad/lib'
-
-import {
-  constructMultiFileIterationRequestWithPromptHelpers,
-  getPromptToEditResult,
-  submitTextToCadMultiFileIterationRequest,
-} from '@src/lib/promptToEdit'
 import toast from 'react-hot-toast'
 
-const MLEPHANT_POLL_STATUSES_MS = 5000
+export enum MlEphantSetupErrors {
+  ConversationNotFound = 'conversation not found',
+  InvalidConversationId = 'Invalid conversation_id',
+  NoRefParentSend = 'no ref parent send',
+}
+
+type TypeVariant<T, U = T> = U extends T ? keyof U : never
+
+type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
+  type: 'user'
+}
+  ? T
+  : never
+
+export function isMlCopilotUserRequest(
+  x: unknown
+): x is MlCopilotClientMessageUser {
+  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+}
 
 export enum MlEphantManagerStates {
-  NeedDependencies = 'need-dependencies',
   Setup = 'setup',
   Ready = 'ready',
-  Background = 'background',
-  Foreground = 'foreground',
+  Response = 'response',
+  Request = 'request',
 }
 
 export enum MlEphantManagerTransitions {
-  SetApiToken = 'set-api-token',
-  GetConversationsThatCreatedProjects = 'get-conversations-that-created-projects',
-  GetPromptsBelongingToConversation = 'get-prompts-belonging-to-conversation',
-  GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
-  GetReasoningForPrompt = 'get-reasoning-for-prompt',
-  PromptEditModel = 'prompt-edit-model',
-  PromptCreateModel = 'prompt-create-model',
-  PromptFeedback = 'prompt-feedback',
-  ClearProjectSpecificState = 'clear-project-specific-state',
-  AppendThoughtForPrompt = 'append-thought-for-prompt',
+  MessageSend = 'message-send',
+  ResponseReceive = 'response-receive',
+  ConversationClose = 'conversation-close',
+  Cancel = 'cancel',
+  AbruptClose = 'abrupt-close',
+  CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
 export type MlEphantManagerEvents =
   | {
-      type: MlEphantManagerTransitions.SetApiToken
-      token: string
+      type: 'xstate.done.state.(machine).ready'
+      conversationId: undefined
     }
   | {
-      type: MlEphantManagerTransitions.GetConversationsThatCreatedProjects
+      type: 'xstate.error.actor.0.(machine).setup'
+      conversationId: undefined
     }
   | {
-      type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
-      project: Project
+      type: MlEphantManagerTransitions.CacheSetupAndConnect
+      refParentSend: (event: MlEphantManagerEvents) => void
+      // If not present, a new conversation is created.
       conversationId?: string
-      nextPage?: string
     }
   | {
-      type: MlEphantManagerTransitions.GetReasoningForPrompt
-      // Causes a cyclic type dependency if I use MlEphantManagerActor,
-      // so for now, it's any.
-      refParent: any
-      promptId: string
+      type: MlEphantManagerStates.Setup
+      refParentSend: (event: MlEphantManagerEvents) => void
+      // If not present, a new conversation is created.
+      conversationId?: string
     }
   | {
-      type: MlEphantManagerTransitions.PromptCreateModel
-      projectForPromptOutput: Project
-      prompt: string
-    }
-  | {
-      type: MlEphantManagerTransitions.PromptEditModel
+      type: MlEphantManagerTransitions.MessageSend
       projectForPromptOutput: Project
       prompt: string
       applicationProjectDirectory: string
@@ -90,88 +93,204 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
+      mode: MlCopilotMode
     }
   | {
-      type: MlEphantManagerTransitions.PromptFeedback
-      promptId: string
-      feedback: Prompt['feedback']
+      type: MlEphantManagerTransitions.ResponseReceive
+      response: MlCopilotServerMessage
     }
   | {
-      type: MlEphantManagerTransitions.ClearProjectSpecificState
+      type: MlEphantManagerTransitions.ConversationClose
     }
   | {
-      type: MlEphantManagerTransitions.AppendThoughtForPrompt
-      promptId: string
-      thought: MlCopilotServerMessage
+      type: MlEphantManagerTransitions.Cancel
+    }
+  | {
+      type: MlEphantManagerTransitions.AbruptClose
     }
 
-// Used to specify a specific event in input properties
-type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
+export interface Exchange {
+  // Technically the WebSocket could send us a response at any time, without
+  // ever having requested anything - such as on WebSocket 'open'.
+  request?: MlCopilotClientMessage
 
-export interface PromptMeta {
-  // If it's a creation prompt, it'll run some SystemIO code that
-  // creates a new project and other goodies.
-  type: PromptType
+  // A response may not necessarily ever come back! (Thus list remains empty.)
+  // It's possible a request triggers multiple responses, such as reasoning,
+  // deltas, tool_outputs.
+  // The end of a response is signaled by 'end_of_stream'.
+  // NOTE: THIS WILL *NOT* INCLUDE `delta` RESPONSES! SEE BELOW.
+  responses: MlCopilotServerMessage[]
 
-  // Where the prompt's output should be placed on completion.
-  project: Project
+  // BELOW:
+  // An optimization. `delta` messages will be appended here.
+  deltasAggregated: string
+}
 
-  // The file that was the "target" during prompting.
-  targetFile?: FileEntry
+export type Conversation = {
+  exchanges: Exchange[]
 }
 
 export interface MlEphantManagerContext {
-  apiTokenMlephant?: string
-
-  conversations: ConversationResultsPage
-
-  // The full prompt information that ids map to.
-  promptsPool: Map<Prompt['id'], Prompt>
-
-  // Project related data is reset on project changes.
-  // If no project is selected: undefined.
-  promptsBelongingToConversation?: Prompt['id'][]
-  pageTokenPromptsBelongingToConversation?: string
-
-  // When prompts transition from in_progress to completed
-  // NOTE TO SUBSCRIBERS! You must check the last event in combination with this
-  // data to ensure it's from a status poll, and not some other event, that
-  // update the context.
-  promptsInProgressToCompleted: Set<Prompt['id']>
-
-  // The current conversation being interacted with.
+  apiToken: string
+  ws?: WebSocket
+  abruptlyClosed: boolean
+  conversation?: Conversation
   conversationId?: string
-
-  // Metadata per prompt that needs to be kept track separately.
-  promptsMeta: Map<Prompt['id'], PromptMeta>
-
-  // Thoughts for each prompt
-  promptsThoughts: Map<Prompt['id'], MlCopilotServerMessage[]>
+  lastMessageId?: number
+  lastMessageType?: TypeVariant<MlCopilotServerMessage>
+  fileFocusedOnInEditor?: FileEntry
+  projectNameCurrentlyOpened?: string
+  cachedSetup?: {
+    refParentSend?: (event: MlEphantManagerEvents) => void
+    conversationId?: string
+  }
 }
 
-export const mlEphantDefaultContext = () => ({
-  apiTokenMlephant: undefined,
-  conversations: {
-    items: [],
-    next_page: undefined,
-  },
-  promptsPool: new Map(),
-  promptsBelongingToConversation: undefined,
-  promptsInProgressToCompleted: new Set<string>(),
-  conversationId: undefined,
-  promptsMeta: new Map(),
-  promptsThoughts: new Map(),
+export const mlEphantDefaultContext = (args: {
+  input?: {
+    apiToken?: string
+  } | null
+}): MlEphantManagerContext => ({
+  apiToken: args.input?.apiToken ?? '',
+  ws: undefined,
+  abruptlyClosed: false,
+  conversation: undefined,
+  cachedSetup: undefined,
+  lastMessageId: undefined,
+  lastMessageType: undefined,
+  fileFocusedOnInEditor: undefined,
+  projectNameCurrentlyOpened: undefined,
 })
+
+function isString(x: unknown): x is string {
+  return typeof x === 'string'
+}
+
+function isPresent<T>(x: undefined | T): x is T {
+  return x !== null && x !== undefined
+}
+
+export const MlEphantConversationToMarkdown = (
+  conversation?: Conversation
+): string => {
+  if (conversation === undefined) return ''
+
+  let agg = ''
+  let meta = ''
+
+  for (const exchange of conversation.exchanges) {
+    let entry = ''
+    let reason = ''
+    if (exchange.request) {
+      if ('content' in exchange.request) {
+        entry += '## You:\n\n'
+        entry += exchange.request.content + '\n\n'
+      }
+    }
+    for (const response of exchange.responses) {
+      if ('reasoning' in response) {
+        if ('content' in response.reasoning) {
+          if (
+            [
+              'created_kcl_file',
+              'updated_kcl_file',
+              'deleted_kcl_file',
+            ].includes(response.reasoning.type) === false
+          ) {
+            const contentWithoutCode = response.reasoning.content.replace(
+              /```[\s\S]*?```/gm,
+              '~~Code redacted~~'
+            )
+            reason += `${contentWithoutCode}\n\n`
+          }
+        }
+        if ('error' in response.reasoning) {
+          reason += `**${response.reasoning.error}**\n\n`
+        }
+
+        // We will ignore code. It adds a lot of noise. We can look at honeycomb
+        // with the api call id if we really want it.
+        if ('code' in response.reasoning) {
+          reason += '~~Code redacted~~\n\n'
+        }
+
+        if ('steps' in response.reasoning) {
+          for (const step of response.reasoning.steps) {
+            reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
+          }
+        }
+      }
+      if ('end_of_stream' in response) {
+        const time = ms(
+          new Date(response.end_of_stream.completed_at ?? 0).getTime() -
+            new Date(response.end_of_stream.started_at ?? 0).getTime(),
+          { long: true }
+        )
+        entry += `## Zookeeper (${time}):\n\n`
+        entry += reason + '\n'
+        entry += new Array(80).fill('-').join('') + '\n\n'
+        entry += response.end_of_stream.whole_response ?? '' + '\n'
+
+        meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+      }
+    }
+    agg += entry + '\n\n'
+  }
+
+  return meta + '\n' + agg + '\n\n'
+}
+
+function xor(a: boolean, b: boolean): boolean {
+  return (a && !b) || (!a && b)
+}
+
+function isMlCopilotServerMessage(
+  response: unknown
+): response is MlCopilotServerMessage {
+  if (
+    typeof response === 'object' &&
+    response !== null &&
+    'body' in response &&
+    typeof response.body === 'object' &&
+    response.body !== null &&
+    xor(
+      'error' in response.body,
+      xor(
+        'info' in response.body,
+        xor(
+          'conversation_id' in response.body,
+          xor(
+            'delta' in response.body,
+            xor(
+              'tool_output' in response.body,
+              xor(
+                'reasoning' in response.body,
+                'end_of_stream' in response.body
+              )
+            )
+          )
+        )
+      )
+    )
+  ) {
+    return false
+  }
+  return true
+}
+
+type XSInput<T> = {
+  input: { event: Extract<MlEphantManagerEvents, { type: T }> } & {
+    context: MlEphantManagerContext
+  }
+}
 
 export const mlEphantManagerMachine = setup({
   types: {
     context: {} as MlEphantManagerContext,
+    input: {} as Pick<MlEphantManagerContext, 'apiToken'>,
     events: {} as MlEphantManagerEvents,
   },
   actions: {
-    consoleError: ({ event }) => {
-      console.error(event)
-    },
     toastError: ({ event }) => {
       console.error(event)
       if ('output' in event && event.output instanceof Error) {
@@ -182,598 +301,575 @@ export const mlEphantManagerMachine = setup({
         toast.error(event.error.message)
       }
     },
+    cacheSetup: assign({
+      conversationId: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+
+        if (event.conversationId) {
+          return event.conversationId
+        }
+
+        return undefined
+      },
+      cachedSetup: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+        return {
+          refParentSend: event.refParentSend,
+          conversationId: event.conversationId,
+        }
+      },
+    }),
+    clearCacheSetup: assign({
+      cachedSetup: undefined,
+    }),
   },
   actors: {
-    [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]:
-      fromPromise(async function (args: {
-        input: {
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
+    [MlEphantManagerStates.Setup]: fromPromise(async function (
+      args: XSInput<MlEphantManagerStates.Setup>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      assertEvent(args.input.event, MlEphantManagerStates.Setup)
 
-        const conversations: ConversationResultsPage | Error =
-          await textToCadMlConversations(context.apiTokenMlephant, {
-            pageToken: context.conversations.next_page,
-            limit: 20,
-            sortBy: 'created_at_descending',
-          })
+      // On future reenters of this actor it will not have args.input.event
+      // You must read from the context for the cached conversationId
+      const maybeConversationId =
+        args.input.context?.cachedSetup?.conversationId ??
+        args.input.context?.conversationId
+      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
-        if (err(conversations)) {
-          return Promise.reject(conversations)
-        }
+      const querystring = maybeConversationId
+        ? `?conversation_id=${maybeConversationId}&replay=true`
+        : ''
+      const url = withMlephantWebSocketURL(querystring)
+      const ws = await Socket(WebSocket, url, args.input.context.apiToken)
+      ws.binaryType = 'arraybuffer'
 
-        const nextItems = context.conversations.items.concat(
-          conversations.items
-        )
-
-        return {
-          conversations: {
-            items: nextItems,
-            next_page: conversations.next_page,
-          },
-        }
-      }),
-    [MlEphantManagerTransitions.GetPromptsBelongingToConversation]: fromPromise(
-      async function (args: {
-        input: {
-          event: XSEvent<MlEphantManagerTransitions.GetPromptsBelongingToConversation>
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        // If no conversation id, simply initialize context.
-        if (args.input.event.conversationId === undefined) {
-          return {
-            promptsBelongingToConversation: [],
-          }
-        }
-
-        const result = await textToCadMlPromptsBelongingToConversation(
-          context.apiTokenMlephant,
-          {
-            conversationId: args.input.event.conversationId,
-            pageToken: args.input.event.nextPage,
-            limit: 20,
-            sortBy: 'created_at_descending',
-          }
-        )
-
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        const promptsPoolNext = new Map(context.promptsPool)
-
-        // Clear what prompts we were tracking.
-        let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] =
-          []
-        const promptsMetaNext = new Map<Prompt['id'], PromptMeta>()
-
-        result.items.reverse().forEach((prompt) => {
-          promptsPoolNext.set(prompt.id, {
-            ...prompt,
-            source_ranges:
-              'source_ranges' in prompt &&
-              isArray((prompt as any).source_ranges)
-                ? (prompt as any).source_ranges
-                : [],
-          })
-          promptsBelongingToConversationNext?.push(prompt.id)
-          promptsMetaNext.set(prompt.id, {
-            // Fake Edit type, because there's no way to tell from the API
-            // what type of prompt this was.
-            type: PromptType.Edit,
-            project: args.input.event.project,
-          })
-        })
-
-        promptsBelongingToConversationNext =
-          promptsBelongingToConversationNext.concat(
-            context.promptsBelongingToConversation ?? []
-          )
-
-        return {
-          conversationId: args.input.event.conversationId,
-          promptsPool: promptsPoolNext,
-          promptsBelongingToConversation: promptsBelongingToConversationNext,
-          promptsMeta: promptsMetaNext,
-          pageTokenPromptsBelongingToConversation: result.next_page,
-        }
-      }
-    ),
-    // This is a kind of special transition.
-    // We spawn the websocket, and then go back to the idling state.
-    // That socket then can send more messages to the machine.
-    // In a sense, it's an action.
-    [MlEphantManagerTransitions.GetReasoningForPrompt]: fromPromise(
-      async function (args: {
-        input: {
-          event: XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        if (args.input.context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        connectReasoningStream(
-          args.input.context.apiTokenMlephant,
-          args.input.event.promptId,
-          {
-            on: {
-              message(msg: any) {
-                if (!msg) return
-
-                args.input.event.refParent.send({
-                  type: MlEphantManagerTransitions.AppendThoughtForPrompt,
-                  promptId: args.input.event.promptId,
-                  thought: msg,
-                })
-              },
+      // TODO: Get the server side to instead insert "interrupt"...
+      const addErrorIfInterrupted = (exchanges: Exchange[]) => {
+        const lastExchange = exchanges.slice(-1)[0]
+        const lastResponse = lastExchange?.responses.slice(-1)[0]
+        if (
+          (lastExchange?.responses?.length > 0 &&
+            lastResponse !== undefined &&
+            !('end_of_stream' in lastResponse)) ||
+          lastExchange?.responses?.length === 0
+        ) {
+          lastExchange.responses.push({
+            error: {
+              detail: 'Interrupted',
             },
-          }
-        )
-
-        return {}
-      }
-    ),
-    [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
-      async function (args: {
-        input: {
-          event: XSEvent<MlEphantManagerTransitions.PromptCreateModel>
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        // It's possible for cached prompts to "instant return" so we need
-        // to signal to the system we instantly went from in progress
-        // to completed.
-        const promptsInProgressToCompleted = new Set<string>(
-          context.promptsInProgressToCompleted
-        )
-
-        const result = await submitTextToCadCreateRequest(
-          args.input.event.prompt,
-          args.input.event.projectForPromptOutput.path,
-          context.apiTokenMlephant
-        )
-
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        const promptsPool = new Map()
-        // We're going to create a new project so it'll be the first
-        const promptsBelongingToConversation = []
-        const promptsMeta = new Map()
-
-        promptsPool.set(result.id, {
-          ...result,
-          source_ranges:
-            'source_ranges' in result && isArray((result as any).source_ranges)
-              ? (result as any).source_ranges
-              : [],
-        })
-        promptsBelongingToConversation.push(result.id)
-        promptsMeta.set(result.id, {
-          type: PromptType.Create,
-          project: args.input.event.projectForPromptOutput,
-        })
-
-        if (result.status === 'completed') {
-          promptsInProgressToCompleted.add(result.id)
-        }
-
-        return {
-          promptsPool,
-          conversationId: result.conversation_id,
-          promptsBelongingToConversation,
-          promptsMeta,
-          promptsInProgressToCompleted,
-        }
-      }
-    ),
-    [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
-      async function (args: {
-        input: {
-          event: XSEvent<MlEphantManagerTransitions.PromptEditModel>
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        const event = args.input.event
-
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        const requestData = constructMultiFileIterationRequestWithPromptHelpers(
-          {
-            conversationId: context.conversationId,
-            prompt: event.prompt,
-            selections: event.selections,
-            applicationProjectDirectory: event.applicationProjectDirectory,
-            projectFiles: event.projectFiles,
-            artifactGraph: event.artifactGraph,
-            projectName: event.projectForPromptOutput.name,
-            currentFile: event.fileSelectedDuringPrompting,
-            kclVersion: getKclVersion(),
-          }
-        )
-        const result = await submitTextToCadMultiFileIterationRequest(
-          requestData,
-          context.apiTokenMlephant
-        )
-
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        const promptsPool = context.promptsPool
-        const promptsBelongingToConversation = Array.from(
-          context.promptsBelongingToConversation ?? []
-        )
-        const promptsMeta = new Map(context.promptsMeta)
-
-        promptsPool.set(result.id, {
-          ...result,
-          prompt: result.prompt ?? '',
-          output_format: 'glb', // it's a lie. we have no 'none' type...
-        })
-        promptsBelongingToConversation.push(result.id)
-        promptsMeta.set(result.id, {
-          type: PromptType.Edit,
-          targetFile: args.input.event.fileSelectedDuringPrompting.entry,
-          project: args.input.event.projectForPromptOutput,
-        })
-
-        return {
-          conversationId: result.conversation_id,
-          promptsBelongingToConversation,
-          promptsMeta,
-        }
-      }
-    ),
-    [MlEphantManagerTransitions.PromptFeedback]: fromPromise(
-      async function (args: {
-        input: {
-          event: XSEvent<MlEphantManagerTransitions.PromptFeedback>
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        const promptsPoolNext = new Map(args.input.context.promptsPool)
-        const prompt = promptsPoolNext.get(args.input.event.promptId)
-        if (!prompt) {
-          return Promise.reject(new Error('Cant find prompt'))
-        }
-        prompt.feedback = args.input.event.feedback
-
-        await textToCadPromptFeedback(context.apiTokenMlephant, {
-          id: args.input.event.promptId,
-          feedback: args.input.event.feedback,
-        })
-
-        return {
-          promptsPool: promptsPoolNext,
-        }
-      }
-    ),
-    [MlEphantManagerTransitions.GetPromptsPendingStatuses]: fromPromise(
-      async function (args: {
-        input: {
-          context: MlEphantManagerContext
-        }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        const promptsPool = context.promptsPool
-        const promptsInProgressToCompleted = new Set<string>()
-
-        for (let prompt of promptsPool.values()) {
-          const promptMeta = context.promptsMeta.get(prompt.id)
-
-          if (promptMeta === undefined) {
-            continue
-          }
-
-          // Only check on prompts that need checking lol
-          if (
-            ['in_progress', 'queued', 'uploaded'].includes(prompt.status) ===
-            false
-          ) {
-            continue
-          }
-
-          // This shit'll be nuked when we have pure websocket API and no diff.
-          // between creation and iteration.
-          let result
-          if (promptMeta.type === PromptType.Create) {
-            result = await getTextToCadCreateResult(
-              prompt.id,
-              context.apiTokenMlephant
-            )
-          } /* PromptType.Edit */ else {
-            result = await getPromptToEditResult(
-              prompt.id,
-              context.apiTokenMlephant
-            )
-          }
-
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          // It's not done still.
-          if (
-            ['in_progress', 'queued', 'uploaded'].includes(result.status) ===
-            true
-          ) {
-            continue
-          }
-
-          promptsInProgressToCompleted.add(prompt.id)
-
-          // The generate types for this are wrong,
-          // TextToCad create and iterate both return a conversation id always
-          // I believe in some circumstances (legacy prompts), conversation_id
-          // will be undefined or the NIL uuid.
-          promptsPool.set(prompt.id, {
-            ...result,
-            prompt: result.prompt ?? '',
-            source_ranges: [],
-            output_format: 'glb', // it's a lie we don't give a shit what this is
           })
         }
-
-        return {
-          promptsInProgressToCompleted,
-        }
       }
-    ),
+
+      let maybeReplayedExchanges: Exchange[] = []
+
+      return await new Promise<Partial<MlEphantManagerContext>>(
+        (onFulfilled, onRejected) => {
+          let devCalledClose = false
+
+          ws.addEventListener('message', function (event: MessageEvent<any>) {
+            let response: unknown
+            if (!isString(event.data)) {
+              const binaryData = new Uint8Array(event.data)
+              try {
+                response = msgpackDecode(binaryData)
+              } catch (msgpackError) {
+                return console.error(
+                  'failed to deserialize binary websocket message',
+                  { msgpackError }
+                )
+              }
+            } else {
+              try {
+                response = JSON.parse(event.data)
+              } catch (e: unknown) {
+                return console.error(e)
+              }
+            }
+
+            if (!isMlCopilotServerMessage(response))
+              return new Error('Not a MlCopilotServerMessage')
+
+            // Ignore the authorization bug
+            if (
+              'error' in response &&
+              response.error.detail ===
+                'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.'
+            )
+              return
+
+            // Ignore the session data
+            if ('session_data' in response) {
+              return
+            }
+
+            if (
+              'error' in response &&
+              (response.error.detail.includes(
+                MlEphantSetupErrors.ConversationNotFound
+              ) ||
+                response.error.detail.includes(
+                  MlEphantSetupErrors.InvalidConversationId
+                ))
+            ) {
+              devCalledClose = true
+              ws.close()
+              // Pass that the conversation is not found to the onError handler which will set the conversationId
+              // to undefined to get us a new id.
+              onRejected(MlEphantSetupErrors.ConversationNotFound)
+              return
+            }
+
+            // If it's a replay, we'll unravel it and process as if they are real
+            // messages being sent from the server.
+            if ('replay' in response) {
+              for (let byteMessage of response.replay.messages) {
+                const data: Uint8Array = Uint8Array.from(
+                  Object.values(byteMessage)
+                )
+                const responseReplay: unknown = Object.freeze(
+                  JSON.parse(new TextDecoder().decode(data))
+                )
+                if (!isMlCopilotServerMessage(responseReplay)) continue
+
+                // Don't show deltas because they are aggregated in the end_of_stream
+                if ('delta' in responseReplay) continue
+
+                if (
+                  'type' in responseReplay &&
+                  responseReplay.type === 'user'
+                ) {
+                  addErrorIfInterrupted(maybeReplayedExchanges)
+
+                  if (isMlCopilotUserRequest(responseReplay)) {
+                    maybeReplayedExchanges.push({
+                      request: responseReplay,
+                      responses: [],
+                      deltasAggregated: '',
+                    })
+                  }
+                  continue
+                }
+
+                if ('error' in responseReplay || 'info' in responseReplay) {
+                  maybeReplayedExchanges.push({
+                    responses: [responseReplay],
+                    deltasAggregated: '',
+                  })
+                  continue
+                }
+
+                const lastExchange = maybeReplayedExchanges.slice(-1)[0] ?? {
+                  responses: [],
+                }
+
+                // Instead we transform a end_of_stream into a delta!
+                if ('end_of_stream' in responseReplay) {
+                  lastExchange.deltasAggregated =
+                    responseReplay.end_of_stream.whole_response ?? ''
+                }
+                lastExchange.responses.push(responseReplay)
+              }
+
+              addErrorIfInterrupted(maybeReplayedExchanges)
+            }
+
+            // We're only considered setup when a conversation_id is assigned
+            // to us. That means data is being stored and the system is ready.
+            if ('conversation_id' in response) {
+              onFulfilled({
+                abruptlyClosed: false,
+                lastMessageId: undefined,
+                lastMessageType: undefined,
+                cachedSetup: undefined,
+                conversation: {
+                  exchanges: maybeReplayedExchanges,
+                },
+                conversationId: response.conversation_id.conversation_id,
+                ws,
+              })
+              return
+            }
+
+            if (theRefParentSend) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions.ResponseReceive,
+                response,
+              })
+            } else {
+              onRejected(MlEphantSetupErrors.NoRefParentSend)
+            }
+          })
+
+          ws.addEventListener('close', function (event: Event) {
+            if (theRefParentSend !== undefined && devCalledClose === false) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions.AbruptClose,
+              })
+            }
+          })
+        }
+      )
+    }),
+    [MlEphantManagerTransitions.MessageSend]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.MessageSend>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context, event } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const requestData = constructMultiFileIterationRequestWithPromptHelpers({
+        conversationId: context.conversationId ?? '',
+        prompt: event.prompt,
+        selections: event.selections,
+        applicationProjectDirectory: event.applicationProjectDirectory,
+        projectFiles: event.projectFiles,
+        artifactGraph: event.artifactGraph,
+        projectName: event.projectForPromptOutput.name,
+        currentFile: event.fileSelectedDuringPrompting,
+        kclVersion: getKclVersion(),
+      })
+
+      const filesAsByteArrays: Record<string, number[]> = {}
+
+      for (let file of requestData.files) {
+        filesAsByteArrays[file.name] = Array.from(
+          new Uint8Array(await file.data.arrayBuffer())
+        )
+      }
+
+      const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
+        type: 'user',
+        content: requestData.body.prompt ?? '',
+        project_name: requestData.body.project_name,
+        source_ranges: requestData.body.source_ranges,
+        current_files: filesAsByteArrays,
+        mode: event.mode,
+      }
+
+      context.ws.send(JSON.stringify(request))
+
+      const conversation: Conversation = {
+        exchanges: Array.from(context.conversation.exchanges),
+      }
+
+      conversation.exchanges.push({
+        request,
+        responses: [],
+        deltasAggregated: '',
+      })
+
+      return {
+        conversation,
+        fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
+        projectNameCurrentlyOpened: requestData.body.project_name,
+      }
+    }),
+    [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Cancel>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'cancel',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
-  initial: MlEphantManagerStates.NeedDependencies,
-  context: mlEphantDefaultContext(),
+  initial: S.Await,
+  context: mlEphantDefaultContext,
   states: {
-    [MlEphantManagerStates.NeedDependencies]: {
+    [S.Await]: {
       on: {
-        [MlEphantManagerTransitions.SetApiToken]: {
+        [MlEphantManagerTransitions.CacheSetupAndConnect]: {
+          target: MlEphantManagerStates.Setup,
           actions: [
             assign({
-              apiTokenMlephant: ({ event }) => event.token,
+              abruptlyClosed: false,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+              conversation: undefined,
+              conversationId: undefined,
             }),
+            'cacheSetup',
           ],
-          target: MlEphantManagerStates.Setup,
         },
+        ...transitions([MlEphantManagerStates.Setup]),
       },
     },
     [MlEphantManagerStates.Setup]: {
       invoke: {
-        input: (args: { context: MlEphantManagerContext }) => args,
-        src: MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
+        input: (args) => {
+          assertEvent(args.event, [
+            MlEphantManagerStates.Setup,
+            'xstate.done.state.(machine).ready',
+            'xstate.error.actor.0.(machine).setup',
+            MlEphantManagerTransitions.CacheSetupAndConnect,
+          ])
+
+          return {
+            event: {
+              type: MlEphantManagerStates.Setup,
+              conversationId: args.event.conversationId,
+              refParentSend: args.self.send,
+            },
+            context: args.context,
+          }
+        },
+        src: MlEphantManagerStates.Setup,
         onDone: {
           target: MlEphantManagerStates.Ready,
-          actions: assign(({ event }) => event.output),
+          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
         },
-        // On failure we need correct dependencies still.
         onError: {
-          target: MlEphantManagerStates.NeedDependencies,
-          actions: 'consoleError',
+          target: MlEphantManagerStates.Setup,
+          actions: [
+            assign(({ event, context }) => {
+              if (event.error === MlEphantSetupErrors.ConversationNotFound) {
+                // set the conversation Id to undefined to have the reenter make a new conversation id
+                return {
+                  abruptlyClosed: false,
+                  conversation: undefined,
+                  conversationId: undefined,
+                  lastMessageId: undefined,
+                  lastMessageType: undefined,
+                  cachedSetup: {
+                    refParentSend: context.cachedSetup?.refParentSend,
+                    conversationId: undefined,
+                  },
+                }
+              }
+
+              // otherwise keep the same one
+              return {
+                cachedSetup: {
+                  refParentSend: context.cachedSetup?.refParentSend,
+                  conversationId: context.cachedSetup?.conversationId,
+                },
+              }
+            }),
+          ],
+          reenter: true,
+        },
+      },
+      on: {
+        ...transitions([MlEphantManagerTransitions.ConversationClose]),
+        [MlEphantManagerTransitions.AbruptClose]: {
+          target: MlEphantManagerTransitions.AbruptClose,
+          actions: [assign({ abruptlyClosed: true })],
         },
       },
     },
     [MlEphantManagerStates.Ready]: {
       type: 'parallel',
       states: {
-        [MlEphantManagerStates.Background]: {
+        [MlEphantManagerStates.Response]: {
           initial: S.Await,
           states: {
             [S.Await]: {
-              after: {
-                [MLEPHANT_POLL_STATUSES_MS]: {
-                  target: MlEphantManagerTransitions.GetPromptsPendingStatuses,
+              on: {
+                ...transitions([
+                  MlEphantManagerTransitions.ResponseReceive,
+                  MlEphantManagerTransitions.ConversationClose,
+                ]),
+                [MlEphantManagerTransitions.AbruptClose]: {
+                  target: MlEphantManagerTransitions.AbruptClose,
+                  actions: [assign({ abruptlyClosed: true })],
                 },
               },
             },
-            [MlEphantManagerTransitions.GetPromptsPendingStatuses]: {
-              invoke: {
-                input: (args) => ({
-                  event:
-                    args.event as XSEvent<MlEphantManagerTransitions.GetPromptsPendingStatuses>,
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.GetPromptsPendingStatuses,
-                onDone: {
-                  target: S.Await,
-                  actions: assign(({ event }) => event.output),
-                },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
+            [MlEphantManagerTransitions.ConversationClose]: {
+              type: 'final',
             },
-          },
-        },
-        [MlEphantManagerStates.Foreground]: {
-          initial: S.Await,
-          states: {
-            [S.Await]: {
-              // Reduces boilerplate. Lets you specify many transitions with
-              // states of the same name.
-              on: transitions([
-                MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
-                MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-                MlEphantManagerTransitions.GetReasoningForPrompt,
-                MlEphantManagerTransitions.PromptCreateModel,
-                MlEphantManagerTransitions.PromptEditModel,
-                MlEphantManagerTransitions.PromptFeedback,
-                MlEphantManagerTransitions.ClearProjectSpecificState,
-                MlEphantManagerTransitions.AppendThoughtForPrompt,
-              ]),
+            [MlEphantManagerTransitions.AbruptClose]: {
+              type: 'final',
             },
-            [MlEphantManagerTransitions.ClearProjectSpecificState]: {
+            // Triggered by the WebSocket 'message' event.
+            [MlEphantManagerTransitions.ResponseReceive]: {
               always: {
                 target: S.Await,
                 actions: [
-                  assign({
-                    promptsBelongingToConversation: undefined,
-                    conversationId: undefined,
+                  assign(({ event, context }) => {
+                    assertEvent(event, [
+                      MlEphantManagerTransitions.ResponseReceive,
+                    ])
+
+                    const lastMessageId = (context.lastMessageId ?? -1) + 1
+
+                    const conversation: Conversation = {
+                      exchanges: Array.from(
+                        context.conversation?.exchanges ?? []
+                      ),
+                    }
+
+                    // Errors are considered their own
+                    // exchanges because they have no end_of_stream signal.
+                    // It is assumed `info` messages are followed up
+                    // with an end_of_stream signal.
+                    if ('error' in event.response) {
+                      conversation.exchanges.push({
+                        responses: [event.response],
+                        deltasAggregated: '',
+                      })
+                      return {
+                        conversation,
+                        lastMessageId,
+                      }
+                    }
+
+                    let lastExchange: Exchange | undefined =
+                      conversation.exchanges[conversation.exchanges.length - 1]
+
+                    if (lastExchange === undefined) {
+                      lastExchange = {
+                        responses: [event.response],
+                        deltasAggregated: '',
+                      }
+                      conversation.exchanges.push(lastExchange)
+
+                      // OPTIMIZATION: `delta` responses are aggregated instead
+                      // of being included in the responses list.
+                    } else if ('delta' in event.response) {
+                      lastExchange.deltasAggregated +=
+                        event.response.delta.delta
+                    } else {
+                      lastExchange.responses.push(event.response)
+                    }
+
+                    // This sucks but must be done because we can't
+                    // enumerate the message types.
+                    const r = event.response
+                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
+                      'info',
+                      'error',
+                      'end_of_stream',
+                      'session_data',
+                      'conversation_id',
+                      'delta',
+                      'tool_output',
+                      'reasoning',
+                      'replay',
+                    ]
+                    const lastMessageType:
+                      | TypeVariant<MlCopilotServerMessage>
+                      | undefined = ts.find((t) => t in r)
+
+                    return {
+                      conversation,
+                      lastMessageId,
+                      lastMessageType,
+                    }
                   }),
                 ],
               },
             },
-            [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]: {
-              invoke: {
-                input: (args) => ({
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
-                onDone: {
-                  target: S.Await,
-                  actions: assign(({ event }) => event.output),
-                },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
+          },
+        },
+        [MlEphantManagerStates.Request]: {
+          initial: S.Await,
+          states: {
+            [S.Await]: {
+              on: transitions([
+                MlEphantManagerTransitions.MessageSend,
+                MlEphantManagerTransitions.Cancel,
+                MlEphantManagerTransitions.ConversationClose,
+                MlEphantManagerTransitions.AbruptClose,
+              ]),
             },
-            [MlEphantManagerTransitions.GetPromptsBelongingToConversation]: {
-              invoke: {
-                input: (args) => ({
-                  event:
-                    args.event as XSEvent<MlEphantManagerTransitions.GetPromptsBelongingToConversation>,
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-                onDone: {
-                  target: S.Await,
-                  actions: assign(({ event }) => event.output),
-                },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
+            [MlEphantManagerTransitions.ConversationClose]: {
+              type: 'final',
             },
-            [MlEphantManagerTransitions.GetReasoningForPrompt]: {
+            [MlEphantManagerTransitions.AbruptClose]: {
+              type: 'final',
+            },
+            [MlEphantManagerTransitions.MessageSend]: {
               invoke: {
                 input: (args) => {
-                  type ReasoningInput = {
-                    event: Extract<
-                      MlEphantManagerEvents,
-                      { type: MlEphantManagerTransitions.GetReasoningForPrompt }
-                    >
-                    context: MlEphantManagerContext
-                  }
-                  if ('output' in args.event) {
-                    const lastId = (
-                      args.event.output as {
-                        promptsBelongingToConversation?: string[]
-                      }
-                    ).promptsBelongingToConversation?.slice(-1)[0]
-                    const inputPayload: ReasoningInput = {
-                      event: {
-                        type: MlEphantManagerTransitions.GetReasoningForPrompt,
-                        refParent: args.self,
-                        promptId: lastId!,
-                      },
-                      context: args.context,
-                    }
-                    return inputPayload
-                  }
-
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.MessageSend,
+                  ])
                   return {
-                    event:
-                      args.event as XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>,
+                    event: args.event,
                     context: args.context,
                   }
                 },
-                src: MlEphantManagerTransitions.GetReasoningForPrompt,
+                src: MlEphantManagerTransitions.MessageSend,
                 onDone: {
                   target: S.Await,
-                  actions: assign(({ event }) => event.output),
+                  actions: [assign(({ event }) => event.output)],
                 },
-                onError: { target: S.Await, actions: 'toastError' },
+                onError: { target: S.Await, actions: ['toastError'] },
               },
             },
-            [MlEphantManagerTransitions.PromptCreateModel]: {
+            [MlEphantManagerTransitions.Cancel]: {
               invoke: {
-                input: (args) => ({
-                  event:
-                    args.event as XSEvent<MlEphantManagerTransitions.PromptCreateModel>,
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.PromptCreateModel,
-                onDone: {
-                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
-                  actions: assign(({ event }) => event.output),
+                input: (args) => {
+                  assertEvent(args.event, [MlEphantManagerTransitions.Cancel])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
                 },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
-            },
-            [MlEphantManagerTransitions.PromptEditModel]: {
-              invoke: {
-                input: (args) => ({
-                  event:
-                    args.event as XSEvent<MlEphantManagerTransitions.PromptEditModel>,
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.PromptEditModel,
-                onDone: {
-                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
-                  actions: assign(({ event }) => event.output),
-                },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
-            },
-            [MlEphantManagerTransitions.PromptFeedback]: {
-              invoke: {
-                input: (args) => ({
-                  event:
-                    args.event as XSEvent<MlEphantManagerTransitions.PromptFeedback>,
-                  context: args.context,
-                }),
-                src: MlEphantManagerTransitions.PromptFeedback,
+                src: MlEphantManagerTransitions.Cancel,
                 onDone: {
                   target: S.Await,
-                  actions: assign(({ event }) => event.output),
+                  actions: [],
                 },
-                onError: { target: S.Await, actions: 'toastError' },
-              },
-            },
-            [MlEphantManagerTransitions.AppendThoughtForPrompt]: {
-              always: {
-                target: S.Await,
-                actions: [
-                  assign({
-                    promptsThoughts: ({ event, context }) => {
-                      assertEvent(
-                        event,
-                        MlEphantManagerTransitions.AppendThoughtForPrompt
-                      )
-                      let next = new Map(context.promptsThoughts)
-                      const promptThoughts = next.get(event.promptId) ?? []
-                      promptThoughts.push(event.thought)
-                      next.set(event.promptId, promptThoughts)
-                      return next
-                    },
-                  }),
-                ],
+                onError: { target: S.Await, actions: ['toastError'] },
               },
             },
           },
         },
+      },
+      onDone: {
+        target: MlEphantManagerTransitions.ConversationClose,
+      },
+    },
+    [MlEphantManagerTransitions.AbruptClose]: {
+      always: {
+        target: MlEphantManagerTransitions.ConversationClose,
+      },
+    },
+    [MlEphantManagerTransitions.ConversationClose]: {
+      always: {
+        target: S.Await,
+        actions: [
+          (args) => {
+            // We want to keep the context around to recover.
+            if (args.context.abruptlyClosed) {
+              return assign({})
+            }
+            return assign({
+              abruptlyClosed: false,
+              conversation: undefined,
+              conversationId: undefined,
+              cachedSetup: undefined,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+            })
+          },
+          (args) => {
+            if (args.context.ws?.readyState === WebSocket.OPEN) {
+              args.context.ws?.close()
+            }
+          },
+        ],
       },
     },
   },
 })
 
 export type MlEphantManagerActor = ActorRefFrom<typeof mlEphantManagerMachine>
+export const MlEphantManagerReactContext = createActorContext(
+  mlEphantManagerMachine
+)

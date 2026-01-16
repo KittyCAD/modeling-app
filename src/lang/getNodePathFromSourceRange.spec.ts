@@ -6,6 +6,7 @@ import { topLevelRange } from '@src/lang/util'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { expect, describe, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('getNodePathFromSourceRange', () => {
@@ -29,7 +30,7 @@ sk3 = startSketchOn(XY)
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<any>(ast, nodePath)
+      const _node = getNodeFromPath<any>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const { node } = _node
 
@@ -55,7 +56,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<Parameter>(ast, nodePath)
+      const _node = getNodeFromPath<Parameter>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const node = _node.node
 
@@ -92,7 +93,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<Name>(ast, nodePath)
+      const _node = getNodeFromPath<Name>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const node = _node.node
       expect(nodePath).toEqual([

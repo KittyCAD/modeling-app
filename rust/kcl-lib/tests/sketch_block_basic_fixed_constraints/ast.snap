@@ -56,7 +56,37 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [],
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "on",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "XY",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
             "body": {
               "commentStart": 0,
               "end": 0,
@@ -123,7 +153,7 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "10",
+                        "raw": "+10",
                         "start": 0,
                         "suffix": "None",
                         "type": "NumericLiteral",

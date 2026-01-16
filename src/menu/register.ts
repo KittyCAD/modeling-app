@@ -1,11 +1,12 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   authActor,
   commandBarActor,
-  editorManager,
+  kclManager,
   settingsActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -16,7 +17,9 @@ import type { NavigateFunction } from 'react-router-dom'
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string
+  filePath: string,
+  engineCommandManager: ConnectionManager,
+  sceneInfra: SceneInfra
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -56,13 +59,13 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(filePath + PATHS.SETTINGS_USER)
+      void navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
-      navigate(filePath + PATHS.SETTINGS_PROJECT)
+      void navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -79,7 +82,7 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
@@ -103,11 +106,6 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
-    } else if (data.menuLabel === 'Edit.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-      })
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -124,13 +122,13 @@ export function modelingMenuCallbackMostActions(
         // Cleaner, but can't import 'electron' to this file:
         // webContents.getFocusedWebContents()?.undo()
       } else {
-        editorManager.undo()
+        kclManager.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
       if (activeFocusIsInput()) {
         document.execCommand('redo')
       } else {
-        editorManager.redo()
+        kclManager.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
@@ -260,24 +258,6 @@ export function modelingMenuCallbackMostActions(
           groupId: 'code',
           name: 'Insert',
         },
-      })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'existingProject',
-            projectName: currentProject?.name,
-          },
-        },
-      })
-    } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
       })
     }
   }

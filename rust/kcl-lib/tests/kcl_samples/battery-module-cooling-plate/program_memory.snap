@@ -8,6 +8,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -31,10 +32,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2179,
-              "end": 2200,
+              "commentStart": 2205,
+              "end": 2226,
               "moduleId": 0,
-              "start": 2179,
+              "start": 2205,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -76,10 +77,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 100.0
               ],
               "tag": {
-                "commentStart": 2179,
-                "end": 2200,
+                "commentStart": 2205,
+                "end": 2226,
                 "moduleId": 0,
-                "start": 2179,
+                "start": 2205,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -145,6 +146,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -152,7 +155,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -218,10 +220,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2179,
-            "end": 2200,
+            "commentStart": 2205,
+            "end": 2226,
             "moduleId": 0,
-            "start": 2179,
+            "start": 2205,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -263,10 +265,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               100.0
             ],
             "tag": {
-              "commentStart": 2179,
-              "end": 2200,
+              "commentStart": 2205,
+              "end": 2226,
               "moduleId": 0,
-              "start": 2179,
+              "start": 2205,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -332,6 +334,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -339,7 +343,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -504,6 +507,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -527,10 +531,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -572,10 +576,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -641,6 +645,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -648,7 +654,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -840,6 +845,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -863,10 +869,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -908,10 +914,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -977,6 +983,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -984,7 +992,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1580,6 +1587,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1603,10 +1611,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -1648,10 +1656,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -1717,6 +1725,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1724,7 +1734,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2300,6 +2309,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2323,10 +2333,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -2368,10 +2378,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -2437,6 +2447,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2444,7 +2456,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3020,6 +3031,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3043,10 +3055,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -3088,10 +3100,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -3157,6 +3169,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3164,7 +3178,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3740,6 +3753,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3763,10 +3777,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -3808,10 +3822,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -3877,6 +3891,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3884,7 +3900,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4460,6 +4475,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4483,10 +4499,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -4528,10 +4544,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -4597,6 +4613,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4604,7 +4622,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5185,6 +5202,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5208,10 +5226,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -5253,10 +5271,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -5322,6 +5340,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5329,7 +5349,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5905,6 +5924,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5928,10 +5948,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -5973,10 +5993,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -6042,6 +6062,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6049,7 +6071,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6625,6 +6646,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6648,10 +6670,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -6693,10 +6715,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -6762,6 +6784,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6769,7 +6793,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7345,6 +7368,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7368,10 +7392,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -7413,10 +7437,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -7482,6 +7506,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7489,7 +7515,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8065,6 +8090,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8088,10 +8114,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2179,
-                      "end": 2200,
+                      "commentStart": 2205,
+                      "end": 2226,
                       "moduleId": 0,
-                      "start": 2179,
+                      "start": 2205,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -8133,10 +8159,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                         100.0
                       ],
                       "tag": {
-                        "commentStart": 2179,
-                        "end": 2200,
+                        "commentStart": 2205,
+                        "end": 2226,
                         "moduleId": 0,
-                        "start": 2179,
+                        "start": 2205,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -8202,6 +8228,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8209,7 +8237,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8762,6 +8789,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -8785,10 +8813,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -8830,10 +8858,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -8899,6 +8927,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -8906,7 +8936,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9100,6 +9129,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9123,10 +9153,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9168,10 +9198,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -9237,6 +9267,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -9244,7 +9276,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9370,6 +9401,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9393,10 +9425,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9438,10 +9470,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -9507,6 +9539,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -9514,7 +9548,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9640,6 +9673,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9663,10 +9697,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9708,10 +9742,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -9777,6 +9811,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -9784,7 +9820,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9910,6 +9945,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9933,10 +9969,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2179,
-                  "end": 2200,
+                  "commentStart": 2205,
+                  "end": 2226,
                   "moduleId": 0,
-                  "start": 2179,
+                  "start": 2205,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9978,10 +10014,10 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 2179,
-                    "end": 2200,
+                    "commentStart": 2205,
+                    "end": 2226,
                     "moduleId": 0,
-                    "start": 2179,
+                    "start": 2205,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -10047,6 +10083,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -10054,7 +10092,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -10256,13 +10293,14 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

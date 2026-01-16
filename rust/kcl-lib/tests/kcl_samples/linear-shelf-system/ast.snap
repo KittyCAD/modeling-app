@@ -1511,8 +1511,6 @@ description: Result of parsing linear-shelf-system.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Side Panels ---",
           "// Left and right vertical structural walls."
         ],
@@ -1984,8 +1982,6 @@ description: Result of parsing linear-shelf-system.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Floor Base / Plinth ---",
           "// Supporting base element between side panels."
         ],
@@ -2186,8 +2182,6 @@ description: Result of parsing linear-shelf-system.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- First Shelf Board ---"
         ],
         "start": 0,
@@ -2913,8 +2907,6 @@ description: Result of parsing linear-shelf-system.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Shelf Stack ---"
         ],
         "start": 0,
@@ -3548,6 +3540,54 @@ description: Result of parsing linear-shelf-system.kcl
             }
           }
         ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "22": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "26": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "27": [
           {
             "commentStart": 0,
@@ -3556,7 +3596,17 @@ description: Result of parsing linear-shelf-system.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "--- Modular Shelf Wall ---",
               "style": "line"
             }
@@ -3619,6 +3669,18 @@ description: Result of parsing linear-shelf-system.kcl
           "value": {
             "type": "blockComment",
             "value": "A parametric, horizontally stackable shelf system for furniture layout and prototyping.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker, Construction",
             "style": "line"
           }
         },

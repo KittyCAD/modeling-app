@@ -1,8 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-import EditorManager from '@src/editor/manager'
-import { KclManager } from '@src/lang/KclSingleton'
-import CodeManager from '@src/lang/codeManager'
+import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -12,12 +9,15 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup, spawnChild } from 'xstate'
+import { assign, createActor, fromPromise, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
-import { createSettings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type SettingsType,
+} from '@src/lib/settings/initialSettings'
 import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
@@ -26,23 +26,60 @@ import {
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
-  mlEphantDefaultContext,
-  mlEphantManagerMachine,
-} from '@src/machines/mlEphantManagerMachine'
-import { settingsMachine } from '@src/machines/settingsMachine'
+  getOnlySettingsFromContext,
+  settingsMachine,
+  type SettingsMachineContext,
+} from '@src/machines/settingsMachine'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { initialiseWasm } from '@src/lang/wasmUtils'
+import { saveSettings } from '@src/lib/settings/settingsUtils'
+import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
+import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+
+/**
+ * THE bundle of WASM, a cornerstone of our app. We use this for:
+ * - settings parse/unparse
+ * - KCL parsing, execution, linting, and LSP
+ *
+ * Access this through `kclManager.wasmInstance`, not directly.
+ */
+const initPromise = initialiseWasm()
+
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [], wasmInstancePromise: initPromise },
+}).start()
+const dummySettingsActor = createActor(settingsMachine, {
+  input: { commandBarActor, ...createSettings() },
+})
 
 export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(engineCommandManager)
+export const rustContext = new RustContext(
+  engineCommandManager,
+  initPromise,
+  // HACK: convert settings to not be an XState actor to prevent the need for
+  // this dummy-with late binding of the real thing.
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
+  dummySettingsActor
+)
 
 declare global {
   interface Window {
-    editorManager: EditorManager
+    kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
   }
@@ -51,59 +88,15 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-export const sceneInfra = new SceneInfra(engineCommandManager)
-
-// This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager(engineCommandManager)
-export const codeManager = new CodeManager({ editorManager })
-
-// This needs to be after codeManager is created.
-// (lee: what??? why?)
-export const kclManager = new KclManager(engineCommandManager, {
+export const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
+export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
-  codeManager,
-  editorManager,
   sceneInfra,
 })
-
-import { initPromise } from '@src/lang/wasmUtils'
-// Initialize KCL version
-import { setKclVersion } from '@src/lib/kclVersion'
-import { AppMachineEventType } from '@src/lib/types'
-import {
-  defaultLayout,
-  defaultLayoutConfig,
-  saveLayout,
-  type Layout,
-} from '@src/lib/layout'
-import { processEnv } from '@src/env'
-
-initPromise
-  .then(() => {
-    if (processEnv()?.VITEST) {
-      const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return
-    }
-
-    setKclVersion(kclManager.kclVersion)
-  })
-  .catch((e) => {
-    console.error(e)
-  })
-
-// The most obvious of cyclic dependencies.
-// This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
-// method requires it for the current ast.
-// CYCLIC REF
-editorManager.kclManager = kclManager
-editorManager.codeManager = codeManager
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
-engineCommandManager.codeManager = codeManager
 engineCommandManager.sceneInfra = sceneInfra
 engineCommandManager.rustContext = rustContext
 
@@ -114,19 +107,17 @@ kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
-  editorManager,
-  codeManager,
   kclManager,
   rustContext
 )
+/** 🚨 Circular dependency alert 🚨 */
+kclManager.sceneEntitiesManager = sceneEntitiesManager
 
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager
   ;(window as any).kclManager = kclManager
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).editorManager = editorManager
-  ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
   ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
@@ -148,13 +139,134 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
-  ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
-  [SETTINGS]: settingsMachine,
+  [SETTINGS]: settingsMachine.provide({
+    actors: {
+      persistSettings: fromPromise<
+        undefined,
+        {
+          doNotPersist: boolean
+          context: SettingsMachineContext
+          toastCallback?: () => void
+        }
+      >(async ({ input }) => {
+        // Without this, when a user changes the file, it'd
+        // create a detection loop with the file-system watcher.
+        if (input.doNotPersist) return
+
+        // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
+        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+        const {
+          currentProject,
+          commandBarActor: _c,
+          ...settings
+        } = input.context
+
+        await saveSettings(initPromise, settings, currentProject?.path)
+
+        if (input.toastCallback) {
+          input.toastCallback()
+        }
+      }),
+      loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise
+        )
+        return settings
+      }),
+      loadProjectSettings: fromPromise<
+        SettingsType,
+        { project?: Project; settings: SettingsType }
+      >(async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise,
+          input.project?.path
+        )
+        return settings
+      }),
+    },
+    actions: {
+      setEngineTheme: ({ context }) => {
+        engineCommandManager
+          .setTheme(context.app.theme.current)
+          .catch(reportRejection)
+      },
+      setEditorLineWrapping: ({ context }) => {
+        kclManager.setEditorLineWrapping(
+          context.textEditor.textWrapping.current
+        )
+      },
+      setCursorBlinking: ({ context }) => {
+        document.documentElement.style.setProperty(
+          `--cursor-color`,
+          context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+        )
+        kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
+      },
+      setEngineHighlightEdges: ({ context }) => {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
+          .catch(reportRejection)
+      },
+      setClientTheme: ({ context }) => {
+        const resolvedTheme = getResolvedTheme(context.app.theme.current)
+        const opposingTheme = getOppositeTheme(context.app.theme.current)
+        sceneInfra.theme = opposingTheme
+        sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+        kclManager.setEditorTheme(resolvedTheme)
+      },
+      setAllowOrbitInSketchMode: ({ context }) => {
+        sceneInfra.camControls._setting_allowOrbitInSketchMode =
+          context.app.allowOrbitInSketchMode.current
+        // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+      },
+      'Execute AST': ({ context, event }) => {
+        try {
+          const relevantSetting = (s: SettingsType) => {
+            return (
+              s.modeling?.defaultUnit?.current !==
+                context.modeling.defaultUnit.current ||
+              s.modeling.showScaleGrid.current !==
+                context.modeling.showScaleGrid.current ||
+              s.modeling?.highlightEdges.current !==
+                context.modeling.highlightEdges.current
+            )
+          }
+
+          const allSettingsIncludesUnitChange =
+            event.type === 'Set all settings' &&
+            relevantSetting(event.settings || context)
+
+          const shouldExecute =
+            kclManager !== undefined &&
+            (event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
+              event.type === 'Reset settings' ||
+              allSettingsIncludesUnitChange)
+
+          if (shouldExecute) {
+            // Unit changes requires a re-exec of code
+            kclManager.executeCode().catch(reportRejection)
+          } else {
+            // For any future logging we'd like to do
+            // console.log(
+            //   'Not re-executing AST because the settings change did not affect the code interpretation'
+            // )
+          }
+        } catch (e) {
+          console.error('Error executing AST after settings change', e)
+        }
+      },
+      setEngineCameraProjection: ({ context }) => {
+        const newCurrentProjection = context.modeling.cameraProjection.current
+        sceneInfra.camControls?.setEngineCameraProjection(newCurrentProjection)
+      },
+    },
+  }),
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const
@@ -167,11 +279,11 @@ const appMachine = setup({
 }).createMachine({
   id: 'modeling-app',
   context: {
-    codeManager: codeManager,
     kclManager: kclManager,
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    commandBarActor,
     layout: defaultLayout,
   },
   entry: [
@@ -184,14 +296,16 @@ const appMachine = setup({
     spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
-      input: createSettings(),
-    }),
-    spawnChild(appMachineActors[MLEPHANT_MANAGER], {
-      systemId: MLEPHANT_MANAGER,
-      input: mlEphantDefaultContext(),
+      input: {
+        ...createSettings(),
+        commandBarActor: commandBarActor,
+      },
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
+      input: {
+        wasmInstancePromise: initPromise,
+      },
     }),
     spawnChild(appMachineActors[COMMAND_BAR], {
       systemId: COMMAND_BAR,
@@ -249,6 +363,10 @@ export const useUser = () =>
 export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
   (typeof appMachineActors)[typeof SETTINGS]
 >
+
+// HACK: late attaching settings actor to this manager
+rustContext.settingsActor = settingsActor
+
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
@@ -262,8 +380,7 @@ sceneEntitiesManager.getSettings = getSettings
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
-    const { currentProject, ...settings } = state.context
-    return settings
+    return getOnlySettingsFromContext(state.context)
   })
 
 export type SystemIOActor = ActorRefFrom<
@@ -271,17 +388,12 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const mlEphantManagerActor = appActor.system.get(
-  MLEPHANT_MANAGER
-) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
-
-export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
-  (typeof appMachineActors)[typeof COMMAND_BAR]
->
+// This extension makes it possible to mark FS operations as un/redoable
+buildFSHistoryExtension(systemIOActor, kclManager)
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
+commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]

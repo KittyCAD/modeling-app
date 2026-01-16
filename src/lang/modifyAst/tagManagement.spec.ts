@@ -1,11 +1,12 @@
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -186,7 +187,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -217,7 +219,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -248,7 +251,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -281,6 +285,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -311,6 +316,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -342,6 +348,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -378,11 +385,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         wallFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the underlying segment
@@ -409,11 +417,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         capFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the extrusion
@@ -443,11 +452,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         edgeCutFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the chamfer operation (edgeCut expression)
@@ -477,12 +487,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         chamferFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
       const tag = tags[0]
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify chamfer tagging worked
@@ -509,7 +520,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         filletFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
 
       // This should now succeed with our fix
@@ -517,7 +529,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (!err(result)) {
         const { modifiedAst, tags } = result
         const tag = tags[0]
-        const newCode = recast(modifiedAst)
+        const newCode = recast(modifiedAst, instanceInThisFile)
         if (!err(newCode)) {
           // Verify fillet tagging worked
           expect(tag).toBeTruthy()

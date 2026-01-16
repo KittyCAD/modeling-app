@@ -645,6 +645,8 @@ impl FnData {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "split" {
+            return "split([${0:extrude001}, ${1:extrude002}], merge = ${2:true})".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract2d" {
@@ -657,6 +659,8 @@ impl FnData {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         } else if self.name == "extrude" {
             return "extrude(length = ${0:10})".to_owned();
+        } else if self.name == "translate" {
+            return "translate(x = ${0:0}, y = ${1:0}, z = ${2:0})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -1047,9 +1051,9 @@ trait ApplyMeta {
                 if let Some((e, p)) = example {
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
+                    } else {
+                        examples.push((e.trim().to_owned(), p));
                     }
-
-                    examples.push((e.trim().to_owned(), p));
                     example = None;
                 } else {
                     let args = l[3..].split(',');

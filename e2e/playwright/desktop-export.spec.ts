@@ -12,9 +12,7 @@ test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -164,9 +162,7 @@ test(
   'DXF export works from feature tree sketch context menu',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await context.folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
@@ -230,6 +226,92 @@ extrude001 = extrude(profile001, length = 5)`
 
     // Check for the exported DXF file
     const exportFileName = 'sketch001.dxf'
+    const dxfFileFullPath = path.resolve(
+      getPlaywrightDownloadDir(tronApp.projectDirName),
+      exportFileName
+    )
+
+    await test.step('Check the DXF export size', async () => {
+      await expect
+        .poll(
+          async () => {
+            try {
+              const outputDxf = await fsp.readFile(dxfFileFullPath)
+              return outputDxf.byteLength
+            } catch (error: unknown) {
+              void error
+              return 0
+            }
+          },
+          { timeout: 15_000 }
+        )
+        .toBeGreaterThan(500) // DXF files should have meaningful content
+    })
+  }
+)
+
+test(
+  'DXF export works for second sketch in feature tree',
+  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+    if (!tronApp) throw new Error('tronApp is missing.')
+
+    await context.folderSetupFn(async (dir) => {
+      const sketchDir = path.join(dir, 'second-sketch-project')
+      await fsp.mkdir(sketchDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(sketchDir, 'main.kcl'),
+        `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 5)
+  |> xLine(length = 5)
+  |> yLine(length = -5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 2)
+sketch002 = startSketchOn(extrude001, face = END)
+profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    // Open the project
+    const projectName = page.getByText(`second-sketch-project`)
+    await expect(projectName).toBeVisible()
+    await projectName.click()
+    await scene.settled(cmdBar)
+
+    // Expect zero errors in gutter
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Close other panes and ensure only feature tree is open
+    const u = await getUtils(page)
+    await u.closeFilePanel()
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+
+    // Open the feature tree pane
+    await toolbar.openFeatureTreePane()
+
+    // Find the second sketch operation in the feature tree
+    const secondSketchNode = await toolbar.getFeatureTreeOperation('Sketch', 1)
+    await expect(secondSketchNode).toBeVisible()
+
+    // Right-click to open context menu
+    await secondSketchNode.click({ button: 'right' })
+
+    // Verify that "Export to DXF" option is present and click it
+    const dxfExportOption = page.getByTestId('context-menu-export-dxf')
+    await expect(dxfExportOption).toBeVisible()
+    await dxfExportOption.click()
+
+    const successToastMessage = page.getByText('DXF export completed [TEST]')
+    await page.waitForTimeout(1_000)
+    const count = await successToastMessage.count()
+    await expect(count).toBeGreaterThanOrEqual(1)
+
+    // Check for the exported DXF file
+    const exportFileName = 'sketch002.dxf'
     const dxfFileFullPath = path.resolve(
       getPlaywrightDownloadDir(tronApp.projectDirName),
       exportFileName

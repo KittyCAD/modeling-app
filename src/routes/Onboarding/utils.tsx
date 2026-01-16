@@ -12,8 +12,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -47,6 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -84,7 +84,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
+    void navigate(targetRoute)
   }, [filePath, newStatus, navigate])
 }
 
@@ -105,7 +105,7 @@ export function useDismiss() {
       })
       waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -213,7 +213,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -246,7 +246,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -262,7 +264,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  codeManager: CodeManager
   kclManager: KclManager
   navigate: NavigateFunction
 }
@@ -299,7 +300,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -313,7 +317,6 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  codeManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -322,20 +325,18 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(browserAxialFan)
-  codeManager.writeToFile().catch(reportRejection)
-  kclManager.executeCode().catch(reportRejection)
-  navigate(
+  kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
+  void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
   )
 }
 
-function hasResetReadyCode(codeManager: CodeManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) ||
-    codeManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
+    kclManager.codeSignal.value === browserAxialFan
   )
 }
 
@@ -413,11 +414,10 @@ export function TutorialRequestToast(
       <div className="grid grid-cols-3 gap-4">
         <TutorialToastCard
           src={quickTipSrc(1)}
-          alt="a screenshot of the Design Studio interface highlighting the Text-to-CAD button in the right sidebar"
+          alt="a screenshot of the Design Studio interface highlighting the Zookeeper button in the right sidebar"
         >
-          <strong>Text-to-CAD</strong> is in the upper right panel, where you
-          can create or modify parts with prompts.{' '}
-          <strong>1 credit = 1 second of compute time.</strong>
+          <strong>Zookeeper</strong> is in the right sidebar, where you can
+          create or modify parts with prompts.{' '}
         </TutorialToastCard>
         <TutorialToastCard
           src={quickTipSrc(2)}
@@ -469,7 +469,7 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
           }}
           name="accept"
           onClick={onAccept}
@@ -559,7 +559,7 @@ export function useOnboardingHighlight(elementId: string) {
       `[data-${ONBOARDING_DATA_ATTRIBUTE}="${elementId}"`
     )
     if (elementToHighlight === null) {
-      console.error('Text-to-CAD dropdown element not found')
+      console.error('Dropdown element not found')
       return
     }
     // There is an ".onboarding-highlight" class defined in index.css

@@ -1,6 +1,4 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 export type CmdBarSerialised =
@@ -23,6 +21,7 @@ export type CmdBarSerialised =
       stage: 'review'
       headerArguments: Record<string, string>
       commandName: string
+      reviewValidationError?: string
     }
 
 export class CmdBarFixture {
@@ -70,15 +69,23 @@ export class CmdBarFixture {
     }
     const getCommandName = () =>
       this.page.getByTestId('command-name').textContent()
+    const getReviewValidationError = async () => {
+      const locator = this.page.getByTestId('cmd-bar-review-validation-error')
+      if (!(await locator.isVisible())) return undefined
+      return (await locator.textContent()) || undefined
+    }
     if (await reviewForm.isVisible()) {
-      const [headerArguments, commandName] = await Promise.all([
-        getHeaderArgs(),
-        getCommandName(),
-      ])
+      const [headerArguments, commandName, reviewValidationError] =
+        await Promise.all([
+          getHeaderArgs(),
+          getCommandName(),
+          getReviewValidationError(),
+        ])
       return {
         stage: 'review',
         headerArguments,
         commandName: commandName || '',
+        reviewValidationError,
       }
     }
 
@@ -308,123 +315,6 @@ export class CmdBarFixture {
    */
   createNewVariable = async () => {
     await this.variableCheckbox.click()
-  }
-
-  /**
-   * Captures a snapshot of the request sent to the text-to-cad API endpoint
-   * and saves it to a file named after the current test.
-   *
-   * The snapshot file will be saved in the specified directory with a filename
-   * derived from the test's full path (including describe blocks).
-   *
-   * @param testInfoInOrderToGetTestTitle The TestInfo object from the test context
-   * @param customOutputDir Optional custom directory for the output file
-   */
-  async captureTextToCadRequestSnapshot(
-    testInfoInOrderToGetTestTitle: TestInfo,
-    customOutputDir = 'e2e/playwright/snapshots/prompt-to-edit'
-  ) {
-    // First sanitize each title component individually
-    const sanitizedTitleComponents = [
-      ...testInfoInOrderToGetTestTitle.titlePath.slice(0, -1), // Get all parent titles
-      testInfoInOrderToGetTestTitle.title, // Add the test title
-    ].map(
-      (component) =>
-        component
-          .replace(/[^a-z0-9]/gi, '-') // Replace non-alphanumeric chars with hyphens
-          .toLowerCase()
-          .replace(/-+/g, '-') // Replace multiple consecutive hyphens with a single one
-          .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-    )
-
-    // Join the sanitized components with -- as a clear separator
-    const sanitizedTestName = sanitizedTitleComponents.join('--')
-
-    // Create the output path
-    const outputPath = path.join(
-      customOutputDir,
-      `${sanitizedTestName}.snap.json`
-    )
-
-    // Create a handler function that saves request bodies to a file
-    const requestHandler = (route: Route, request: Request) => {
-      try {
-        // Get the raw post data
-        const postData = request.postData()
-        if (!postData) {
-          console.error('No post data found in request')
-          return
-        }
-
-        // Extract all parts from the multipart form data
-        const boundary = postData.match(/------WebKitFormBoundary[^\r\n]*/)?.[0]
-        if (!boundary) {
-          console.error('Could not find form boundary')
-          return
-        }
-
-        const parts = postData.split(boundary).filter((part) => part.trim())
-        const files: Record<string, string> = {}
-        let eventData = null
-
-        for (const part of parts) {
-          // Skip the final boundary marker
-          if (part.startsWith('--')) continue
-
-          const nameMatch = part.match(/name="([^"]+)"/)
-          if (!nameMatch) {
-            console.log('No name match found in part:', part.substring(0, 100))
-            continue
-          }
-
-          const name = nameMatch[1]
-          const content = part.split(/\r?\n\r?\n/)[1]?.trim()
-          if (!content) continue
-
-          if (name === 'body') {
-            eventData = JSON.parse(content)
-          } else if (name === 'files') {
-            files[name] = content
-          }
-        }
-
-        if (!eventData) {
-          console.error('Could not find event JSON in multipart form data')
-          return
-        }
-
-        const requestBody = {
-          ...eventData,
-          files,
-        }
-
-        // Ensure directory exists
-        const dir = path.dirname(outputPath)
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true })
-        }
-
-        // Write the request body to the file
-        fs.writeFileSync(outputPath, JSON.stringify(requestBody, null, 2))
-
-        console.log(`Saved text-to-cad API request to: ${outputPath}`)
-      } catch (error) {
-        console.error('Error processing text-to-cad request:', error)
-      }
-
-      // Use void to explicitly mark the promise as ignored
-      void route.continue()
-    }
-
-    // Start monitoring requests
-    await this.page.route(
-      '**/ml/text-to-cad/multi-file/iteration',
-      requestHandler
-    )
-
-    console.log(
-      `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
-    )
   }
 
   async toBeOpened() {

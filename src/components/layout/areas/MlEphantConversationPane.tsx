@@ -1,74 +1,60 @@
-import type { User } from '@kittycad/lib'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { Prompt } from '@src/lib/prompt'
-import { type settings } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
+import { NIL as uuidNIL } from 'uuid'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SystemIOActor } from '@src/lib/singletons'
+import { useEffect, useState, useRef } from 'react'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import { useEffect, useState } from 'react'
-import { NIL as uuidNIL } from 'uuid'
-import type { BillingActor } from '@src/machines/billingMachine'
+import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-
-const hasPromptsPending = (promptsPool: Prompt[]) => {
-  return (
-    promptsPool.filter((prompt) =>
-      ['queued', 'uploaded', 'in_progress'].includes(prompt.status)
-    ).length > 0
-  )
-}
+import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
-  billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
-  codeManager: CodeManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
+  sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
-  settings: typeof settings
+  settings: SettingsType
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
-  const promptsBelongingToConversation = useSelector(
-    props.mlEphantManagerActor,
-    () => {
-      return mlEphantManagerActorSnapshot.context.promptsBelongingToConversation
-    }
-  )
-  const billingContext = useSelector(props.billingActor, (actor) => {
-    return actor.context
-  })
-
-  const prompts = Array.from(
-    promptsBelongingToConversation
-      ?.map((promptId) =>
-        mlEphantManagerActorSnapshot.context.promptsPool.get(promptId)
-      )
-      .filter((x) => x !== undefined) ?? []
+  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
   )
 
-  const promptsThoughts = useSelector(props.mlEphantManagerActor, () => {
-    return mlEphantManagerActorSnapshot.context.promptsThoughts
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.conversation
   })
 
-  const onProcess = async (requestedPrompt: string) => {
+  const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.abruptlyClosed
+  })
+
+  if (
+    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
+    !abruptlyClosed
+  ) {
+    conversation = undefined
+  }
+
+  const onProcess = async (request: string, mode: MlCopilotMode) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -78,85 +64,109 @@ export const MlEphantConversationPane = (props: {
       return
     }
 
+    let project: Project = props.theProject
+
+    if (!window.electron) {
+      // If there is no project, we'll create a fake one. Expectation is for
+      // this to only happen on web.
+      project = {
+        metadata: null,
+        kcl_file_count: 1,
+        directory_count: 0,
+        default_file: '/main.kcl',
+        path: '/' + props.settings.meta.id.current,
+        name: props.settings.meta.id.current,
+        children: [
+          {
+            name: 'main.kcl',
+            path: `/main.kcl`,
+            children: null,
+          },
+        ],
+        readWriteAccess: true,
+      }
+    }
+
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.codeManager.code,
+      selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
-      projectContext: props.theProject,
+      projectContext: project,
     })
 
     // Only on initial project creation do we call the create endpoint, which
     // has more data for initial creations. Improvements to the TTC service
     // will close this gap in performance.
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.PromptEditModel,
-      prompt: requestedPrompt,
-      projectForPromptOutput: props.theProject,
+      type: MlEphantManagerTransitions.MessageSend,
+      prompt: request,
+      projectForPromptOutput: project,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.codeManager.code,
+        content: props.kclManager.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      mode,
     })
+
+    props.sendBillingUpdate()
   }
 
-  const onSeeMoreHistory = (nextPage?: string) => {
-    if (!nextPage) return
+  const lastExchange = conversation?.exchanges.slice(-1) ?? []
 
-    const conversationId = props.systemIOActor
-      .getSnapshot()
-      .context.mlEphantConversations?.get(props.settings.meta.id.current)
+  const isProcessing = lastExchange[0]
+    ? lastExchange[0].responses.some(
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
+      ) === false
+    : false
 
-    if (conversationId === undefined || conversationId === uuidNIL) {
-      console.warn('Unexpected conversationId is undefined!')
-    }
+  const needsReconnect = abruptlyClosed
 
-    if (props.theProject === undefined) {
-      return
-    }
-
+  const onReconnect = () => {
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-      project: props.theProject,
-      conversationId,
-      nextPage:
-        mlEphantManagerActorSnapshot.context
-          .pageTokenPromptsBelongingToConversation,
+      type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      refParentSend: props.mlEphantManagerActor.send,
+      conversationId:
+        props.mlEphantManagerActor.getSnapshot().context.conversationId,
     })
   }
 
-  const onFeedback = (id: Prompt['id'], feedback: Prompt['feedback']) => {
+  const onCancel = () => {
+    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.PromptFeedback,
-      promptId: id,
-      feedback,
+      type: MlEphantManagerTransitions.Cancel,
     })
   }
 
-  const onSeeReasoning = (id: Prompt['id']) => {
-    // Already have the thoughts!
-    if (promptsThoughts.get(id)) {
-      return
-    }
+  if (needsReconnect && timeoutReconnect.current === undefined) {
+    timeoutReconnect.current = setTimeout(() => {
+      onReconnect()
+      timeoutReconnect.current = undefined
+    }, 3000)
+  }
 
+  const onClickClearChat = () => {
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.GetReasoningForPrompt,
-      // So the machine can send messages to itself.
-      refParent: props.mlEphantManagerActor,
-      promptId: id,
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
     })
   }
 
-  const isProcessing =
-    mlEphantManagerActorSnapshot.matches({
-      [MlEphantManagerStates.Ready]: {
-        [MlEphantManagerStates.Foreground]: S.Await,
-      },
-    }) === false
-
-  const tryToGetPrompts = () => {
+  const tryToGetExchanges = () => {
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -179,13 +189,12 @@ export const MlEphantConversationPane = (props: {
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
-      props.mlEphantManagerActor.getSnapshot().context
-        .promptsBelongingToConversation === undefined &&
-      props.theProject !== undefined
+      props.theProject !== undefined &&
+      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
     ) {
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-        project: props.theProject,
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
         conversationId,
       })
     }
@@ -207,31 +216,46 @@ export const MlEphantConversationPane = (props: {
           return
         }
 
-        tryToGetPrompts()
+        const { context } = props.mlEphantManagerActor.getSnapshot()
+
+        if (context.conversation !== undefined) {
+          return
+        }
+
+        tryToGetExchanges()
       }
     )
 
     const subscriptionMlEphantManagerActor =
-      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot2) => {
+      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
         const isProcessing =
-          mlEphantManagerActorSnapshot2.matches({
+          (mlEphantManagerActorSnapshot.matches({
             [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Foreground]: S.Await,
+              [MlEphantManagerStates.Request]: S.Await,
             },
-          }) === false
+          }) || mlEphantManagerActorSnapshot.value === S.Await) === false
+
+        const { context } = mlEphantManagerActorSnapshot
 
         if (isProcessing) {
           return
         }
 
-        tryToGetPrompts()
+        // End of processing, trigger a billing update
+        props.sendBillingUpdate()
+
+        if (context.conversation !== undefined) {
+          return
+        }
+
+        tryToGetExchanges()
       })
 
     props.systemIOActor.send({
       type: SystemIOMachineEvents.getMlEphantConversations,
     })
 
-    tryToGetPrompts()
+    tryToGetExchanges()
 
     return () => {
       subscriptionSystemIOActor.unsubscribe()
@@ -254,28 +278,39 @@ export const MlEphantConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
+  const userBlockedOnPayment: () => boolean = () => {
+    if (!props.user || !props.user.block) {
+      return false
+    }
+
+    switch (props.user.block) {
+      case 'missing_payment_method':
+      case 'payment_method_failed':
+        return true
+      default:
+        props.user.block satisfies never // exhaustiveness check
+        return false
+    }
+  }
+
   return (
     <MlEphantConversation
-      isLoading={promptsBelongingToConversation === undefined || isProcessing}
-      prompts={prompts}
-      promptsThoughts={promptsThoughts}
-      billingContext={billingContext}
-      onProcess={(requestedPrompt: string) => {
-        onProcess(requestedPrompt).catch(reportRejection)
+      isLoading={conversation === undefined}
+      contexts={[
+        { type: 'selections', data: props.contextModeling.selectionRanges },
+      ]}
+      conversation={conversation}
+      onProcess={(request: string, mode: MlCopilotMode) => {
+        onProcess(request, mode).catch(reportRejection)
       }}
-      onFeedback={onFeedback}
-      onSeeReasoning={onSeeReasoning}
-      disabled={hasPromptsPending(prompts) || isProcessing}
-      hasPromptCompleted={
-        mlEphantManagerActorSnapshot.context.promptsInProgressToCompleted.size >
-        0
-      }
-      nextPage={
-        mlEphantManagerActorSnapshot.context
-          .pageTokenPromptsBelongingToConversation
-      }
-      onSeeMoreHistory={onSeeMoreHistory}
+      onClickClearChat={onClickClearChat}
+      onReconnect={onReconnect}
+      onCancel={onCancel}
+      disabled={isProcessing || needsReconnect}
+      needsReconnect={needsReconnect}
+      hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
+      userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
     />
   )
