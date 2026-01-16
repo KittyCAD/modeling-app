@@ -178,6 +178,8 @@ pub struct Sweep {
     /// Only applicable to SweepSubType::Sweep, which can use a trajectory path
     pub trajectory_id: Option<ArtifactId>,
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -1100,6 +1102,7 @@ fn artifacts_to_update(
                 code_ref,
                 trajectory_id: None,
                 method,
+                consumed: false,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1184,6 +1187,7 @@ fn artifacts_to_update(
                 code_ref,
                 trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+                consumed: false,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
