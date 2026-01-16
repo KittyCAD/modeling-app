@@ -5,7 +5,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
@@ -16,6 +16,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
+  const { kclManager, rustContext } = useSingletons()
   const currentLevel: WarningLevel =
     kclManager.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
