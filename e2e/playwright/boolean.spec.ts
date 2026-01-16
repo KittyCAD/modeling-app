@@ -87,7 +87,7 @@ test.describe(
           await page.waitForTimeout(1000)
 
           // For subtract, we need to proceed to the next step before selecting the second object
-          if (operationName !== 'subtract' && operationName !== 'split') {
+          if (operationName !== 'subtract') {
             // should down shift key to select multiple objects
             await page.keyboard.down('Shift')
           } else {
@@ -123,8 +123,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Targets: '1 path',
-                Tools: '1 path',
+                Targets: '2 paths',
               },
               commandName,
             })

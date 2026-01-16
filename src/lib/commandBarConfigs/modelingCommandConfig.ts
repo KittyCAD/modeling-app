@@ -370,7 +370,6 @@ export type ModelingCommandSchema = {
   }
   'Boolean Split': {
     targets: Selections
-    tools: Selections
     merge: boolean
   }
 }
@@ -1231,13 +1230,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       targets: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-      },
-      tools: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        clearSelectionFirst: true,
         multiple: true,
         required: true,
       },
