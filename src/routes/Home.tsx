@@ -66,6 +66,10 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
+import { useSingletons } from '@src/lib/singletons'
+import { SettingsType } from '@src/lib/settings/initialSettings'
+import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -75,6 +79,14 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const {
+    authActor,
+    billingActor,
+    commandBarActor,
+    kclManager,
+    useSettings,
+    useToken,
+  } = useSingletons()
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -389,7 +401,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
 }
 
@@ -506,6 +518,7 @@ function ProjectGrid({
   handleRenameProject,
   ...rest
 }: ProjectGridProps) {
+  const { systemIOActor } = useSingletons()
   const state = useSystemIOState()
 
   return (
@@ -520,8 +533,8 @@ function ProjectGrid({
                 <ProjectCard
                   key={project.name}
                   project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
+                  handleRenameProject={handleRenameProject(systemIOActor)}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
             </ul>
@@ -553,20 +566,36 @@ function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-async function handleRenameProject(
-  e: FormEvent<HTMLFormElement>,
-  project: Project
+function handleRenameProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  const { newProjectName } = Object.fromEntries(
-    new FormData(e.target as HTMLFormElement)
-  )
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+    const { newProjectName } = Object.fromEntries(
+      new FormData(e.target as HTMLFormElement)
+    )
 
-  if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-    toast.error('Project names cannot start with a dot (.)')
-    return
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
+
+    if (newProjectName !== project.name) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+          redirect: false,
+        },
+      })
+    }
   }
+}
 
-  if (newProjectName !== project.name) {
+function handleDeleteProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+) {
+  return async function (project: Project) {
     systemIOActor.send({
       type: SystemIOMachineEvents.renameProject,
       data: {
@@ -576,13 +605,6 @@ async function handleRenameProject(
       },
     })
   }
-}
-
-async function handleDeleteProject(project: Project) {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.deleteProject,
-    data: { requestedProjectName: project.name },
-  })
 }
 
 export default Home
