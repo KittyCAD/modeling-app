@@ -8,18 +8,16 @@ import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
+import type { Command, CommandArgument } from '@src/lib/commandTypes'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
+  const { commandBarActor, kclManager, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, commands },
@@ -68,16 +66,19 @@ export const CommandBar = () => {
   )
 
   function stepBack() {
-    const entries = Object.entries(selectedCommand?.args || {}).filter(
-      ([argName, arg]) => {
-        const { value, isRequired, isHidden } = evaluateCommandBarArg(
-          argName,
-          arg,
-          commandBarState.context
-        )
-        return !isHidden && (value || isRequired)
-      }
-    )
+    const entries = (
+      Object.entries(selectedCommand?.args || {}) as [
+        string,
+        CommandArgument<unknown>,
+      ][]
+    ).filter(([argName, arg]) => {
+      const { value, isRequired, isHidden } = evaluateCommandBarArg(
+        argName,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden && (value || isRequired)
+    })
 
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
@@ -153,7 +154,7 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command) => {
+                options={commands.filter((command: Command) => {
                   return (
                     // By default everything is undefined
                     // If marked explicitly as false hide
