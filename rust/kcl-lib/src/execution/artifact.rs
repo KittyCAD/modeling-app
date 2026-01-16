@@ -116,8 +116,6 @@ pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
-    /// Whether this artifact has been used in a subsequent operation
-    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -203,8 +201,6 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
-    /// Whether this artifact has been used in a subsequent operation
-    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -261,8 +257,6 @@ pub struct Wall {
     pub face_code_ref: CodeRef,
     /// The command ID that got the data for this wall. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
-    /// Whether this artifact has been used in a subsequent operation
-    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -279,8 +273,6 @@ pub struct Cap {
     pub face_code_ref: CodeRef,
     /// The command ID that got the data for this cap. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
-    /// Whether this artifact has been used in a subsequent operation
-    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -510,7 +502,6 @@ impl Plane {
             return Some(new);
         };
         merge_ids(&mut self.path_ids, new.path_ids);
-        self.consumed = new.consumed;
 
         None
     }
@@ -569,7 +560,6 @@ impl Wall {
         };
         merge_ids(&mut self.edge_cut_edge_ids, new.edge_cut_edge_ids);
         merge_ids(&mut self.path_ids, new.path_ids);
-        self.consumed = new.consumed;
 
         None
     }
@@ -941,7 +931,6 @@ fn artifacts_to_update(
                 id,
                 path_ids: Vec::new(),
                 code_ref,
-                consumed: false,
             })]);
         }
         ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
@@ -963,7 +952,6 @@ fn artifacts_to_update(
                         path_ids: wall.path_ids.clone(),
                         face_code_ref: wall.face_code_ref.clone(),
                         cmd_id: artifact_command.cmd_id,
-                        consumed: false,
                     })]);
                 }
                 Some(Artifact::Cap(cap)) => {
@@ -975,7 +963,6 @@ fn artifacts_to_update(
                         path_ids: cap.path_ids.clone(),
                         face_code_ref: cap.face_code_ref.clone(),
                         cmd_id: artifact_command.cmd_id,
-                        consumed: false,
                     })]);
                 }
                 Some(_) | None => {
@@ -988,7 +975,6 @@ fn artifacts_to_update(
                         id: entity_id.into(),
                         path_ids,
                         code_ref,
-                        consumed: false,
                     })]);
                 }
             }
@@ -1021,7 +1007,6 @@ fn artifacts_to_update(
                     id: (*current_plane_id).into(),
                     path_ids: vec![id],
                     code_ref: plane_code_ref,
-                    consumed: true,
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
@@ -1033,7 +1018,6 @@ fn artifacts_to_update(
                     path_ids: vec![id],
                     face_code_ref: wall.face_code_ref.clone(),
                     cmd_id: artifact_command.cmd_id,
-                    consumed: true,
                 }));
             }
             if let Some(Artifact::Cap(cap)) = plane {
@@ -1045,7 +1029,6 @@ fn artifacts_to_update(
                     path_ids: vec![id],
                     face_code_ref: cap.face_code_ref.clone(),
                     cmd_id: artifact_command.cmd_id,
-                    consumed: true,
                 }));
             }
             return Ok(return_arr);
@@ -1079,7 +1062,6 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
-                    consumed: false,
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
@@ -1367,7 +1349,6 @@ fn artifacts_to_update(
                     path_ids: Vec::new(),
                     face_code_ref: sketch_on_face_code_ref,
                     cmd_id: artifact_command.cmd_id,
-                    consumed: false,
                 }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
@@ -1426,7 +1407,6 @@ fn artifacts_to_update(
                         path_ids: Vec::new(),
                         face_code_ref: sketch_on_face_code_ref,
                         cmd_id: artifact_command.cmd_id,
-                        consumed: false,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
@@ -1762,7 +1742,6 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
-                                new_path.consumed = true;
                                 new_path.composite_solid_id = Some(*solid_id);
 
                                 // We want to mark any sweeps of the path used in this operation
