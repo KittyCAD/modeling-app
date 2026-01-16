@@ -6,7 +6,7 @@ use crate::{
     errors::KclErrorDetails,
     exec::{KclValue, NumericType, Sketch},
     execution::{
-        BasePath, GeoMeta, ModelingCmdMeta, Path, Segment, SegmentKind, SketchSurface,
+        BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, Segment, SegmentKind, SketchSurface,
         types::{ArrayLen, RuntimeType},
     },
     std::{
@@ -173,19 +173,19 @@ async fn inner_region(
     args: Args,
 ) -> Result<KclValue, KclError> {
     let segments_len = segments.len();
-    let [seg0, seg1]: [KclValue; 2] = segments.try_into().map_err(|_| {
+    let [seg0_value, seg1_value]: [KclValue; 2] = segments.try_into().map_err(|_| {
         KclError::new_argument(KclErrorDetails::new(
             format!("Expected exactly 2 segments to create a region, but got {segments_len}"),
             vec![args.source_range],
         ))
     })?;
-    let Some(seg0_engine_id) = seg0.as_segment().map(|s| s.id) else {
+    let Some(seg0) = seg0_value.as_segment() else {
         return Err(KclError::new_argument(KclErrorDetails::new(
             "Expected first segment to be a Segment".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(seg1_engine_id) = seg1.as_segment().map(|s| s.id) else {
+    let Some(seg1) = seg1_value.as_segment() else {
         return Err(KclError::new_argument(KclErrorDetails::new(
             "Expected second segment to be a Segment".to_owned(),
             vec![args.source_range],
@@ -201,8 +201,8 @@ async fn inner_region(
             meta,
             ModelingCmd::from(
                 mcmd::CreateRegion::builder()
-                    .segment(seg0_engine_id)
-                    .intersection_segment(seg1_engine_id)
+                    .segment(seg0.id)
+                    .intersection_segment(seg1.id)
                     .intersection_index(intersection_index)
                     .curve_clockwise(direction.is_clockwise())
                     .build(),
@@ -210,5 +210,50 @@ async fn inner_region(
         )
         .await?;
 
-    Ok(KclValue::none())
+    let units = exec_state.length_unit();
+    // Dummy to-coordinate.
+    let to = [0.0, 0.0];
+    // Dummy path so that paths is never empty, as long as the segment ID is
+    // valid. It's used by `do_post_extrude`.
+    let first_path = Path::ToPoint {
+        base: BasePath {
+            from: to,
+            to,
+            units,
+            tag: None,
+            geo_meta: GeoMeta {
+                id: seg0.id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+    let start_base_path = BasePath {
+        from: to,
+        to,
+        tag: None,
+        units,
+        geo_meta: GeoMeta {
+            id: region_id,
+            metadata: args.source_range.into(),
+        },
+    };
+    let sketch = Sketch {
+        id: region_id,
+        original_id: region_id,
+        artifact_id: region_id.into(),
+        on: seg0.surface.clone(),
+        paths: vec![first_path],
+        inner_paths: vec![],
+        units,
+        mirror: Default::default(),
+        clone: Default::default(),
+        meta: vec![args.source_range.into()],
+        tags: Default::default(),
+        start: start_base_path,
+        // The engine always returns a closed Solid2d.
+        is_closed: ProfileClosed::Explicitly,
+    };
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
