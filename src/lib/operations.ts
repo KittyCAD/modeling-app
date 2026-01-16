@@ -1899,6 +1899,58 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  'sketch2::coincident': {
+    label: 'Coincident Constraint',
+    icon: 'coincident',
+  },
+  'sketch2::concentric': {
+    label: 'Concentric Constraint',
+    icon: 'concentric',
+  },
+  'sketch2::distance': {
+    label: 'Distance Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  'sketch2::equalLength': {
+    label: 'Equal Length Constraint',
+    icon: 'equal',
+  },
+  'sketch2::fixed': {
+    label: 'Fixed Constraint',
+    icon: 'fix',
+  },
+  'sketch2::horizontal': {
+    label: 'Horizontal Constraint',
+    icon: 'horizontal',
+  },
+  'sketch2::midpoint': {
+    label: 'Midpoint Constraint',
+    icon: 'midpoint',
+  },
+  'sketch2::normal': {
+    label: 'Normal Constraint',
+    icon: 'normal',
+  },
+  'sketch2::parallel': {
+    label: 'Parallel Constraint',
+    icon: 'parallel',
+  },
+  'sketch2::perpendicular': {
+    label: 'Perpendicular Constraint',
+    icon: 'perpendicular',
+  },
+  'sketch2::symmetric': {
+    label: 'Symmetric Constraint',
+    icon: 'symmetry',
+  },
+  'sketch2::tangent': {
+    label: 'Tangent Constraint',
+    icon: 'tangent',
+  },
+  'sketch2::vertical': {
+    label: 'Vertical Constraint',
+    icon: 'vertical',
+  },
   'hole::hole': {
     label: 'Hole',
     icon: 'hole',
