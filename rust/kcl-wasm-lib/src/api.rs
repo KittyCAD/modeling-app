@@ -9,6 +9,13 @@ use wasm_bindgen::prelude::*;
 
 use crate::{Context, TRUE_BUG};
 
+#[derive(serde::Serialize)]
+struct TrimResult {
+    kcl_source: kcl_lib::front::SourceDelta,
+    scene_graph_delta: kcl_lib::front::SceneGraphDelta,
+    operations_performed: bool,
+}
+
 #[wasm_bindgen]
 impl Context {
     #[wasm_bindgen]
@@ -493,13 +500,6 @@ impl Context {
         };
 
         // Return both kclSource and sceneGraphDelta
-        #[derive(serde::Serialize)]
-        struct TrimResult {
-            kcl_source: kcl_lib::front::SourceDelta,
-            scene_graph_delta: kcl_lib::front::SceneGraphDelta,
-            operations_performed: bool,
-        }
-
         let result = TrimResult {
             kcl_source: source_delta,
             scene_graph_delta,
