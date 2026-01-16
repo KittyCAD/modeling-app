@@ -259,6 +259,8 @@ pub struct Wall {
     pub face_code_ref: CodeRef,
     /// The command ID that got the data for this wall. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -955,6 +957,7 @@ fn artifacts_to_update(
                         path_ids: wall.path_ids.clone(),
                         face_code_ref: wall.face_code_ref.clone(),
                         cmd_id: artifact_command.cmd_id,
+                        consumed: false,
                     })]);
                 }
                 Some(Artifact::Cap(cap)) => {
@@ -1011,7 +1014,6 @@ fn artifacts_to_update(
                     id: (*current_plane_id).into(),
                     path_ids: vec![id],
                     code_ref: plane_code_ref,
-                    // A plane is "consumed" as soon as it has been used by a path
                     consumed: true,
                 }));
             }
@@ -1024,6 +1026,7 @@ fn artifacts_to_update(
                     path_ids: vec![id],
                     face_code_ref: wall.face_code_ref.clone(),
                     cmd_id: artifact_command.cmd_id,
+                    consumed: true,
                 }));
             }
             if let Some(Artifact::Cap(cap)) = plane {
@@ -1355,6 +1358,7 @@ fn artifacts_to_update(
                     path_ids: Vec::new(),
                     face_code_ref: sketch_on_face_code_ref,
                     cmd_id: artifact_command.cmd_id,
+                    consumed: false,
                 }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
