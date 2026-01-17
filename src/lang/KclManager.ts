@@ -422,9 +422,6 @@ export class KclManager extends EventTarget {
     this.setDiagnostics(this.diagnostics)
   }
 
-  set sceneEntitiesManager(s: SceneEntities) {
-    this._sceneEntitiesManager = s
-  }
   /**
    * You probably should provide the `sceneEntitiesManager` singleton instead.
    *

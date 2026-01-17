@@ -2,7 +2,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import {
-  Artifact,
+  type Artifact,
   getBodiesFromArtifactGraph,
 } from '@src/lang/std/artifactGraph'
 import type { AreaTypeComponentProps } from '@src/lib/layout'

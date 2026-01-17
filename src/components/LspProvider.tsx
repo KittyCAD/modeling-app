@@ -9,6 +9,7 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import React, {
   createContext,
+  use,
   useContext,
   useEffect,
   useMemo,
