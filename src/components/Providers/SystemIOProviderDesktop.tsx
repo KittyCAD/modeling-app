@@ -12,14 +12,7 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import {
-  billingActor,
-  engineCommandManager,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
@@ -39,6 +32,14 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
+  const {
+    billingActor,
+    engineCommandManager,
+    kclManager,
+    systemIOActor,
+    useSettings,
+    useToken,
+  } = useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
