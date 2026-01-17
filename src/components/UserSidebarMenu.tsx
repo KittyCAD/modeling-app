@@ -13,13 +13,14 @@ import usePlatform from '@src/hooks/usePlatform'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { authActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const { authActor } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
