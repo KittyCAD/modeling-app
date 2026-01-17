@@ -50,7 +50,7 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import React from 'react'
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -62,7 +62,7 @@ declare global {
   }
 }
 
-type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
+export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export function buildSingletons() {
   /**

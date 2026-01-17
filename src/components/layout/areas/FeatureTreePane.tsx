@@ -966,7 +966,7 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
         systemDeps
       )
     },
-    [modelingState.context.store.useNewSketchMode]
+    [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

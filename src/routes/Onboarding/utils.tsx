@@ -40,8 +40,10 @@ import {
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SystemIOActor } from '@src/lib/singletons'
 import { useSingletons } from '@src/lib/singletons'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -81,7 +83,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
     void navigate(targetRoute)
-  }, [filePath, newStatus, navigate])
+  }, [filePath, newStatus, navigate, settingsActor])
 }
 
 export function useDismiss() {
@@ -112,7 +114,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [send, filePath, navigate]
+    [send, filePath, navigate, settingsActor]
   )
 
   return settingsCallback
@@ -262,6 +264,7 @@ export function OnboardingButtons({
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
+  systemIOActor: SystemIOActor
   navigate: NavigateFunction
 }
 
@@ -272,7 +275,6 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  * depending on the platform and the state of the user's code.
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
-  const { systemIOActor } = useSingletons()
   // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
@@ -281,7 +283,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     /**
      * Bulk create the assembly and navigate to the project
      */
-    systemIOActor.send({
+    deps.systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
         files: fanParts.map((part) => ({
@@ -349,8 +351,7 @@ export function needsToOnboard(
   )
 }
 
-export function onDismissOnboardingInvite() {
-  const { settingsActor } = useSingletons()
+export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -629,7 +630,7 @@ export function useOnModelingCmdGroupReadyOnce(
       })
       return () => subscription.unsubscribe()
     }
-  }, [])
+  }, [commandBarActor])
 
   // Fire the callback when the modeling command group is ready
   useEffect(() => {

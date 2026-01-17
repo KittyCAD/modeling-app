@@ -48,7 +48,7 @@ export default function CommandBarSelectionMixedInput({
 
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.ast, selection)
-  }, [selection])
+  }, [selection, kclManager.ast])
 
   // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function CommandBarSelectionMixedInput({
       })
       setHasClearedSelection(true)
     }
-  }, [arg.clearSelectionFirst])
+  }, [arg.clearSelectionFirst, engineCommandManager])
 
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
@@ -164,7 +164,15 @@ export default function CommandBarSelectionMixedInput({
         })
       }
     }
-  }, [arg.selectionFilter, selection, hasCoercedSelections, wasmInstance])
+  }, [
+    arg.selectionFilter,
+    selection,
+    hasCoercedSelections,
+    wasmInstance,
+    engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
+  ])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)

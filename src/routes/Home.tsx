@@ -86,6 +86,8 @@ const Home = () => {
     kclManager,
     useSettings,
     useToken,
+    systemIOActor,
+    settingsActor,
   } = useSingletons()
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
@@ -207,7 +209,7 @@ const Home = () => {
   useEffect(() => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
-  }, [])
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -255,6 +257,7 @@ const Home = () => {
                       onboardingStatus,
                       navigate,
                       kclManager,
+                      systemIOActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
@@ -269,7 +272,7 @@ const Home = () => {
                 </ActionButton>
                 <ActionButton
                   Element="button"
-                  onClick={onDismissOnboardingInvite}
+                  onClick={() => onDismissOnboardingInvite(settingsActor)}
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',

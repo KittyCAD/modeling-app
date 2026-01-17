@@ -50,7 +50,7 @@ export function UnitsMenu() {
     }
     setRulerWidth(rulerWidth)
     setRulerLabelValue(displayValue)
-  }, [inSketchMode])
+  }, [inSketchMode, sceneInfra])
 
   useEffect(() => {
     const unsubscribers = [
@@ -61,11 +61,19 @@ export function UnitsMenu() {
     return () => {
       unsubscribers.forEach((unsubscriber) => unsubscriber())
     }
-  }, [onCameraChange])
+  }, [
+    onCameraChange,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.fileSettings])
+  }, [
+    kclManager.fileSettings,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
 
   return (
     <Popover className="relative pointer-events-auto flex">

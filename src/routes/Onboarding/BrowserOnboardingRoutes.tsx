@@ -80,7 +80,7 @@ function Welcome() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -123,7 +123,7 @@ function Scene() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -264,7 +264,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -412,7 +412,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">

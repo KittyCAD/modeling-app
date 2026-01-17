@@ -73,7 +73,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [])
+  }, [commandBarActor, engineCommandManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')

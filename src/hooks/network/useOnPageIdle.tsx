@@ -46,7 +46,7 @@ export const useOnPageIdle = ({
         intervalId.current = null
       }
     }
-  }, [])
+  }, [kclManager])
 
   useEffect(() => {
     timeoutStart.current = streamIdleMode ? Date.now() : null
@@ -100,7 +100,13 @@ export const useOnPageIdle = ({
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [IDLE_TIME_MS, idleCallback, modelingMachineState])
+  }, [
+    IDLE_TIME_MS,
+    idleCallback,
+    modelingMachineState,
+    engineCommandManager,
+    sceneInfra.camControls,
+  ])
 
   useEffect(() => {
     if (!streamIdleMode) return

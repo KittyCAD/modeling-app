@@ -43,7 +43,7 @@ function CommandBarSelectionInput({
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
-  }, [selection])
+  }, [selection, kclManager.astSignal.value])
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
@@ -131,7 +131,7 @@ function CommandBarSelectionInput({
         },
       }) &&
       setHasClearedSelection(true)
-  }, [arg])
+  }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)

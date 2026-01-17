@@ -226,7 +226,7 @@ export const ConnectionStream = (props: {
       canvasRef,
       engineCommandManager,
     }),
-    []
+    [engineCommandManager]
   )
   useOnPageResize(onPageResizeParams)
 
@@ -399,7 +399,7 @@ export const ConnectionStream = (props: {
       },
       engineCommandManager,
     }),
-    [modelingSend]
+    [modelingSend, engineCommandManager]
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
@@ -418,7 +418,7 @@ export const ConnectionStream = (props: {
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
-    []
+    [sceneInfra.camControls.wasDragging]
   )
 
   return (

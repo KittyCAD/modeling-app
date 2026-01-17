@@ -1651,15 +1651,15 @@ export const ModelingMachineProvider = ({
   // Give the state back to the kclManager.
   useEffect(() => {
     kclManager.modelingSend = modelingSend
-  }, [modelingSend])
+  }, [modelingSend, kclManager])
 
   useEffect(() => {
     kclManager.modelingState = modelingState
-  }, [modelingState])
+  }, [modelingState, kclManager])
 
   useEffect(() => {
     kclManager.selectionRanges = modelingState.context.selectionRanges
-  }, [modelingState.context.selectionRanges])
+  }, [modelingState.context.selectionRanges, kclManager])
 
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be

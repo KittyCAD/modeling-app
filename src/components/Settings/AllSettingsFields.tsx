@@ -42,7 +42,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { appActor, kclManager, settingsActor, useSettings } = useSingletons()
+    const { appActor, kclManager, settingsActor, useSettings, systemIOActor } =
+      useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = useSettings()
@@ -69,6 +70,7 @@ export const AllSettingsFields = forwardRef(
         onboardingStatus: onboardingStartPath,
         navigate,
         kclManager,
+        systemIOActor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web

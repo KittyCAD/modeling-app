@@ -23,7 +23,7 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
-  const { kclManager } = useSingletons()
+  const { kclManager, systemIOActor } = useSingletons()
   const navigate = useNavigate()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -33,6 +33,7 @@ export function HelpMenu() {
       onboardingStatus: onboardingStartPath,
       navigate,
       kclManager,
+      systemIOActor,
     }
     acceptOnboarding(props).catch((reason) =>
       catchOnboardingWarnError(reason, props)

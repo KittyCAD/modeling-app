@@ -291,7 +291,7 @@ export const ProjectExplorer = ({
     systemIOActor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
-  }, [refreshExplorerPressed])
+  }, [refreshExplorerPressed, systemIOActor])
 
   useEffect(() => {
     if (collapsePressed <= 0) {
@@ -438,7 +438,7 @@ export const ProjectExplorer = ({
         )
       }
     },
-    [readOnly, project.path, wasmInstance]
+    [readOnly, project.path, wasmInstance, systemIOActor]
   )
 
   const handleDragOverTarget = useCallback(

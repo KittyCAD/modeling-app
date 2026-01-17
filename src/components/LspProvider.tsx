@@ -134,7 +134,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, kclManager.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -188,7 +188,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       kclManager.editorView.dispatch({
         effects: kclLspCompartment.reconfigure(Prec.highest([])),
       })
-  }, [kclLSP])
+  }, [kclLSP, kclManager.editorView])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -252,7 +252,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady])
+  }, [copilotLspClient, isCopilotLspReady, kclManager])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {

@@ -86,7 +86,7 @@ function Welcome() {
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [loaderData?.project?.name, systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -127,7 +127,7 @@ function Scene() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -262,7 +262,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -392,7 +392,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -518,7 +518,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">

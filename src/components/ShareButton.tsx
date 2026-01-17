@@ -41,7 +41,7 @@ export const ShareButton = memo(function ShareButton() {
         isRestrictedToOrg: false,
       },
     })
-  }, [hasOptions])
+  }, [hasOptions, commandBarActor])
 
   const onShareClickProOrOrganization = useCallback(() => {
     setShowOptions(false)
@@ -55,7 +55,7 @@ export const ShareButton = memo(function ShareButton() {
         password,
       },
     })
-  }, [isRestrictedToOrg, password])
+  }, [isRestrictedToOrg, password, commandBarActor])
 
   useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
     scopes: ['modeling'],

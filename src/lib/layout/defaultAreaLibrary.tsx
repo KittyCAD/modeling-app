@@ -7,7 +7,7 @@ import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -38,18 +38,21 @@ function ModelingArea() {
  */
 export const useDefaultAreaLibrary = () => {
   const { getLayout, getSettings, kclManager, setLayout } = useSingletons()
-  const onCodeNotificationClick: MouseEventHandler = (e) => {
-    e.preventDefault()
-    const rootLayout = structuredClone(getLayout())
-    setLayout(
-      togglePaneLayoutNode({
-        rootLayout,
-        targetNodeId: DefaultLayoutPaneID.Code,
-        shouldExpand: true,
-      })
-    )
-    kclManager.scrollToFirstErrorDiagnosticIfExists()
-  }
+  const onCodeNotificationClick: MouseEventHandler = useCallback(
+    (e) => {
+      e.preventDefault()
+      const rootLayout = structuredClone(getLayout())
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: DefaultLayoutPaneID.Code,
+          shouldExpand: true,
+        })
+      )
+      kclManager.scrollToFirstErrorDiagnosticIfExists()
+    },
+    [kclManager, setLayout, getLayout]
+  )
 
   return useMemo(
     () =>
@@ -126,7 +129,7 @@ export const useDefaultAreaLibrary = () => {
           Component: DebugPane,
         },
       } satisfies Record<AreaType, AreaTypeDefinition>),
-    [getLayout, getSettings, kclManager, onCodeNotificationClick, setLayout]
+    [getSettings, kclManager, onCodeNotificationClick]
   )
 }
 

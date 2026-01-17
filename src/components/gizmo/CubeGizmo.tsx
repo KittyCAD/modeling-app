@@ -38,7 +38,7 @@ export default function CubeGizmo() {
       renderer.current?.dispose()
       renderer.current = null
     }
-  }, [])
+  }, [sceneInfra])
 
   // perspective changed
   // useEffect(() => {

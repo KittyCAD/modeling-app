@@ -54,7 +54,7 @@ export const KclEditorPaneContents = () => {
 
     return () =>
       kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
-  }, [])
+  }, [kclManager.editorView.dom])
 
   return (
     <div className="relative">

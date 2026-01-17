@@ -200,6 +200,13 @@ export function useViewControlMenuItems() {
       sketching,
       snapToGrid,
       gizmoType,
+      engineCommandManager,
+      getLayout,
+      kclManager,
+      rustContext,
+      sceneEntitiesManager,
+      sceneInfra,
+      settingsActor,
     ]
   )
   return menuItems

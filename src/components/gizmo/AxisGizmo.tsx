@@ -123,7 +123,7 @@ export default function AxisGizmo() {
       disposeMouseEvents()
       sceneInfra.camControls.cameraChange.remove(animate)
     }
-  }, [])
+  }, [sceneInfra])
 
   return (
     <div
