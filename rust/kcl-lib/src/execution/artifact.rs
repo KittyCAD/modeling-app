@@ -504,7 +504,6 @@ impl Plane {
             return Some(new);
         };
         merge_ids(&mut self.path_ids, new.path_ids);
-        self.consumed = new.consumed;
 
         None
     }

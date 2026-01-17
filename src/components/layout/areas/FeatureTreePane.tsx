@@ -48,6 +48,8 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import type { VisibilityToggleProps } from '@src/components/VisibilityToggle'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<
