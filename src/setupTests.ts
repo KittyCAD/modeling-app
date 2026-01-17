@@ -77,14 +77,14 @@ vi.mock('three', async () => {
 /// Cleanup the engine connection if we had one.
 /*
 import { afterAll } from 'vitest'
-import { engineCommandManager } from '@src/lib/singletons'
+import { singletons } from '@src/lib/singletons'
 
 afterEach(async () => {
-  const ws = engineCommandManager.engineConnection?.websocket as any
+  const ws = singletons.engineCommandManager.engineConnection?.websocket as any
   if (ws) {
     await finishWebSocket(ws)
   }
-  engineCommandManager.tearDown()
+  singletons.engineCommandManager.tearDown()
 })
 
 // 1️⃣  make timers fake
