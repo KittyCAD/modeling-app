@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 
-import { billingActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import Tooltip from '@src/components/Tooltip'
 import type { BillingContext } from '@src/machines/billingMachine'
 import {
@@ -54,6 +54,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
 }
 
 export function ZookeeperCreditsMenu() {
+  const { billingActor } = useSingletons()
   const billingContext = useSelector(billingActor, (actor) => {
     return actor.context
   })
