@@ -54,8 +54,8 @@ import {
   getOpenPanes,
   LayoutRootNode,
 } from '@src/lib/layout'
-import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
@@ -84,6 +84,8 @@ export function App() {
     useSettings,
     useToken,
   } = useSingletons()
+  const defaultAreaLibrary = useDefaultAreaLibrary()
+  const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
   const loaderData = useLoaderData<IndexLoaderData>()
@@ -115,7 +117,7 @@ export function App() {
       return
     void kclManager.executeCode()
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [systemIOState])
+  }, [systemIOState, kclManager])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -225,6 +227,7 @@ export function App() {
     navigate,
     searchParams.size,
     authToken,
+    kclManager,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -299,7 +302,7 @@ export function App() {
         className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
       />
     ),
-    []
+    [kclManager]
   )
 
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
