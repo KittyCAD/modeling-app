@@ -100,7 +100,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.24"
 thiserror = "2.0.17"
-toml = "0.9.10"
+toml = "0.9.11"
 ts-rs = { version = "11.1.0", features = [
   "uuid-impl",
   "url-impl",
@@ -145,7 +145,7 @@ expectorate = "1.2.0"
 fs-err = "3.2.2"
 handlebars = "6.4.0"
 image = { version = "0.25.9", default-features = false, features = ["png"] }
-insta = { version = "1.45.0", features = ["json", "filters", "redactions"] }
+insta = { version = "1.46.0", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
