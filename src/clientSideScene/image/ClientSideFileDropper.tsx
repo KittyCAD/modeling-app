@@ -1,8 +1,19 @@
 import { useRef, useState } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
+import { PATHS } from '@src/lib/paths'
+import type { IndexLoaderData } from '@src/lib/types'
 
-function handleExternalDragEvent(e: React.DragEvent): boolean {
+type ModelingState = ReturnType<typeof useModelingContext>['state']
+
+function isDropEnabled(e: React.DragEvent, state: ModelingState): boolean {
   if (!isExternalFileDrag(e)) {
+    return false
+  }
+  if (!state.matches('Sketch') && !state.matches('sketchSolveMode')) {
     return false
   }
   e.preventDefault()
@@ -19,6 +30,32 @@ export function ClientSideFileDropper({
 }: ClientSideFileDropperProps) {
   const [isExternalDragOver, setIsExternalDragOver] = useState(false)
   const dragCounter = useRef(0)
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { state } = useModelingContext()
+
+  const handleFileDrop = async (files: FileList) => {
+    if (!loaderData?.project?.path) {
+      toast.error('No project path available')
+      return
+    }
+
+    const file = files[0]
+    if (!file) return
+
+    if (!ImageManager.isSupportedImageFile(file)) {
+      toast.error(`Unsupported image format. Supported: png, jpg, svg, webp`)
+      return
+    }
+
+    try {
+      const imageManager = new ImageManager(loaderData.project.path)
+      await imageManager.addImage(file)
+      toast.success(`Added image: ${file.name}`)
+    } catch (error) {
+      console.error('Failed to add image:', error)
+      toast.error(`Failed to add image: ${file.name}`)
+    }
+  }
 
   return (
     <div
@@ -28,18 +65,18 @@ export function ClientSideFileDropper({
           : ''
       }`}
       onDragEnter={(e) => {
-        if (handleExternalDragEvent(e)) {
+        if (isDropEnabled(e, state)) {
           dragCounter.current++
           setIsExternalDragOver(true)
         }
       }}
       onDragOver={(e) => {
-        if (handleExternalDragEvent(e)) {
+        if (isDropEnabled(e, state)) {
           e.dataTransfer.dropEffect = 'copy'
         }
       }}
       onDragLeave={(e) => {
-        if (handleExternalDragEvent(e)) {
+        if (isDropEnabled(e, state)) {
           dragCounter.current--
           if (dragCounter.current <= 0) {
             dragCounter.current = 0
@@ -48,11 +85,11 @@ export function ClientSideFileDropper({
         }
       }}
       onDrop={(e) => {
-        if (handleExternalDragEvent(e)) {
+        if (isDropEnabled(e, state)) {
           dragCounter.current = 0
           setIsExternalDragOver(false)
           if (e.dataTransfer.files.length > 0) {
-            console.log('Dropped files:', Array.from(e.dataTransfer.files))
+            void handleFileDrop(e.dataTransfer.files)
           }
         }
       }}
