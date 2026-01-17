@@ -1,5 +1,5 @@
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
 import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'
@@ -35,6 +35,7 @@ export function useSketchModeMenuEnableDisable(
   isStreamReady: boolean,
   menus: { menuLabel: MenuLabels; commandName?: string; groupId?: string }[]
 ) {
+  const { useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const commands = commandBarState.context.commands
 
