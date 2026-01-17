@@ -9,7 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
@@ -23,6 +23,7 @@ export type SettingsSearchItem = {
 }
 
 export function SettingsSearchBar() {
+  const { useSettings } = useSingletons()
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
     'Ctrl+.',
