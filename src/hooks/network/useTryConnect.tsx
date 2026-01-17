@@ -6,11 +6,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
@@ -18,6 +14,9 @@ import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -30,6 +29,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   settingsEngine,
   timeToConnect,
+  engineCommandManager,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -38,6 +38,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
+  engineCommandManager: ConnectionManager
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
@@ -116,7 +117,16 @@ const attemptToConnectToEngine = async ({
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   sceneInfra,
   settingsActor,
-}: { sceneInfra: SceneInfra; settingsActor: SettingsActorType }) => {
+  engineCommandManager,
+  kclManager,
+  rustContext,
+}: {
+  sceneInfra: SceneInfra
+  settingsActor: SettingsActorType
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  rustContext: RustContext
+}) => {
   const providedSettings = getSettingsFromActorContext(settingsActor)
   const settings = await jsAppSettings(providedSettings)
   EngineDebugger.addLog({
@@ -181,6 +191,9 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
   sceneInfra,
+  engineCommandManager,
+  kclManager,
+  rustContext,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -193,6 +206,9 @@ async function tryConnecting({
   settings: SettingsViaQueryString
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  rustContext: RustContext
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -218,12 +234,16 @@ async function tryConnecting({
             setIsSceneReady,
             settingsEngine: settings,
             timeToConnect,
+            engineCommandManager,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
             settingsActor: rustContext.settingsActor,
+            engineCommandManager,
+            kclManager,
+            rustContext,
           })
 
           /**
@@ -294,11 +314,22 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  type TryConnectingArgs = Omit<
+    Parameters<typeof tryConnecting>[0],
+    'engineCommandManager' | 'kclManager' | 'rustContext'
+  >
 
   return {
-    tryConnecting,
+    tryConnecting: (args: TryConnectingArgs) =>
+      tryConnecting({
+        ...args,
+        engineCommandManager,
+        kclManager,
+        rustContext,
+      }),
     isConnecting,
     numberOfConnectionAttempts,
   }
