@@ -13,7 +13,7 @@ import type {
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import Tooltip from '@src/components/Tooltip'
 
 const noop = () => {}
@@ -145,6 +145,7 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
+  const { kclManager } = useSingletons()
   const selectionText = getSelectionTypeDisplayText(
     kclManager.astSignal.value,
     props.selections.data
