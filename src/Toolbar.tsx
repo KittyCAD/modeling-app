@@ -22,11 +22,14 @@ import type {
   ToolbarItemResolvedDropdown,
   ToolbarModeName,
 } from '@src/lib/toolbar'
-import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import {
+  isToolbarItemResolvedDropdown,
+  useToolbarConfig,
+} from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSingletons } from './lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -44,6 +47,7 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { kclManager, commandBarActor } = useSingletons()
+    const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
