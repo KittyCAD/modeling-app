@@ -1,10 +1,5 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  useSettings,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -16,6 +11,8 @@ export const useOnPageIdle = ({
   startCallback: () => void
   idleCallback: () => void
 }) => {
+  const { engineCommandManager, kclManager, sceneInfra, useSettings } =
+    useSingletons()
   const settings = useSettings()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
