@@ -28,6 +28,7 @@ import {
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
+import { IMAGES_FOLDER } from '@src/clientSideScene/image/ImageManager'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
@@ -326,6 +327,10 @@ const collectAllFilesRecursiveFrom = async (
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
     if (e.indexOf('.') === 0) {
+      continue
+    }
+    // ignore the zoo_images folder (managed separately for reference images)
+    if (e === IMAGES_FOLDER) {
       continue
     }
 

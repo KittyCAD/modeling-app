@@ -1,6 +1,6 @@
 import { joinOSPaths } from '@src/lib/paths'
 
-const IMAGES_FOLDER = 'zoo_images'
+export const IMAGES_FOLDER = 'zoo_images'
 const CONTENT_FILE = 'content.json'
 const SUPPORTED_IMAGE_EXTENSIONS = new Set([
   'png',
@@ -10,8 +10,9 @@ const SUPPORTED_IMAGE_EXTENSIONS = new Set([
   'webp',
 ])
 
-interface ImageEntry {
+export interface ImageEntry {
   path: string
+  visible?: boolean
 }
 
 interface ImageContent {
@@ -81,8 +82,26 @@ export class ImageManager {
       (img) => img.path === file.name
     )
     if (existingIndex === -1) {
-      content.images.push({ path: file.name })
+      content.images.push({ path: file.name, visible: true })
       await this.writeContentFile(content)
     }
+  }
+
+  async getImages(): Promise<ImageEntry[]> {
+    const content = await this.readContentFile()
+    return content.images
+  }
+
+  async setImageVisibility(imagePath: string, visible: boolean): Promise<void> {
+    const content = await this.readContentFile()
+    const image = content.images.find((img) => img.path === imagePath)
+    if (image) {
+      image.visible = visible
+      await this.writeContentFile(content)
+    }
+  }
+
+  getImageFullPath(imagePath: string): string {
+    return joinOSPaths(this.imagesFolderPath, imagePath)
   }
 }
