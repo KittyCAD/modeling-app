@@ -3,6 +3,7 @@ import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
@@ -422,3 +423,6 @@ export const getLayout = () => appActor.getSnapshot().context.layout
 export const useLayout = () => useSelector(appActor, layoutSelector)
 export const setLayout = (layout: Layout) =>
   appActor.send({ type: AppMachineEventType.SetLayout, layout })
+
+// ImageManager singleton - subscribes to settingsActor for project path
+export const imageManager = new ImageManager(settingsActor)

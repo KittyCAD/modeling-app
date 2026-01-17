@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react'
-import { useRouteLoaderData } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { ImageManager } from '@src/clientSideScene/image/ImageManager'
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
+import { imageManager } from '@src/lib/singletons'
 
 type ModelingState = ReturnType<typeof useModelingContext>['state']
 
@@ -30,15 +28,9 @@ export function ClientSideFileDropper({
 }: ClientSideFileDropperProps) {
   const [isExternalDragOver, setIsExternalDragOver] = useState(false)
   const dragCounter = useRef(0)
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { state } = useModelingContext()
 
   const handleFileDrop = async (files: FileList) => {
-    if (!loaderData?.project?.path) {
-      toast.error('No project path available')
-      return
-    }
-
     const file = files[0]
     if (!file) return
 
@@ -48,7 +40,6 @@ export function ClientSideFileDropper({
     }
 
     try {
-      const imageManager = new ImageManager(loaderData.project.path)
       await imageManager.addImage(file)
       toast.success(`Added image: ${file.name}`)
     } catch (error) {

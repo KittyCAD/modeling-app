@@ -1,31 +1,23 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
-import {
-  ImageManager,
-  type ImageEntry,
-} from '@src/clientSideScene/image/ImageManager'
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
+import { imageManager } from '@src/lib/singletons'
 
 export function ImagesList() {
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  useSignals()
   const [images, setImages] = useState<ImageEntry[]>([])
-  const [imageManager, setImageManager] = useState<ImageManager | null>(null)
 
   useEffect(() => {
-    if (!loaderData?.project?.path) return
-
-    const manager = new ImageManager(loaderData.project.path)
-    setImageManager(manager)
-
-    manager.getImages().then(setImages).catch(console.error)
-  }, [loaderData?.project?.path])
+    imageManager.getImages().then(setImages).catch(console.error)
+    // Subscribe to imagesChanged signal to refresh when images are added/deleted
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageManager.imagesChanged.value])
 
   const handleVisibilityToggle = useCallback(
     async (imagePath: string) => {
-      if (!imageManager) return
-
       const image = images.find((img) => img.path === imagePath)
       if (!image) return
 
@@ -38,8 +30,24 @@ export function ImagesList() {
         )
       )
     },
-    [imageManager, images]
+    [images]
   )
+
+  const handleDelete = useCallback(async (imagePath: string) => {
+    try {
+      await imageManager.deleteImage(imagePath)
+      setImages((prev) => prev.filter((img) => img.path !== imagePath))
+      toast.success(`Deleted image: ${imagePath}`)
+    } catch (error) {
+      console.error('Failed to delete image:', error)
+      toast.error(`Failed to delete image: ${imagePath}`)
+    }
+  }, [])
+
+  const handleLocate = useCallback((imagePath: string) => {
+    // TODO: Implement locate functionality
+    toast('Locate functionality coming soon')
+  }, [])
 
   if (images.length === 0) {
     return null
@@ -56,6 +64,8 @@ export function ImagesList() {
           key={image.path}
           image={image}
           onVisibilityToggle={handleVisibilityToggle}
+          onDelete={handleDelete}
+          onLocate={handleLocate}
         />
       ))}
     </div>
@@ -64,20 +74,49 @@ export function ImagesList() {
 
 interface ImageItemProps {
   image: ImageEntry
-  onVisibilityToggle: (imagePath: string) => void
+  onVisibilityToggle: (imagePath: string) => void | Promise<void>
+  onDelete: (imagePath: string) => void | Promise<void>
+  onLocate: (imagePath: string) => void
 }
 
-function ImageItem({ image, onVisibilityToggle }: ImageItemProps) {
+function ImageItem({
+  image,
+  onVisibilityToggle,
+  onDelete,
+  onLocate,
+}: ImageItemProps) {
   const visible = image.visible ?? true
+  const itemRef = useRef<HTMLDivElement>(null)
+
+  const contextMenuItems = [
+    <ContextMenuItem
+      key="delete"
+      icon="close"
+      onClick={() => void onDelete(image.path)}
+    >
+      Delete
+    </ContextMenuItem>,
+    <ContextMenuItem
+      key="locate"
+      icon="search"
+      onClick={() => onLocate(image.path)}
+    >
+      Locate
+    </ContextMenuItem>,
+  ]
 
   return (
-    <div className="flex items-center group/item my-0 py-0.5 px-1 hover:bg-2">
+    <div
+      ref={itemRef}
+      className="flex items-center group/item my-0 py-0.5 px-1 hover:bg-2"
+    >
+      <ContextMenu menuTargetElement={itemRef} items={contextMenuItems} />
       <div className="flex-1 flex items-center gap-2 min-w-0">
         <CustomIcon name="file" className="w-6 h-6 block flex-shrink-0" />
         <span className="text-sm truncate">{image.path}</span>
       </div>
       <button
-        onClick={() => onVisibilityToggle(image.path)}
+        onClick={() => void onVisibilityToggle(image.path)}
         className="p-0 m-0 border-transparent dark:border-transparent"
         data-testid="image-visibility-toggle"
       >
