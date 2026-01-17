@@ -67,9 +67,9 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
 import { useSingletons } from '@src/lib/singletons'
-import { SettingsType } from '@src/lib/settings/initialSettings'
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { ActorRefFrom } from 'xstate'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -585,7 +585,6 @@ function handleRenameProject(
         data: {
           requestedProjectName: String(newProjectName),
           projectName: project.name,
-          redirect: false,
         },
       })
     }
