@@ -51,7 +51,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(engineCommandManager)
+    } = createNamedViewsCommand(engineCommandManager, settingsActor)
 
     const commands = [
       createNamedViewCommand,
