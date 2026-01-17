@@ -1,11 +1,25 @@
 import { useMachine, useSelector } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useContext, useEffect, useRef } from 'react'
+import {
+  createContext,
+  use,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
-import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
+import type {
+  Actor,
+  ActorRefFrom,
+  ContextFrom,
+  Prop,
+  SnapshotFrom,
+  StateFrom,
+} from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -45,14 +59,7 @@ import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import {
-  commandBarActor,
-  getLayout,
-  useCommandBarState,
-  setLayout,
-  settingsActor,
-} from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
@@ -95,13 +102,6 @@ import {
   updateExtraSegments,
   getPlaneDataFromSketchBlock,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import type {
   DefaultPlane,
@@ -122,15 +122,9 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import type { SketchCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 const OVERLAY_TIMEOUT_MS = 1_000
-
-// Defined outside of React to prevent rerenders
-const systemDeps = {
-  sceneInfra,
-  rustContext,
-  sceneEntitiesManager,
-}
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -143,7 +137,7 @@ export const ModelingMachineContext = createContext(
 )
 
 const commandBarIsClosedSelector = (
-  state: SnapshotFrom<typeof commandBarActor>
+  state: SnapshotFrom<ActorRefFrom<typeof commandBarMachine>>
 ) => state.matches('Closed')
 
 export const ModelingMachineProvider = ({
@@ -151,6 +145,27 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    getLayout,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+    setLayout,
+    settingsActor,
+    useCommandBarState,
+    useSettings,
+  } = useSingletons()
+  const systemDeps = useMemo(
+    () => ({
+      sceneInfra,
+      rustContext,
+      sceneEntitiesManager,
+    }),
+    [sceneInfra, rustContext, sceneEntitiesManager]
+  )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
     app: { allowOrbitInSketchMode },
