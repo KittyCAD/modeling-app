@@ -10,7 +10,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { commandBarActor, kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -44,6 +44,7 @@ export default function useStateMachineCommands<
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
+  const { commandBarActor, kclManager } = useSingletons()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const shouldDisableEngineCommands =
