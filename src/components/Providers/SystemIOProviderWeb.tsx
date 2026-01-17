@@ -2,13 +2,7 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
-import {
-  billingActor,
-  engineCommandManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
@@ -20,6 +14,13 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
+  const {
+    billingActor,
+    engineCommandManager,
+    systemIOActor,
+    useSettings,
+    useToken,
+  } = useSingletons()
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
   const token = useToken()
