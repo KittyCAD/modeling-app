@@ -33,16 +33,6 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import {
-  authActor,
-  billingActor,
-  commandBarActor,
-  kclManager,
-  settingsActor,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
-import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
@@ -385,7 +375,7 @@ const Home = () => {
           projects={projects}
           query={query}
           sort={sort}
-          handleRenameProject={handleRenameProject}
+          handleRenameProject={handleRenameProject(systemIOActor)}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -536,7 +526,7 @@ function ProjectGrid({
                 <ProjectCard
                   key={project.name}
                   project={project}
-                  handleRenameProject={handleRenameProject(systemIOActor)}
+                  handleRenameProject={handleRenameProject}
                   handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
@@ -588,6 +578,7 @@ function handleRenameProject(
         data: {
           requestedProjectName: String(newProjectName),
           projectName: project.name,
+          redirect: false,
         },
       })
     }
@@ -601,7 +592,7 @@ function handleDeleteProject(
     systemIOActor.send({
       type: SystemIOMachineEvents.renameProject,
       data: {
-        requestedProjectName: String(newProjectName),
+        requestedProjectName: String(project.name),
         projectName: project.name,
         redirect: false, // only redirect when renaming from within the project
       },
