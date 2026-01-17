@@ -6,13 +6,14 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
+  const { kclManager, sceneInfra } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   const { state: modelingState } = useModelingContext()
