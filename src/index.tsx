@@ -33,6 +33,8 @@ singletons.kclManager.wasmInstancePromise
           ...createApplicationCommands({
             systemIOActor: singletons.systemIOActor,
             wasmInstance,
+            appActor: singletons.appActor,
+            setLayout: singletons.setLayout,
           }),
         ],
       },
