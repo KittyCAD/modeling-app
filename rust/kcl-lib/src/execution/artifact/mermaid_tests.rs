@@ -204,9 +204,13 @@ impl Artifact {
                 // Note: Don't include these since they're parents: edge_cut_id.
                 vec![a.surface_id]
             }
-            Artifact::Helix(_) => {
+            Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(sweep_id) = a.sweep_id {
+                    ids.push(sweep_id);
+                }
+                ids
             }
         }
     }
