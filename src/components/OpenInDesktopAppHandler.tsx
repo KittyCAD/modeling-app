@@ -9,7 +9,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -23,6 +23,7 @@ import toast from 'react-hot-toast'
  * want to open the current page in the desktop app.
  */
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
+  const { kclManager } = useSingletons()
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
   const [searchParams, setSearchParams] = useSearchParams()
