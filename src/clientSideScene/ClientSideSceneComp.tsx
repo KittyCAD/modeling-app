@@ -46,6 +46,7 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
+import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -187,7 +188,7 @@ export const ClientSideScene = ({
   }
 
   return (
-    <>
+    <ClientSideFileDropper>
       <div
         ref={containerRef}
         style={{ cursor: cursor }}
@@ -202,7 +203,7 @@ export const ClientSideScene = ({
       ></div>
       <Overlays />
       <SketchSolveToolIconOverlay />
-    </>
+    </ClientSideFileDropper>
   )
 }
 
