@@ -9,15 +9,7 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneInfra,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -32,6 +24,18 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    sceneInfra,
+    systemIOActor,
+    useSettings,
+    useToken,
+    authActor,
+    settingsActor,
+  } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
@@ -115,13 +119,17 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
+  const cb = modelingMenuCallbackMostActions({
+    authActor,
+    commandBarActor,
     engineCommandManager,
-    sceneInfra
-  )
+    filePath,
+    kclManager,
+    navigate,
+    sceneInfra,
+    settings,
+    settingsActor,
+  })
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
