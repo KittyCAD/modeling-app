@@ -18,7 +18,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { findKclSample } from '@src/lib/kclSamples'
 import type { FileLinkParams } from '@src/lib/links'
 import { webSafePathSplit } from '@src/lib/paths'
-import { commandBarActor, useAuthState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import type { KclManager } from '@src/lang/KclManager'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -37,6 +37,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects(kclManager: KclManager) {
+  const { commandBarActor, useAuthState } = useSingletons()
   const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
