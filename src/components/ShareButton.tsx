@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { billingActor, commandBarActor, kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -12,6 +12,7 @@ const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
+  const { billingActor, commandBarActor, kclManager } = useSingletons()
   const platform = usePlatform()
 
   const [showOptions, setShowOptions] = useState(false)
