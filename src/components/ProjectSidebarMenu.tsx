@@ -16,8 +16,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -64,6 +63,7 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
@@ -90,9 +90,6 @@ function AppLogoLink({
   )
 }
 
-const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state.context.commands
-
 function ProjectMenuPopover({
   project,
   file,
@@ -100,11 +97,14 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { commandBarActor, engineCommandManager, kclManager } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const machineManager = useContext(MachineManagerContext)
+  const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+    state.context.commands
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
