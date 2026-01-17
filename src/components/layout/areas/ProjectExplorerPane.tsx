@@ -13,7 +13,7 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { systemIOActor, commandBarActor, kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import {
   useFolders,
   useProjectDirectoryPath,
@@ -28,6 +28,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
+  const { commandBarActor, kclManager, systemIOActor } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
