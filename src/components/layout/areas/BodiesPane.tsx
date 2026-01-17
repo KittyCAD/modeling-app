@@ -1,18 +1,15 @@
-import type { WebSocketResponse } from '@kittycad/lib/dist/types/src'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import {
   Artifact,
-  filterArtifacts,
   getBodiesFromArtifactGraph,
 } from '@src/lang/std/artifactGraph'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { uuidv4 } from '@src/lib/utils'
+import { useState } from 'react'
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   const artifactGraph = kclManager.artifactGraph
@@ -39,14 +36,19 @@ export function BodiesPane(props: AreaTypeComponentProps) {
  * Temporary function to toggle visibility directly through engine.
  * Visibility ultimately should be written to KCL via a codemod API.
  */
-async function setEngineVisibility(id: string, isVisible: boolean) {
+async function setEngineVisibility(artifact: Artifact, isVisible: boolean) {
+  let id = artifact.id
+  if (artifact.type === 'sweep' && artifact.pathId) {
+    id = artifact.pathId
+  }
+
   return engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'object_visible',
       object_id: id,
-      hidden: !isVisible,
+      hidden: isVisible,
     },
   })
 }
@@ -55,19 +57,29 @@ function BodiesList({ bodies }: { bodies: Map<string, Artifact> }) {
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
-        {bodies.entries().map(([id, _artifact], i) => (
-          <li key={id || i} className="flex px-1 py-0.5 group/visibilityToggle">
-            <CustomIcon name="body" className="w-6 h-6" />
-            <span className="flex-1">Body {i}</span>
-            <VisibilityToggle
-              visible={true}
-              onVisibilityChange={() => {
-                /** no-op for now **/
-              }}
-            />
-          </li>
+        {bodies.entries().map(([id, artifact], i) => (
+          <BodyItem key={id || i} label={`Body ${i + 1}`} artifact={artifact} />
         ))}
       </ul>
     </section>
+  )
+}
+
+function BodyItem({ label, artifact }: { label: string; artifact: Artifact }) {
+  const [visible, setVisible] = useState(true)
+
+  return (
+    <li className="flex px-1 py-0.5 group/visibilityToggle">
+      <CustomIcon name="body" className="w-6 h-6" />
+      <span className="flex-1">{label}</span>
+      <VisibilityToggle
+        visible={visible}
+        onVisibilityChange={() => {
+          /** no-op for now **/
+          setVisible((curr) => !curr)
+          void setEngineVisibility(artifact, visible).catch(reportRejection)
+        }}
+      />
+    </li>
   )
 }

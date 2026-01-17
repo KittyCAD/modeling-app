@@ -841,30 +841,6 @@ export function coerceSelectionsToBody(
 }
 
 /**
- * Utility to determine whether a "body" artifact has been used anywhere else in the
- * scene, combined into a compiteSolid for example.
- *
- * TODO: This is likely a very expensive operation to be done on the TS side, as
- * we exhaustively check the rest of the artifact graph's IDs to confirm one ID isn't there.
- * Do this instead in Rust as the artifact gets used, flagging it as a "consumed" body or something.
- */
-function artifactIsUsedInSolidOperation(
-  solidId: string,
-  artifactGraphEntries: [string, Artifact][]
-): boolean {
-  for (let [id, artifact] of artifactGraphEntries) {
-    if (
-      artifact.type === 'compositeSolid' &&
-      (artifact.toolIds.includes(solidId) ||
-        artifact.solidIds.includes(solidId))
-    ) {
-      return true
-    }
-  }
-
-  return false
-}
-/**
  * Utility to filter down the artifact graph to artifacts that we
  * on the frontend deem "bodies". There is no fixed definition of a "body"
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
@@ -872,8 +848,8 @@ function artifactIsUsedInSolidOperation(
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
   const artifacts = filterArtifacts(
     {
-      types: ['compositeSolid', 'sweep'],
-      predicate: (a, _, g) => !artifactIsUsedInSolidOperation(a.id, g),
+      types: ['compositeSolid', 'sweep', 'helix'],
+      predicate: (a) => !a.consumed,
     },
     artifactGraph
   )
