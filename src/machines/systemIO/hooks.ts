@@ -2,7 +2,7 @@ import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { systemIOActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   SystemIOMachineEvents,
@@ -17,25 +17,48 @@ import {
 } from '@src/machines/billingMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
-export const useRequestedProjectName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedProjectName)
-export const useRequestedFileName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedFileName)
-export const useProjectDirectoryPath = () =>
-  useSelector(systemIOActor, (state) => state.context.projectDirectoryPath)
-export const useFolders = () =>
-  useSelector(systemIOActor, (state) => state.context.folders)
-export const useState = () => useSelector(systemIOActor, (state) => state)
-export const useCanReadWriteProjectDirectory = () =>
-  useSelector(
+export const useRequestedProjectName = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(
+    systemIOActor,
+    (state) => state.context.requestedProjectName
+  )
+}
+export const useRequestedFileName = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state.context.requestedFileName)
+}
+export const useProjectDirectoryPath = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(
+    systemIOActor,
+    (state) => state.context.projectDirectoryPath
+  )
+}
+export const useFolders = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state.context.folders)
+}
+export const useState = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state)
+}
+export const useCanReadWriteProjectDirectory = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
-export const useHasListedProjects = () =>
-  useSelector(systemIOActor, (state) => state.context.hasListedProjects)
+}
+export const useHasListedProjects = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
+}
 
-export const useClearURLParams = () =>
-  useSelector(systemIOActor, (state) => state.context.clearURLParams)
+export const useClearURLParams = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state.context.clearURLParams)
+}
 
 export const useProjectIdToConversationId = (
   mlEphantManagerActor: MlEphantManagerActor,
