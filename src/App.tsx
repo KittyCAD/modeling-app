@@ -211,6 +211,7 @@ export function App() {
             kclManager,
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
+            systemIOActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -228,6 +229,7 @@ export function App() {
     searchParams.size,
     authToken,
     kclManager,
+    systemIOActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

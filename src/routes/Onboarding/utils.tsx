@@ -384,6 +384,7 @@ function TutorialToastCard(props: TutorialToastCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
 ) {
+  const { settingsActor } = useSingletons()
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -447,7 +448,7 @@ export function TutorialRequestToast(
           }}
           data-negative-button="dismiss"
           name="dismiss"
-          onClick={onDismissOnboardingInvite}
+          onClick={() => onDismissOnboardingInvite(settingsActor)}
         >
           Not right now
         </ActionButton>
@@ -502,6 +503,7 @@ export async function catchOnboardingWarnError(
 }
 
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
+  const { settingsActor } = useSingletons()
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
     resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
@@ -529,7 +531,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             }}
             data-negative-button="dismiss"
             name="dismiss"
-            onClick={onDismissOnboardingInvite}
+            onClick={() => onDismissOnboardingInvite(settingsActor)}
           >
             I'll save it
           </ActionButton>
