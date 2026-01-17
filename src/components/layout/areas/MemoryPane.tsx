@@ -14,11 +14,12 @@ import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { kclManager } from '@src/lib/singletons'
 import { Suspense, use } from 'react'
 import Loading from '@src/components/Loading'
+import { useSingletons } from '@src/lib/singletons'
 
 export const MemoryPaneMenu = () => {
+  const { kclManager } = useSingletons()
   const variables = kclManager.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
@@ -72,6 +73,7 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
+  const { kclManager } = useSingletons()
   const theme = useResolvedTheme()
   const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()
