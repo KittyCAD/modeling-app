@@ -39,8 +39,8 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
-import { SceneInfra } from './sceneInfra'
+import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -56,7 +56,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
         setIsTween(isTweenValue)
       }
     )
-  }, [])
+  }, [sceneInfra.camControls])
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
@@ -85,15 +85,15 @@ export const ClientSideScene = ({
   useEffect(() => {
     sceneInfra.camControls.interactionGuards =
       cameraMouseDragGuards[cameraControls]
-  }, [cameraControls])
+  }, [cameraControls, sceneInfra.camControls])
   useEffect(() => {
     sceneInfra.camControls.initTouchControls(enableTouchControls)
-  }, [enableTouchControls])
+  }, [enableTouchControls, sceneInfra.camControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
     )
-  }, [state?.context?.selectionRanges?.otherSelections])
+  }, [state?.context?.selectionRanges?.otherSelections, sceneInfra])
 
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -202,16 +202,13 @@ export const ClientSideScene = ({
   )
 }
 
-// Map sketchSolve tool names to their corresponding icon names
-// Derived from toolbar config to maintain a single source of truth
-const toolIconMap = getSketchSolveToolIconMap()
-const getToolIconName = (toolName: string | null): CustomIconName | null => {
-  if (!toolName) return null
-  return toolIconMap[toolName] || null
-}
-
 const SketchSolveToolIconOverlay = () => {
   const { state, context } = useModelingContext()
+  const toolbarConfig = useToolbarConfig()
+  const toolIconMap = useMemo(
+    () => getSketchSolveToolIconMap(toolbarConfig),
+    [toolbarConfig]
+  )
   const [mousePosition, setMousePosition] = useState<{
     x: number
     y: number
@@ -221,7 +218,7 @@ const SketchSolveToolIconOverlay = () => {
   const isToolEquipped =
     state.matches('sketchSolveMode') && context.sketchSolveToolName !== null
   const iconName = isToolEquipped
-    ? getToolIconName(context.sketchSolveToolName)
+    ? (toolIconMap[context.sketchSolveToolName ?? ''] ?? null)
     : null
 
   useEffect(() => {
