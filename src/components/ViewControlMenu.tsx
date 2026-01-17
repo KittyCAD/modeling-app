@@ -12,16 +12,7 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import {
-  engineCommandManager,
-  getLayout,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-  settingsActor,
-} from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
@@ -31,9 +22,17 @@ import {
   setOpenPanes,
 } from '@src/lib/layout'
 
-const systemDeps = { sceneInfra, engineCommandManager, settingsActor }
-
 export function useViewControlMenuItems() {
+  const {
+    engineCommandManager,
+    getLayout,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+    settingsActor,
+    useSettings,
+  } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -79,7 +78,11 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition(systemDeps).catch(reportRejection)
+          resetCameraPosition({
+            sceneInfra,
+            engineCommandManager,
+            settingsActor,
+          }).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
