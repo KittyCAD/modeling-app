@@ -11,30 +11,35 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import { singletons, SingletonsContext } from '@src/lib/singletons'
+import { App } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
+const app = new App()
+
 markOnce('code/willAuth')
-initializeWindowExceptionHandler(singletons.kclManager, singletons.rustContext)
+initializeWindowExceptionHandler(
+  app.singletons.kclManager,
+  app.singletons.rustContext
+)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
-singletons.kclManager.wasmInstancePromise
+app.singletons.kclManager.wasmInstancePromise
   .then((wasmInstance) => {
-    singletons.appActor.start()
+    app.singletons.appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
-    singletons.commandBarActor.send({
+    app.singletons.commandBarActor.send({
       type: 'Add commands',
       data: {
         commands: [
           ...createApplicationCommands({
-            systemIOActor: singletons.systemIOActor,
+            systemIOActor: app.singletons.systemIOActor,
             wasmInstance,
-            appActor: singletons.appActor,
-            setLayout: singletons.setLayout,
+            appActor: app.singletons.appActor,
+            setLayout: app.singletons.setLayout,
           }),
         ],
       },
@@ -53,7 +58,7 @@ if (!window.electron) {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
-  <SingletonsContext.Provider value={singletons}>
+  <app.ReactContext.Provider value={app.singletons}>
     <HotkeysProvider>
       <AppStreamProvider>
         <Router />
@@ -80,7 +85,7 @@ root.render(
         <ModalContainer />
       </AppStreamProvider>
     </HotkeysProvider>
-  </SingletonsContext.Provider>
+  </app.ReactContext.Provider>
 )
 
 // If you want to start measuring performance in your app, pass a function
