@@ -4,13 +4,14 @@ import { ensureProjectDirectoryExists, listProjects } from '@src/lib/desktop'
 import type { Project } from '@src/lib/project'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 // Gotcha: This should be ported to the ProjectMachine and keep track of
 // projectDirs and projectPaths in the context when it internally calls listProjects
 // Hook uses [number] to give users familiarity. It is meant to mimic a
 // dependency array, but is intended to only ever be used with 1 value.
 export const useProjectsLoader = (deps?: [number]) => {
+  const { kclManager } = useSingletons()
   const [lastTs, setLastTs] = useState(-1)
   const [projectPaths, setProjectPaths] = useState<Project[]>([])
   const [projectsDir, setProjectsDir] = useState<string | undefined>(undefined)
