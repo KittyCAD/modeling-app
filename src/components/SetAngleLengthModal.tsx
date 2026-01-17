@@ -11,8 +11,7 @@ import {
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { rustContext } from '@src/lib/singletons'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 type ModalResolve = {
   value: string
@@ -46,6 +45,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
+  const { kclManager, rustContext } = useSingletons()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
