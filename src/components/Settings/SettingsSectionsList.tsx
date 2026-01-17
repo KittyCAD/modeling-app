@@ -2,7 +2,7 @@ import decamelize from 'decamelize'
 
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
-import { useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
@@ -13,6 +13,7 @@ export function SettingsSectionsList({
   searchParamTab,
   scrollRef,
 }: SettingsSectionsListProps) {
+  const { useSettings } = useSingletons()
   const context = useSettings()
 
   const visibleCategories = Object.entries(context).filter(
