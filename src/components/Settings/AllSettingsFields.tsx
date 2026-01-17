@@ -22,12 +22,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import {
-  appActor,
-  kclManager,
-  settingsActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import {
@@ -47,6 +42,7 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
+    const { appActor, kclManager, settingsActor, useSettings } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = useSettings()
