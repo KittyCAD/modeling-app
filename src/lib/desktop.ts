@@ -324,7 +324,7 @@ const collectAllFilesRecursiveFrom = async (
     return 0
   })
 
-  for (let e of entries) {
+  for (const e of entries) {
     // ignore hidden files and directories (starting with a dot)
     if (e.indexOf('.') === 0) {
       continue

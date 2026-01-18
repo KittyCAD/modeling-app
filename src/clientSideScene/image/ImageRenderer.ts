@@ -51,7 +51,7 @@ export class ImageRenderer {
     for (const image of images) {
       let mesh = this.meshes.get(image.path)
       if (!mesh) {
-        mesh = await this.createImageMesh(image)
+        mesh = this.createImageMesh(image)
         if (mesh) {
           this.meshes.set(image.path, mesh)
           this.group.add(mesh)
@@ -71,38 +71,42 @@ export class ImageRenderer {
     this.disposeMeshes(unusedMeshes)
   }
 
-  private async createImageMesh(
-    image: ImageEntry
-  ): Promise<ImageMesh | undefined> {
-    const fullPath = await this.imageManager.getImageFullPath(image.path)
+  private createImageMesh(image: ImageEntry): ImageMesh {
+    const material = new MeshBasicMaterial({
+      transparent: true,
+      side: DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+    })
 
-    try {
-      let texture = this.loadedTextures.get(image.path)
-      if (!texture) {
-        texture = await this.loadTexture(fullPath)
-        this.loadedTextures.set(image.path, texture)
-      }
+    const mesh = new Mesh(this.geometry, material)
+    mesh.name = `ReferenceImage_${image.path}`
+    mesh.layers.set(SKETCH_LAYER)
+    mesh.renderOrder = 999
+    mesh.scale.set(image.width, image.height, 1)
+    mesh.position.set(image.x, image.y, 0.1)
 
-      const material = new MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: DoubleSide,
-        depthTest: false,
-        depthWrite: false,
+    this.imageManager
+      .getImageFullPath(image.path)
+      .then(async (fullPath) => {
+        try {
+          let texture = this.loadedTextures.get(image.path)
+          if (!texture) {
+            texture = await this.loadTexture(fullPath)
+            this.loadedTextures.set(image.path, texture)
+          }
+          material.map = texture
+          material.needsUpdate = true
+        } catch (error) {
+          console.error(`Failed to load image: ${image.path}`, error)
+          return undefined
+        }
+      })
+      .catch((e) => {
+        console.error(e)
       })
 
-      const mesh = new Mesh(this.geometry, material)
-      mesh.name = `ReferenceImage_${image.path}`
-      mesh.layers.set(SKETCH_LAYER)
-      mesh.renderOrder = 999
-      mesh.scale.set(image.width, image.height, 1)
-      mesh.position.set(image.x, image.y, 0.1)
-
-      return mesh
-    } catch (error) {
-      console.error(`Failed to load image: ${image.path}`, error)
-      return undefined
-    }
+    return mesh
   }
 
   private async loadTexture(path: string): Promise<Texture> {
