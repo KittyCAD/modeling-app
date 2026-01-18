@@ -51,7 +51,6 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -106,11 +105,13 @@ kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
   sceneInfra.baseUnit = unit
 }
 
+export const imageManager = new ImageManager()
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
   kclManager,
-  rustContext
+  rustContext,
+  imageManager
 )
 /** 🚨 Circular dependency alert 🚨 */
 kclManager.sceneEntitiesManager = sceneEntitiesManager
@@ -425,6 +426,4 @@ export const useLayout = () => useSelector(appActor, layoutSelector)
 export const setLayout = (layout: Layout) =>
   appActor.send({ type: AppMachineEventType.SetLayout, layout })
 
-// ImageManager singleton - subscribes to settingsActor for project path
-export const imageManager = new ImageManager(settingsActor)
-const _imageRenderer = new ImageRenderer(imageManager, sceneInfra)
+imageManager.init(settingsActor)

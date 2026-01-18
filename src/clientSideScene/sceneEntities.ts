@@ -186,6 +186,8 @@ import {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
+import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -205,6 +207,7 @@ export class SceneEntities {
   readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
+  readonly imageRenderer: ImageRenderer
   currentSketchQuaternion: Quaternion | null = null
 
   getSettings: (() => SettingsType) | null = null
@@ -213,7 +216,8 @@ export class SceneEntities {
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    imageManager: ImageManager
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
@@ -225,6 +229,7 @@ export class SceneEntities {
     this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
       this.sceneInfra
     )
+    this.imageRenderer = new ImageRenderer(imageManager, sceneInfra)
     this.sceneInfra.camControls.cameraChange.add(() => {
       this.onCamChange().catch(reportRejection)
     })
@@ -1069,6 +1074,7 @@ export class SceneEntities {
     this.intersectionPlane.setRotationFromQuaternion(
       this.currentSketchQuaternion
     )
+    this.imageRenderer.setQuaternion(this.currentSketchQuaternion)
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
 

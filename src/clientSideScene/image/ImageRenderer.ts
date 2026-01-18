@@ -1,4 +1,6 @@
+import type { Quaternion } from 'three'
 import {
+  DoubleSide,
   Group,
   Mesh,
   MeshBasicMaterial,
@@ -10,6 +12,7 @@ import type {
   ImageEntry,
 } from '@src/clientSideScene/image/ImageManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 
 const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
 
@@ -30,6 +33,7 @@ export class ImageRenderer {
 
     this.group = new Group()
     this.group.name = IMAGE_RENDERER_GROUP
+    this.group.layers.set(SKETCH_LAYER)
     this.sceneInfra.scene.add(this.group)
     this.geometry = new PlaneGeometry()
 
@@ -47,7 +51,7 @@ export class ImageRenderer {
     for (const image of images) {
       let mesh = this.meshes.get(image.path)
       if (!mesh) {
-        mesh = await this.addImageMesh(image)
+        mesh = await this.createImageMesh(image)
         if (mesh) {
           this.meshes.set(image.path, mesh)
           this.group.add(mesh)
@@ -63,34 +67,11 @@ export class ImageRenderer {
     const unusedMeshes = Array.from(this.meshes)
       .filter(([path]) => !images.some((image) => image.path === path))
       .map(([_path, mesh]) => mesh)
+    console.log('unusedmeshes', unusedMeshes)
     this.disposeMeshes(unusedMeshes)
   }
 
-  async render(): Promise<void> {
-    const images = await this.imageManager.getImages()
-    const visibleImages = images.filter((img) => img.visible !== false)
-
-    // Remove meshes for images that are no longer visible
-    for (const [path, mesh] of this.meshes) {
-      if (!visibleImages.find((img) => img.path === path)) {
-        this.group.remove(mesh)
-        mesh.geometry.dispose()
-        if (mesh.material instanceof MeshBasicMaterial) {
-          mesh.material.dispose()
-        }
-        this.meshes.delete(path)
-      }
-    }
-
-    // Add or update meshes for visible images
-    for (const image of visibleImages) {
-      if (!this.meshes.has(image.path)) {
-        await this.addImageMesh(image)
-      }
-    }
-  }
-
-  private async addImageMesh(
+  private async createImageMesh(
     image: ImageEntry
   ): Promise<ImageMesh | undefined> {
     const fullPath = await this.imageManager.getImageFullPath(image.path)
@@ -105,12 +86,17 @@ export class ImageRenderer {
       const material = new MeshBasicMaterial({
         map: texture,
         transparent: true,
+        side: DoubleSide,
+        depthTest: false,
+        depthWrite: false,
       })
 
       const mesh = new Mesh(this.geometry, material)
       mesh.name = `ReferenceImage_${image.path}`
+      mesh.layers.set(SKETCH_LAYER)
+      mesh.renderOrder = 999
       mesh.scale.set(image.width, image.height, 1)
-      mesh.position.set(image.x, image.y, -0.1)
+      mesh.position.set(image.x, image.y, 0.1)
 
       return mesh
     } catch (error) {
@@ -154,35 +140,44 @@ export class ImageRenderer {
     }
   }
 
+  setQuaternion(quaternion: Quaternion): void {
+    this.group.setRotationFromQuaternion(quaternion)
+  }
+
   private disposeMeshes(meshes: ImageMesh[]): void {
     for (const mesh of meshes) {
       this.group.remove(mesh)
       mesh.material.dispose()
+      for (const [path, m] of this.meshes) {
+        if (m === mesh) {
+          this.meshes.delete(path)
+          break
+        }
+      }
     }
-    this.meshes.clear()
-
-    this.sceneInfra.scene.remove(this.group)
   }
 
   public dispose() {
+    this.sceneInfra.scene.remove(this.group)
+
     this.disposeMeshes(Array.from(this.meshes.values()))
+    this.meshes.clear()
     for (const [, texture] of this.loadedTextures) {
       texture.dispose()
     }
     this.loadedTextures.clear()
-    this.sceneInfra.scene.remove(this.group)
+
     this.geometry.dispose()
   }
 }
 
-
-  function getMimeType(extension: string): string {
-    const mimeTypes: Record<string, string> = {
-      png: 'image/png',
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      svg: 'image/svg+xml',
-      webp: 'image/webp',
-    }
-    return mimeTypes[extension] ?? 'image/png'
+function getMimeType(extension: string): string {
+  const mimeTypes: Record<string, string> = {
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    svg: 'image/svg+xml',
+    webp: 'image/webp',
   }
+  return mimeTypes[extension] ?? 'image/png'
+}

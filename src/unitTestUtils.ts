@@ -24,6 +24,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -83,11 +84,14 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
 
+  const imageManager = new ImageManager()
+
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext
+    rustContext,
+    imageManager
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
   kclManager.sceneEntitiesManager = sceneEntitiesManager
@@ -95,6 +99,8 @@ export async function buildTheWorldAndConnectToEngine() {
   const getSettings = () => getSettingsFromActorContext(settingsActor)
   sceneInfra.camControls.getSettings = getSettings
   sceneEntitiesManager.getSettings = getSettings
+
+  imageManager.init(settingsActor)
 
   await new Promise((resolve) => {
     engineCommandManager
@@ -171,11 +177,14 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
+
+  const imageManager = new ImageManager()
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext
+    rustContext,
+    imageManager
   )
 
   settingsActor.start()
@@ -184,6 +193,8 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   sceneEntitiesManager.getSettings = getSettings
 
   kclManager.sceneEntitiesManager = sceneEntitiesManager
+  imageManager.init(settingsActor)
+
   return {
     instance: await instancePromise,
     engineCommandManager,

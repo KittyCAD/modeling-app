@@ -28,46 +28,44 @@ interface ImageContent {
 type SettingsActor = typeof settingsActor
 
 export class ImageManager {
-  /** Signal that increments whenever images are added, deleted, or modified */
+  /**
+   * Signal that increments whenever images are added, deleted, or modified
+   */
   readonly imagesChanged: Signal<number> = signal(0)
 
   private projectPath: Promise<string> | string
   private projectPathResolve: Function | undefined
 
-  constructor(settingsActor: SettingsActor) {
-    let currentPathValue =
-      settingsActor.getSnapshot().context.currentProject?.path ?? ''
-
+  constructor() {
     this.projectPath = new Promise((resolve) => {
-      if (currentPathValue) {
-        // path is already valid
-        resolve(currentPathValue)
-      } else {
-        // settings is still loading, wait for it
-        this.projectPathResolve = resolve
-      }
+      this.projectPathResolve = resolve
     })
+  }
 
+  // subscribes to settingsActor for project path
+  public init(settingsActor: SettingsActor) {
+    let currentPathValue = ''
     settingsActor.subscribe((state) => {
-      const newPath = state.context.currentProject?.path ?? null
-      if (newPath) {
-        if (newPath !== currentPathValue) {
-          // project path changed
+      const newPath = state.context.currentProject?.path ?? ''
+      if (newPath !== currentPathValue) {
+        if (newPath) {
+          // new valid project path -> resolve promise
+          currentPathValue = newPath
           if (this.projectPathResolve) {
-            currentPathValue = newPath
             this.projectPathResolve(newPath)
             this.projectPathResolve = undefined
           }
           this.projectPath = newPath
+        } else {
+          // Path became falsy (user closed the project) ->
+          // start waiting for a new valid path (when user opens a project)
+          currentPathValue = ''
+          this.projectPath = new Promise((resolve) => {
+            this.projectPathResolve = resolve
+          })
         }
-      } else {
-        // Wait for a new valid path
-        this.projectPath = new Promise((resolve) => {
-          this.projectPathResolve = resolve
-        })
+        this.imagesChanged.value++
       }
-      // Notify listeners that images may have changed (new project)
-      this.imagesChanged.value++
     })
   }
 
