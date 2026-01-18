@@ -1,4 +1,5 @@
 import { AppStreamProvider } from '@src/AppState'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -17,6 +18,7 @@ import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 const app = new App()
+export const useSingletons = () => React.useContext(app.ReactContext)
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler(

@@ -16,7 +16,7 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Suspense, use } from 'react'
 import Loading from '@src/components/Loading'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 export const MemoryPaneMenu = () => {
   const { kclManager } = useSingletons()

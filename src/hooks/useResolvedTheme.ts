@@ -1,4 +1,4 @@
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 
 /**

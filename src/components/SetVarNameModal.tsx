@@ -7,7 +7,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean

@@ -25,9 +25,11 @@ vi.mock('@src/lib/singletons', () => {
     commandBarActor: { send: vi.fn() },
     useCommandBarState: () => ({ context: { argumentsToSubmit: {} } }),
   }
+  class App {
+    singletons = singletons
+  }
   return {
-    singletons,
-    useSingletons: () => singletons,
+    App,
   }
 })
 
@@ -68,7 +70,8 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const { singletons } = await import('@src/lib/singletons')
+      const { App } = await import('@src/lib/singletons')
+      const { singletons } = new App()
       const wasmInstance = await singletons.kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(
         singletons.engineCommandManager.modelingSend
@@ -94,7 +97,8 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
-      const { singletons } = await import('@src/lib/singletons')
+      const { App } = await import('@src/lib/singletons')
+      const { singletons } = new App()
       const wasmInstance = await singletons.kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(
         singletons.engineCommandManager.modelingSend
@@ -116,7 +120,8 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
-      const { singletons } = await import('@src/lib/singletons')
+      const { App } = await import('@src/lib/singletons')
+      const { singletons } = new App()
       const wasmInstance = await singletons.kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(
         singletons.engineCommandManager.modelingSend
@@ -138,7 +143,8 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should send clear selection command only once on mount', async () => {
-      const { singletons } = await import('@src/lib/singletons')
+      const { App } = await import('@src/lib/singletons')
+      const { singletons } = new App()
       const wasmInstance = await singletons.kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(
         singletons.engineCommandManager.modelingSend
@@ -175,7 +181,8 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should set hasClearedSelection state after clearing', async () => {
-      const { singletons } = await import('@src/lib/singletons')
+      const { App } = await import('@src/lib/singletons')
+      const { singletons } = new App()
       const wasmInstance = await singletons.kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(
         singletons.engineCommandManager.modelingSend

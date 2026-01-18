@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react'
 
 import type { components } from '@src/lib/machine-api'
 
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'

@@ -1,5 +1,5 @@
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
 import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'

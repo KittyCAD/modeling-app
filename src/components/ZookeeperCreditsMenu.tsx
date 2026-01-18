@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import Tooltip from '@src/components/Tooltip'
 import type { BillingContext } from '@src/machines/billingMachine'
 import {

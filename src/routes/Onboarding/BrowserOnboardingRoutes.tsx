@@ -30,7 +30,7 @@ import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths

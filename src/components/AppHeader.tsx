@@ -2,7 +2,7 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import type { IndexLoaderData } from '@src/lib/types'
 
 import type { ReactNode } from 'react'

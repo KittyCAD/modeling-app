@@ -468,6 +468,3 @@ export class App {
     }
   }
 }
-
-export const app = new App()
-export const useSingletons = () => React.useContext(app.ReactContext)

@@ -1,7 +1,7 @@
 import ReactJsonView from '@microlink/react-json-view'
 
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 

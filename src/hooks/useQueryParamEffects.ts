@@ -18,7 +18,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { findKclSample } from '@src/lib/kclSamples'
 import type { FileLinkParams } from '@src/lib/links'
 import { webSafePathSplit } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import type { KclManager } from '@src/lang/KclManager'
 
 // For initializing the command arguments, we actually want `method` to be undefined

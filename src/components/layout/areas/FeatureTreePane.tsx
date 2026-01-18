@@ -34,7 +34,7 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { err } from '@src/lib/trap'
 import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {

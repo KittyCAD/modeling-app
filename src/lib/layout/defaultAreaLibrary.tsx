@@ -1,4 +1,4 @@
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'

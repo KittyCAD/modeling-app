@@ -13,7 +13,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 

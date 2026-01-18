@@ -1,6 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import env from '@src/env'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN

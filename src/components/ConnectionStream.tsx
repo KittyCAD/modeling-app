@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { btnName } from '@src/lib/cameraControls'
 import { err, reportRejection } from '@src/lib/trap'

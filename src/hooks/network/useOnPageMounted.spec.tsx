@@ -1,9 +1,10 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { expect, vi, describe, test } from 'vitest'
-import { singletons } from '@src/lib/singletons'
+import { App } from '@src/lib/singletons'
 
 describe('useOnPageMounted', () => {
+  const singletons = new App().singletons
   describe('on mounted', () => {
     test('should run once', () => {
       const callback = vi.fn(() => 1)

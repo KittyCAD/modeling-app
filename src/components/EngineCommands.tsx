@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import type { CommandLog } from '@src/lang/std/commandLog'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { reportRejection } from '@src/lib/trap'
 
 export function useEngineCommands(): [CommandLog[], () => void] {

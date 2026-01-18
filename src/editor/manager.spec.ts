@@ -1,9 +1,10 @@
 import type { Diagnostic } from '@codemirror/lint'
 
 import { expect, describe, it } from 'vitest'
-import { singletons } from '@src/lib/singletons'
+import { App } from '@src/lib/singletons'
 
 describe('EditorManager Class', () => {
+  const singletons = new App().singletons
   describe('makeUniqueDiagnostics', () => {
     it('should filter out duplicated diagnostics', () => {
       const duplicatedDiagnostics: Diagnostic[] = [

@@ -7,7 +7,7 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { codeToIdSelections } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/singletons'
+import { useSingletons } from '@src/index'
 import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
