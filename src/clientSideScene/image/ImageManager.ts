@@ -15,6 +15,10 @@ const SUPPORTED_IMAGE_EXTENSIONS = new Set([
 export interface ImageEntry {
   path: string
   visible?: boolean
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 interface ImageContent {
@@ -31,16 +35,15 @@ export class ImageManager {
   private projectPathResolve: Function | undefined
 
   constructor(settingsActor: SettingsActor) {
-    this.projectPath = new Promise((resolve) => {
-      this.projectPathResolve = resolve
-    })
-
     let currentPathValue =
       settingsActor.getSnapshot().context.currentProject?.path ?? ''
+
     this.projectPath = new Promise((resolve) => {
       if (currentPathValue) {
+        // path is already valid
         resolve(currentPathValue)
       } else {
+        // settings is still loading, wait for it
         this.projectPathResolve = resolve
       }
     })
@@ -76,6 +79,11 @@ export class ImageManager {
   private async getContentFilePath(): Promise<string> {
     const imagesFolderPath = await this.getImagesFolderPath()
     return joinOSPaths(imagesFolderPath, CONTENT_FILE)
+  }
+
+  async getImageFullPath(imagePath: string): Promise<string> {
+    const imagesFolderPath = await this.getImagesFolderPath()
+    return joinOSPaths(imagesFolderPath, imagePath)
   }
 
   static isSupportedImageFile(file: File): boolean {
@@ -122,12 +130,17 @@ export class ImageManager {
   private async writeContentFile(content: ImageContent): Promise<void> {
     if (!window.electron) return
     const contentFilePath = await this.getContentFilePath()
-    if (!contentFilePath) return
+    if (!contentFilePath) {
+      return
+    }
     const jsonString = JSON.stringify(content, null, 2)
     await window.electron.writeFile(contentFilePath, jsonString)
   }
 
-  async addImage(file: File): Promise<void> {
+  async addImage(
+    file: File,
+    position: { x: number; y: number; width: number; height: number }
+  ): Promise<void> {
     if (!window.electron) return
 
     const folderExists = await this.ensureImagesFolderExists()
@@ -149,7 +162,14 @@ export class ImageManager {
       (img) => img.path === file.name
     )
     if (existingIndex === -1) {
-      content.images.push({ path: file.name, visible: true })
+      content.images.push({
+        path: file.name,
+        visible: true,
+        x: position.x,
+        y: position.y,
+        width: position.width,
+        height: position.height,
+      })
       await this.writeContentFile(content)
     }
 
@@ -169,12 +189,6 @@ export class ImageManager {
       image.visible = visible
       await this.writeContentFile(content)
     }
-  }
-
-  async getImageFullPath(imagePath: string): Promise<string | null> {
-    const imagesFolderPath = await this.getImagesFolderPath()
-    if (!imagesFolderPath) return null
-    return joinOSPaths(imagesFolderPath, imagePath)
   }
 
   async deleteImage(imagePath: string): Promise<void> {

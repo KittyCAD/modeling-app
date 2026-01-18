@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
+import { Vector3 } from 'three'
 import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { ImageManager } from '@src/clientSideScene/image/ImageManager'
-import { imageManager } from '@src/lib/singletons'
+import { imageManager, sceneInfra } from '@src/lib/singletons'
 
 type ModelingState = ReturnType<typeof useModelingContext>['state']
 
@@ -19,6 +20,24 @@ function isDropEnabled(e: React.DragEvent, state: ModelingState): boolean {
   return true
 }
 
+function getImageDimensions(
+  file: File
+): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve({ width: img.width, height: img.height })
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('Failed to load image'))
+    }
+    img.src = url
+  })
+}
+
 interface ClientSideFileDropperProps {
   children: React.ReactNode
 }
@@ -30,7 +49,8 @@ export function ClientSideFileDropper({
   const dragCounter = useRef(0)
   const { state } = useModelingContext()
 
-  const handleFileDrop = async (files: FileList) => {
+  const handleFileDrop = async (e: React.DragEvent) => {
+    const files = e.dataTransfer.files
     const file = files[0]
     if (!file) return
 
@@ -40,7 +60,23 @@ export function ClientSideFileDropper({
     }
 
     try {
-      await imageManager.addImage(file)
+      // Get drop position in world coordinates
+      const worldPos = sceneInfra.camControls.screenToWorld(e.nativeEvent)
+
+      // Get image dimensions to calculate aspect ratio
+      const imgDimensions = await getImageDimensions(file)
+      const aspectRatio = imgDimensions.width / imgDimensions.height
+
+      // Default height in world units, width based on aspect ratio
+      const height = 100
+      const width = height * aspectRatio
+
+      await imageManager.addImage(file, {
+        x: worldPos.x,
+        y: worldPos.y,
+        width,
+        height,
+      })
       toast.success(`Added image: ${file.name}`)
     } catch (error) {
       console.error('Failed to add image:', error)
@@ -80,7 +116,7 @@ export function ClientSideFileDropper({
           dragCounter.current = 0
           setIsExternalDragOver(false)
           if (e.dataTransfer.files.length > 0) {
-            void handleFileDrop(e.dataTransfer.files)
+            void handleFileDrop(e)
           }
         }
       }}

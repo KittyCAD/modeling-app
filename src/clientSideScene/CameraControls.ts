@@ -141,8 +141,8 @@ export class CameraControls {
   private _lastWheelEvent: WheelEvent | null = null
 
   // Converts a screen space coordinate to world space
-  private screenToWorld(
-    event: WheelEvent | PointerEvent,
+  public screenToWorld(
+    event: WheelEvent | PointerEvent | DragEvent,
     camera?: Camera
   ): Vector3 {
     let x = event.offsetX
