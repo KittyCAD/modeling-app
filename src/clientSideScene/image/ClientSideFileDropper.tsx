@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { Vector3 } from 'three'
 import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'

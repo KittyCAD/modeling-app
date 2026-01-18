@@ -14,7 +14,7 @@ const SUPPORTED_IMAGE_EXTENSIONS = new Set([
 
 export interface ImageEntry {
   path: string
-  visible?: boolean
+  visible: boolean
   x: number
   y: number
   width: number

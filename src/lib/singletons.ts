@@ -51,6 +51,7 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -426,3 +427,4 @@ export const setLayout = (layout: Layout) =>
 
 // ImageManager singleton - subscribes to settingsActor for project path
 export const imageManager = new ImageManager(settingsActor)
+const _imageRenderer = new ImageRenderer(imageManager, sceneInfra)
