@@ -2,8 +2,8 @@ import { signal, type Signal } from '@preact/signals-react'
 import { joinOSPaths } from '@src/lib/paths'
 import type { settingsActor } from '@src/lib/singletons'
 
-export const IMAGES_FOLDER = 'zoo_images'
-const CONTENT_FILE = 'content.json'
+export const IMAGES_FOLDER = 'zds_images'
+const CONTENT_FILE = 'images.json'
 const SUPPORTED_IMAGE_EXTENSIONS = new Set([
   'png',
   'jpg',
