@@ -184,8 +184,11 @@ export class ImageManager {
     const content = await this.readContentFile()
     const image = content.images.find((img) => img.path === imagePath)
     if (image) {
-      image.visible = visible
-      await this.writeContentFile(content)
+      if (image.visible !== visible) {
+        image.visible = visible
+        this.imagesChanged.value++
+        await this.writeContentFile(content)
+      }
     }
   }
 
