@@ -1,3 +1,4 @@
+import { OrthographicCamera } from 'three'
 import { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -53,26 +54,34 @@ export function ClientSideFileDropper({
     const file = files[0]
     if (!file) return
 
+    console.log('Dropped file:', file.name, 'type:', file.type)
+
     if (!ImageManager.isSupportedImageFile(file)) {
       toast.error(`Unsupported image format. Supported: png, jpg, svg, webp`)
       return
     }
 
     try {
-      // Get drop position in world coordinates
-      const worldPos = sceneInfra.camControls.screenToWorld(e.nativeEvent)
+      // Get drop position on the sketch plane (2D coordinates)
+      const planeIntersect = sceneInfra.getPlaneIntersectPoint()
+      if (!planeIntersect?.twoD) {
+        toast.error('Could not determine drop position on sketch plane')
+        return
+      }
+      const dropPos = planeIntersect.twoD
+      console.log('Drop position:', { x: dropPos.x, y: dropPos.y })
 
-      // Get image dimensions to calculate aspect ratio
+      // Get image dimensions and calculate size to fit 70% of the view
       const imgDimensions = await getImageDimensions(file)
-      const aspectRatio = imgDimensions.width / imgDimensions.height
-
-      // Default height in world units, width based on aspect ratio
-      const height = 100
-      const width = height * aspectRatio
+      const { width, height } = calculateInitialImageSize(
+        imgDimensions.width,
+        imgDimensions.height,
+        sceneInfra.camControls.camera
+      )
 
       await imageManager.addImage(file, {
-        x: worldPos.x,
-        y: worldPos.y,
+        x: dropPos.x,
+        y: dropPos.y,
         width,
         height,
       })
@@ -123,4 +132,40 @@ export function ClientSideFileDropper({
       {children}
     </div>
   )
+}
+
+function calculateInitialImageSize(
+  imageWidth: number,
+  imageHeight: number,
+  camera:
+    | OrthographicCamera
+    | { fov: number; aspect: number; position: { length(): number } }
+): { width: number; height: number } {
+  const aspectRatio = imageWidth / imageHeight
+
+  let viewWidth: number
+  let viewHeight: number
+
+  if (camera instanceof OrthographicCamera) {
+    viewWidth = (camera.right - camera.left) / camera.zoom
+    viewHeight = (camera.top - camera.bottom) / camera.zoom
+  } else {
+    const distance = camera.position.length()
+    const fovRad = (camera.fov * Math.PI) / 180
+    viewHeight = 2 * Math.tan(fovRad / 2) * distance
+    viewWidth = viewHeight * camera.aspect
+  }
+
+  // Fit image to 40% of the view, respecting aspect ratio
+  const targetFraction = 0.4
+  const maxWidth = viewWidth * targetFraction
+  const maxHeight = viewHeight * targetFraction
+
+  if (aspectRatio > maxWidth / maxHeight) {
+    // Image is wider - fit to width
+    return { width: maxWidth, height: maxWidth / aspectRatio }
+  } else {
+    // Image is taller - fit to height
+    return { width: maxHeight * aspectRatio, height: maxHeight }
+  }
 }
