@@ -671,7 +671,7 @@ test.describe(
         await expect(projectSidebarToggle).toContainText(projectRenamedName)
       })
     })
-  
+
     test(`Delete from project page`, async ({
       context,
       page,

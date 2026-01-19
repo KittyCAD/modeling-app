@@ -930,7 +930,8 @@ export const systemIOMachine = setup({
                 assertEvent(event, SystemIOMachineEvents.done_renameProject)
                 return { name: event.output.newName }
               },
-            }),],
+            }),
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
