@@ -887,9 +887,19 @@ export class SceneInfra {
         : null
     }
 
-    // If nothing was selected, initialize area select
-    if (!this.selected) {
-      const planeIntersectPoint = this.getPlaneIntersectPoint()
+    const planeIntersectPoint = this.getPlaneIntersectPoint()
+
+    if (
+      this.selected &&
+      this.imageRenderer.transformHandler.startDrag(
+        this.selected,
+        planeIntersectPoint?.twoD
+      )
+    ) {
+      // See if we're starting to drag an image
+    }
+    // Otherwise, If nothing was selected, initialize area select
+    else if (!this.selected) {
       if (
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
@@ -914,7 +924,9 @@ export class SceneInfra {
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      if (this.selected.hasBeenDragged) {
+      if (this.imageRenderer.transformHandler.processDragEnd()) {
+        // An image has been dragged currently, drag end captured.
+      } else if (this.selected.hasBeenDragged) {
         await this.onDragEndCallback({
           intersectionPoint: planeIntersectPoint
             ? {

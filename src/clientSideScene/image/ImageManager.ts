@@ -37,6 +37,8 @@ export class ImageManager {
   private projectPath: Promise<string> | string
   private projectPathResolve: Function | undefined
 
+  private images: ImageEntry[] = []
+
   constructor() {
     this.projectPath = new Promise((resolve) => {
       this.projectPathResolve = resolve
@@ -202,6 +204,10 @@ export class ImageManager {
 
       //this.imagesChanged.value++
     }
+  }
+
+  public saveToFile() {
+    //
   }
 
   async deleteImage(imagePath: string): Promise<void> {
