@@ -8,8 +8,9 @@ import type { Coords2d } from '@src/lang/util'
 import { Vector2 } from 'three'
 
 type DraggingInfo = {
-  imagePath: string
-  startPos: Coords2d
+  image: ImageEntry
+  imagePosAtStartDrag: Coords2d
+  mousePosAtStartDrag: Coords2d
 }
 
 export class ImageTransformHandler {
@@ -38,21 +39,24 @@ export class ImageTransformHandler {
     selected: SceneInfra['selected'],
     intersectionPoint: Vector2 | undefined
   ) {
-    const isReferenceImage =
-      selected?.object.parent?.name === IMAGE_RENDERER_GROUP
-    if (isReferenceImage && intersectionPoint) {
-      if (this._dragging) {
-        this.dragUpdate(selected, this._dragging, intersectionPoint)
-      } else {
-        // Start dragging
-        const image = selected.object.userData.image as ImageEntry
-        this._dragging = {
-          imagePath: image.path,
-          startPos: [image.x, image.y],
+    if (intersectionPoint) {
+      const isReferenceImage =
+        selected?.object.parent?.name === IMAGE_RENDERER_GROUP
+      if (isReferenceImage) {
+        if (this._dragging) {
+          this.dragUpdate(selected, this._dragging, intersectionPoint)
+        } else {
+          // Start drag
+          const image = selected.object.userData.image as ImageEntry
+          this._dragging = {
+            image,
+            imagePosAtStartDrag: [image.x, image.y],
+            mousePosAtStartDrag: [intersectionPoint.x, intersectionPoint.y],
+          }
         }
-      }
 
-      return true
+        return true
+      }
     }
     return false
   }
@@ -62,14 +66,19 @@ export class ImageTransformHandler {
     draggingInfo: DraggingInfo,
     intersectionPoint: Vector2
   ) {
-    const diff = intersectionPoint.clone().sub(selected!.mouseDownVector)
-    const x = draggingInfo.startPos[0] + diff.x
-    const y = draggingInfo.startPos[1] + diff.y
+    const diff = intersectionPoint
+      .clone()
+      .sub(new Vector2(...draggingInfo.mousePosAtStartDrag))
+    const x = draggingInfo.imagePosAtStartDrag[0] + diff.x
+    const y = draggingInfo.imagePosAtStartDrag[1] + diff.y
     selected?.object.position.set(x, y, 1)
 
-    console.log('diff', diff)
+    draggingInfo.image.x = x
+    draggingInfo.image.y = y
 
     // drag end only
-    void this._imageManager.updateImagePosition(draggingInfo.imagePath, [x, y])
+    //void this._imageManager.updateImagePosition(draggingInfo.imagePath, [x, y])
   }
+
+  private dragEnd() {}
 }

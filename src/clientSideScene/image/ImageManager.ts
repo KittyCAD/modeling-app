@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import { Coords2d } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 import { joinOSPaths } from '@src/lib/paths'
 import type { settingsActor } from '@src/lib/singletons'
 
