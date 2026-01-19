@@ -10,6 +10,56 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ToastOptions } from 'react-hot-toast'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+
+// Helper function to find the plane artifact for a subtract2d operation
+// by traversing the artifact graph to find which plane contains the sketch's paths
+function findPlaneArtifactForSubtract2d(
+  operation: StdLibCallOp,
+  kclManager: KclManager
+): Artifact | null {
+  const subtract2dNodePath = operation.nodePath
+  if (!subtract2dNodePath.steps || subtract2dNodePath.steps.length < 2) {
+    return null
+  }
+  // Get the root of the subtract2d's nodePath (identifies the variable/pipe)
+  const subtract2dRoot = JSON.stringify(subtract2dNodePath.steps.slice(0, 2))
+
+  // Find all path artifacts that share the same root - these are the sketch's paths
+  const sketchPathIds: string[] = []
+  for (const artifact of kclManager.artifactGraph.values()) {
+    if (artifact.type !== 'path') continue
+
+    const pathNodePath = artifact.codeRef?.nodePath
+    if (!pathNodePath?.steps || pathNodePath.steps.length < 2) continue
+
+    const pathRoot = JSON.stringify(pathNodePath.steps.slice(0, 2))
+    if (pathRoot === subtract2dRoot) {
+      sketchPathIds.push(artifact.id)
+    }
+  }
+
+  if (sketchPathIds.length === 0) {
+    return null
+  }
+
+  // Find which plane contains these paths by checking plane.pathIds
+  for (const artifact of kclManager.artifactGraph.values()) {
+    if (artifact.type !== 'plane') continue
+    if (!('pathIds' in artifact) || !Array.isArray(artifact.pathIds)) continue
+
+    // Check if this plane contains any of the sketch's paths
+    const containsSketchPath = sketchPathIds.some((pathId) =>
+      artifact.pathIds.includes(pathId)
+    )
+
+    if (containsSketchPath) {
+      return artifact
+    }
+  }
+
+  return null
+}
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
@@ -47,11 +97,21 @@ export async function exportSketchToDxf(
   let toastId: string | undefined = undefined
 
   try {
-    // Get the plane artifact associated with this sketch operation
-    const planeArtifact = findOperationPlaneLikeArtifact(
-      operation,
-      kclManager.artifactGraph
-    )
+    // For subtract2d operations, find the plane artifact from the same sketch
+    let planeArtifact
+    if (operation.name === 'subtract2d') {
+      planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
+      if (!planeArtifact) {
+        toast.error('Could not find sketch to export from subtract2d operation')
+        return new Error('Could not find plane artifact for subtract2d')
+      }
+    } else {
+      // Get the plane artifact associated with this sketch operation
+      planeArtifact = findOperationPlaneLikeArtifact(
+        operation,
+        kclManager.artifactGraph
+      )
+    }
 
     if (!planeArtifact) {
       toast.error('Could not find sketch for DXF export')
