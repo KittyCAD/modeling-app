@@ -5,14 +5,14 @@ title: ""
 type: Initiative
 ---
 
-### Description
-
-...
-
-### Dependencies
+### Scope
 
 ...
 
 ### UI mockup needs
+
+...
+
+### Dependencies
 
 ...
