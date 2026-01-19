@@ -1,4 +1,5 @@
-import { signal, type Signal } from '@preact/signals-react'
+import { signal } from '@preact/signals-core'
+import { Coords2d } from '@src/lang/util'
 import { joinOSPaths } from '@src/lib/paths'
 import type { settingsActor } from '@src/lib/singletons'
 
@@ -31,7 +32,7 @@ export class ImageManager {
   /**
    * Signal that increments whenever images are added, deleted, or modified
    */
-  readonly imagesChanged: Signal<number> = signal(0)
+  readonly imagesChanged = signal(0)
 
   private projectPath: Promise<string> | string
   private projectPathResolve: Function | undefined
@@ -189,6 +190,17 @@ export class ImageManager {
         this.imagesChanged.value++
         await this.writeContentFile(content)
       }
+    }
+  }
+
+  async updateImagePosition(imagePath: string, position: Coords2d) {
+    const content = await this.readContentFile()
+    const image = content.images.find((img) => img.path === imagePath)
+    if (image) {
+      image.x = position[0]
+      image.y = position[1]
+
+      //this.imagesChanged.value++
     }
   }
 

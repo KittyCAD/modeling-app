@@ -607,6 +607,7 @@ export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
 }
 
 export function updateSelectedIds({ event, context }: SolveAssignArgs) {
+  console.log('updateselectedids', event)
   assertEvent(event, 'update selected ids')
 
   const updates: Partial<SketchSolveContext> = {}

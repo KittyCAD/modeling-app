@@ -75,7 +75,13 @@ export async function buildTheWorldAndConnectToEngine() {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
+
+  const imageManager = new ImageManager()
+  const sceneInfra = new SceneInfra(
+    engineCommandManager,
+    instancePromise,
+    imageManager
+  )
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -84,14 +90,11 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
 
-  const imageManager = new ImageManager()
-
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext,
-    imageManager
+    rustContext
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
   kclManager.sceneEntitiesManager = sceneEntitiesManager
@@ -169,7 +172,13 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
+
+  const imageManager = new ImageManager()
+  const sceneInfra = new SceneInfra(
+    engineCommandManager,
+    instancePromise,
+    imageManager
+  )
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -178,13 +187,11 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
 
-  const imageManager = new ImageManager()
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext,
-    imageManager
+    rustContext
   )
 
   settingsActor.start()

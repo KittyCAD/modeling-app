@@ -13,14 +13,16 @@ import type {
 } from '@src/clientSideScene/image/ImageManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
+import { ImageTransformHandler } from '@src/clientSideScene/image/ImageTransformHandler'
 
-const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
+export const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
 
 type ImageMesh = Mesh<PlaneGeometry, MeshBasicMaterial>
 
 export class ImageRenderer {
   private readonly imageManager: ImageManager
   private readonly sceneInfra: SceneInfra
+  public readonly transformHandler: ImageTransformHandler
 
   private readonly group: Group
   private readonly geometry: PlaneGeometry
@@ -36,6 +38,8 @@ export class ImageRenderer {
     this.group.layers.set(SKETCH_LAYER)
     this.sceneInfra.scene.add(this.group)
     this.geometry = new PlaneGeometry()
+
+    this.transformHandler = new ImageTransformHandler(imageManager, sceneInfra)
 
     imageManager.imagesChanged.subscribe(this.onImagesChanged)
     this.onImagesChanged()
@@ -61,6 +65,7 @@ export class ImageRenderer {
         mesh.visible = image.visible
         mesh.scale.set(image.width, image.height, 1)
         mesh.position.set(image.x, image.y, 0)
+        console.log(image.x, image.y)
       }
     }
 
@@ -71,6 +76,8 @@ export class ImageRenderer {
     this.disposeMeshes(unusedMeshes)
   }
 
+  private readonly renderImages = () => {}
+
   private createImageMesh(image: ImageEntry): ImageMesh {
     const material = new MeshBasicMaterial({
       transparent: true,
@@ -80,6 +87,9 @@ export class ImageRenderer {
     })
 
     const mesh = new Mesh(this.geometry, material)
+    mesh.userData = {
+      image,
+    }
     mesh.name = `ReferenceImage_${image.path}`
     mesh.layers.set(SKETCH_LAYER)
     mesh.renderOrder = 999

@@ -43,6 +43,9 @@ import type {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { signal } from '@preact/signals-core'
+import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
+import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -300,13 +303,24 @@ export class SceneInfra {
   hoveredObject: null | Object3D = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+
   // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
-  selected: {
+
+  // Selection
+  private _selected: {
     mouseDownVector: Vector2
     object: Object3D
     hasBeenDragged: boolean
   } | null = null
+  readonly selectedSignal = signal(0)
+  set selected(value) {
+    this._selected = value
+    this.selectedSignal.value++
+  }
+  get selected() {
+    return this._selected
+  }
   areaSelect: {
     mouseDownVector: Vector2
     startPoint: {
@@ -323,9 +337,12 @@ export class SceneInfra {
   private lastFrameTime = 0
   private animationFrameId = -1
 
+  readonly imageRenderer: ImageRenderer
+
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInitPromise: Promise<ModuleType>
+    wasmInitPromise: Promise<ModuleType>,
+    imageManager: ImageManager
   ) {
     this.wasmInstancePromise = wasmInitPromise
     // SCENE
@@ -377,6 +394,8 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
+
+    this.imageRenderer = new ImageRenderer(imageManager, this)
   }
 
   // Called after canvas is attached to the DOM and on each resize.
@@ -542,45 +561,53 @@ export class SceneInfra {
         this.ndc2screenSpace(this.selected.mouseDownVector),
         10 // Drag threshold in pixels
       )
-      if (!this.selected.hasBeenDragged && hasBeenDragged) {
-        this.selected.hasBeenDragged = true
-        // Fire onDragStart event when drag threshold is first exceeded
+
+      if (
+        !this.imageRenderer.transformHandler.processDrag(
+          this.selected,
+          planeIntersectPoint?.twoD
+        )
+      ) {
+        if (!this.selected.hasBeenDragged && hasBeenDragged) {
+          this.selected.hasBeenDragged = true
+          // Fire onDragStart event when drag threshold is first exceeded
+          if (
+            planeIntersectPoint &&
+            planeIntersectPoint.twoD &&
+            planeIntersectPoint.threeD
+          ) {
+            await this.onDragStartCallback({
+              mouseEvent,
+              intersectionPoint: {
+                twoD: planeIntersectPoint.twoD,
+                threeD: planeIntersectPoint.threeD,
+              },
+              intersects,
+              selected: this.selected.object,
+            })
+          }
+        }
         if (
+          this.selected.hasBeenDragged &&
           planeIntersectPoint &&
           planeIntersectPoint.twoD &&
           planeIntersectPoint.threeD
         ) {
-          await this.onDragStartCallback({
+          const selected = this.selected
+          await this.onDragCallback({
             mouseEvent,
             intersectionPoint: {
               twoD: planeIntersectPoint.twoD,
               threeD: planeIntersectPoint.threeD,
             },
             intersects,
-            selected: this.selected.object,
+            selected: selected.object,
+          })
+          this.updateMouseState({
+            type: 'isDragging',
+            on: selected.object,
           })
         }
-      }
-      if (
-        this.selected.hasBeenDragged &&
-        planeIntersectPoint &&
-        planeIntersectPoint.twoD &&
-        planeIntersectPoint.threeD
-      ) {
-        const selected = this.selected
-        await this.onDragCallback({
-          mouseEvent,
-          intersectionPoint: {
-            twoD: planeIntersectPoint.twoD,
-            threeD: planeIntersectPoint.threeD,
-          },
-          intersects,
-          selected: selected.object,
-        })
-        this.updateMouseState({
-          type: 'isDragging',
-          on: selected.object,
-        })
       }
     } else if (this.areaSelect) {
       // Handle area select drag

@@ -553,6 +553,8 @@ export function createOnDragCallback({
   intersects: Array<unknown>
 }) => Promise<void> {
   return async ({ selected, intersectionPoint }) => {
+    console.log('ondragcallback')
+
     // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
       return

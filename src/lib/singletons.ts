@@ -89,7 +89,12 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-export const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
+export const imageManager = new ImageManager()
+export const sceneInfra = new SceneInfra(
+  engineCommandManager,
+  initPromise,
+  imageManager
+)
 export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
@@ -105,13 +110,11 @@ kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
   sceneInfra.baseUnit = unit
 }
 
-export const imageManager = new ImageManager()
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
   kclManager,
-  rustContext,
-  imageManager
+  rustContext
 )
 /** 🚨 Circular dependency alert 🚨 */
 kclManager.sceneEntitiesManager = sceneEntitiesManager
