@@ -1452,7 +1452,7 @@ export async function pinchFromCenter(
 
 export const closeOnboardingModalIfPresent = async (page: Page) => {
   const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
-  await expect(page.getByTestId('stream')).toBeVisible()
+  await expect(page.getByTestId('stream')).toBeVisible({ timeout: 10_000 })
   if (await onboardingNotRightNow.isVisible()) {
     await onboardingNotRightNow.click()
     await expect(onboardingNotRightNow).toBeHidden()

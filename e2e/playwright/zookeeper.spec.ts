@@ -27,7 +27,7 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     copilot: CopilotFixture
   }) {
     await page.setBodyDimensions({ width: 1500, height: 1000 })
-    await homePage.goToModelingScene()
+    await homePage.createAndGoToProject('testDefault')
     await scene.settled(cmdBar)
 
     await test.step(`Submit basic prompt`, async () => {

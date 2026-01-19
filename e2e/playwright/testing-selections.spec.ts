@@ -1,3 +1,4 @@
+import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -81,7 +82,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
   test(
     'Testing selections (and hovers) work on sketches when NOT in sketch mode',
     { tag: '@web' },
-    async ({ page, homePage, scene, cmdBar }) => {
+    async ({ page, homePage, scene, cmdBar, folderSetupFn, fs }) => {
       const cases = [
         {
           pos: [0.31, 0.5],
@@ -96,10 +97,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
           expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
         },
       ] as const
-      await page.addInitScript(
-        async ({ cases }) => {
-          localStorage.setItem(
-            'persistCode',
+      await folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, 'testDefault')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          path.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(
             `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
@@ -110,11 +113,10 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     |> line(end = [41.19, 28.97 + 5])
     |> ${cases[2].expectedCode}`
           )
-        },
-        { cases }
-      )
+        )
+      })
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+      await homePage.openProject('testDefault')
       await scene.settled(cmdBar)
 
       // end setup, now test hover and selects

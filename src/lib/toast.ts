@@ -16,9 +16,16 @@ export const waitForToastAnimationEnd = async (
 
     // For some reason this is so new TS doesn't know about it.
     // @ts-expect-error
-    styledEl.getAnimations().finished.then(() => {
+    const animations = styledEl.getAnimations()
+
+    if (animations !== undefined && animations.finished !== undefined) {
+      animations.finished.then(() => {
+        cb()
+        resolve()
+      })
+    } else {
       cb()
       resolve()
-    })
+    }
   })
 }

@@ -317,22 +317,36 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, editor, toolbar, scene, cmdBar }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit=in)
+    async ({
+      page,
+      editor,
+      toolbar,
+      scene,
+      cmdBar,
+      folderSetupFn,
+      fs,
+      homePage,
+    }) => {
+      await folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, 'testDefault')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          path.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(
+            `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [5, 0])
   |> tangentialArc(end = [5, 5])
   |> close()
   |> extrude(length = 5)`
+          )
         )
       })
 
-      await toolbar.waitForFeatureTreeToBeBuilt()
+      await homePage.openProject('testDefault')
       await scene.settled(cmdBar)
+      await toolbar.waitForFeatureTreeToBeBuilt()
 
       await editor.closePane()
       await toolbar.editSketch()

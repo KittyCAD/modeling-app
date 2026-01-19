@@ -80,7 +80,7 @@ test(
         executorInputPath('cylinder-inches.kcl')
       )
 
-      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), new Uint8Array(testFileData))
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -121,13 +121,13 @@ test(
       let testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
       )
-      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), new Uint8Array(testFileData))
       const errorDir = path.join(dir, 'broken-code')
       await fs.mkdir(errorDir, { recursive: true })
       testFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl')
       )
-      await fs.writeFile(path.join(errorDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(errorDir, 'main.kcl'), new Uint8Array(testFileData))
     })
 
     const u = await getUtils(page)
@@ -184,7 +184,7 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
       )
-      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), new Uint8Array(testFileData))
       const emptyDir = path.join(dir, 'empty')
       await fs.mkdir(emptyDir, { recursive: true })
       await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
@@ -233,7 +233,7 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
       )
-      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), new Uint8Array(testFileData))
       await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
@@ -281,14 +281,14 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
       )
-      await fs.writeFile(path.join(bracketDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(bracketDir, 'main.kcl'), new Uint8Array(testFileData))
 
       const brokenFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl')
       )
       await fs.writeFile(
         path.join(bracketDir, 'broken-code-test.kcl'),
-        brokenFileData
+        new Uint8Array(brokenFileData)
       )
     })
 
@@ -337,13 +337,14 @@ test(
     testInfo
   ) => {
     await folderSetupFn(async (dir) => {
-      await fs.mkdir(path.join(dir, 'broken-code'), { recursive: true })
+      const projectDir = path.join(dir, 'broken-code')
+      await fs.mkdir(projectDir, { recursive: true })
       const testFileData = await nodeFs.readFile(
         executorInputPath('broken-code-test.kcl')
       )
       await fs.writeFile(
-        path.join(dir, 'broken-code', 'main.kcl'),
-        testFileData
+        path.join(projectDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
     })
 
@@ -377,17 +378,17 @@ test(
       let testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl')
       )
-      await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
+      await fs.writeFile(`${dir}/router-template-slate/main.kcl`, new Uint8Array(testFileData))
 
       await fs.mkdir(`${dir}/bracket`, { recursive: true })
       testFileData = await nodeFs.readFile(
         executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
-      await fs.writeFile(`${dir}/bracket/main.kcl`, testFileData)
+      await fs.writeFile(`${dir}/bracket/main.kcl`, new Uint8Array(testFileData))
 
       await fs.mkdir(`${dir}/lego`, { recursive: true })
       testFileData = await nodeFs.readFile(executorInputPath('lego.kcl'), {})
-      await fs.writeFile(`${dir}/lego/main.kcl`, testFileData)
+      await fs.writeFile(`${dir}/lego/main.kcl`, new Uint8Array(testFileData))
     })
 
     await page.setBodyDimensions({ width: 1200, height: 600 })
@@ -584,7 +585,7 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl')
       )
-      await fs.writeFile(`${dir}/router-template-slate/main.kcl`, testFileData)
+      await fs.writeFile(`${dir}/router-template-slate/main.kcl`, new Uint8Array(testFileData))
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -622,7 +623,7 @@ test.describe(
         const testFileData = await nodeFs.readFile(
           'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
         )
-        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, new Uint8Array(testFileData))
       })
 
       // Constants and locators
@@ -686,7 +687,7 @@ test.describe(
         const testFileData = await nodeFs.readFile(
           'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
         )
-        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, new Uint8Array(testFileData))
       })
 
       // Constants and locators
@@ -736,9 +737,9 @@ test.describe(
       await folderSetupFn(async (dir) => {
         await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
         const testFileData = await nodeFs.readFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+          executorInputPath('router-template-slate.kcl')
         )
-        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, new Uint8Array(testFileData))
       })
 
       // Constants and locators
@@ -800,7 +801,7 @@ test.describe(
         const testFileData = await nodeFs.readFile(
           'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
         )
-        await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+        await fs.writeFile(`${dir}/${projectName}/main.kcl`, new Uint8Array(testFileData))
       })
 
       // Constants and locators
@@ -852,7 +853,7 @@ test.describe(
           const testFileData = await nodeFs.readFile(
             executorInputPath('router-template-slate.kcl')
           )
-          await fs.writeFile(path.join(projectDir, 'main.kcl'), testFileData)
+          await fs.writeFile(path.join(projectDir, 'main.kcl'), new Uint8Array(testFileData))
         })
         await homePage.expectState({
           projectCards: [
@@ -977,13 +978,13 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl')
       )
-      await fs.writeFile(`${dir}/${projectName}/main.kcl`, testFileData)
+      await fs.writeFile(`${dir}/${projectName}/main.kcl`, new Uint8Array(testFileData))
       const testFileData2 = await nodeFs.readFile(
         executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
       await fs.writeFile(
         `${dir}/${projectName}/otherThingToClickOn.kcl`,
-        testFileData2
+        new Uint8Array(testFileData2)
       )
     })
 
@@ -1024,7 +1025,7 @@ test(
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl'),
-        testFileData2
+        new Uint8Array(testFileData2)
       )
 
       const testFileData = await nodeFs.readFile(
@@ -1032,7 +1033,7 @@ test(
       )
       await fs.writeFile(
         path.join(dir, 'router-template-slate', 'nested', 'slate.kcl'),
-        testFileData
+        new Uint8Array(testFileData)
       )
 
       testDir = dir
@@ -1058,10 +1059,10 @@ test(
     expect(testDir).toBeDefined()
     if (testDir !== undefined) {
       await expect(
-        await fs.stat(path.join(testDir, 'router-template-slate', 'main.kcl'))
+        fs.stat(path.join(testDir, 'router-template-slate', 'main.kcl'))
       ).rejects.toThrow()
       await expect(
-        await fs.stat(
+        fs.stat(
           path.join(testDir, 'router-template-slate', 'nested', 'main.kcl')
         )
       ).rejects.toThrow()
@@ -1085,8 +1086,8 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
-        await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(path.join(dir, name, `main.kcl`), new Uint8Array(testFileData))
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
       }
@@ -1195,8 +1196,8 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
-        await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(path.join(dir, name, `main.kcl`), new Uint8Array(testFileData))
 
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
@@ -1412,8 +1413,8 @@ test(
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
         await fs.mkdir(path.join(dir, name), { recursive: true })
-        const testFileData = await nodeFs.readFile(executorInputPath(file), {})
-        await fs.writeFile(path.join(dir, name, `main.kcl`), testFileData)
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(path.join(dir, name, `main.kcl`), new Uint8Array(testFileData))
       }
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1521,7 +1522,7 @@ test(
       ]
       for (const fileName of fileNames) {
         const testFileData = await nodeFs.readFile(executorInputPath(fileName))
-        await fs.writeFile(path.join(testDir, fileName), testFileData)
+        await fs.writeFile(path.join(testDir, fileName), new Uint8Array(testFileData))
       }
     })
 
@@ -1567,7 +1568,7 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath(`${name}.kcl`)
       )
-      await fs.writeFile(path.join(testDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(testDir, 'main.kcl'), new Uint8Array(testFileData))
     })
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1703,7 +1704,7 @@ test(
         executorInputPath('cylinder-inches.kcl')
       )
       const finalPath = path.join(bracketDir, 'main.kcl')
-      await fs.writeFile(finalPath, testFileData)
+      await fs.writeFile(finalPath, new Uint8Array(testFileData))
     })
 
     await homePage.openProject(projectName)
@@ -1736,7 +1737,7 @@ test(
       const testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
       )
-      await fs.writeFile(path.join(nestedDir, 'main.kcl'), testFileData)
+      await fs.writeFile(path.join(nestedDir, 'main.kcl'), new Uint8Array(testFileData))
 
       await fs.writeFile(
         path.join(bracketDir, 'main.kcl'),

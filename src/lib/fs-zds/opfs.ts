@@ -238,7 +238,7 @@ const readFile = async <T extends ReadFileOptions>(
       return (await file.text()) as ReadFileReturn<T>
     }
 
-    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
+    return (await file.bytes()) as ReadFileReturn<T>
   }
 
   return Promise.reject()
@@ -295,7 +295,6 @@ const writeFile = async (
 ) => {
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
-  console.log(parent)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
@@ -303,7 +302,9 @@ const writeFile = async (
     create: true,
   })
   const writer = await (await handleFile).createWritable()
-  await writer.write(data)
+  console.log('xxxxxxxssssssss', data)
+  console.trace()
+  await writer.write(new Blob([data], { type: 'application/octet-stream' }))
   await writer.close()
 
   // Update parent directory's metadata, since OPFS doesn't support tracking it.
