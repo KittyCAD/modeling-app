@@ -772,6 +772,37 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'StdLibCall' && props.item.name === 'subtract2d'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (props.item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(props.item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
+
+                  if (err(result)) {
+                    // Additional error logging for debugging purposes
+                    // Main error handling (toasts) is already done in exportSketchToDxf
+                    console.error('DXF export failed:', result.message)
+                  } else {
+                    console.log('DXF export completed successfully')
+                  }
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
+            </ContextMenuItem>,
+          ]
+        : []),
       ...(props.item.type === 'StdLibCall' ||
       props.item.type === 'VariableDeclaration'
         ? [
