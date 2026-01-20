@@ -53,9 +53,6 @@ export function ClientSideFileDropper({
     const files = e.dataTransfer.files
     const file = files[0]
     if (!file) return
-
-    console.log('Dropped file:', file.name, 'type:', file.type)
-
     if (!ImageManager.isSupportedImageFile(file)) {
       toast.error(`Unsupported image format. Supported: png, jpg, svg, webp`)
       return

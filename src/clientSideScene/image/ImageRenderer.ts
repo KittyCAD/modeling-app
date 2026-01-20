@@ -7,9 +7,10 @@ import {
   PlaneGeometry,
   Texture,
 } from 'three'
-import type {
-  ImageManager,
-  ImageEntry,
+import {
+  type ImageManager,
+  type ImageEntry,
+  getImageFilePath,
 } from '@src/clientSideScene/image/ImageManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
@@ -50,33 +51,36 @@ export class ImageRenderer {
   }
 
   private readonly updateImages = async () => {
-    const images = await this.imageManager.getImages()
+    const images = this.imageManager.getImages()
 
-    for (const image of images) {
-      let mesh = this.meshes.get(image.path)
-      if (!mesh) {
-        mesh = this.createImageMesh(image)
-        if (mesh) {
-          this.meshes.set(image.path, mesh)
-          this.group.add(mesh)
+    if (images) {
+      for (const image of images.list) {
+        let mesh = this.meshes.get(image.fileName)
+        if (!mesh) {
+          mesh = this.createImageMesh(image, images.projectPath)
+          if (mesh) {
+            this.meshes.set(image.fileName, mesh)
+            this.group.add(mesh)
+          }
         }
-      }
-      if (mesh) {
-        mesh.visible = image.visible
-        mesh.scale.set(image.width, image.height, 1)
-        mesh.position.set(image.x, image.y, 0)
-        mesh.rotation.z = image.rotation ?? 0
-        console.log(image.x, image.y)
+        if (mesh) {
+          mesh.visible = image.visible
+          mesh.scale.set(image.width, image.height, 1)
+          mesh.position.set(image.x, image.y, 0)
+          mesh.rotation.z = image.rotation ?? 0
+          console.log(image.x, image.y)
+        }
       }
     }
 
+    const imageList = images?.list || []
     const unusedMeshes = Array.from(this.meshes)
-      .filter(([path]) => !images.some((image) => image.path === path))
+      .filter(([path]) => !imageList.some((image) => image.fileName === path))
       .map(([_path, mesh]) => mesh)
     this.disposeMeshes(unusedMeshes)
   }
 
-  private createImageMesh(image: ImageEntry): ImageMesh {
+  private createImageMesh(image: ImageEntry, projectPath: string): ImageMesh {
     const material = new MeshBasicMaterial({
       transparent: true,
       side: DoubleSide,
@@ -88,34 +92,35 @@ export class ImageRenderer {
     mesh.userData = {
       image,
     }
-    mesh.name = `ReferenceImage_${image.path}`
+    mesh.name = `ReferenceImage_${image.fileName}`
     mesh.layers.set(SKETCH_LAYER)
     mesh.renderOrder = 999
     mesh.scale.set(image.width, image.height, 1)
     mesh.position.set(image.x, image.y, 0.1)
     mesh.rotation.z = image.rotation ?? 0
 
-    this.imageManager
-      .getImageFullPath(image.path)
-      .then(async (fullPath) => {
-        try {
-          let texture = this.loadedTextures.get(image.path)
-          if (!texture) {
-            texture = await this.loadTexture(fullPath)
-            this.loadedTextures.set(image.path, texture)
-          }
-          material.map = texture
-          material.needsUpdate = true
-        } catch (error) {
-          console.error(`Failed to load image: ${image.path}`, error)
-          return undefined
-        }
-      })
-      .catch((e) => {
-        console.error(e)
-      })
+    const fullImagePath = getImageFilePath(projectPath, image.fileName)
+    void this.setImageTexture(fullImagePath, image, material)
 
     return mesh
+  }
+
+  private async setImageTexture(
+    fullImagePath: string,
+    image: ImageEntry,
+    material: MeshBasicMaterial
+  ) {
+    try {
+      let texture = this.loadedTextures.get(image.fileName)
+      if (!texture) {
+        texture = await this.loadTexture(fullImagePath)
+        this.loadedTextures.set(image.fileName, texture)
+      }
+      material.map = texture
+      material.needsUpdate = true
+    } catch (error) {
+      console.error(`Failed to load image: ${image.fileName}`, error)
+    }
   }
 
   private async loadTexture(path: string): Promise<Texture> {

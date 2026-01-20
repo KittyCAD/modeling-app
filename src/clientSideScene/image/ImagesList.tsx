@@ -16,22 +16,22 @@ export function ImagesList() {
     modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
 
   useEffect(() => {
-    imageManager.getImages().then(setImages).catch(console.error)
+    setImages(imageManager.getImages()?.list || [])
     // Subscribe to imagesChanged signal to refresh when images are added/deleted
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageManager.imagesChanged.value])
 
   const handleVisibilityToggle = useCallback(
     async (imagePath: string) => {
-      const image = images.find((img) => img.path === imagePath)
+      const image = images.find((img) => img.fileName === imagePath)
       if (!image) return
 
       const newVisibility = !(image.visible ?? true)
-      await imageManager.setImageVisibility(imagePath, newVisibility)
+      await imageManager.updateImage(imagePath, { visible: newVisibility })
 
       setImages((prev) =>
         prev.map((img) =>
-          img.path === imagePath ? { ...img, visible: newVisibility } : img
+          img.fileName === imagePath ? { ...img, visible: newVisibility } : img
         )
       )
     },
@@ -40,15 +40,15 @@ export function ImagesList() {
 
   const handleLockToggle = useCallback(
     async (imagePath: string) => {
-      const image = images.find((img) => img.path === imagePath)
+      const image = images.find((img) => img.fileName === imagePath)
       if (!image) return
 
       const newLocked = !(image.locked ?? false)
-      await imageManager.setImageLocked(imagePath, newLocked)
+      await imageManager.updateImage(imagePath, { locked: newLocked })
 
       setImages((prev) =>
         prev.map((img) =>
-          img.path === imagePath ? { ...img, locked: newLocked } : img
+          img.fileName === imagePath ? { ...img, locked: newLocked } : img
         )
       )
     },
@@ -58,7 +58,7 @@ export function ImagesList() {
   const handleDelete = useCallback(async (imagePath: string) => {
     try {
       await imageManager.deleteImage(imagePath)
-      setImages((prev) => prev.filter((img) => img.path !== imagePath))
+      setImages((prev) => prev.filter((img) => img.fileName !== imagePath))
       toast.success(`Deleted image: ${imagePath}`)
     } catch (error) {
       console.error('Failed to delete image:', error)
@@ -68,7 +68,7 @@ export function ImagesList() {
 
   const handleFocus = useCallback(
     (imagePath: string) => {
-      const image = images.find((img) => img.path === imagePath)
+      const image = images.find((img) => img.fileName === imagePath)
       if (!image) {
         return
       }
@@ -123,7 +123,7 @@ export function ImagesList() {
       </div>
       {images.map((image) => (
         <ImageItem
-          key={image.path}
+          key={image.fileName}
           image={image}
           onVisibilityToggle={handleVisibilityToggle}
           onLockToggle={handleLockToggle}
@@ -158,7 +158,7 @@ function ImageItem({
     <ContextMenuItem
       key="delete"
       icon="close"
-      onClick={() => void onDelete(image.path)}
+      onClick={() => void onDelete(image.fileName)}
     >
       Delete
     </ContextMenuItem>,
@@ -168,7 +168,7 @@ function ImageItem({
       <ContextMenuItem
         key="focus"
         icon="search"
-        onClick={() => onFocus(image.path)}
+        onClick={() => onFocus(image.fileName)}
       >
         Focus
       </ContextMenuItem>
@@ -183,10 +183,10 @@ function ImageItem({
       <ContextMenu menuTargetElement={itemRef} items={contextMenuItems} />
       <div className="flex-1 flex items-center gap-2 min-w-0">
         <CustomIcon name="file" className="w-6 h-6 block flex-shrink-0" />
-        <span className="text-sm truncate">{image.path}</span>
+        <span className="text-sm truncate">{image.fileName}</span>
       </div>
       <button
-        onClick={() => void onLockToggle(image.path)}
+        onClick={() => void onLockToggle(image.fileName)}
         className={`p-0 m-0 border-transparent dark:border-transparent transition-opacity ${
           locked
             ? 'opacity-100'
@@ -201,7 +201,7 @@ function ImageItem({
         />
       </button>
       <button
-        onClick={() => void onVisibilityToggle(image.path)}
+        onClick={() => void onVisibilityToggle(image.fileName)}
         className={`p-0 m-0 border-transparent dark:border-transparent transition-opacity ${
           visible
             ? 'opacity-0 pointer-events-none group-hover/item:opacity-100 group-hover/item:pointer-events-auto'

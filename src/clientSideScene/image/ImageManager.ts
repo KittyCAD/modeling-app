@@ -1,10 +1,9 @@
 import { signal } from '@preact/signals-core'
-import type { Coords2d } from '@src/lang/util'
 import { joinOSPaths } from '@src/lib/paths'
 import type { settingsActor } from '@src/lib/singletons'
 
-export const IMAGES_FOLDER = 'zds_images'
-const CONTENT_FILE = 'images.json'
+export const IMAGES_FOLDER_NAME = 'zds_images'
+const IMAGES_JSON_FILE_NAME = 'images.json'
 const SUPPORTED_IMAGE_EXTENSIONS = new Set([
   'png',
   'jpg',
@@ -14,7 +13,7 @@ const SUPPORTED_IMAGE_EXTENSIONS = new Set([
 ])
 
 export interface ImageEntry {
-  path: string
+  fileName: string
   visible: boolean
   x: number
   y: number
@@ -24,110 +23,78 @@ export interface ImageEntry {
   locked?: boolean
 }
 
-interface ImageContent {
+interface ImagesJSON {
   images: ImageEntry[]
 }
 
 type SettingsActor = typeof settingsActor
 
 export class ImageManager {
-  /**
-   * Signal that increments whenever images are added, deleted, or modified
-   */
-  readonly imagesChanged = signal(0)
-
-  private projectPath: Promise<string> | string
-  private projectPathResolve: Function | undefined
-
-  private images: ImageEntry[] = []
-
-  constructor() {
-    this.projectPath = new Promise((resolve) => {
-      this.projectPathResolve = resolve
-    })
-  }
-
-  // subscribes to settingsActor for project path
-  public init(settingsActor: SettingsActor) {
-    let currentPathValue = ''
-    settingsActor.subscribe((state) => {
-      const newPath = state.context.currentProject?.path ?? ''
-      if (newPath !== currentPathValue) {
-        if (newPath) {
-          // new valid project path -> resolve promise
-          currentPathValue = newPath
-          if (this.projectPathResolve) {
-            this.projectPathResolve(newPath)
-            this.projectPathResolve = undefined
-          }
-          this.projectPath = newPath
-        } else {
-          // Path became falsy (user closed the project) ->
-          // start waiting for a new valid path (when user opens a project)
-          currentPathValue = ''
-          this.projectPath = new Promise((resolve) => {
-            this.projectPathResolve = resolve
-          })
-        }
-        this.imagesChanged.value++
-      }
-    })
-  }
-
-  private async getImagesFolderPath(): Promise<string> {
-    const projectPath = await this.projectPath
-    return joinOSPaths(projectPath, IMAGES_FOLDER)
-  }
-
-  private async getContentFilePath(): Promise<string> {
-    const imagesFolderPath = await this.getImagesFolderPath()
-    return joinOSPaths(imagesFolderPath, CONTENT_FILE)
-  }
-
-  async getImageFullPath(imagePath: string): Promise<string> {
-    const imagesFolderPath = await this.getImagesFolderPath()
-    return joinOSPaths(imagesFolderPath, imagePath)
-  }
-
   static isSupportedImageFile(file: File): boolean {
     const extension = file.name.split('.').pop()?.toLowerCase() ?? ''
     return SUPPORTED_IMAGE_EXTENSIONS.has(extension)
   }
 
-  private async ensureImagesFolderExists(): Promise<boolean> {
-    if (!window.electron) {
-      return false
-    }
-    const imagesFolderPath = await this.getImagesFolderPath()
-    if (!imagesFolderPath) {
-      return false
-    }
-    await window.electron.mkdir(imagesFolderPath, { recursive: true })
-    return true
+  /**
+   * Signal that increments whenever images are added, deleted, or modified
+   */
+  readonly imagesChanged = signal(0)
+
+  private images:
+    | {
+        projectPath: string
+        // imageFolderPath: string
+        // imageJSONPath: string
+        list: ImageEntry[]
+      }
+    | undefined
+
+  // Subscribes to settingsActor for project path. Not in the constructor because of circular dependencies..
+  public init(settingsActor: SettingsActor) {
+    let currentPathValue = ''
+    settingsActor.subscribe((state) => {
+      const projectPath = state.context.currentProject?.path ?? ''
+      if (projectPath !== currentPathValue) {
+        if (projectPath) {
+          readImagesJSON(projectPath)
+            .then((imageFileContent) => {
+              this.images = {
+                projectPath,
+                list: imageFileContent.images,
+              }
+              this.imagesChanged.value++
+            })
+            .catch((e) => {
+              console.error(e)
+            })
+        } else {
+          // Path became falsy (user closed the project) ->
+          // Start waiting for a new valid path (when user opens a project)
+          currentPathValue = ''
+          this.images = undefined
+          this.imagesChanged.value++
+        }
+      }
+    })
   }
 
-  private async readContentFile(): Promise<ImageContent> {
+  public getImages() {
+    return this.images
+  }
+
+  private async ensureImagesFolderExists(): Promise<
+    ImageManager['images'] | undefined
+  > {
     if (!window.electron) {
-      return {
-        images: [],
-      }
+      return
     }
 
-    const contentFilePath = await this.getContentFilePath()
-    if (!contentFilePath) {
-      return {
-        images: [],
-      }
+    if (!this.images?.projectPath) {
+      return
     }
-
-    try {
-      const content = await window.electron.readFile(contentFilePath, 'utf-8')
-      return JSON.parse(content) as ImageContent
-    } catch {
-      return {
-        images: [],
-      }
-    }
+    const imageFolderPath = getImageFolderPath(this.images.projectPath)
+    await window.electron.mkdir(imageFolderPath, { recursive: true })
+    return this.images
   }
 
   async addImage(
@@ -136,101 +103,66 @@ export class ImageManager {
   ): Promise<void> {
     if (!window.electron) return
 
-    const folderExists = await this.ensureImagesFolderExists()
-    if (!folderExists) return
+    // Write the image file into the image folder
+    const images = await this.ensureImagesFolderExists()
+    if (!images) return
 
-    const imagesFolderPath = await this.getImagesFolderPath()
-    if (!imagesFolderPath) return
+    if (!images.list.some((img) => img.fileName === file.name)) {
+      const arrayBuffer = await file.arrayBuffer()
+      const destinationPath = joinOSPaths(images.projectPath, file.name)
+      await window.electron.writeFile(
+        destinationPath,
+        new Uint8Array(arrayBuffer)
+      )
 
-    const arrayBuffer = await file.arrayBuffer()
-    const destinationPath = joinOSPaths(imagesFolderPath, file.name)
-    await window.electron.writeFile(
-      destinationPath,
-      new Uint8Array(arrayBuffer)
-    )
-
-    // add to JSON
-    const content = await this.readContentFile()
-    const existingIndex = content.images.findIndex(
-      (img) => img.path === file.name
-    )
-    if (existingIndex === -1) {
-      content.images.push({
-        path: file.name,
-        visible: true,
+      images.list.push({
+        fileName: file.name,
         x: position.x,
         y: position.y,
         width: position.width,
         height: position.height,
         rotation: 0,
+        visible: true,
         locked: false,
       })
-      await this.writeContentFile(content)
+
+      await this.saveToFile()
     }
-
-    // Notify listeners that images have changed
-    this.imagesChanged.value++
   }
 
-  async getImages(): Promise<ImageEntry[]> {
-    const content = await this.readContentFile()
-    return content.images
-  }
+  // async getImages(): Promise<ImageEntry[]> {
+  //   const content = await this.readContentFile()
+  //   return content.images
+  // }
 
-  async setImageVisibility(imagePath: string, visible: boolean): Promise<void> {
-    const content = await this.readContentFile()
-    const image = content.images.find((img) => img.path === imagePath)
-    if (image) {
-      if (image.visible !== visible) {
-        image.visible = visible
-        this.imagesChanged.value++
-        await this.writeContentFile(content)
+  async updateImage(
+    imageFileName: string,
+    imageUpdate: Partial<Omit<ImageEntry, 'fileName'>>
+  ) {
+    if (this.images) {
+      const index = this.images.list.findIndex(
+        (img) => img.fileName === imageFileName
+      )
+      if (index >= 0) {
+        this.images.list[index] = {
+          ...this.images.list[index],
+          ...imageUpdate,
+        }
+        await this.saveToFile()
+      } else {
+        console.error("Can't find image data, maybe project has been closed?")
       }
+    } else {
+      console.error("Can't find images list, maybe project has been closed?")
     }
   }
 
-  async setImageLocked(imagePath: string, locked: boolean): Promise<void> {
-    const content = await this.readContentFile()
-    const image = content.images.find((img) => img.path === imagePath)
-    if (image) {
-      if (image.locked !== locked) {
-        image.locked = locked
-        this.imagesChanged.value++
-        await this.writeContentFile(content)
-      }
-    }
-  }
-
-  async updateImagePosition(imagePath: string, position: Coords2d) {
-    const content = await this.readContentFile()
-    const image = content.images.find((img) => img.path === imagePath)
-    if (image) {
-      image.x = position[0]
-      image.y = position[1]
-
-      //this.imagesChanged.value++
-    }
-  }
-
-  public saveToFile() {
-    //
-  }
-
-    private async writeContentFile(content: ImageContent): Promise<void> {
+  async deleteImage(imageFileName: string): Promise<void> {
     if (!window.electron) return
-    const contentFilePath = await this.getContentFilePath()
-    if (!contentFilePath) {
-      return
-    }
-    const jsonString = JSON.stringify(content, null, 2)
-    await window.electron.writeFile(contentFilePath, jsonString)
-  }
-
-  async deleteImage(imagePath: string): Promise<void> {
-    if (!window.electron) return
+    if (!this.images) return
 
     // Delete the file
-    const fullPath = await this.getImageFullPath(imagePath)
+    const fullPath = getImageFilePath(this.images.projectPath, imageFileName)
     if (fullPath) {
       try {
         await window.electron.rm(fullPath)
@@ -239,12 +171,55 @@ export class ImageManager {
       }
     }
 
-    // Remove from content.json
-    const content = await this.readContentFile()
-    content.images = content.images.filter((img) => img.path !== imagePath)
-    await this.writeContentFile(content)
-
-    // Notify listeners that images have changed
-    this.imagesChanged.value++
+    this.images.list = this.images.list.filter(
+      (img) => img.fileName !== imageFileName
+    )
+    await this.saveToFile()
   }
+
+  public async saveToFile() {
+    if (!window.electron) return
+    if (!this.images) return
+
+    const fileContent: ImagesJSON = {
+      images: this.images.list
+    }
+
+    const imageFilePath = getImageJSONPath(this.images.projectPath)
+    const jsonString = JSON.stringify(fileContent, null, 2)
+    await window.electron.writeFile(imageFilePath, jsonString)
+  }
+}
+
+async function readImagesJSON(projectPath: string): Promise<ImagesJSON> {
+  if (!window.electron) {
+    return {
+      images: [],
+    }
+  }
+
+  const imageJSONPath = getImageJSONPath(projectPath)
+  try {
+    const content = await window.electron.readFile(imageJSONPath, 'utf-8')
+    return JSON.parse(content) as ImagesJSON
+  } catch (e) {
+    console.error(e)
+    return {
+      images: [],
+    }
+  }
+}
+
+// eg. "/Users/joe/Documents/zoo-design-studio-projects/untitled-104/zoo_images"
+function getImageFolderPath(projectPath: string) {
+  return joinOSPaths(projectPath, IMAGES_FOLDER_NAME)
+}
+
+// eg. "/Users/joe/Documents/zoo-design-studio-projects/untitled-104/zoo_images/images.json"
+function getImageJSONPath(projectPath: string) {
+  return joinOSPaths(getImageFolderPath(projectPath), IMAGES_JSON_FILE_NAME)
+}
+
+export function getImageFilePath(projectPath: string, imageFileName: string) {
+  return joinOSPaths(getImageFolderPath(projectPath), imageFileName)
 }

@@ -409,7 +409,7 @@ export class ImageTransformHandler {
 
   private updateImageMesh(image: ImageEntry) {
     const mesh = this._sceneInfra.scene.getObjectByName(
-      `ReferenceImage_${image.path}`
+      `ReferenceImage_${image.fileName}`
     )
     if (!mesh) {
       return
