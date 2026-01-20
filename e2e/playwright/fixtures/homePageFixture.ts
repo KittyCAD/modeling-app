@@ -105,7 +105,9 @@ export class HomePageFixture {
   }
 
   projectsLoaded = async () => {
-    await expect(this.projectSection).not.toHaveText('Loading your Projects...')
+    const projectLink = this.page.getByTestId('project-link').first()
+    const noProjects = this.page.getByTestId('projects-none')
+    await expect(projectLink.or(noProjects)).toBeVisible()
   }
 
   createAndGoToProject = async (projectTitle = 'untitled') => {

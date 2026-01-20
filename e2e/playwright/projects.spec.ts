@@ -994,6 +994,7 @@ test(
       await homePage.createAndGoToProject('Test')
       await scene.settled(cmdBar)
     })
+
     await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
       await toolbar.logoLink.click()
       await homePage.expectState({
@@ -1188,7 +1189,7 @@ test(
     })
 
     await test.step('Check we can still create a project', async () => {
-      await createProject({ name: 'new-project', page, returnHome: false })
+      await createProject({ name: 'new-project', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'new-project' })
       ).toBeVisible()

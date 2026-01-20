@@ -1056,11 +1056,13 @@ export async function createProject({
     if (returnHome) {
       await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
       await page.getByTestId('app-logo').click()
+    } else {
+      await closeOnboardingModalIfPresent(page)
     }
   })
 }
 
-async function goToHomePageFromModeling(page: Page) {
+export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }

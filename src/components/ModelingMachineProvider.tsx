@@ -676,8 +676,6 @@ export const ModelingMachineProvider = ({
               systemDeps
             )
             if (!planeData) {
-              console.trace('yo!!')
-
               const errorMessage = 'Could not determine plane/face information'
               toast.error(errorMessage)
               return reject(new Error(errorMessage))

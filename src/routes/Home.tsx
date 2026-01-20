@@ -526,7 +526,7 @@ function ProjectGrid({
               ))}
             </ul>
           ) : (
-            <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
+            <p data-testid="projects-none" className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
               No projects found
               {projects.length === 0
                 ? ', ready to make your first one?'

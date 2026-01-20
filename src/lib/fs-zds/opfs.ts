@@ -234,7 +234,7 @@ const readFile = async <T extends ReadFileOptions>(
       return (await file.text()) as ReadFileReturn<T>
     }
 
-    return (await file.bytes()) as ReadFileReturn<T>
+    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
   }
 
   return Promise.reject()
@@ -295,7 +295,6 @@ const writeFile = async (
     create: true,
   })
   const writer = await (await handleFile).createWritable()
-  console.trace()
   await writer.write(new Blob([data], { type: 'application/octet-stream' }))
   await writer.close()
 
@@ -355,9 +354,6 @@ const cp = async (
 ): Promise<undefined> => {
   const handleSource = await walk(sourcePath)
   if (handleSource === undefined) return Promise.reject('ENOENT')
-
-  let handleTarget = await walk(targetPath)
-  if (handleTarget === undefined) return Promise.reject('ENOENT')
 
   if (handleSource instanceof FileSystemFileHandle) {
     const data = await readFile(sourcePath)
