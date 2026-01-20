@@ -42,6 +42,7 @@ import {
   cleanupSketchSolveGroup,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { SKETCH_API_VERSION } from '@src/lib/constants'
 
 export const sketchSolveMachine = setup({
   types: {
@@ -402,7 +403,7 @@ export const sketchSolveMachine = setup({
         // Call deleteObjects with the selected segment IDs
         const result = await context.rustContext
           .deleteObjects(
-            0,
+            SKETCH_API_VERSION,
             context.sketchId,
             [],
             selectedIds,

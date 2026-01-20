@@ -174,15 +174,6 @@ export async function deleteFromSelection(
       sketchBlock.node.body.items.splice(nodeIndex, 1)
       return astClone
     }
-
-    // Whole sketch block deletion case
-    if (
-      typeof nodeIndex === 'number' &&
-      astClone.body[nodeIndex] !== undefined
-    ) {
-      astClone.body.splice(nodeIndex, 1)
-      return astClone
-    }
   }
 
   // Below is all AST-based deletion logic

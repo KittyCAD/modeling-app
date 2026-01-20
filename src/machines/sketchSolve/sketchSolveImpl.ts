@@ -49,6 +49,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { SKETCH_API_VERSION } from '@src/lib/constants'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -804,7 +805,7 @@ export async function deleteDraftEntities({
 
   try {
     const result = await context.rustContext.deleteObjects(
-      0,
+      SKETCH_API_VERSION,
       context.sketchId,
       constraintIds,
       segmentIds,
@@ -854,7 +855,7 @@ export async function deleteDraftEntitiesPromise({
 
   try {
     const result = await context.rustContext.deleteObjects(
-      0,
+      SKETCH_API_VERSION,
       context.sketchId,
       constraintIds,
       segmentIds,
