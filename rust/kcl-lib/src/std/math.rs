@@ -163,6 +163,23 @@ pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
     let exp: TyF64 = args.get_kw_arg("exp", &RuntimeType::count(), exec_state)?;
+    let exp_is_int = exp.n.fract() == 0.0;
+    if input.n < 0.0 && !exp_is_int {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Exponent must be an integer when input is negative, but it was {}",
+                exp.n
+            ),
+            vec![args.source_range],
+        )));
+    }
+    let valid_input = !(input.n == 0.0 && exp.n < 0.0);
+    if !valid_input {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Input cannot be 0 when exp < 0"),
+            vec![args.source_range],
+        )));
+    }
     let result = input.n.powf(exp.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
@@ -171,7 +188,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the arccosine of a number (in radians).
 pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
-    let in_range = (-1.0..1.0).contains(&input.n);
+    let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("The argument must be between -1 and 1, but it was {}", input.n),
@@ -186,7 +203,7 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the arcsine of a number (in radians).
 pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
-    let in_range = (-1.0..1.0).contains(&input.n);
+    let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("The argument must be between -1 and 1, but it was {}", input.n),
@@ -268,6 +285,13 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the base 10 logarithm of the number.
 pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
+    let valid_input = input.n > 0.0;
+    if !valid_input {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Input must be > 0, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
     let result = input.n.log10();
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
@@ -276,6 +300,13 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the natural logarithm of the number.
 pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
+    let valid_input = input.n > 0.0;
+    if !valid_input {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Input must be > 0, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
     let result = input.n.ln();
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
@@ -295,7 +326,22 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
-    let result = libm::acos(leg.min(hypotenuse) / hypotenuse).to_degrees();
+    let valid_hypotenuse = hypotenuse > 0.0;
+    if !valid_hypotenuse {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
+            vec![args.source_range],
+        )));
+    }
+    let ratio = leg.min(hypotenuse) / hypotenuse;
+    let in_range = (-1.0..=1.0).contains(&ratio);
+    if !in_range {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("The argument must be between -1 and 1, but it was {}", ratio),
+            vec![args.source_range],
+        )));
+    }
+    let result = libm::acos(ratio).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::degrees(),
@@ -308,7 +354,22 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
-    let result = libm::asin(leg.min(hypotenuse) / hypotenuse).to_degrees();
+    let valid_hypotenuse = hypotenuse > 0.0;
+    if !valid_hypotenuse {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
+            vec![args.source_range],
+        )));
+    }
+    let ratio = leg.min(hypotenuse) / hypotenuse;
+    let in_range = (-1.0..=1.0).contains(&ratio);
+    if !in_range {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("The argument must be between -1 and 1, but it was {}", ratio),
+            vec![args.source_range],
+        )));
+    }
+    let result = libm::asin(ratio).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::degrees(),
