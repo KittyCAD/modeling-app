@@ -218,6 +218,9 @@ pub struct Line {
 pub struct LineCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -246,6 +249,9 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

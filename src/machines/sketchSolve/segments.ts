@@ -433,17 +433,50 @@ class LineSegment implements SketchEntityUtils {
     const isHovered = straightSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Check previous mode BEFORE updating it
+    const previousMode = group.userData.mode as SegmentMode | undefined
+    const modeChanged = previousMode !== mode
     // Update userData for consistency
     group.userData.freedom = freedom
     group.userData.mode = mode
 
     // Update material dash pattern for construction geometry
     const isConstruction = mode === 'construction'
+
     if (straightSegmentBody.material instanceof LineMaterial) {
       straightSegmentBody.material.dashed = isConstruction
-      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
-      if (isConstruction) {
-        // Update segment start/end uniforms for screen-space dash calculation
+
+      // If mode changed, we need to set up or remove the custom shader
+      if (modeChanged) {
+        if (isConstruction) {
+          // Switching to construction: set up the custom shader
+          const lineStart = new Vector3(
+            input.start.x.value,
+            input.start.y.value,
+            0
+          )
+          const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
+          setupConstructionDashShader(
+            straightSegmentBody.material,
+            lineStart,
+            lineEnd,
+            `construction-dashed-${id}`
+          )
+        } else {
+          // Switching away from construction: remove the custom shader
+          delete (straightSegmentBody.material as any).onBeforeCompile
+          delete (straightSegmentBody.material as any).customProgramCacheKey
+        }
+        // Force shader recompilation when mode changes
+        straightSegmentBody.material.needsUpdate = true
+        if (
+          'program' in straightSegmentBody.material &&
+          straightSegmentBody.material.program
+        ) {
+          ;(straightSegmentBody.material as any).program = null
+        }
+      } else if (isConstruction) {
+        // Mode didn't change but we're in construction mode: just update uniforms
         const lineStart = new Vector3(
           input.start.x.value,
           input.start.y.value,
@@ -459,10 +492,8 @@ class LineSegment implements SketchEntityUtils {
             uniforms.uSegmentEnd.value = lineEnd
           }
         }
-      } else {
-        // When not dashed, don't set dash properties to 0 - just leave them or set to defaults
-        // Setting to 0 might interfere with shader compilation
       }
+
       straightSegmentBody.material.worldUnits = false
       // LineMaterial requires resolution to be set for proper rendering
       if (!straightSegmentBody.material.resolution) {
@@ -475,15 +506,6 @@ class LineSegment implements SketchEntityUtils {
           window.innerWidth,
           window.innerHeight
         )
-      }
-      // Force material update to recompile shader if needed
-      straightSegmentBody.material.needsUpdate = true
-      // Also mark the material as needing a program update for shader recompilation
-      if (
-        'program' in straightSegmentBody.material &&
-        straightSegmentBody.material.program
-      ) {
-        ;(straightSegmentBody.material as any).program = null
       }
     }
 
@@ -756,17 +778,48 @@ class ArcSegment implements SketchEntityUtils {
     const isHovered = arcSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Check previous mode BEFORE updating it
+    const previousMode = group.userData.mode as SegmentMode | undefined
+    const modeChanged = previousMode !== mode
     // Update userData for consistency
     group.userData.freedom = freedom
     group.userData.mode = mode
 
     // Update material dash pattern for construction geometry
     const isConstruction = mode === 'construction'
+
     if (arcSegmentBody.material instanceof LineMaterial) {
       arcSegmentBody.material.dashed = isConstruction
-      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
-      if (isConstruction) {
-        // Update arc center and start uniforms for screen-space dash calculation
+
+      // If mode changed, we need to set up or remove the custom shader
+      if (modeChanged) {
+        if (isConstruction) {
+          // Switching to construction: set up the custom shader
+          const arcCenter = new Vector3(centerX, centerY, 0)
+          const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+          setupConstructionArcDashShader(
+            arcSegmentBody.material,
+            arcCenter,
+            arcStart,
+            startAngle,
+            endAngle,
+            `construction-dashed-arc-${id}`
+          )
+        } else {
+          // Switching away from construction: remove the custom shader
+          delete (arcSegmentBody.material as any).onBeforeCompile
+          delete (arcSegmentBody.material as any).customProgramCacheKey
+        }
+        // Force shader recompilation when mode changes
+        arcSegmentBody.material.needsUpdate = true
+        if (
+          'program' in arcSegmentBody.material &&
+          arcSegmentBody.material.program
+        ) {
+          ;(arcSegmentBody.material as any).program = null
+        }
+      } else if (isConstruction) {
+        // Mode didn't change but we're in construction mode: just update uniforms
         const arcCenter = new Vector3(centerX, centerY, 0)
         const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
         const uniforms = (arcSegmentBody.material as any).uniforms
@@ -785,6 +838,7 @@ class ArcSegment implements SketchEntityUtils {
           }
         }
       }
+
       arcSegmentBody.material.worldUnits = false
       // LineMaterial requires resolution to be set for proper rendering
       if (!arcSegmentBody.material.resolution) {
@@ -797,15 +851,6 @@ class ArcSegment implements SketchEntityUtils {
           window.innerWidth,
           window.innerHeight
         )
-      }
-      // Force material update to recompile shader if needed
-      arcSegmentBody.material.needsUpdate = true
-      // Also mark the material as needing a program update for shader recompilation
-      if (
-        'program' in arcSegmentBody.material &&
-        arcSegmentBody.material.program
-      ) {
-        ;(arcSegmentBody.material as any).program = null
       }
     }
 

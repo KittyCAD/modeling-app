@@ -58,6 +58,7 @@ function createLineSegmentObject(
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -99,6 +100,7 @@ function createArcSegmentObject(
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -416,9 +418,9 @@ describe('getSegmentColor', () => {
   const TEXT_COLOR = 0xffffff // White
   const DRAFT_COLOR = 0x888888 // Grey
 
-  it('should return draft color when isDraft is true (highest priority)', () => {
+  it('should return draft color when mode is draft (highest priority)', () => {
     const color = getSegmentColor({
-      isDraft: true,
+      mode: 'draft',
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
@@ -429,7 +431,7 @@ describe('getSegmentColor', () => {
 
   it('should return hover color when isHovered is true (priority 2)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: true,
       isSelected: true,
       freedom: 'Conflict',
@@ -447,7 +449,7 @@ describe('getSegmentColor', () => {
 
   it('should return selection color when isSelected is true (priority 3)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
@@ -458,7 +460,7 @@ describe('getSegmentColor', () => {
 
   it('should return conflict color when freedom is Conflict (priority 4)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
@@ -469,7 +471,7 @@ describe('getSegmentColor', () => {
 
   it('should return unconstrained color when freedom is Free (priority 5)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
@@ -480,7 +482,7 @@ describe('getSegmentColor', () => {
 
   it('should return constrained color when freedom is Fixed (priority 6)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',
@@ -491,7 +493,7 @@ describe('getSegmentColor', () => {
 
   it('should return unconstrained color when freedom is null (default)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: null,
@@ -502,7 +504,7 @@ describe('getSegmentColor', () => {
 
   it('should return unconstrained color when freedom is undefined (default)', () => {
     const color = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
     })
@@ -512,14 +514,14 @@ describe('getSegmentColor', () => {
 
   it('should prioritize draft over all other states', () => {
     const color1 = getSegmentColor({
-      isDraft: true,
+      mode: 'draft',
       isHovered: true,
       isSelected: false,
       freedom: 'Fixed',
     })
 
     const color2 = getSegmentColor({
-      isDraft: true,
+      mode: 'draft',
       isHovered: false,
       isSelected: true,
       freedom: 'Conflict',
@@ -531,14 +533,14 @@ describe('getSegmentColor', () => {
 
   it('should prioritize hover over selection and freedom', () => {
     const hoverColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: true,
       isSelected: true,
       freedom: 'Fixed',
     })
 
     const selectionColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: true,
       freedom: 'Fixed',
@@ -550,14 +552,14 @@ describe('getSegmentColor', () => {
 
   it('should prioritize selection over freedom', () => {
     const selectedColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: true,
       freedom: 'Free',
     })
 
     const unselectedColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
@@ -569,21 +571,21 @@ describe('getSegmentColor', () => {
 
   it('should prioritize conflict over free and fixed', () => {
     const conflictColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Conflict',
     })
 
     const freeColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Free',
     })
 
     const fixedColor = getSegmentColor({
-      isDraft: false,
+      mode: 'normal',
       isHovered: false,
       isSelected: false,
       freedom: 'Fixed',

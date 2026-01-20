@@ -194,6 +194,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                 ))
             })?,
         },
+        construction: None,
     };
     // Order of ID generation is important.
     let start_object_id = exec_state.next_object_id();
@@ -403,6 +404,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                 ))
             })?,
         },
+        construction: None,
     };
 
     // Order of ID generation is important.
