@@ -123,7 +123,11 @@ pub struct Path {
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The sweep, if any, that this Path serves as the base path for.
+    /// corresponds to `path_id` on the Sweep.
     pub sweep_id: Option<ArtifactId>,
+    /// The sweep, if any, that this Path serves as the trajectory for.
+    pub sweep_id_trajectory: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -351,7 +355,8 @@ pub struct Helix {
     /// add axes to the graph.
     pub axis_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    pub sweep_id: Option<ArtifactId>,
+    /// The sweep, if any, that this Helix serves as the trajectory for.
+    pub sweep_id_trajectory: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -495,6 +500,7 @@ impl Path {
             return Some(new);
         };
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
+        merge_opt_id(&mut self.sweep_id_trajectory, new.sweep_id_trajectory);
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
@@ -573,7 +579,7 @@ impl Helix {
             return Some(new);
         };
         merge_opt_id(&mut self.axis_id, new.axis_id);
-        merge_opt_id(&mut self.sweep_id, new.sweep_id);
+        merge_opt_id(&mut self.sweep_id_trajectory, new.sweep_id_trajectory);
 
         None
     }
@@ -886,6 +892,7 @@ fn artifacts_to_update(
                 plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
+                sweep_id_trajectory: None,
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
@@ -1007,6 +1014,7 @@ fn artifacts_to_update(
                         plane_id: original_path.plane_id,
                         seg_ids: Vec::new(),
                         sweep_id: None,
+                        sweep_id_trajectory: None,
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
@@ -1120,12 +1128,12 @@ fn artifacts_to_update(
                 match trajectory_artifact {
                     Artifact::Path(path) => {
                         let mut new_path = path.clone();
-                        new_path.sweep_id = Some(id);
+                        new_path.sweep_id_trajectory = Some(id);
                         return_arr.push(Artifact::Path(new_path));
                     }
                     Artifact::Helix(helix) => {
                         let mut new_helix = helix.clone();
-                        new_helix.sweep_id = Some(id);
+                        new_helix.sweep_id_trajectory = Some(id);
                         return_arr.push(Artifact::Helix(new_helix));
                     }
                     _ => {}
@@ -1446,7 +1454,7 @@ fn artifacts_to_update(
                 id,
                 axis_id: Some(cylinder_id),
                 code_ref,
-                sweep_id: None,
+                sweep_id_trajectory: None,
             })];
             return Ok(return_arr);
         }
@@ -1455,7 +1463,7 @@ fn artifacts_to_update(
                 id,
                 axis_id: None,
                 code_ref,
-                sweep_id: None,
+                sweep_id_trajectory: None,
             })];
             return Ok(return_arr);
         }
@@ -1465,7 +1473,7 @@ fn artifacts_to_update(
                 id,
                 axis_id: Some(edge_id),
                 code_ref,
-                sweep_id: None,
+                sweep_id_trajectory: None,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
