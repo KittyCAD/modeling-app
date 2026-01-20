@@ -126,6 +126,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let start: Vec<KclValue> = args.get_kw_arg("start", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add midpoint.
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
+    let construction: bool = args
+        .get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?
+        .unwrap_or(false);
     let [start_x_value, start_y_value]: [KclValue; 2] = start.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "start must be a 2D point".to_owned(),
@@ -204,6 +207,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             ctor: Box::new(ctor),
             start_object_id,
             end_object_id,
+            construction,
         },
         meta: vec![args.source_range.into()],
     };
@@ -296,6 +300,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add interior.
     let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let construction: bool = args
+        .get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?
+        .unwrap_or(false);
 
     let [start_x_value, start_y_value]: [KclValue; 2] = start.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
@@ -413,6 +420,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             start_object_id,
             end_object_id,
             center_object_id,
+            construction,
         },
         meta: vec![args.source_range.into()],
     };

@@ -210,6 +210,7 @@ pub struct Line {
     // The frontend should only display handles for the constructor inputs if the ctor is applicable.
     // (Or because they are the (locked) start/end of the segment).
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -236,6 +237,7 @@ pub struct Arc {
     // Invariant: Arc or TangentArc
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
