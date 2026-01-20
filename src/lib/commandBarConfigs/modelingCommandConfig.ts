@@ -53,6 +53,7 @@ import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -370,6 +371,10 @@ export type ModelingCommandSchema = {
   }
   'Flip Surface': {
     surface: Selections
+  }
+  'Boolean Split': {
+    targets: Selections
+    merge: boolean
   }
 }
 
@@ -1194,6 +1199,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Split': {
+    description:
+      "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+    icon: 'split',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addSplit({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Split']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      targets: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      merge: {
+        inputType: 'boolean',
+        required: true,
+        defaultValue: true,
+        hidden: true, // TODO: revisit once KCL supports false
+        skip: true,
       },
     },
   },

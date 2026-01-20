@@ -74,6 +74,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -223,6 +224,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Boolean Intersect'
       data: ModelingCommandSchema['Boolean Intersect']
+    }
+  | {
+      type: 'Boolean Split'
+      data: ModelingCommandSchema['Boolean Split']
     }
   | {
       type: 'Pattern Circular 3D'
@@ -3691,7 +3696,48 @@ export const modelingMachine = setup({
           wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    boolSplitAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Split'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addSplit({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
         await updateModelingState(
           result.modifiedAst,
@@ -4001,6 +4047,10 @@ export const modelingMachine = setup({
 
         'Boolean Intersect': {
           target: 'Boolean intersecting',
+        },
+
+        'Boolean Split': {
+          target: 'Boolean splitting',
         },
 
         'Pattern Circular 3D': {
@@ -6053,6 +6103,27 @@ export const modelingMachine = setup({
         id: 'boolIntersectAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Boolean Intersect') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Boolean splitting': {
+      invoke: {
+        src: 'boolSplitAstMod',
+        id: 'boolSplitAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Split') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
