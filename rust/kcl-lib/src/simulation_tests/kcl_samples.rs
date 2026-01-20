@@ -11,7 +11,6 @@ use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
 use super::Test;
-use crate::test_server::ExportAction;
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
@@ -73,20 +72,7 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-
-    // Skip GLTF export for models that currently crash the exporter, see
-    // https://github.com/KittyCAD/format/issues/812
-    let ignored_samples = ["saturn-v", "gridfinity-bins-stacking-lip"];
-    let ignore = ignored_samples
-        .iter()
-        .any(|name| dir_path.ends_with(format!("kcl-samples/{name}")))
-        || dir_path.to_string_lossy().contains("internal");
-    let exports = if ignore {
-        vec![ExportAction::Step]
-    } else {
-        vec![ExportAction::Step, ExportAction::Gltf]
-    };
-    super::execute_test(&t, true, exports).await;
+    super::execute_test(&t, true, true).await;
 }
 
 #[test]
@@ -110,7 +96,6 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     // directory so that they can be used as inputs for the next run.
     // First ensure each directory exists.
     let public_screenshot_dir = INPUTS_DIR.join("screenshots");
-    let public_model_dir = INPUTS_DIR.join("models");
     for dir in [&public_screenshot_dir] {
         if !dir.exists() {
             std::fs::create_dir_all(dir).unwrap();
@@ -126,13 +111,6 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
             public_screenshot_dir.join(format!("{}.png", &tests.name)),
         )
         .unwrap();
-        let model_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_MODEL_NAME);
-        if model_file.exists() {
-            let dst = public_model_dir.join(format!("{}.glb", &tests.name));
-            fs_err::rename(model_file, dst).unwrap();
-        } else {
-            eprintln!("WARNING: Missing model for test {}", tests.name);
-        }
     }
 
     // Update the README.md with the new screenshots.
@@ -204,7 +182,7 @@ fn kcl_samples_inputs() -> Vec<Test> {
             // Skip hidden directories.
             continue;
         }
-        if matches!(dir_name_str.as_ref(), "screenshots" | "models") {
+        if matches!(dir_name_str.as_ref(), "screenshots") {
             // Skip output directories.
             continue;
         }
