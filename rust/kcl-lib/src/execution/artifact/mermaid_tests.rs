@@ -216,7 +216,7 @@ impl Artifact {
             Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
                 let mut ids = Vec::new();
-                if let Some(sweep_id) = a.sweep_id_trajectory {
+                if let Some(sweep_id) = a.trajectory_sweep_id {
                     ids.push(sweep_id);
                 }
                 ids
