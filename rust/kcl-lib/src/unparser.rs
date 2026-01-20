@@ -948,7 +948,15 @@ impl IfExpression {
         lines.push((0, "}".to_owned()));
         let out = lines
             .into_iter()
-            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .enumerate()
+            .map(|(idx, (ind, line))| {
+                let indentation = if ctxt == ExprContext::Pipe && idx == 0 {
+                    String::new()
+                } else {
+                    options.get_indentation(indentation_level + ind)
+                };
+                format!("{indentation}{}", line.trim())
+            })
             .collect::<Vec<_>>()
             .join("\n");
         buf.push_str(&out);
