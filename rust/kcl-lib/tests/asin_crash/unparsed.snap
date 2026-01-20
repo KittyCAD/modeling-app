@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing asin_crash.kcl
+---
+tAngle = 5deg
+thickness = 10
+
+a = (270deg - tAngle): number(_)
+x = asin(a)

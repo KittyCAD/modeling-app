@@ -1,0 +1,5 @@
+tAngle = 5deg
+thickness = 10
+
+a = (270deg - tAngle):number(_)
+x = asin(a)

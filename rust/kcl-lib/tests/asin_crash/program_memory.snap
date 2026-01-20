@@ -1,0 +1,41 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing asin_crash.kcl
+---
+{
+  "a": {
+    "type": "Number",
+    "value": 265.0,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    }
+  },
+  "tAngle": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
+    }
+  },
+  "thickness": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "x": {
+    "type": "Number",
+    "value": null,
+    "ty": {
+      "radians": null,
+      "type": "Known",
+      "type": "Angle"
+    }
+  }
+}
