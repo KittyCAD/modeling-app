@@ -66,7 +66,7 @@ import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
-import { sendDeleteCommand } from '@src/lib/featureTree'
+import { prepareEditCommand, sendDeleteCommand } from '@src/lib/featureTree'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
@@ -583,13 +583,19 @@ const OperationItem = (props: OperationProps) => {
       props.item.type === 'VariableDeclaration' ||
       props.item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'enterEditFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
-      })
+      const artifact =
+        getArtifactFromRange(
+          props.item.sourceRange,
+          systemDeps.kclManager.artifactGraph
+        ) ?? undefined
+      prepareEditCommand({
+        artifactGraph: systemDeps.kclManager.artifactGraph,
+        code: systemDeps.kclManager.code,
+        commandBarSend: commandBarActor.send,
+        operation: props.item,
+        rustContext: systemDeps.rustContext,
+        artifact,
+      }).catch((e) => toast.error(e))
     }
   }
 

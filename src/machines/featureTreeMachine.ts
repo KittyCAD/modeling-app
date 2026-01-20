@@ -1,11 +1,7 @@
-import toast from 'react-hot-toast'
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, setup } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import type { EnterEditFlowProps } from '@src/lib/operations'
-import { enterEditFlow } from '@src/lib/operations'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -20,10 +16,6 @@ type FeatureTreeEvent =
   | {
       type: 'selectOperation'
       data: { targetSourceRange: SourceRange }
-    }
-  | {
-      type: 'enterEditFlow'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | {
       type: 'enterAppearanceFlow'
@@ -69,31 +61,6 @@ export const featureTreeMachine = setup({
   guards: {
     codePaneIsOpen: () => false,
   },
-  actors: {
-    prepareEditCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: CommandBarActorType['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterEditFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
-  },
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
@@ -134,11 +101,6 @@ export const featureTreeMachine = setup({
 
         selectOperation: {
           actions: ['saveTargetSourceRange', 'sendSelectionEvent'],
-        },
-
-        enterEditFlow: {
-          target: 'enteringEditFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterAppearanceFlow: {
@@ -295,54 +257,6 @@ export const featureTreeMachine = setup({
       },
 
       initial: 'enteringAppearanceFlow',
-    },
-
-    enteringEditFlow: {
-      states: {
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareEditCommand: {
-          invoke: {
-            src: 'prepareEditCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    context.kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: context.commandBarActor.send,
-                rustContext: context.rustContext,
-                code: context.kclManager.code,
-                artifactGraph: context.kclManager.artifactGraph,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'prepareEditCommand',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
     },
 
     goingToError: {

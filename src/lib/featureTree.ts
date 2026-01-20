@@ -8,6 +8,8 @@ import {
 } from '@src/lang/modifyAst/deleteSelection'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { err } from '@src/lib/trap'
+import { type CommandBarActorType } from '@src/machines/commandBarMachine'
+import { type EnterEditFlowProps, enterEditFlow } from '@src/lib/operations'
 
 export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
@@ -42,6 +44,26 @@ export function sendDeleteCommand(input: {
           reject(result)
           return
         }
+        resolve(result)
+      })
+      .catch(reject)
+  })
+}
+
+export function prepareEditCommand(
+  input: EnterEditFlowProps & {
+    commandBarSend: CommandBarActorType['send']
+  }
+) {
+  return new Promise((resolve, reject) => {
+    const { commandBarSend, ...editFlowProps } = input
+    enterEditFlow(editFlowProps)
+      .then((result) => {
+        if (err(result)) {
+          reject(result)
+          return
+        }
+        input.commandBarSend(result)
         resolve(result)
       })
       .catch(reject)
