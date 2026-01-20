@@ -346,8 +346,9 @@ class LineSegment implements SketchEntityUtils {
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-      dashed: isConstruction, // Enables USE_DASH macro for custom shader
-      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      dashed: isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
+      gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
       resolution: new Vector2(window.innerWidth, window.innerHeight),
     })
@@ -684,8 +685,9 @@ class ArcSegment implements SketchEntityUtils {
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-      dashed: isConstruction, // Enables USE_DASH macro for custom shader
-      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      dashed: isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
+      gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
       resolution: new Vector2(window.innerWidth, window.innerHeight),
     })

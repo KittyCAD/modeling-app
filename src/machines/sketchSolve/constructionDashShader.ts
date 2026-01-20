@@ -2,7 +2,7 @@ import type { Vector3 } from 'three'
 import type { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 /**
- * Sets up a custom screen-space dot-dash shader for arc construction geometry.
+ * Sets up a custom screen-space dashed shader for arc construction geometry.
  * This calculates distance along the arc curve using a constant centerline radius,
  * preventing skew that occurs when using per-fragment radius calculations.
  *
@@ -114,7 +114,7 @@ void main() {
       )
     }
 
-    // Replace the dashing logic with screen-space dot-dash pattern for arcs
+    // Replace vLineDistance (world-space) with screen-space distance calculation for arcs
     // Uses constant centerline radius to prevent skew across stroke width
     const dashPattern =
       /if\s*\(\s*mod\s*\(\s*vLineDistance[\s\S]*?\)\s*>\s*dashSize\s*\)\s*discard\s*;/
@@ -122,7 +122,7 @@ void main() {
       shader.fragmentShader = shader.fragmentShader.replace(
         dashPattern,
         `
-  // Screen-space dot-dash pattern for arcs: uses constant centerline radius
+  // Replace world-space vLineDistance with screen-space distance for arcs
   vec2 screenCenter = vScreenArcCenter;
   vec2 screenStart = vScreenArcStart;
   vec2 screenPos = gl_FragCoord.xy;
@@ -143,28 +143,9 @@ void main() {
   // Calculate distance along arc using constant radius (prevents skew)
   float screenDistance = R * abs(angleFromStart);
   
-  // Pattern definition (in screen pixels)
-  float longDash = 8.0;
-  float shortDash = 2.0;
-  float gap = 6.0;
-  float patternLength = longDash + gap + shortDash + gap;
-  
-  // Find position within pattern cycle
-  float patternOffset = mod(screenDistance, patternLength);
-  
-  // Determine if we're in a dash or gap
-  bool inDash = false;
-  if (patternOffset < longDash) {
-    inDash = true;
-  } else if (patternOffset < longDash + gap) {
-    inDash = false;
-  } else if (patternOffset < longDash + gap + shortDash) {
-    inDash = true;
-  } else {
-    inDash = false;
-  }
-  
-  if (!inDash) discard;
+  // Use LineMaterial's dashSize and gapSize uniforms (already available in shader)
+  // These are in world units, but we're using screen-space distance, so they work as pixels
+  if (mod(screenDistance, dashSize + gapSize) > dashSize) discard;
         `
       )
     } else {
@@ -173,7 +154,7 @@ void main() {
         /#ifdef\s+USE_DASH[\s\S]*?#endif/,
         `
 #ifdef USE_DASH
-  // Screen-space dot-dash pattern for arcs: uses constant centerline radius
+  // Replace world-space vLineDistance with screen-space distance for arcs
   vec2 screenCenter = vScreenArcCenter;
   vec2 screenStart = vScreenArcStart;
   vec2 screenPos = gl_FragCoord.xy;
@@ -186,23 +167,8 @@ void main() {
   if (angleFromStart < -3.14159) angleFromStart += 6.28318;
   float screenDistance = R * abs(angleFromStart);
   
-  float longDash = 8.0;
-  float shortDash = 2.0;
-  float gap = 6.0;
-  float patternLength = longDash + gap + shortDash + gap;
-  float patternOffset = mod(screenDistance, patternLength);
-  bool inDash = false;
-  if (patternOffset < longDash) {
-    inDash = true;
-  } else if (patternOffset < longDash + gap) {
-    inDash = false;
-  } else if (patternOffset < longDash + gap + shortDash) {
-    inDash = true;
-  } else {
-    inDash = false;
-  }
-  
-  if (!inDash) discard;
+  // Use LineMaterial's dashSize and gapSize uniforms (already available in shader)
+  if (mod(screenDistance, dashSize + gapSize) > dashSize) discard;
 #endif
         `
       )
@@ -211,7 +177,7 @@ void main() {
 }
 
 /**
- * Sets up a custom screen-space dot-dash shader for construction geometry.
+ * Sets up a custom screen-space dashed shader for construction geometry.
  * This function injects shader code that calculates dash patterns in screen pixels,
  * ensuring dashes stay constant size regardless of zoom level.
  *
@@ -308,15 +274,15 @@ void main() {
       )
     }
 
-    // Replace the dashing logic with screen-space dot-dash pattern
-    // Pattern: 8px long dash, 6px gap, 2px short dash, 6px gap (repeat = 22px total)
+    // Replace vLineDistance (world-space) with screen-space distance calculation
+    // This allows LineMaterial's built-in dashSize/gapSize to work in screen-space
     const dashPattern =
       /if\s*\(\s*mod\s*\(\s*vLineDistance[\s\S]*?\)\s*>\s*dashSize\s*\)\s*discard\s*;/
     if (dashPattern.test(shader.fragmentShader)) {
       shader.fragmentShader = shader.fragmentShader.replace(
         dashPattern,
         `
-  // Screen-space dot-dash pattern: 8px long, 6px gap, 2px short, 6px gap (22px repeat)
+  // Replace world-space vLineDistance with screen-space distance
   vec2 screenStart = vScreenSegmentStart;
   vec2 screenEnd = vScreenSegmentEnd;
   vec2 screenPos = gl_FragCoord.xy;
@@ -324,32 +290,9 @@ void main() {
   vec2 toFragment = screenPos - screenStart;
   float screenDistance = dot(toFragment, lineDir);
   
-  // Pattern definition (in screen pixels)
-  float longDash = 8.0;
-  float shortDash = 2.0;
-  float gap = 6.0;
-  float patternLength = longDash + gap + shortDash + gap;
-  
-  // Find position within pattern cycle
-  float patternOffset = mod(screenDistance, patternLength);
-  
-  // Determine if we're in a dash or gap
-  bool inDash = false;
-  if (patternOffset < longDash) {
-    // First long dash (0-8px)
-    inDash = true;
-  } else if (patternOffset < longDash + gap) {
-    // First gap (8-14px)
-    inDash = false;
-  } else if (patternOffset < longDash + gap + shortDash) {
-    // Short dash (14-16px)
-    inDash = true;
-  } else {
-    // Second gap (16-22px)
-    inDash = false;
-  }
-  
-  if (!inDash) discard;
+  // Use LineMaterial's dashSize and gapSize uniforms (already available in shader)
+  // These are in world units, but we're using screen-space distance, so they work as pixels
+  if (mod(screenDistance, dashSize + gapSize) > dashSize) discard;
         `
       )
     } else {
@@ -358,7 +301,7 @@ void main() {
         /#ifdef\s+USE_DASH[\s\S]*?#endif/,
         `
 #ifdef USE_DASH
-  // Screen-space dot-dash pattern: 8px long, 6px gap, 2px short, 6px gap (22px repeat)
+  // Replace world-space vLineDistance with screen-space distance
   vec2 screenStart = vScreenSegmentStart;
   vec2 screenEnd = vScreenSegmentEnd;
   vec2 screenPos = gl_FragCoord.xy;
@@ -366,24 +309,8 @@ void main() {
   vec2 toFragment = screenPos - screenStart;
   float screenDistance = dot(toFragment, lineDir);
   
-  float longDash = 8.0;
-  float shortDash = 2.0;
-  float gap = 6.0;
-  float patternLength = longDash + gap + shortDash + gap;
-  
-  float patternOffset = mod(screenDistance, patternLength);
-  bool inDash = false;
-  if (patternOffset < longDash) {
-    inDash = true;
-  } else if (patternOffset < longDash + gap) {
-    inDash = false;
-  } else if (patternOffset < longDash + gap + shortDash) {
-    inDash = true;
-  } else {
-    inDash = false;
-  }
-  
-  if (!inDash) discard;
+  // Use LineMaterial's dashSize and gapSize uniforms (already available in shader)
+  if (mod(screenDistance, dashSize + gapSize) > dashSize) discard;
 #endif
         `
       )
