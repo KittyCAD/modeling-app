@@ -53,6 +53,31 @@ function disposeObject(obj: Object3D): void {
 }
 
 function disposeMaterial(material: Material): void {
+  // Clean up custom shader properties before disposal
+  // This ensures shader programs and callbacks are properly released
+  // Note: delete is safe even if the property doesn't exist
+  if ('onBeforeCompile' in material) {
+    delete (material as any).onBeforeCompile
+  }
+  if ('customProgramCacheKey' in material) {
+    delete (material as any).customProgramCacheKey
+  }
+
+  // Clear any custom uniforms that might hold references
+  // (Three.js will handle standard uniforms, but custom ones from onBeforeCompile need cleanup)
+  // Note: Uniforms are stored in the shader object, not directly on material,
+  // but we clear them defensively in case they're accessible
+  if ('uniforms' in material && (material as any).uniforms) {
+    const uniforms = (material as any).uniforms
+    // Clear custom uniforms that we added (uSegmentStart, uSegmentEnd, uArcCenter, etc.)
+    if (uniforms.uSegmentStart) delete uniforms.uSegmentStart
+    if (uniforms.uSegmentEnd) delete uniforms.uSegmentEnd
+    if (uniforms.uArcCenter) delete uniforms.uArcCenter
+    if (uniforms.uArcStart) delete uniforms.uArcStart
+    if (uniforms.uArcStartAngle) delete uniforms.uArcStartAngle
+    if (uniforms.uArcEndAngle) delete uniforms.uArcEndAngle
+  }
+
   // Dispose of textures associated with the material
   // if we ever start using textures in the sketch scene
   material.dispose()
