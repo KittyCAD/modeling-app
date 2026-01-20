@@ -46,7 +46,7 @@ function findPlaneArtifactForSubtract2d(
   // Find which plane contains these paths by checking plane.pathIds
   for (const artifact of kclManager.artifactGraph.values()) {
     if (artifact.type !== 'plane') continue
-    if (!('pathIds' in artifact) || !Array.isArray(artifact.pathIds)) continue
+    if (!('pathIds' in artifact) || !isArray(artifact.pathIds)) continue
 
     // Check if this plane contains any of the sketch's paths
     const containsSketchPath = sketchPathIds.some((pathId) =>
