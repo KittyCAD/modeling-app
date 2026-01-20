@@ -29,7 +29,7 @@ import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 // Import and re-export pure utility functions
 import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import {
-  setupConstructionDashShader,
+  setupConstructionLineDashShader,
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
 
@@ -358,7 +358,7 @@ class LineSegment implements SketchEntityUtils {
     if (isConstruction) {
       const lineStart = new Vector3(startX, startY, 0)
       const lineEnd = new Vector3(endX, endY, 0)
-      setupConstructionDashShader(
+      setupConstructionLineDashShader(
         material,
         lineStart,
         lineEnd,
@@ -457,7 +457,7 @@ class LineSegment implements SketchEntityUtils {
             0
           )
           const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
-          setupConstructionDashShader(
+          setupConstructionLineDashShader(
             straightSegmentBody.material,
             lineStart,
             lineEnd,

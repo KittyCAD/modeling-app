@@ -210,7 +210,7 @@ void main() {
 }
 
 /**
- * Sets up a customized screen-space dashed shader for construction geometry.
+ * Sets up a customized screen-space dashed shader for line construction geometry.
  * This function injects shader code that calculates dash patterns in screen pixels,
  * ensuring dashes stay constant size regardless of zoom level.
  *
@@ -218,7 +218,7 @@ void main() {
  * Uses LineMaterial's built-in `dashSize` and `gapSize` uniforms, but replaces
  * world-space `vLineDistance` with screen-space distance calculations.
  */
-export function setupConstructionDashShader(
+export function setupConstructionLineDashShader(
   material: LineMaterial,
   segmentStart: Vector3,
   segmentEnd: Vector3,
