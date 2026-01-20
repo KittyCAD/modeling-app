@@ -65,6 +65,7 @@ export class ImageRenderer {
         mesh.visible = image.visible
         mesh.scale.set(image.width, image.height, 1)
         mesh.position.set(image.x, image.y, 0)
+        mesh.rotation.z = image.rotation ?? 0
         console.log(image.x, image.y)
       }
     }
@@ -95,6 +96,7 @@ export class ImageRenderer {
     mesh.renderOrder = 999
     mesh.scale.set(image.width, image.height, 1)
     mesh.position.set(image.x, image.y, 0.1)
+    mesh.rotation.z = image.rotation ?? 0
 
     this.imageManager
       .getImageFullPath(image.path)

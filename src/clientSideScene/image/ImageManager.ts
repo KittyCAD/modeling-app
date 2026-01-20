@@ -20,6 +20,7 @@ export interface ImageEntry {
   y: number
   width: number
   height: number
+  rotation?: number // radians
 }
 
 interface ImageContent {
@@ -170,6 +171,7 @@ export class ImageManager {
         y: position.y,
         width: position.width,
         height: position.height,
+        rotation: 0,
       })
       await this.writeContentFile(content)
     }

@@ -1,15 +1,18 @@
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ImageEntry } from '@src/clientSideScene/image/ImageManager'
-import type { PlaneGeometry } from 'three'
+import type { Object3D, PlaneGeometry } from 'three'
 import { Group, Mesh, MeshBasicMaterial } from 'three'
 import { RectangleUI } from '@src/clientSideScene/image/RectangleUI'
+import { getRotateCursor } from '@src/clientSideScene/image/cursorUtils'
 
 const UI_BLUE = 0x3b82f6
 const UI_Z_OFFSET = 0.2
 const HANDLE_SIZE_PX = 6
 const EDGE_HIT_THICKNESS_PX = 3
 const CORNER_HIT_SIZE_PX = 5
+const ROTATE_HIT_SIZE_PX = 18
+const ROTATE_HIT_OFFSET_PX = 6
 const HIT_AREA_OPACITY = 0.0
 const HIT_AREA_COLOR = 0x00ff00
 const UI_RENDER_ORDER = 1000
@@ -17,6 +20,7 @@ const UI_HANDLE_RENDER_ORDER = 1010
 
 export const IMAGE_TRANSFORM_CORNER = 'image-transform-corner'
 export const IMAGE_TRANSFORM_EDGE = 'image-transform-edge'
+export const IMAGE_TRANSFORM_ROTATE = 'image-transform-rotate'
 
 export class ImageTransformUI {
   public readonly container: Group
@@ -30,6 +34,12 @@ export class ImageTransformUI {
     left: Mesh<PlaneGeometry, MeshBasicMaterial>
   }
   private readonly _cornerHitAreas: {
+    topLeft: Mesh<PlaneGeometry, MeshBasicMaterial>
+    topRight: Mesh<PlaneGeometry, MeshBasicMaterial>
+    bottomLeft: Mesh<PlaneGeometry, MeshBasicMaterial>
+    bottomRight: Mesh<PlaneGeometry, MeshBasicMaterial>
+  }
+  private readonly _rotateHitAreas: {
     topLeft: Mesh<PlaneGeometry, MeshBasicMaterial>
     topRight: Mesh<PlaneGeometry, MeshBasicMaterial>
     bottomLeft: Mesh<PlaneGeometry, MeshBasicMaterial>
@@ -105,6 +115,24 @@ export class ImageTransformUI {
         target: 'bottom-right',
       }),
     }
+    this._rotateHitAreas = {
+      topLeft: this.createHitArea({
+        type: IMAGE_TRANSFORM_ROTATE,
+        target: 'top-left',
+      }),
+      topRight: this.createHitArea({
+        type: IMAGE_TRANSFORM_ROTATE,
+        target: 'top-right',
+      }),
+      bottomLeft: this.createHitArea({
+        type: IMAGE_TRANSFORM_ROTATE,
+        target: 'bottom-left',
+      }),
+      bottomRight: this.createHitArea({
+        type: IMAGE_TRANSFORM_ROTATE,
+        target: 'bottom-right',
+      }),
+    }
 
     this.container.add(this._fill.container)
     Object.values(this._edgeHitAreas).forEach((mesh) =>
@@ -115,6 +143,9 @@ export class ImageTransformUI {
       this.container.add(handle.container)
     }
     Object.values(this._cornerHitAreas).forEach((mesh) =>
+      this.container.add(mesh)
+    )
+    Object.values(this._rotateHitAreas).forEach((mesh) =>
       this.container.add(mesh)
     )
   }
@@ -155,6 +186,8 @@ export class ImageTransformUI {
     const handleSize = HANDLE_SIZE_PX * uiScale
     const edgeThickness = EDGE_HIT_THICKNESS_PX * uiScale
     const cornerHitSize = CORNER_HIT_SIZE_PX * uiScale
+    const rotateHitSize = ROTATE_HIT_SIZE_PX * uiScale
+    const rotateOffset = ROTATE_HIT_OFFSET_PX * uiScale
 
     this._fill.setSize(width, height)
 
@@ -176,6 +209,31 @@ export class ImageTransformUI {
     this._cornerHitAreas.bottomRight.scale.set(cornerHitSize, cornerHitSize, 1)
     this._cornerHitAreas.bottomRight.position.set(halfWidth, -halfHeight, 0)
 
+    this._rotateHitAreas.topLeft.scale.set(rotateHitSize, rotateHitSize, 1)
+    this._rotateHitAreas.topLeft.position.set(
+      -halfWidth - rotateOffset,
+      halfHeight + rotateOffset,
+      0
+    )
+    this._rotateHitAreas.topRight.scale.set(rotateHitSize, rotateHitSize, 1)
+    this._rotateHitAreas.topRight.position.set(
+      halfWidth + rotateOffset,
+      halfHeight + rotateOffset,
+      0
+    )
+    this._rotateHitAreas.bottomLeft.scale.set(rotateHitSize, rotateHitSize, 1)
+    this._rotateHitAreas.bottomLeft.position.set(
+      -halfWidth - rotateOffset,
+      -halfHeight - rotateOffset,
+      0
+    )
+    this._rotateHitAreas.bottomRight.scale.set(rotateHitSize, rotateHitSize, 1)
+    this._rotateHitAreas.bottomRight.position.set(
+      halfWidth + rotateOffset,
+      -halfHeight - rotateOffset,
+      0
+    )
+
     this._handles.topLeft.container.position.set(-halfWidth, halfHeight, 0)
     this._handles.topRight.container.position.set(halfWidth, halfHeight, 0)
     this._handles.bottomLeft.container.position.set(-halfWidth, -halfHeight, 0)
@@ -184,18 +242,18 @@ export class ImageTransformUI {
     for (const handle of Object.values(this._handles)) {
       handle.setSize(handleSize, handleSize)
     }
+    this.container.rotation.z = image.rotation ?? 0
   }
 }
 
-export function getImageTransformCursor(object: unknown): string | null {
-  if (!object || typeof object !== 'object') {
+export function getImageTransformCursor(
+  object: Object3D | undefined
+): string | null {
+  if (!object) {
     return null
   }
-  const target = object as {
-    userData?: { type?: string; target?: string }
-  }
-  if (target.userData?.type === IMAGE_TRANSFORM_EDGE) {
-    switch (target.userData.target) {
+  if (object.userData?.type === IMAGE_TRANSFORM_EDGE) {
+    switch (object.userData.target) {
       case 'left':
       case 'right':
         return 'ew-resize'
@@ -206,8 +264,8 @@ export function getImageTransformCursor(object: unknown): string | null {
         return null
     }
   }
-  if (target.userData?.type === IMAGE_TRANSFORM_CORNER) {
-    switch (target.userData.target) {
+  if (object.userData?.type === IMAGE_TRANSFORM_CORNER) {
+    switch (object.userData.target) {
       case 'top-left':
       case 'bottom-right':
         return 'nwse-resize'
@@ -218,5 +276,22 @@ export function getImageTransformCursor(object: unknown): string | null {
         return null
     }
   }
+  if (object.userData?.type === IMAGE_TRANSFORM_ROTATE) {
+    const image = object.parent?.userData.image as ImageEntry
+    if (image) {
+      const rotation = image.rotation ?? 0
+      const initialRotation = initialRotations[object.userData.target]
+      return getRotateCursor(initialRotation - rotation)
+    } else {
+      return 'rotate'
+    }
+  }
   return null
+}
+
+const initialRotations: Record<string, number> = {
+  'top-right': 0,
+  'top-left': -Math.PI / 2,
+  'bottom-left': Math.PI,
+  'bottom-right': Math.PI / 2,
 }

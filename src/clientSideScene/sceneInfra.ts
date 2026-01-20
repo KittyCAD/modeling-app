@@ -49,6 +49,7 @@ import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,
+  IMAGE_TRANSFORM_ROTATE,
 } from '@src/clientSideScene/image/ImageTransformUI'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
@@ -1103,12 +1104,13 @@ function isAxisObject(object: Object3D | undefined): boolean {
 }
 
 function getIntersectionPriority(object: Object3D | undefined): number {
-  if (!object) return 2
+  if (!object) return 3
   const type = object.userData?.type
   if (type === IMAGE_TRANSFORM_CORNER) return 0
   if (type === IMAGE_TRANSFORM_EDGE) return 1
-  if (isAxisObject(object)) return 3
-  return 2
+  if (type === IMAGE_TRANSFORM_ROTATE) return 2
+  if (isAxisObject(object)) return 4
+  return 3
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

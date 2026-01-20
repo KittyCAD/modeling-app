@@ -9,6 +9,7 @@ import { Vector2 } from 'three'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,
+  IMAGE_TRANSFORM_ROTATE,
   ImageTransformUI,
 } from '@src/clientSideScene/image/ImageTransformUI'
 
@@ -37,14 +38,24 @@ type ResizingInfo = {
     y: number
     width: number
     height: number
+    rotation: number
   }
   aspectRatio: number
   lastPointer?: Vector2
 }
 
-type ResizeModifiers = {
+type RotatingInfo = {
+  image: ImageEntry
+  startRotation: number
+  startAngle: number
+  center: Vector2
+  lastPointer?: Vector2
+}
+
+type ModifierState = {
   lockAspect: boolean
   center: boolean
+  snapRotation: boolean
 }
 
 export class ImageTransformHandler {
@@ -54,9 +65,11 @@ export class ImageTransformHandler {
   private _selected: ImageEntry | undefined
   private _dragging: DraggingInfo | undefined
   private _resizing: ResizingInfo | undefined
-  private _resizeModifiers: ResizeModifiers = {
+  private _rotating: RotatingInfo | undefined
+  private _modifierState: ModifierState = {
     lockAspect: true,
     center: false,
+    snapRotation: false,
   }
 
   private _ui: ImageTransformUI | undefined
@@ -68,9 +81,9 @@ export class ImageTransformHandler {
     this._sceneInfra.selectedSignal.subscribe(this.updateSelection)
     this._sceneInfra.camControls.cameraChange.add(this.updateUI)
     this._sceneInfra.baseUnitChange.add(this.updateUI)
-    globalThis.addEventListener('keydown', this.onResizeModifierChange)
-    globalThis.addEventListener('keyup', this.onResizeModifierChange)
-    globalThis.addEventListener('blur', this.onResizeModifierReset)
+    globalThis.addEventListener('keydown', this.onModifierChange)
+    globalThis.addEventListener('keyup', this.onModifierChange)
+    globalThis.addEventListener('blur', this.onModifierReset)
 
     this.updateSelection()
   }
@@ -80,6 +93,7 @@ export class ImageTransformHandler {
     if (!selected) {
       this._dragging = undefined
       this._resizing = undefined
+      this._rotating = undefined
     }
   }
 
@@ -104,10 +118,12 @@ export class ImageTransformHandler {
       } else {
         const image = selected?.object.parent?.userData.image as ImageEntry
         if (image) {
-          // Start dragging one of the resize handles
+          // Start dragging one of the transform handles
           const resizing =
             selected?.object.userData.type === IMAGE_TRANSFORM_EDGE ||
             selected?.object.userData.type === IMAGE_TRANSFORM_CORNER
+          const rotating =
+            selected?.object.userData.type === IMAGE_TRANSFORM_ROTATE
           if (resizing) {
             const target = selected?.object.userData.target as
               | ResizeTarget
@@ -123,13 +139,34 @@ export class ImageTransformHandler {
                 y: image.y,
                 width: image.width,
                 height: image.height,
+                rotation: image.rotation ?? 0,
               },
               aspectRatio: image.width / image.height,
               lastPointer: intersectionPoint.clone(),
             }
             this._dragging = undefined
+            this._rotating = undefined
             this.setSelected(image)
             this.applyResize(intersectionPoint)
+            return true
+          }
+          if (rotating) {
+            const center = new Vector2(image.x, image.y)
+            const startAngle = Math.atan2(
+              intersectionPoint.y - center.y,
+              intersectionPoint.x - center.x
+            )
+            this._rotating = {
+              image,
+              startRotation: image.rotation ?? 0,
+              startAngle,
+              center,
+              lastPointer: intersectionPoint.clone(),
+            }
+            this._dragging = undefined
+            this._resizing = undefined
+            this.setSelected(image)
+            this.applyRotation(intersectionPoint)
             return true
           }
         }
@@ -161,17 +198,23 @@ export class ImageTransformHandler {
         this._resizing.lastPointer = intersectionPoint.clone()
         this.applyResize(intersectionPoint)
         return true
+      } else if (this._rotating) {
+        this._rotating.lastPointer = intersectionPoint.clone()
+        this.applyRotation(intersectionPoint)
+        return true
       }
     }
     return false
   }
 
   public processDragEnd() {
-    if (this._dragging || this._resizing) {
-      const image = this._dragging?.image ?? this._resizing?.image
+    if (this._dragging || this._resizing || this._rotating) {
+      const image =
+        this._dragging?.image ?? this._resizing?.image ?? this._rotating?.image
       this.setSelected(image)
       this._dragging = undefined
       this._resizing = undefined
+      this._rotating = undefined
       void this._imageManager.saveToFile()
       return true
     } else {
@@ -213,29 +256,46 @@ export class ImageTransformHandler {
     this._ui.update(this._selected)
   }
 
-  private readonly onResizeModifierChange = (event: KeyboardEvent) => {
-    const newModifiers: ResizeModifiers = {
+  private readonly onModifierChange = (event: KeyboardEvent) => {
+    const newModifiers: ModifierState = {
       lockAspect: !event.ctrlKey,
       center: event.altKey,
+      snapRotation: event.shiftKey,
     }
     const changed =
-      newModifiers.lockAspect !== this._resizeModifiers.lockAspect ||
-      newModifiers.center !== this._resizeModifiers.center
-    this._resizeModifiers = newModifiers
-    if (changed && this._resizing?.lastPointer) {
+      newModifiers.lockAspect !== this._modifierState.lockAspect ||
+      newModifiers.center !== this._modifierState.center ||
+      newModifiers.snapRotation !== this._modifierState.snapRotation
+    this._modifierState = newModifiers
+    if (!changed) {
+      return
+    }
+    if (this._resizing?.lastPointer) {
       this.applyResize(this._resizing.lastPointer)
+    }
+    if (this._rotating?.lastPointer) {
+      this.applyRotation(this._rotating.lastPointer)
     }
   }
 
-  private readonly onResizeModifierReset = () => {
+  private readonly onModifierReset = () => {
     const changed =
-      !this._resizeModifiers.lockAspect || this._resizeModifiers.center
-    this._resizeModifiers = {
+      !this._modifierState.lockAspect ||
+      this._modifierState.center ||
+      this._modifierState.snapRotation
+    this._modifierState = {
       lockAspect: true,
       center: false,
+      snapRotation: false,
     }
-    if (changed && this._resizing?.lastPointer) {
+    if (!changed) {
+      return
+    }
+    if (this._resizing?.lastPointer) {
       this.applyResize(this._resizing.lastPointer)
+    }
+    if (this._rotating?.lastPointer) {
+      this.applyRotation(this._rotating.lastPointer)
     }
   }
 
@@ -248,73 +308,98 @@ export class ImageTransformHandler {
     const halfWidth = start.width * 0.5
     const halfHeight = start.height * 0.5
     const minSize = 0.0001
+    const center = new Vector2(start.x, start.y)
+    const localPointer = pointer
+      .clone()
+      .sub(center)
+      .rotateAround(new Vector2(0, 0), -start.rotation)
 
     let newWidth = start.width
     let newHeight = start.height
-    let newX = start.x
-    let newY = start.y
+    let newX = 0
+    let newY = 0
 
-    if (this._resizeModifiers.center) {
+    if (this._modifierState.center) {
       if (axes.x !== 0) {
-        newWidth = Math.max(minSize, Math.abs(pointer.x - start.x) * 2)
+        newWidth = Math.max(minSize, Math.abs(localPointer.x) * 2)
       }
       if (axes.y !== 0) {
-        newHeight = Math.max(minSize, Math.abs(pointer.y - start.y) * 2)
+        newHeight = Math.max(minSize, Math.abs(localPointer.y) * 2)
       }
     } else {
       if (axes.x !== 0) {
-        const anchorX = start.x - axes.x * halfWidth
-        newWidth = Math.max(minSize, Math.abs(pointer.x - anchorX))
-        newX = (pointer.x + anchorX) * 0.5
+        const anchorX = -axes.x * halfWidth
+        newWidth = Math.max(minSize, Math.abs(localPointer.x - anchorX))
+        newX = (localPointer.x + anchorX) * 0.5
       }
       if (axes.y !== 0) {
-        const anchorY = start.y - axes.y * halfHeight
-        newHeight = Math.max(minSize, Math.abs(pointer.y - anchorY))
-        newY = (pointer.y + anchorY) * 0.5
+        const anchorY = -axes.y * halfHeight
+        newHeight = Math.max(minSize, Math.abs(localPointer.y - anchorY))
+        newY = (localPointer.y + anchorY) * 0.5
       }
     }
 
-    if (this._resizeModifiers.lockAspect && aspectRatio > 0) {
+    if (this._modifierState.lockAspect && aspectRatio > 0) {
       if (axes.x !== 0 && axes.y !== 0) {
         const widthScale = newWidth / start.width
         const heightScale = newHeight / start.height
         const scale = Math.max(widthScale, heightScale)
         newWidth = Math.max(minSize, start.width * scale)
         newHeight = Math.max(minSize, start.height * scale)
-        if (!this._resizeModifiers.center) {
-          const anchorX = start.x - axes.x * halfWidth
-          const anchorY = start.y - axes.y * halfHeight
+        if (!this._modifierState.center) {
+          const anchorX = -axes.x * halfWidth
+          const anchorY = -axes.y * halfHeight
           newX = anchorX + axes.x * newWidth * 0.5
           newY = anchorY + axes.y * newHeight * 0.5
         }
       } else if (axes.x !== 0) {
         const scale = newWidth / start.width
         newHeight = Math.max(minSize, start.height * scale)
-        if (!this._resizeModifiers.center) {
-          newY = start.y
+        if (!this._modifierState.center) {
+          newY = 0
         }
       } else if (axes.y !== 0) {
         const scale = newHeight / start.height
         newWidth = Math.max(minSize, start.width * scale)
-        if (!this._resizeModifiers.center) {
-          newX = start.x
+        if (!this._modifierState.center) {
+          newX = 0
         }
       }
-    } else {
-      if (!this._resizeModifiers.center) {
-        if (axes.x === 0) {
-          newX = start.x
-        }
-        if (axes.y === 0) {
-          newY = start.y
-        }
+    } else if (!this._modifierState.center) {
+      if (axes.x === 0) {
+        newX = 0
+      }
+      if (axes.y === 0) {
+        newY = 0
       }
     }
 
-    image.x = newX
-    image.y = newY
+    const centerOffset = new Vector2(newX, newY).rotateAround(
+      new Vector2(0, 0),
+      start.rotation
+    )
+    const nextCenter = center.clone().add(centerOffset)
+
+    image.x = nextCenter.x
+    image.y = nextCenter.y
     image.width = newWidth
     image.height = newHeight
+    this.updateImageMesh(image)
+    this.updateUI()
+  }
+
+  private applyRotation(pointer: Vector2) {
+    if (!this._rotating) {
+      return
+    }
+    const { image, startRotation, startAngle, center } = this._rotating
+    const angle = Math.atan2(pointer.y - center.y, pointer.x - center.x)
+    let nextRotation = startRotation + (angle - startAngle)
+    if (this._modifierState.snapRotation) {
+      const snap = (5 * Math.PI) / 180
+      nextRotation = Math.round(nextRotation / snap) * snap
+    }
+    image.rotation = nextRotation
     this.updateImageMesh(image)
     this.updateUI()
   }
@@ -328,6 +413,7 @@ export class ImageTransformHandler {
     }
     mesh.position.set(image.x, image.y, mesh.position.z)
     mesh.scale.set(image.width, image.height, 1)
+    mesh.rotation.z = image.rotation ?? 0
   }
 
   private getResizeAxes(target: ResizeTarget): {
@@ -356,8 +442,8 @@ export class ImageTransformHandler {
 
   // TODO not yet called from anywhere
   public dispose() {
-    globalThis.removeEventListener('keydown', this.onResizeModifierChange)
-    globalThis.removeEventListener('keyup', this.onResizeModifierChange)
-    globalThis.removeEventListener('blur', this.onResizeModifierReset)
+    globalThis.removeEventListener('keydown', this.onModifierChange)
+    globalThis.removeEventListener('keyup', this.onModifierChange)
+    globalThis.removeEventListener('blur', this.onModifierReset)
   }
 }
