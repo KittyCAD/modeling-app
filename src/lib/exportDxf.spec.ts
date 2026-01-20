@@ -563,5 +563,145 @@ describe('DXF Export', () => {
         'toast-id'
       )
     })
+
+    it('should successfully export DXF for subtract2d operation', async () => {
+      // Setup: subtract2d operation with deeper nodePath
+      const subtract2dOperation: StdLibCallOp = {
+        type: 'StdLibCall',
+        name: 'subtract2d',
+        unlabeledArg: null,
+        labeledArgs: {},
+        nodePath: {
+          steps: [
+            { type: 'ProgramBodyItem', index: 0 },
+            { type: 'VariableDeclarationInit' },
+            { type: 'PipeBodyItem', index: 1 }, // Deeper in the pipe
+            { type: 'CallCallee' },
+          ],
+        },
+        sourceRange: [0, 0, 0],
+      }
+
+      // Setup: plane artifact with nodePath matching root (first 2 steps)
+      const planeArtifact: Artifact = {
+        id: 'plane-id',
+        type: 'plane',
+        pathIds: ['path-1', 'path-2'],
+        codeRef: {
+          nodePath: {
+            steps: [
+              { type: 'ProgramBodyItem', index: 0 },
+              { type: 'VariableDeclarationInit' },
+              { type: 'CallCallee' }, // At pipe root
+            ],
+          },
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+      }
+
+      // Setup: path artifacts with nodePaths matching the subtract2d root
+      const pathArtifact1: Artifact = {
+        id: 'path-1',
+        type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: {
+            steps: [
+              { type: 'ProgramBodyItem', index: 0 },
+              { type: 'VariableDeclarationInit' },
+              { type: 'PipeBodyItem', index: 0 },
+              { type: 'CallCallee' },
+            ],
+          },
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+      }
+
+      const pathArtifact2: Artifact = {
+        id: 'path-2',
+        type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: {
+            steps: [
+              { type: 'ProgramBodyItem', index: 0 },
+              { type: 'VariableDeclarationInit' },
+              { type: 'PipeBodyItem', index: 1 },
+              { type: 'CallCallee' },
+            ],
+          },
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+      }
+
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1)
+      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2)
+
+      // Mock successful engine response
+      const mockResponse: WebSocketResponse = {
+        success: true,
+        request_id: 'test-request-id',
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'export2d',
+              data: {
+                files: [{ contents: 'base64-content', name: 'sketch.dxf' }],
+              },
+            },
+          },
+        },
+      }
+      vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue(mockResponse)
+
+      // Mock successful base64 decode
+      const mockDecodedData = new ArrayBuffer(8)
+      vi.mocked(mockDeps.base64Decode).mockImplementation((input: string) => {
+        if (!input) return new Error('Invalid base64 input')
+        return mockDecodedData
+      })
+
+      // Mock browser environment - no window.electron
+      // @ts-ignore
+      globalThis.window.electron = undefined
+      vi.mocked(mockDeps.browserSaveFile).mockResolvedValue(undefined)
+
+      const result = await exportSketchToDxf(subtract2dOperation, mockDeps)
+
+      expect(result).toBe(true)
+      expect(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).toHaveBeenCalledWith(
+        {
+          type: 'modeling_cmd_req',
+          cmd_id: 'test-uuid',
+          cmd: {
+            type: 'export2d',
+            entity_ids: ['path-1', 'path-2'],
+            format: {
+              type: 'dxf',
+              storage: 'ascii',
+            },
+          },
+        },
+        true
+      )
+      expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'sketch.dxf',
+        'toast-id'
+      )
+    })
   })
 })
