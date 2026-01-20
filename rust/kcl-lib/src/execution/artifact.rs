@@ -170,6 +170,9 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// ID of trajectory path for sweep, if any
+    /// Only applicable to SweepSubType::Sweep, which can use a trajectory path
+    pub trajectory_id: Option<ArtifactId>,
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
 }
 
@@ -532,6 +535,7 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+        merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
 
         None
     }
@@ -1078,6 +1082,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                trajectory_id: None,
                 method,
             }));
             let path = artifacts.get(&target);
@@ -1109,6 +1114,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                trajectory_id: Some(trajectory),
                 method,
             }));
             let path = artifacts.get(&target);
@@ -1160,6 +1166,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             }));
             for section_id in &loft_cmd.section_ids {

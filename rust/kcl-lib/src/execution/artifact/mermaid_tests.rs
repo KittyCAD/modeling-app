@@ -89,7 +89,13 @@ impl Artifact {
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
-            Artifact::Sweep(a) => vec![a.path_id],
+            Artifact::Sweep(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(trajectory_id) = a.trajectory_id {
+                    ids.push(trajectory_id);
+                }
+                ids
+            }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
