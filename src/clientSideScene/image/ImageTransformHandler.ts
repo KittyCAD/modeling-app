@@ -19,17 +19,32 @@ type DraggingInfo = {
   moved: boolean
 }
 
+type ResizeTarget =
+  | 'top'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right'
+
 type ResizingInfo = {
   image: ImageEntry
-  target:
-    | 'top'
-    | 'bottom'
-    | 'left'
-    | 'right'
-    | 'top-left'
-    | 'top-right'
-    | 'bottom-left'
-    | 'bottom-right'
+  target: ResizeTarget
+  start: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+  aspectRatio: number
+  lastPointer?: Vector2
+}
+
+type ResizeModifiers = {
+  lockAspect: boolean
+  center: boolean
 }
 
 export class ImageTransformHandler {
@@ -39,6 +54,10 @@ export class ImageTransformHandler {
   private _selected: ImageEntry | undefined
   private _dragging: DraggingInfo | undefined
   private _resizing: ResizingInfo | undefined
+  private _resizeModifiers: ResizeModifiers = {
+    lockAspect: true,
+    center: false,
+  }
 
   private _ui: ImageTransformUI | undefined
 
@@ -49,6 +68,9 @@ export class ImageTransformHandler {
     this._sceneInfra.selectedSignal.subscribe(this.updateSelection)
     this._sceneInfra.camControls.cameraChange.add(this.updateUI)
     this._sceneInfra.baseUnitChange.add(this.updateUI)
+    globalThis.addEventListener('keydown', this.onResizeModifierChange)
+    globalThis.addEventListener('keyup', this.onResizeModifierChange)
+    globalThis.addEventListener('blur', this.onResizeModifierReset)
 
     this.updateSelection()
   }
@@ -57,6 +79,7 @@ export class ImageTransformHandler {
     const selected = this._sceneInfra.selected
     if (!selected) {
       this._dragging = undefined
+      this._resizing = undefined
     }
   }
 
@@ -86,12 +109,29 @@ export class ImageTransformHandler {
             selected?.object.userData.type === IMAGE_TRANSFORM_EDGE ||
             selected?.object.userData.type === IMAGE_TRANSFORM_CORNER
           if (resizing) {
+            const target = selected?.object.userData.target as
+              | ResizeTarget
+              | undefined
+            if (!target) {
+              return false
+            }
             this._resizing = {
               image,
-              target: selected?.object.userData.target,
+              target,
+              start: {
+                x: image.x,
+                y: image.y,
+                width: image.width,
+                height: image.height,
+              },
+              aspectRatio: image.width / image.height,
+              lastPointer: intersectionPoint.clone(),
             }
+            this._dragging = undefined
+            this.setSelected(image)
+            this.applyResize(intersectionPoint)
+            return true
           }
-          // TODO implement
         }
       }
     }
@@ -118,7 +158,8 @@ export class ImageTransformHandler {
 
         return true
       } else if (this._resizing) {
-        // TODO implement
+        this._resizing.lastPointer = intersectionPoint.clone()
+        this.applyResize(intersectionPoint)
         return true
       }
     }
@@ -126,8 +167,9 @@ export class ImageTransformHandler {
   }
 
   public processDragEnd() {
-    if (this._dragging) {
-      this.setSelected(this._dragging.image)
+    if (this._dragging || this._resizing) {
+      const image = this._dragging?.image ?? this._resizing?.image
+      this.setSelected(image)
       this._dragging = undefined
       this._resizing = undefined
       void this._imageManager.saveToFile()
@@ -169,5 +211,153 @@ export class ImageTransformHandler {
       return
     }
     this._ui.update(this._selected)
+  }
+
+  private readonly onResizeModifierChange = (event: KeyboardEvent) => {
+    const newModifiers: ResizeModifiers = {
+      lockAspect: !event.ctrlKey,
+      center: event.altKey,
+    }
+    const changed =
+      newModifiers.lockAspect !== this._resizeModifiers.lockAspect ||
+      newModifiers.center !== this._resizeModifiers.center
+    this._resizeModifiers = newModifiers
+    if (changed && this._resizing?.lastPointer) {
+      this.applyResize(this._resizing.lastPointer)
+    }
+  }
+
+  private readonly onResizeModifierReset = () => {
+    const changed =
+      !this._resizeModifiers.lockAspect || this._resizeModifiers.center
+    this._resizeModifiers = {
+      lockAspect: true,
+      center: false,
+    }
+    if (changed && this._resizing?.lastPointer) {
+      this.applyResize(this._resizing.lastPointer)
+    }
+  }
+
+  private applyResize(pointer: Vector2) {
+    if (!this._resizing) {
+      return
+    }
+    const { image, target, start, aspectRatio } = this._resizing
+    const axes = this.getResizeAxes(target)
+    const halfWidth = start.width * 0.5
+    const halfHeight = start.height * 0.5
+    const minSize = 0.0001
+
+    let newWidth = start.width
+    let newHeight = start.height
+    let newX = start.x
+    let newY = start.y
+
+    if (this._resizeModifiers.center) {
+      if (axes.x !== 0) {
+        newWidth = Math.max(minSize, Math.abs(pointer.x - start.x) * 2)
+      }
+      if (axes.y !== 0) {
+        newHeight = Math.max(minSize, Math.abs(pointer.y - start.y) * 2)
+      }
+    } else {
+      if (axes.x !== 0) {
+        const anchorX = start.x - axes.x * halfWidth
+        newWidth = Math.max(minSize, Math.abs(pointer.x - anchorX))
+        newX = (pointer.x + anchorX) * 0.5
+      }
+      if (axes.y !== 0) {
+        const anchorY = start.y - axes.y * halfHeight
+        newHeight = Math.max(minSize, Math.abs(pointer.y - anchorY))
+        newY = (pointer.y + anchorY) * 0.5
+      }
+    }
+
+    if (this._resizeModifiers.lockAspect && aspectRatio > 0) {
+      if (axes.x !== 0 && axes.y !== 0) {
+        const widthScale = newWidth / start.width
+        const heightScale = newHeight / start.height
+        const scale = Math.max(widthScale, heightScale)
+        newWidth = Math.max(minSize, start.width * scale)
+        newHeight = Math.max(minSize, start.height * scale)
+        if (!this._resizeModifiers.center) {
+          const anchorX = start.x - axes.x * halfWidth
+          const anchorY = start.y - axes.y * halfHeight
+          newX = anchorX + axes.x * newWidth * 0.5
+          newY = anchorY + axes.y * newHeight * 0.5
+        }
+      } else if (axes.x !== 0) {
+        const scale = newWidth / start.width
+        newHeight = Math.max(minSize, start.height * scale)
+        if (!this._resizeModifiers.center) {
+          newY = start.y
+        }
+      } else if (axes.y !== 0) {
+        const scale = newHeight / start.height
+        newWidth = Math.max(minSize, start.width * scale)
+        if (!this._resizeModifiers.center) {
+          newX = start.x
+        }
+      }
+    } else {
+      if (!this._resizeModifiers.center) {
+        if (axes.x === 0) {
+          newX = start.x
+        }
+        if (axes.y === 0) {
+          newY = start.y
+        }
+      }
+    }
+
+    image.x = newX
+    image.y = newY
+    image.width = newWidth
+    image.height = newHeight
+    this.updateImageMesh(image)
+    this.updateUI()
+  }
+
+  private updateImageMesh(image: ImageEntry) {
+    const mesh = this._sceneInfra.scene.getObjectByName(
+      `ReferenceImage_${image.path}`
+    )
+    if (!mesh) {
+      return
+    }
+    mesh.position.set(image.x, image.y, mesh.position.z)
+    mesh.scale.set(image.width, image.height, 1)
+  }
+
+  private getResizeAxes(target: ResizeTarget): {
+    x: -1 | 0 | 1
+    y: -1 | 0 | 1
+  } {
+    switch (target) {
+      case 'left':
+        return { x: -1, y: 0 }
+      case 'right':
+        return { x: 1, y: 0 }
+      case 'top':
+        return { x: 0, y: 1 }
+      case 'bottom':
+        return { x: 0, y: -1 }
+      case 'top-left':
+        return { x: -1, y: 1 }
+      case 'top-right':
+        return { x: 1, y: 1 }
+      case 'bottom-left':
+        return { x: -1, y: -1 }
+      case 'bottom-right':
+        return { x: 1, y: -1 }
+    }
+  }
+
+  // TODO not yet called from anywhere
+  public dispose() {
+    globalThis.removeEventListener('keydown', this.onResizeModifierChange)
+    globalThis.removeEventListener('keyup', this.onResizeModifierChange)
+    globalThis.removeEventListener('blur', this.onResizeModifierReset)
   }
 }
