@@ -1,4 +1,4 @@
-import type { SegmentCtor, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
@@ -26,20 +26,166 @@ import {
   STRAIGHT_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
+import { isArray } from '@src/lib/utils'
 // Import and re-export pure utility functions
-import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  getSegmentColor,
+  type SegmentMode,
+} from '@src/machines/sketchSolve/segmentsUtils'
 import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
+import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+
+/**
+ * Type predicate to check if an object has a specific property.
+ * Uses runtime checks without type assertions.
+ */
+function hasProperty<K extends string>(
+  obj: unknown,
+  key: K
+): obj is Record<K, unknown> {
+  return typeof obj === 'object' && obj !== null && key in obj
+}
+
+/**
+ * Type guard to check if a value is a Record with string keys.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !isArray(value) &&
+    Object.getPrototypeOf(value) === Object.prototype
+  )
+}
+
+/**
+ * Type guard to check if a value is a uniform value object with a 'value' property.
+ */
+function isUniformValue(value: unknown): value is { value: unknown } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'value' in value &&
+    Object.keys(value).length >= 1
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid SegmentMode.
+ */
+function isSegmentMode(value: unknown): value is SegmentMode {
+  return (
+    typeof value === 'string' &&
+    (value === 'normal' || value === 'draft' || value === 'construction')
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid Freedom.
+ */
+function isFreedom(value: unknown): value is Freedom {
+  return (
+    typeof value === 'string' &&
+    (value === 'Free' || value === 'Fixed' || value === 'Conflict')
+  )
+}
+
+/**
+ * Type guard to check if a value is a Three.js Line object.
+ */
+function isLine(value: unknown): value is Line {
+  return value instanceof Line
+}
+
+/**
+ * Safely removes custom shader properties from a material.
+ * Uses runtime property checks without type assertions.
+ */
+function removeCustomShaderProperties(material: LineMaterial): void {
+  // Check if properties exist at runtime before attempting to delete
+  if (hasProperty(material, 'onBeforeCompile')) {
+    Reflect.deleteProperty(material, 'onBeforeCompile')
+  }
+  if (hasProperty(material, 'customProgramCacheKey')) {
+    Reflect.deleteProperty(material, 'customProgramCacheKey')
+  }
+}
+
+/**
+ * Safely accesses the program property if it exists.
+ * Uses runtime type checking without assertions.
+ */
+function getMaterialProgram(
+  material: LineMaterial
+): { [key: string]: unknown } | null | undefined {
+  if (!hasProperty(material, 'program')) {
+    return undefined
+  }
+  const program = material.program
+  // Runtime type check to ensure it's the expected type
+  if (program === null || program === undefined) {
+    return program
+  }
+  if (isRecord(program)) {
+    // Verify it has index signature by checking it's a plain object
+    // Construct return type from verified object
+    const result: { [key: string]: unknown } = {}
+    for (const key in program) {
+      if (Object.prototype.hasOwnProperty.call(program, key)) {
+        result[key] = program[key]
+      }
+    }
+    return result
+  }
+  return undefined
+}
+
+/**
+ * Safely accesses uniforms if they exist.
+ * Uses runtime type checking without assertions.
+ */
+function getMaterialUniforms(
+  material: LineMaterial
+): Record<string, { value: unknown }> | undefined {
+  if (!hasProperty(material, 'uniforms')) {
+    return undefined
+  }
+  const uniforms = material.uniforms
+  // Runtime type check to ensure it's the expected type
+  if (
+    uniforms !== null &&
+    uniforms !== undefined &&
+    typeof uniforms === 'object' &&
+    !isArray(uniforms)
+  ) {
+    // Verify structure matches expected format
+    const entries = Object.entries(uniforms)
+    const isValidUniforms = entries.every(
+      ([, value]) =>
+        typeof value === 'object' && value !== null && 'value' in value
+    )
+    if (isValidUniforms) {
+      // Construct the return type from verified entries
+      const result: Record<string, { value: unknown }> = {}
+      for (const [key, value] of entries) {
+        if (isUniformValue(value)) {
+          result[key] = value
+        }
+      }
+      return result
+    }
+  }
+  return undefined
+}
 
 export const SEGMENT_TYPE_POINT = 'POINT'
 export const SEGMENT_TYPE_LINE = 'LINE'
 export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
-
-export type SegmentMode = 'normal' | 'draft' | 'construction'
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -202,8 +348,10 @@ class PointSegment implements SketchEntityUtils {
     handleDiv.addEventListener('mouseenter', () => {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const mode = (handleDiv.dataset.mode as SegmentMode) || 'normal'
-      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
+      const modeValue = handleDiv.dataset.mode
+      const mode = isSegmentMode(modeValue) ? modeValue : 'normal'
+      const freedomValue = handleDiv.dataset.freedom
+      const freedom = isFreedom(freedomValue) ? freedomValue : null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
@@ -217,8 +365,10 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, isHovered)
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const mode = (handleDiv.dataset.mode as SegmentMode) || 'normal'
-      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
+      const modeValue = handleDiv.dataset.mode
+      const mode = isSegmentMode(modeValue) ? modeValue : 'normal'
+      const freedomValue = handleDiv.dataset.freedom
+      const freedom = isFreedom(freedomValue) ? freedomValue : null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered,
@@ -435,7 +585,10 @@ class LineSegment implements SketchEntityUtils {
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous mode BEFORE updating it
-    const previousMode = group.userData.mode as SegmentMode | undefined
+    const previousModeValue = group.userData.mode
+    const previousMode = isSegmentMode(previousModeValue)
+      ? previousModeValue
+      : undefined
     const modeChanged = previousMode !== mode
     // Update userData for consistency
     group.userData.freedom = freedom
@@ -465,16 +618,16 @@ class LineSegment implements SketchEntityUtils {
           )
         } else {
           // Switching away from construction: remove the custom shader
-          delete (straightSegmentBody.material as any).onBeforeCompile
-          delete (straightSegmentBody.material as any).customProgramCacheKey
+          removeCustomShaderProperties(straightSegmentBody.material)
         }
         // Force shader recompilation when mode changes
         straightSegmentBody.material.needsUpdate = true
-        if (
-          'program' in straightSegmentBody.material &&
-          straightSegmentBody.material.program
-        ) {
-          ;(straightSegmentBody.material as any).program = null
+        const program = getMaterialProgram(straightSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          // Use hasProperty to safely set the program property
+          if (hasProperty(straightSegmentBody.material, 'program')) {
+            straightSegmentBody.material.program = null
+          }
         }
       } else if (isConstruction) {
         // Mode didn't change but we're in construction mode: just update uniforms
@@ -484,7 +637,7 @@ class LineSegment implements SketchEntityUtils {
           0
         )
         const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
-        const uniforms = (straightSegmentBody.material as any).uniforms
+        const uniforms = getMaterialUniforms(straightSegmentBody.material)
         if (uniforms) {
           if (uniforms.uSegmentStart) {
             uniforms.uSegmentStart.value = lineStart
@@ -628,7 +781,11 @@ class ArcSegment implements SketchEntityUtils {
     const sketchGroup =
       sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ?? sceneInfra.scene
 
-    let preview = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE) as Line | null
+    const previewObject = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE)
+    let preview: Line | null = null
+    if (previewObject && isLine(previewObject)) {
+      preview = previewObject
+    }
 
     const segments = 64
     const points = []
@@ -781,7 +938,10 @@ class ArcSegment implements SketchEntityUtils {
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Check previous mode BEFORE updating it
-    const previousMode = group.userData.mode as SegmentMode | undefined
+    const previousModeValue = group.userData.mode
+    const previousMode = isSegmentMode(previousModeValue)
+      ? previousModeValue
+      : undefined
     const modeChanged = previousMode !== mode
     // Update userData for consistency
     group.userData.freedom = freedom
@@ -809,22 +969,22 @@ class ArcSegment implements SketchEntityUtils {
           )
         } else {
           // Switching away from construction: remove the custom shader
-          delete (arcSegmentBody.material as any).onBeforeCompile
-          delete (arcSegmentBody.material as any).customProgramCacheKey
+          removeCustomShaderProperties(arcSegmentBody.material)
         }
         // Force shader recompilation when mode changes
         arcSegmentBody.material.needsUpdate = true
-        if (
-          'program' in arcSegmentBody.material &&
-          arcSegmentBody.material.program
-        ) {
-          ;(arcSegmentBody.material as any).program = null
+        const program = getMaterialProgram(arcSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          // Use hasProperty to safely set the program property
+          if (hasProperty(arcSegmentBody.material, 'program')) {
+            arcSegmentBody.material.program = null
+          }
         }
       } else if (isConstruction) {
         // Mode didn't change but we're in construction mode: just update uniforms
         const arcCenter = new Vector3(centerX, centerY, 0)
         const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
-        const uniforms = (arcSegmentBody.material as any).uniforms
+        const uniforms = getMaterialUniforms(arcSegmentBody.material)
         if (uniforms) {
           if (uniforms.uArcCenter) {
             uniforms.uArcCenter.value = arcCenter

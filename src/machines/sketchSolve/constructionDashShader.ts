@@ -32,6 +32,9 @@ import type { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
  * This approach applies to both straight lines and arcs, with arcs requiring
  * additional logic to calculate distance along the arc curve using a constant
  * centerline radius to prevent skew across the stroke width.
+ *
+ * NOTE: Consider TSL with a webGPU migration, removes the need for string replace.
+ * https://threejsroadmap.com/blog/tsl-a-better-way-to-write-shaders-in-threejs
  */
 
 /**

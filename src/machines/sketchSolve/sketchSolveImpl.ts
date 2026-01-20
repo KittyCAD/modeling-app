@@ -9,7 +9,6 @@ import type {
 import {
   segmentUtilsMap,
   updateSegmentHover,
-  type SegmentMode,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import { Group, OrthographicCamera, Mesh } from 'three'
@@ -49,7 +48,10 @@ import {
   ARC_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  deriveSegmentFreedom,
+  type SegmentMode,
+} from '@src/machines/sketchSolve/segmentsUtils'
 
 export type EquipTool = keyof typeof equipTools
 

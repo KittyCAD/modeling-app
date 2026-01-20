@@ -127,7 +127,7 @@ export function deriveSegmentFreedom(
   return null
 }
 
-type SegmentMode = 'normal' | 'draft' | 'construction'
+export type SegmentMode = 'normal' | 'draft' | 'construction'
 
 /**
  * Color precedence system:
