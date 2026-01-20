@@ -73,11 +73,8 @@ export class ImageRenderer {
     const unusedMeshes = Array.from(this.meshes)
       .filter(([path]) => !images.some((image) => image.path === path))
       .map(([_path, mesh]) => mesh)
-    console.log('unusedmeshes', unusedMeshes)
     this.disposeMeshes(unusedMeshes)
   }
-
-  private readonly renderImages = () => {}
 
   private createImageMesh(image: ImageEntry): ImageMesh {
     const material = new MeshBasicMaterial({

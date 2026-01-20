@@ -130,16 +130,6 @@ export class ImageManager {
     }
   }
 
-  private async writeContentFile(content: ImageContent): Promise<void> {
-    if (!window.electron) return
-    const contentFilePath = await this.getContentFilePath()
-    if (!contentFilePath) {
-      return
-    }
-    const jsonString = JSON.stringify(content, null, 2)
-    await window.electron.writeFile(contentFilePath, jsonString)
-  }
-
   async addImage(
     file: File,
     position: { x: number; y: number; width: number; height: number }
@@ -224,6 +214,16 @@ export class ImageManager {
 
   public saveToFile() {
     //
+  }
+
+    private async writeContentFile(content: ImageContent): Promise<void> {
+    if (!window.electron) return
+    const contentFilePath = await this.getContentFilePath()
+    if (!contentFilePath) {
+      return
+    }
+    const jsonString = JSON.stringify(content, null, 2)
+    await window.electron.writeFile(contentFilePath, jsonString)
   }
 
   async deleteImage(imagePath: string): Promise<void> {
