@@ -101,12 +101,16 @@ export class ImageTransformHandler {
     selected: SceneInfra['selected'],
     intersectionPoint: Vector2 | undefined
   ) {
+    const image = (selected?.object.userData.image ||
+      selected?.object.parent?.userData.image) as ImageEntry | undefined
+    if (image?.locked) {
+      return false
+    }
     if (intersectionPoint) {
       const isReferenceImage =
         selected?.object.parent?.name === IMAGE_RENDERER_GROUP
-      if (isReferenceImage) {
+      if (isReferenceImage && image) {
         // Start dragging the image
-        const image = selected.object.userData.image as ImageEntry
         this._dragging = {
           image,
           imagePosAtStartDrag: [image.x, image.y],
@@ -116,7 +120,6 @@ export class ImageTransformHandler {
         this.setSelected(image)
         return true
       } else {
-        const image = selected?.object.parent?.userData.image as ImageEntry
         if (image) {
           // Start dragging one of the transform handles
           const resizing =

@@ -252,6 +252,10 @@ export function getImageTransformCursor(
   if (!object) {
     return null
   }
+  const image = object.parent?.userData?.image as ImageEntry | undefined
+  if (image?.locked) {
+    return null
+  }
   if (object.userData?.type === IMAGE_TRANSFORM_EDGE) {
     switch (object.userData.target) {
       case 'left':
@@ -277,7 +281,6 @@ export function getImageTransformCursor(
     }
   }
   if (object.userData?.type === IMAGE_TRANSFORM_ROTATE) {
-    const image = object.parent?.userData.image as ImageEntry
     if (image) {
       const rotation = image.rotation ?? 0
       const initialRotation = initialRotations[object.userData.target]

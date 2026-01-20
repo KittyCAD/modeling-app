@@ -21,6 +21,7 @@ export interface ImageEntry {
   width: number
   height: number
   rotation?: number // radians
+  locked?: boolean
 }
 
 interface ImageContent {
@@ -172,6 +173,7 @@ export class ImageManager {
         width: position.width,
         height: position.height,
         rotation: 0,
+        locked: false,
       })
       await this.writeContentFile(content)
     }
@@ -191,6 +193,18 @@ export class ImageManager {
     if (image) {
       if (image.visible !== visible) {
         image.visible = visible
+        this.imagesChanged.value++
+        await this.writeContentFile(content)
+      }
+    }
+  }
+
+  async setImageLocked(imagePath: string, locked: boolean): Promise<void> {
+    const content = await this.readContentFile()
+    const image = content.images.find((img) => img.path === imagePath)
+    if (image) {
+      if (image.locked !== locked) {
+        image.locked = locked
         this.imagesChanged.value++
         await this.writeContentFile(content)
       }

@@ -33,6 +33,23 @@ export function ImagesList() {
     [images]
   )
 
+  const handleLockToggle = useCallback(
+    async (imagePath: string) => {
+      const image = images.find((img) => img.path === imagePath)
+      if (!image) return
+
+      const newLocked = !(image.locked ?? false)
+      await imageManager.setImageLocked(imagePath, newLocked)
+
+      setImages((prev) =>
+        prev.map((img) =>
+          img.path === imagePath ? { ...img, locked: newLocked } : img
+        )
+      )
+    },
+    [images]
+  )
+
   const handleDelete = useCallback(async (imagePath: string) => {
     try {
       await imageManager.deleteImage(imagePath)
@@ -64,6 +81,7 @@ export function ImagesList() {
           key={image.path}
           image={image}
           onVisibilityToggle={handleVisibilityToggle}
+          onLockToggle={handleLockToggle}
           onDelete={handleDelete}
           onLocate={handleLocate}
         />
@@ -75,6 +93,7 @@ export function ImagesList() {
 interface ImageItemProps {
   image: ImageEntry
   onVisibilityToggle: (imagePath: string) => void | Promise<void>
+  onLockToggle: (imagePath: string) => void | Promise<void>
   onDelete: (imagePath: string) => void | Promise<void>
   onLocate: (imagePath: string) => void
 }
@@ -82,10 +101,12 @@ interface ImageItemProps {
 function ImageItem({
   image,
   onVisibilityToggle,
+  onLockToggle,
   onDelete,
   onLocate,
 }: ImageItemProps) {
   const visible = image.visible ?? true
+  const locked = image.locked ?? false
   const itemRef = useRef<HTMLDivElement>(null)
 
   const contextMenuItems = [
@@ -116,8 +137,27 @@ function ImageItem({
         <span className="text-sm truncate">{image.path}</span>
       </div>
       <button
+        onClick={() => void onLockToggle(image.path)}
+        className={`p-0 m-0 border-transparent dark:border-transparent transition-opacity ${
+          locked
+            ? 'opacity-100'
+            : 'opacity-0 pointer-events-none group-hover/item:opacity-100 group-hover/item:pointer-events-auto'
+        }`}
+        data-testid="image-lock-toggle"
+        aria-label={locked ? 'Unlock image' : 'Lock image'}
+      >
+        <CustomIcon
+          name={locked ? 'lockClosed' : 'lockOpen'}
+          className="w-6 h-6"
+        />
+      </button>
+      <button
         onClick={() => void onVisibilityToggle(image.path)}
-        className="p-0 m-0 border-transparent dark:border-transparent"
+        className={`p-0 m-0 border-transparent dark:border-transparent transition-opacity ${
+          visible
+            ? 'opacity-0 pointer-events-none group-hover/item:opacity-100 group-hover/item:pointer-events-auto'
+            : 'opacity-100'
+        }`}
         data-testid="image-visibility-toggle"
       >
         <CustomIcon
