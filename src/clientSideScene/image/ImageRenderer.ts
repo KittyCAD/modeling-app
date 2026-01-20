@@ -24,8 +24,8 @@ export class ImageRenderer {
   private readonly sceneInfra: SceneInfra
   public readonly transformHandler: ImageTransformHandler
 
+  public readonly planeGeometry: PlaneGeometry
   private readonly group: Group
-  private readonly geometry: PlaneGeometry
   private readonly loadedTextures: Map<string, Texture> = new Map()
   private readonly meshes: Map<string, ImageMesh> = new Map()
 
@@ -37,7 +37,7 @@ export class ImageRenderer {
     this.group.name = IMAGE_RENDERER_GROUP
     this.group.layers.set(SKETCH_LAYER)
     this.sceneInfra.scene.add(this.group)
-    this.geometry = new PlaneGeometry()
+    this.planeGeometry = new PlaneGeometry()
 
     this.transformHandler = new ImageTransformHandler(imageManager, sceneInfra)
 
@@ -86,7 +86,7 @@ export class ImageRenderer {
       depthWrite: false,
     })
 
-    const mesh = new Mesh(this.geometry, material)
+    const mesh = new Mesh(this.planeGeometry, material)
     mesh.userData = {
       image,
     }
@@ -181,7 +181,7 @@ export class ImageRenderer {
     }
     this.loadedTextures.clear()
 
-    this.geometry.dispose()
+    this.planeGeometry.dispose()
   }
 }
 

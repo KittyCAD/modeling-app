@@ -47,6 +47,7 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
 import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
+import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -156,7 +157,13 @@ export const ClientSideScene = ({
   }, [])
 
   let cursor = 'default'
-  if (state.matches('Sketch')) {
+  const imageTransformCursor =
+    context.mouseState.type === 'isHovering'
+      ? getImageTransformCursor(context.mouseState.on)
+      : null
+  if (imageTransformCursor) {
+    cursor = imageTransformCursor
+  } else if (state.matches('Sketch')) {
     if (
       context.mouseState.type === 'isHovering' &&
       getParentGroup(context.mouseState.on, [

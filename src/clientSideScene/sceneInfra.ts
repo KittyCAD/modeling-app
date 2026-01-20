@@ -46,6 +46,10 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { signal } from '@preact/signals-core'
 import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
 import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
+import {
+  IMAGE_TRANSFORM_CORNER,
+  IMAGE_TRANSFORM_EDGE,
+} from '@src/clientSideScene/image/ImageTransformUI'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -767,22 +771,44 @@ export class SceneInfra {
       )
     }
 
-    // Convert the map values to an array and sort by distance
+    // Convert the map values to an array and sort by priority/distance
     return Array.from(intersectionsMap.values()).sort((a, b) => {
-      // Deprioritize axis selection to allow selecting segments that lie on axes
-      const aIsAxis = isAxisObject(a.object)
-      const bIsAxis = isAxisObject(b.object)
-      if (aIsAxis && !bIsAxis) return 1
-      if (!aIsAxis && bIsAxis) return -1
-      // Otherwise sort by distance
+      const aPriority = getIntersectionPriority(a.object)
+      const bPriority = getIntersectionPriority(b.object)
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority
+      }
+      // Priority is the same -> sort by distance
       return a.distance - b.distance
     })
   }
 
   updateMouseState(mouseState: MouseState) {
-    if (this.lastMouseState.type === mouseState.type) return
-    this.lastMouseState = mouseState
-    this.modelingSend({ type: 'Set mouse state', data: mouseState })
+    //if (this.lastMouseState.type === mouseState.type) return
+
+    let mouseStateChanged = false
+    if (this.lastMouseState.type !== mouseState.type) {
+      mouseStateChanged = true
+    } else {
+      // types are the same
+      if (
+        (mouseState.type === 'isDragging' ||
+          mouseState.type === 'isHovering') &&
+        // this part of the condition is only needed for TS to be happy for this.lastMouseState.on
+        (this.lastMouseState.type === 'isDragging' ||
+          this.lastMouseState.type === 'isHovering')
+      ) {
+        if (mouseState.on !== this.lastMouseState.on) {
+          mouseStateChanged = true
+        }
+      }
+      // should timeoutEnd care about pathToNodeString change?
+    }
+
+    if (mouseStateChanged) {
+      this.lastMouseState = mouseState
+      this.modelingSend({ type: 'Set mouse state', data: mouseState })
+    }
   }
 
   /**
@@ -923,9 +949,10 @@ export class SceneInfra {
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
+    const imageDragged = this.imageRenderer.transformHandler.processDragEnd()
     if (this.selected) {
-      if (this.imageRenderer.transformHandler.processDragEnd()) {
-        // An image has been dragged currently, drag end captured.
+      if (imageDragged) {
+        // An image has been dragged currently, drag end captured, so don't do anything else.
       } else if (this.selected.hasBeenDragged) {
         await this.onDragEndCallback({
           intersectionPoint: planeIntersectPoint
@@ -1073,6 +1100,15 @@ export class SceneInfra {
 function isAxisObject(object: Object3D | undefined): boolean {
   if (!object) return false
   return object.name === X_AXIS || object.name === Y_AXIS
+}
+
+function getIntersectionPriority(object: Object3D | undefined): number {
+  if (!object) return 2
+  const type = object.userData?.type
+  if (type === IMAGE_TRANSFORM_CORNER) return 0
+  if (type === IMAGE_TRANSFORM_EDGE) return 1
+  if (isAxisObject(object)) return 3
+  return 2
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {
