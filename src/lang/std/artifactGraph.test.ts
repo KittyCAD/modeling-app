@@ -19,6 +19,7 @@ describe('getSweepArtifactFromSelection', () => {
       planeId: 'plane-1',
       segIds: ['segment-1'],
       sweepId: 'sweep-1',
+      trajectorySweepId: null,
     }
 
     const sweep: Artifact = {
@@ -34,6 +35,7 @@ describe('getSweepArtifactFromSelection', () => {
       surfaceIds: [],
       edgeIds: [],
       method: 'merge',
+      trajectoryId: null,
     }
 
     const segment: Artifact = {
@@ -98,6 +100,7 @@ describe('getSweepArtifactFromSelection', () => {
       surfaceIds: [],
       edgeIds: ['sweep-edge-1'],
       method: 'merge',
+      trajectoryId: null,
     }
 
     const sweepEdge: Artifact = {
@@ -152,6 +155,7 @@ describe('coerceSelectionsToBody', () => {
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',
       segIds: [],
+      trajectorySweepId: null,
     }
     artifactGraph.set('path-1', path)
 
@@ -185,6 +189,7 @@ describe('coerceSelectionsToBody', () => {
       planeId: 'plane-1',
       segIds: ['segment-1'],
       sweepId: 'sweep-1',
+      trajectorySweepId: null,
     }
 
     const sweep: Artifact = {
@@ -200,6 +205,7 @@ describe('coerceSelectionsToBody', () => {
       surfaceIds: [],
       edgeIds: [],
       method: 'merge',
+      trajectoryId: null,
     }
 
     const segment: Artifact = {

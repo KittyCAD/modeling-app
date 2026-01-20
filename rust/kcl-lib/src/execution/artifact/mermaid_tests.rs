@@ -89,7 +89,13 @@ impl Artifact {
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
-            Artifact::Sweep(a) => vec![a.path_id],
+            Artifact::Sweep(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(trajectory_id) = a.trajectory_id {
+                    ids.push(trajectory_id);
+                }
+                ids
+            }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
@@ -119,6 +125,9 @@ impl Artifact {
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
+                }
+                if let Some(sweep_id_trajectory) = a.trajectory_sweep_id {
+                    ids.push(sweep_id_trajectory);
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
                     ids.push(solid2d_id);
@@ -204,9 +213,13 @@ impl Artifact {
                 // Note: Don't include these since they're parents: edge_cut_id.
                 vec![a.surface_id]
             }
-            Artifact::Helix(_) => {
+            Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(sweep_id) = a.trajectory_sweep_id {
+                    ids.push(sweep_id);
+                }
+                ids
             }
         }
     }
