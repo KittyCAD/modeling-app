@@ -244,7 +244,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   }
 
   // Open the DevTools.
-  newWindow.webContents.openDevTools()
+  // newWindow.webContents.openDevTools()
 
   // Disable refresh shortcut globally for the desktop application
   newWindow.webContents.on('before-input-event', (event, input) => {
@@ -253,7 +253,9 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     }
   })
 
-  if (!process.env.HEADLESS) newWindow.show()
+  newWindow.on('ready-to-show', () => {
+    if (!process.env.HEADLESS) newWindow.show()
+  })
 
   return newWindow
 }
