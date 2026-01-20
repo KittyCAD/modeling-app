@@ -4,11 +4,16 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
-import { imageManager } from '@src/lib/singletons'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { imageManager, sceneInfra } from '@src/lib/singletons'
+import { OrthographicCamera, Vector3 } from 'three'
 
 export function ImagesList() {
   useSignals()
   const [images, setImages] = useState<ImageEntry[]>([])
+  const { state: modelingState } = useModelingContext()
+  const isSketchMode =
+    modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
 
   useEffect(() => {
     imageManager.getImages().then(setImages).catch(console.error)
@@ -61,10 +66,50 @@ export function ImagesList() {
     }
   }, [])
 
-  const handleLocate = useCallback((imagePath: string) => {
-    // TODO: Implement locate functionality
-    toast('Locate functionality coming soon')
-  }, [])
+  const handleFocus = useCallback(
+    (imagePath: string) => {
+      const image = images.find((img) => img.path === imagePath)
+      if (!image) {
+        return
+      }
+
+      const cameraControls = sceneInfra.camControls
+      const camera = cameraControls.camera
+
+      if (!(camera instanceof OrthographicCamera)) {
+        return
+      }
+
+      const currentTarget = cameraControls.target.clone()
+      const offset = camera.position.clone().sub(currentTarget)
+      const center = new Vector3(image.x, image.y, 0)
+      const rotation = image.rotation ?? 0
+      const cos = Math.abs(Math.cos(rotation))
+      const sin = Math.abs(Math.sin(rotation))
+      const boundWidth = image.width * cos + image.height * sin
+      const boundHeight = image.width * sin + image.height * cos
+      if (boundWidth <= 0 || boundHeight <= 0) {
+        return
+      }
+
+      const padding = 1.3
+      const paddedWidth = boundWidth * padding
+      const paddedHeight = boundHeight * padding
+
+      cameraControls.target.copy(center)
+
+      const viewWidth = camera.right - camera.left
+      const viewHeight = camera.top - camera.bottom
+      const zoom = Math.min(viewWidth / paddedWidth, viewHeight / paddedHeight)
+      camera.position.copy(center.clone().add(offset))
+      camera.zoom = zoom
+
+      cameraControls.safeLookAtTarget()
+      camera.updateProjectionMatrix()
+      cameraControls.update(true)
+    },
+    [images]
+  )
 
   if (images.length === 0) {
     return null
@@ -83,7 +128,7 @@ export function ImagesList() {
           onVisibilityToggle={handleVisibilityToggle}
           onLockToggle={handleLockToggle}
           onDelete={handleDelete}
-          onLocate={handleLocate}
+          onFocus={isSketchMode ? handleFocus : undefined}
         />
       ))}
     </div>
@@ -95,7 +140,7 @@ interface ImageItemProps {
   onVisibilityToggle: (imagePath: string) => void | Promise<void>
   onLockToggle: (imagePath: string) => void | Promise<void>
   onDelete: (imagePath: string) => void | Promise<void>
-  onLocate: (imagePath: string) => void
+  onFocus?: (imagePath: string) => void
 }
 
 function ImageItem({
@@ -103,7 +148,7 @@ function ImageItem({
   onVisibilityToggle,
   onLockToggle,
   onDelete,
-  onLocate,
+  onFocus,
 }: ImageItemProps) {
   const visible = image.visible ?? true
   const locked = image.locked ?? false
@@ -117,14 +162,18 @@ function ImageItem({
     >
       Delete
     </ContextMenuItem>,
-    <ContextMenuItem
-      key="locate"
-      icon="search"
-      onClick={() => onLocate(image.path)}
-    >
-      Locate
-    </ContextMenuItem>,
   ]
+  if (onFocus) {
+    contextMenuItems.push(
+      <ContextMenuItem
+        key="focus"
+        icon="search"
+        onClick={() => onFocus(image.path)}
+      >
+        Focus
+      </ContextMenuItem>
+    )
+  }
 
   return (
     <div

@@ -6,7 +6,7 @@ import { Group, Mesh, MeshBasicMaterial } from 'three'
 import { RectangleUI } from '@src/clientSideScene/image/RectangleUI'
 import { getRotateCursor } from '@src/clientSideScene/image/cursorUtils'
 
-const UI_BLUE = 0x3b82f6
+const UI_BLUE = 0x3c73ff // chalkboard-80, oklch(0.6 0.2167 264.48), char0x3b82f6
 const UI_Z_OFFSET = 0.2
 const HANDLE_SIZE_PX = 6
 const EDGE_HIT_THICKNESS_PX = 3
