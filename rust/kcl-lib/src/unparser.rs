@@ -3260,4 +3260,21 @@ x = 1
         let expected = code;
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn inline_ifs() {
+        let code = "y = true
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> if y {
+    yLine(length = 1)
+  } else {
+    xLine(length = 1)
+  }
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
 }
