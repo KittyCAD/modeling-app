@@ -27,12 +27,14 @@ export type CmdBarSerialised =
 export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
+  public stepBackButton!: Locator
   public cmdBarElement!: Locator
   public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
+    this.stepBackButton = this.page.getByTestId('command-bar-step-back')
     this.cmdBarElement = this.page.getByTestId('command-bar')
     this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
       'command-bar-loading-checking-arguments'
