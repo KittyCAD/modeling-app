@@ -8,6 +8,10 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 export const deletionErrorMessage =
   'Unable to delete selection. Please edit manually in code pane.'
@@ -27,22 +31,49 @@ export async function deleteSelectionPromise({
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.
-  if (selection.artifact?.type === 'sketchBlock') {
+  if (
+    selection.artifact?.type === 'sketchBlock' ||
+    selection.artifact?.type === 'sketchConstraint'
+  ) {
+    let result:
+      | {
+          kclSource: SourceDelta
+          sceneGraphDelta: SceneGraphDelta
+        }
+      | undefined = undefined
     try {
-      const result = await systemDeps.rustContext.deleteSketch(
-        SKETCH_API_VERSION,
-        selection.artifact.sketchId,
-        await jsAppSettings(systemDeps.rustContext.settingsActor)
-      )
-      systemDeps.kclManager.updateCodeEditor(result.kclSource.text, {
-        shouldExecute: true,
-        shouldWriteToDisk: true,
-      })
-      return
+      const settings = await jsAppSettings(systemDeps.rustContext.settingsActor)
+      switch (selection.artifact.type) {
+        case 'sketchBlock':
+          result = await systemDeps.rustContext.deleteSketch(
+            SKETCH_API_VERSION,
+            selection.artifact.sketchId,
+            settings
+          )
+          break
+        case 'sketchConstraint':
+          result = await systemDeps.rustContext.deleteObjects(
+            SKETCH_API_VERSION,
+            selection.artifact.sketchId,
+            [selection.artifact.sketchConstraintId],
+            [],
+            settings
+          )
+          break
+        default:
+          const _exhaustiveCheck: never = selection.artifact
+          return new Error('Should never happen at runtime')
+      }
     } catch (e) {
       console.error('Error deleting sketch:', e)
       return e as Error
     }
+
+    systemDeps.kclManager.updateCodeEditor(result.kclSource.text, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    return
   }
 
   // AST based deletion, we should stop adding cases in there

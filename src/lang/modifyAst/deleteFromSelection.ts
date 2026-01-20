@@ -37,7 +37,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -152,28 +151,6 @@ export async function deleteFromSelection(
     const importIndex = selection.codeRef.pathToNode[1][0]
     astClone.body.splice(importIndex, 1)
     return astClone
-  }
-
-  // Sketch Solve Constraint case
-  const sketchBlock = getNodeFromPath<SketchBlock>(
-    astClone,
-    selection.codeRef.pathToNode,
-    wasmInstance,
-    'SketchBlock'
-  )
-  if (!err(sketchBlock) && sketchBlock.node.type === 'SketchBlock') {
-    const isItemInSketchBlock =
-      sketchBlock.deepPath.length > sketchBlock.shallowPath.length
-    const itemsIndex = -2 // index of items in body is second to last
-    const nodeIndex = sketchBlock.deepPath.at(itemsIndex)?.[0]
-    if (
-      isItemInSketchBlock &&
-      typeof nodeIndex === 'number' &&
-      sketchBlock.node.body.items[nodeIndex] !== undefined
-    ) {
-      sketchBlock.node.body.items.splice(nodeIndex, 1)
-      return astClone
-    }
   }
 
   // Below is all AST-based deletion logic
