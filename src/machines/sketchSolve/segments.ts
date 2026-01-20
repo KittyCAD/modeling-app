@@ -14,6 +14,7 @@ import {
   Group,
   Line,
   LineBasicMaterial,
+  Vector2,
   Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -34,12 +35,14 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 
+export type SegmentMode = 'normal' | 'draft' | 'construction'
+
 interface CreateSegmentArgs {
   input: SegmentCtor
   theme: Themes
   id: number
   scale: number
-  isDraft?: boolean
+  mode: SegmentMode
   freedom?: Freedom | null
 }
 
@@ -50,7 +53,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
-  isDraft?: boolean
+  mode: SegmentMode
   freedom?: Freedom | null
 }
 
@@ -108,13 +111,13 @@ class PointSegment implements SketchEntityUtils {
     status: {
       isSelected: boolean
       isHovered: boolean
-      isDraft?: boolean
+      mode: SegmentMode
       freedom?: Freedom | null
     }
   ): void {
     // Use color precedence system
     const color = getSegmentColor({
-      isDraft: status.isDraft,
+      mode: status.mode,
       isHovered: status.isHovered,
       isSelected: status.isSelected,
       freedom: status.freedom,
@@ -127,7 +130,7 @@ class PointSegment implements SketchEntityUtils {
     const rgbStr = `${r}, ${g}, ${b}`
 
     // Draft segments are grey
-    if (status.isDraft) {
+    if (status.mode === 'draft') {
       innerCircle.style.backgroundColor = '#888888'
       innerCircle.style.border = '0px solid #CCCCCC'
       return // draft styles take precedence
@@ -195,12 +198,12 @@ class PointSegment implements SketchEntityUtils {
     handleDiv.addEventListener('mouseenter', () => {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const isDraft = handleDiv.dataset.isDraft === 'true'
+      const mode = (handleDiv.dataset.mode as SegmentMode) || 'normal'
       const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
-        isDraft,
+        mode,
         freedom,
       })
     })
@@ -210,12 +213,12 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, isHovered)
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const isDraft = handleDiv.dataset.isDraft === 'true'
+      const mode = (handleDiv.dataset.mode as SegmentMode) || 'normal'
       const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered,
-        isDraft,
+        mode,
         freedom,
       })
     })
@@ -240,7 +243,7 @@ class PointSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      isDraft: args.isDraft,
+      mode: args.mode,
       freedom: args.freedom,
     })
     return segmentGroup
@@ -250,7 +253,7 @@ class PointSegment implements SketchEntityUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, scale, selectedIds, id, isDraft } = args
+    const { input, group, scale, selectedIds, id, mode } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -270,11 +273,12 @@ class PointSegment implements SketchEntityUtils {
       const freedom = args.freedom ?? group.userData.freedom ?? null
       // Update userData for consistency
       group.userData.freedom = freedom
+      group.userData.mode = mode
 
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
-      // Store draft state in data attribute for hover handlers
-      el.dataset.isDraft = String(isDraft ?? false)
+      // Store mode in data attribute for hover handlers
+      el.dataset.mode = mode
       // Store freedom state in data attribute for hover handlers
       el.dataset.freedom = freedom ?? ''
 
@@ -283,7 +287,7 @@ class PointSegment implements SketchEntityUtils {
         this.updatePointColors(innerCircle, {
           isSelected,
           isHovered: false,
-          isDraft,
+          mode,
           freedom,
         })
       }
@@ -299,13 +303,13 @@ class LineSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean,
+    mode: SegmentMode,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
-      isDraft,
+      mode,
       freedom,
     })
   }
@@ -332,10 +336,31 @@ class LineSegment implements SketchEntityUtils {
     const segmentGroup = new Group()
     const geometry = new LineGeometry()
     geometry.setPositions([startX, startY, 0, endX, endY, 0])
+    // Construction geometry uses dashed pattern
+    // LineMaterial uses screen-space units (pixels) when worldUnits is false
+    const isConstruction = args.mode === 'construction'
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: isConstruction, // Enables USE_DASH macro for custom shader
+      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      worldUnits: false, // Use screen-space units for consistent dash size
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
     })
+
+    // For construction geometry, inject custom screen-space dash shader
+    // This ensures dashes stay constant pixel size regardless of zoom
+    if (isConstruction) {
+      const lineStart = new Vector3(startX, startY, 0)
+      const lineEnd = new Vector3(endX, endY, 0)
+      setupConstructionDashShader(
+        material,
+        lineStart,
+        lineEnd,
+        `construction-dashed-${id}`
+      )
+    }
+
     const mesh = new Line2(geometry, material)
 
     mesh.userData.type = STRAIGHT_SEGMENT_BODY
@@ -343,6 +368,7 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
+      mode: args.mode,
     }
 
     segmentGroup.add(mesh)
@@ -357,7 +383,7 @@ class LineSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      isDraft: args.isDraft,
+      mode: args.mode,
       freedom: args.freedom,
     })
 
@@ -367,7 +393,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, mode } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -405,12 +431,63 @@ class LineSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Update userData for consistency
     group.userData.freedom = freedom
+    group.userData.mode = mode
+
+    // Update material dash pattern for construction geometry
+    const isConstruction = mode === 'construction'
+    if (straightSegmentBody.material instanceof LineMaterial) {
+      straightSegmentBody.material.dashed = isConstruction
+      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      if (isConstruction) {
+        // Update segment start/end uniforms for screen-space dash calculation
+        const lineStart = new Vector3(
+          input.start.x.value,
+          input.start.y.value,
+          0
+        )
+        const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
+        const uniforms = (straightSegmentBody.material as any).uniforms
+        if (uniforms) {
+          if (uniforms.uSegmentStart) {
+            uniforms.uSegmentStart.value = lineStart
+          }
+          if (uniforms.uSegmentEnd) {
+            uniforms.uSegmentEnd.value = lineEnd
+          }
+        }
+      } else {
+        // When not dashed, don't set dash properties to 0 - just leave them or set to defaults
+        // Setting to 0 might interfere with shader compilation
+      }
+      straightSegmentBody.material.worldUnits = false
+      // LineMaterial requires resolution to be set for proper rendering
+      if (!straightSegmentBody.material.resolution) {
+        straightSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        straightSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+      // Force material update to recompile shader if needed
+      straightSegmentBody.material.needsUpdate = true
+      // Also mark the material as needing a program update for shader recompilation
+      if (
+        'program' in straightSegmentBody.material &&
+        straightSegmentBody.material.program
+      ) {
+        ;(straightSegmentBody.material as any).program = null
+      }
+    }
 
     this.updateLineColors(
       straightSegmentBody,
       isSelected,
       isHovered,
-      isDraft,
+      mode,
       freedom
     )
   }
@@ -495,13 +572,13 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean,
+    mode: SegmentMode,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
-      isDraft,
+      mode,
       freedom,
     })
   }
@@ -575,10 +652,37 @@ class ArcSegment implements SketchEntityUtils {
 
     const segmentGroup = new Group()
     const geometry = new LineGeometry()
+    // Construction geometry uses dashed pattern
+    // LineMaterial uses screen-space units (pixels) when worldUnits is false
+    const isConstruction = args.mode === 'construction'
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: isConstruction, // Enables USE_DASH macro for custom shader
+      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      worldUnits: false, // Use screen-space units for consistent dash size
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
     })
+
+    // For construction geometry, inject custom screen-space dash shader
+    // This ensures dashes stay constant pixel size regardless of zoom
+    // For arcs, we use the center and start point to calculate constant radius
+    if (isConstruction) {
+      const arcData = this.extractArcData(input)
+      if (!(arcData instanceof Error)) {
+        const arcCenter = new Vector3(arcData.centerX, arcData.centerY, 0)
+        const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+        setupConstructionArcDashShader(
+          material,
+          arcCenter,
+          arcStart,
+          arcData.startAngle,
+          arcData.endAngle,
+          `construction-dashed-arc-${id}`
+        )
+      }
+    }
+
     const mesh = new Line2(geometry, material)
 
     mesh.userData.type = ARC_SEGMENT_BODY
@@ -586,6 +690,7 @@ class ArcSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
+      mode: args.mode,
     }
 
     segmentGroup.add(mesh)
@@ -600,7 +705,7 @@ class ArcSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      isDraft: args.isDraft,
+      mode: args.mode,
       freedom: args.freedom,
     })
 
@@ -608,7 +713,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, mode } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -649,14 +754,444 @@ class ArcSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Update userData for consistency
     group.userData.freedom = freedom
+    group.userData.mode = mode
 
-    this.updateArcColors(
-      arcSegmentBody,
-      isSelected,
-      isHovered,
-      isDraft,
-      freedom
+    // Update material dash pattern for construction geometry
+    const isConstruction = mode === 'construction'
+    if (arcSegmentBody.material instanceof LineMaterial) {
+      arcSegmentBody.material.dashed = isConstruction
+      // Note: dashSize/gapSize are not used - custom shader implements dot-dash pattern directly
+      if (isConstruction) {
+        // Update arc center and start uniforms for screen-space dash calculation
+        const arcCenter = new Vector3(centerX, centerY, 0)
+        const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+        const uniforms = (arcSegmentBody.material as any).uniforms
+        if (uniforms) {
+          if (uniforms.uArcCenter) {
+            uniforms.uArcCenter.value = arcCenter
+          }
+          if (uniforms.uArcStart) {
+            uniforms.uArcStart.value = arcStart
+          }
+          if (uniforms.uArcStartAngle) {
+            uniforms.uArcStartAngle.value = startAngle
+          }
+          if (uniforms.uArcEndAngle) {
+            uniforms.uArcEndAngle.value = endAngle
+          }
+        }
+      }
+      arcSegmentBody.material.worldUnits = false
+      // LineMaterial requires resolution to be set for proper rendering
+      if (!arcSegmentBody.material.resolution) {
+        arcSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        arcSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+      // Force material update to recompile shader if needed
+      arcSegmentBody.material.needsUpdate = true
+      // Also mark the material as needing a program update for shader recompilation
+      if (
+        'program' in arcSegmentBody.material &&
+        arcSegmentBody.material.program
+      ) {
+        ;(arcSegmentBody.material as any).program = null
+      }
+    }
+
+    this.updateArcColors(arcSegmentBody, isSelected, isHovered, mode, freedom)
+  }
+}
+
+/**
+ * Sets up a custom screen-space dot-dash shader for arc construction geometry.
+ * This calculates distance along the arc curve using a constant centerline radius,
+ * preventing skew that occurs when using per-fragment radius calculations.
+ */
+function setupConstructionArcDashShader(
+  material: LineMaterial,
+  arcCenter: Vector3,
+  arcStart: Vector3,
+  startAngle: number,
+  endAngle: number,
+  cacheKey: string
+): void {
+  // Set a unique cache key so each material gets its own shader program
+  material.customProgramCacheKey = () => cacheKey
+
+  material.onBeforeCompile = (shader) => {
+    // Add uniforms for arc center and start point (used to calculate constant radius)
+    shader.uniforms.uArcCenter = { value: arcCenter }
+    shader.uniforms.uArcStart = { value: arcStart }
+    shader.uniforms.uArcStartAngle = { value: startAngle }
+    shader.uniforms.uArcEndAngle = { value: endAngle }
+
+    // Add uniform declarations to vertex shader
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <common>',
+      `
+#include <common>
+uniform vec3 uArcCenter;
+uniform vec3 uArcStart;
+uniform float uArcStartAngle;
+uniform float uArcEndAngle;
+      `
     )
+
+    // Add varying declarations to vertex shader
+    const lastIncludeMatch = shader.vertexShader.match(
+      /(#include\s+<[\w]+>[\s\S]*?)$/m
+    )
+    if (lastIncludeMatch) {
+      shader.vertexShader = shader.vertexShader.replace(
+        lastIncludeMatch[0],
+        lastIncludeMatch[0] +
+          `
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
+        `
+      )
+    } else {
+      shader.vertexShader = shader.vertexShader.replace(
+        'void main() {',
+        `
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
+
+void main() {
+        `
+      )
+    }
+
+    // Calculate screen-space positions in vertex shader
+    shader.vertexShader = shader.vertexShader.replace(
+      'void main() {',
+      `
+void main() {
+  // Calculate screen-space positions for arc center and start
+  vec4 uArcCenterClip = projectionMatrix * modelViewMatrix * vec4(uArcCenter, 1.0);
+  vec4 uArcStartClip = projectionMatrix * modelViewMatrix * vec4(uArcStart, 1.0);
+  vec2 uArcCenterNDC = uArcCenterClip.xy / uArcCenterClip.w;
+  vec2 uArcStartNDC = uArcStartClip.xy / uArcStartClip.w;
+  vScreenArcCenter = (uArcCenterNDC * 0.5 + 0.5) * resolution;
+  vScreenArcStart = (uArcStartNDC * 0.5 + 0.5) * resolution;
+        `
+    )
+
+    // Add uniform and varying declarations to fragment shader
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <common>',
+      `
+#include <common>
+uniform float uArcStartAngle;
+uniform float uArcEndAngle;
+      `
+    )
+
+    const fragLastIncludeMatch = shader.fragmentShader.match(
+      /(#include\s+<[\w]+>[\s\S]*?)$/m
+    )
+    if (fragLastIncludeMatch) {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        fragLastIncludeMatch[0],
+        fragLastIncludeMatch[0] +
+          `
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
+        `
+      )
+    } else {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        'void main() {',
+        `
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
+
+void main() {
+        `
+      )
+    }
+
+    // Replace the dashing logic with screen-space dot-dash pattern for arcs
+    // Uses constant centerline radius to prevent skew across stroke width
+    const dashPattern =
+      /if\s*\(\s*mod\s*\(\s*vLineDistance[\s\S]*?\)\s*>\s*dashSize\s*\)\s*discard\s*;/
+    if (dashPattern.test(shader.fragmentShader)) {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        dashPattern,
+        `
+  // Screen-space dot-dash pattern for arcs: uses constant centerline radius
+  vec2 screenCenter = vScreenArcCenter;
+  vec2 screenStart = vScreenArcStart;
+  vec2 screenPos = gl_FragCoord.xy;
+  
+  // Calculate constant screen-space radius from center to start point
+  float R = length(screenStart - screenCenter);
+  
+  // Calculate angle from center to current fragment
+  vec2 toFragment = screenPos - screenCenter;
+  float fragmentAngle = atan(toFragment.y, toFragment.x);
+  
+  // Normalize angle to arc range and calculate arc length using constant radius
+  float angleFromStart = fragmentAngle - uArcStartAngle;
+  // Handle angle wrapping
+  if (angleFromStart > 3.14159) angleFromStart -= 6.28318;
+  if (angleFromStart < -3.14159) angleFromStart += 6.28318;
+  
+  // Calculate distance along arc using constant radius (prevents skew)
+  float screenDistance = R * abs(angleFromStart);
+  
+  // Pattern definition (in screen pixels)
+  float longDash = 8.0;
+  float shortDash = 2.0;
+  float gap = 6.0;
+  float patternLength = longDash + gap + shortDash + gap;
+  
+  // Find position within pattern cycle
+  float patternOffset = mod(screenDistance, patternLength);
+  
+  // Determine if we're in a dash or gap
+  bool inDash = false;
+  if (patternOffset < longDash) {
+    inDash = true;
+  } else if (patternOffset < longDash + gap) {
+    inDash = false;
+  } else if (patternOffset < longDash + gap + shortDash) {
+    inDash = true;
+  } else {
+    inDash = false;
+  }
+  
+  if (!inDash) discard;
+        `
+      )
+    } else {
+      // Fallback: replace the entire USE_DASH block
+      shader.fragmentShader = shader.fragmentShader.replace(
+        /#ifdef\s+USE_DASH[\s\S]*?#endif/,
+        `
+#ifdef USE_DASH
+  // Screen-space dot-dash pattern for arcs: uses constant centerline radius
+  vec2 screenCenter = vScreenArcCenter;
+  vec2 screenStart = vScreenArcStart;
+  vec2 screenPos = gl_FragCoord.xy;
+  
+  float R = length(screenStart - screenCenter);
+  vec2 toFragment = screenPos - screenCenter;
+  float fragmentAngle = atan(toFragment.y, toFragment.x);
+  float angleFromStart = fragmentAngle - uArcStartAngle;
+  if (angleFromStart > 3.14159) angleFromStart -= 6.28318;
+  if (angleFromStart < -3.14159) angleFromStart += 6.28318;
+  float screenDistance = R * abs(angleFromStart);
+  
+  float longDash = 8.0;
+  float shortDash = 2.0;
+  float gap = 6.0;
+  float patternLength = longDash + gap + shortDash + gap;
+  float patternOffset = mod(screenDistance, patternLength);
+  bool inDash = false;
+  if (patternOffset < longDash) {
+    inDash = true;
+  } else if (patternOffset < longDash + gap) {
+    inDash = false;
+  } else if (patternOffset < longDash + gap + shortDash) {
+    inDash = true;
+  } else {
+    inDash = false;
+  }
+  
+  if (!inDash) discard;
+#endif
+        `
+      )
+    }
+  }
+}
+
+/**
+ * Sets up a custom screen-space dot-dash shader for construction geometry.
+ * This function injects shader code that calculates dash patterns in screen pixels,
+ * ensuring dashes stay constant size regardless of zoom level.
+ *
+ * Works for straight segments (lines) that can be approximated by start and end points.
+ */
+function setupConstructionDashShader(
+  material: LineMaterial,
+  segmentStart: Vector3,
+  segmentEnd: Vector3,
+  cacheKey: string
+): void {
+  // Set a unique cache key so each material gets its own shader program
+  material.customProgramCacheKey = () => cacheKey
+
+  material.onBeforeCompile = (shader) => {
+    // Add uniforms for segment start/end positions in world space
+    shader.uniforms.uSegmentStart = { value: segmentStart }
+    shader.uniforms.uSegmentEnd = { value: segmentEnd }
+
+    // Add uniform declarations to vertex shader
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <common>',
+      `
+#include <common>
+uniform vec3 uSegmentStart;
+uniform vec3 uSegmentEnd;
+      `
+    )
+
+    // Add varying declarations to vertex shader (must be at top level, before main)
+    const lastIncludeMatch = shader.vertexShader.match(
+      /(#include\s+<[\w]+>[\s\S]*?)$/m
+    )
+    if (lastIncludeMatch) {
+      shader.vertexShader = shader.vertexShader.replace(
+        lastIncludeMatch[0],
+        lastIncludeMatch[0] +
+          `
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
+        `
+      )
+    } else {
+      // Fallback: add before main()
+      shader.vertexShader = shader.vertexShader.replace(
+        'void main() {',
+        `
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
+
+void main() {
+        `
+      )
+    }
+
+    // Calculate screen-space positions in vertex shader
+    shader.vertexShader = shader.vertexShader.replace(
+      'void main() {',
+      `
+void main() {
+  // Calculate screen-space positions for segment start/end
+  vec4 uSegmentStartClip = projectionMatrix * modelViewMatrix * vec4(uSegmentStart, 1.0);
+  vec4 uSegmentEndClip = projectionMatrix * modelViewMatrix * vec4(uSegmentEnd, 1.0);
+  vec2 uSegmentStartNDC = uSegmentStartClip.xy / uSegmentStartClip.w;
+  vec2 uSegmentEndNDC = uSegmentEndClip.xy / uSegmentEndClip.w;
+  vScreenSegmentStart = (uSegmentStartNDC * 0.5 + 0.5) * resolution;
+  vScreenSegmentEnd = (uSegmentEndNDC * 0.5 + 0.5) * resolution;
+        `
+    )
+
+    // Add varying declarations to fragment shader (must match vertex shader)
+    const fragLastIncludeMatch = shader.fragmentShader.match(
+      /(#include\s+<[\w]+>[\s\S]*?)$/m
+    )
+    if (fragLastIncludeMatch) {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        fragLastIncludeMatch[0],
+        fragLastIncludeMatch[0] +
+          `
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
+        `
+      )
+    } else {
+      // Fallback: add before main()
+      shader.fragmentShader = shader.fragmentShader.replace(
+        'void main() {',
+        `
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
+
+void main() {
+        `
+      )
+    }
+
+    // Replace the dashing logic with screen-space dot-dash pattern
+    // Pattern: 8px long dash, 6px gap, 2px short dash, 6px gap (repeat = 22px total)
+    const dashPattern =
+      /if\s*\(\s*mod\s*\(\s*vLineDistance[\s\S]*?\)\s*>\s*dashSize\s*\)\s*discard\s*;/
+    if (dashPattern.test(shader.fragmentShader)) {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        dashPattern,
+        `
+  // Screen-space dot-dash pattern: 8px long, 6px gap, 2px short, 6px gap (22px repeat)
+  vec2 screenStart = vScreenSegmentStart;
+  vec2 screenEnd = vScreenSegmentEnd;
+  vec2 screenPos = gl_FragCoord.xy;
+  vec2 lineDir = normalize(screenEnd - screenStart);
+  vec2 toFragment = screenPos - screenStart;
+  float screenDistance = dot(toFragment, lineDir);
+  
+  // Pattern definition (in screen pixels)
+  float longDash = 8.0;
+  float shortDash = 2.0;
+  float gap = 6.0;
+  float patternLength = longDash + gap + shortDash + gap;
+  
+  // Find position within pattern cycle
+  float patternOffset = mod(screenDistance, patternLength);
+  
+  // Determine if we're in a dash or gap
+  bool inDash = false;
+  if (patternOffset < longDash) {
+    // First long dash (0-8px)
+    inDash = true;
+  } else if (patternOffset < longDash + gap) {
+    // First gap (8-14px)
+    inDash = false;
+  } else if (patternOffset < longDash + gap + shortDash) {
+    // Short dash (14-16px)
+    inDash = true;
+  } else {
+    // Second gap (16-22px)
+    inDash = false;
+  }
+  
+  if (!inDash) discard;
+        `
+      )
+    } else {
+      // Fallback: replace the entire USE_DASH block
+      shader.fragmentShader = shader.fragmentShader.replace(
+        /#ifdef\s+USE_DASH[\s\S]*?#endif/,
+        `
+#ifdef USE_DASH
+  // Screen-space dot-dash pattern: 8px long, 6px gap, 2px short, 6px gap (22px repeat)
+  vec2 screenStart = vScreenSegmentStart;
+  vec2 screenEnd = vScreenSegmentEnd;
+  vec2 screenPos = gl_FragCoord.xy;
+  vec2 lineDir = normalize(screenEnd - screenStart);
+  vec2 toFragment = screenPos - screenStart;
+  float screenDistance = dot(toFragment, lineDir);
+  
+  float longDash = 8.0;
+  float shortDash = 2.0;
+  float gap = 6.0;
+  float patternLength = longDash + gap + shortDash + gap;
+  
+  float patternOffset = mod(screenDistance, patternLength);
+  bool inDash = false;
+  if (patternOffset < longDash) {
+    inDash = true;
+  } else if (patternOffset < longDash + gap) {
+    inDash = false;
+  } else if (patternOffset < longDash + gap + shortDash) {
+    inDash = true;
+  } else {
+    inDash = false;
+  }
+  
+  if (!inDash) discard;
+#endif
+        `
+      )
+    }
   }
 }
 
@@ -665,19 +1200,19 @@ function updateLineMaterial(
   {
     isSelected,
     isHovered,
-    isDraft,
+    mode,
     freedom,
   }: {
     isSelected: boolean
     isHovered: boolean
-    isDraft?: boolean
+    mode: SegmentMode
     freedom?: Freedom | null
   }
 ) {
   if (!material) return
 
   const color = getSegmentColor({
-    isDraft,
+    mode,
     isHovered,
     isSelected,
     freedom,
@@ -713,7 +1248,11 @@ export function updateSegmentHover(
   }
 
   const isSelected = selectedIds.includes(segmentId)
-  const isDraft = draftEntityIds?.includes(segmentId) ?? false
+  // Get mode from group userData, or determine from draftEntityIds as fallback
+  let mode: SegmentMode = group.userData.mode || 'normal'
+  if (!group.userData.mode && draftEntityIds?.includes(segmentId)) {
+    mode = 'draft'
+  }
   const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
@@ -723,7 +1262,7 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        isDraft,
+        mode,
         freedom
       )
     } else {
@@ -735,7 +1274,7 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        isDraft,
+        mode,
         freedom
       )
     } else {

@@ -9,6 +9,7 @@ import type {
 import {
   segmentUtilsMap,
   updateSegmentHover,
+  type SegmentMode,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import { Group, OrthographicCamera, Mesh } from 'three'
@@ -268,7 +269,23 @@ export function updateSegmentGroup({
     return
   }
 
-  const isDraft = draftEntityIds?.includes(idNum) ?? false
+  // Determine mode: check if draft, then check if construction, otherwise normal
+  let mode: SegmentMode = 'normal'
+  if (draftEntityIds?.includes(idNum)) {
+    mode = 'draft'
+  } else if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      const constructionValue = segmentObj.kind.segment.construction
+      if (constructionValue === true) {
+        mode = 'construction'
+      }
+    }
+  }
 
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
@@ -290,7 +307,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -301,7 +318,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -312,7 +329,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   }
@@ -337,6 +354,24 @@ function initSegmentGroup({
   isDraft?: boolean
   objects?: Array<ApiObject>
 }): Group | Error {
+  // Determine mode: check if draft, then check if construction, otherwise normal
+  let mode: SegmentMode = 'normal'
+  if (isDraft) {
+    mode = 'draft'
+  } else if (objects) {
+    const segmentObj = objects[id]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      const constructionValue = segmentObj.kind.segment.construction
+      if (constructionValue === true) {
+        mode = 'construction'
+      }
+    }
+  }
+
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
   if (objects) {
@@ -353,7 +388,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -362,7 +397,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -371,7 +406,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      mode,
       freedom: freedomResult,
     })
   }
