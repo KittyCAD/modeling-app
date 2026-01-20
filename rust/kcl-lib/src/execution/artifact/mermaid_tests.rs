@@ -126,7 +126,7 @@ impl Artifact {
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
                 }
-                if let Some(sweep_id_trajectory) = a.sweep_id_trajectory {
+                if let Some(sweep_id_trajectory) = a.trajectory_sweep_id {
                     ids.push(sweep_id_trajectory);
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
