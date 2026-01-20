@@ -256,6 +256,11 @@ export class CmdBarFixture {
     await submitButton.click()
   }
 
+  stepBack = async () => {
+    await this.page.waitForTimeout(1000)
+    await this.stepBackButton.click()
+  }
+
   openCmdBar = async () => {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()

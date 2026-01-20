@@ -834,6 +834,30 @@ export exported = 2`,
       },
     })
 
+    await cmdBar.clickOptionalArgument('bodyType')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: '',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+    await cmdBar.selectOption({ name: 'Solid' }).click()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+    })
+
     await cmdBar.clickOptionalArgument('method')
     await cmdBar.expectState({
       stage: 'arguments',
@@ -843,12 +867,28 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
         Method: '',
       },
       highlightedHeaderArg: 'method',
     })
+    // Here we specifically don't input anything, making the arg unvalidated
 
-    await cmdBar.stepBackButton.click()
+    await cmdBar.stepBack()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+
+    await cmdBar.stepBack()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
@@ -857,11 +897,12 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
       highlightedHeaderArg: 'length',
     })
 
-    await cmdBar.stepBackButton.click()
+    await cmdBar.stepBack()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
@@ -870,11 +911,12 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
       highlightedHeaderArg: 'Profiles',
     })
 
-    await cmdBar.stepBackButton.click()
+    await cmdBar.stepBack()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
 })
