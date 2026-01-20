@@ -2221,7 +2221,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       surface: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        multiple: false,
+        multiple: true,
         required: true,
       },
     },

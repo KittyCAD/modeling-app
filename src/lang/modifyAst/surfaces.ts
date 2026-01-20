@@ -38,8 +38,8 @@ export function addFlipSurface({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  if (surface.graphSelections.length !== 1) {
-    return new Error('flipSurface surface must have exactly one selection.')
+  if (surface.graphSelections.length < 1) {
+    return new Error('flipSurface surfaces must have at least one selection.')
   }
 
   const lastChildLookup = true
