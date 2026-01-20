@@ -2,7 +2,40 @@ import type { Vector3 } from 'three'
 import type { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 /**
- * Sets up a custom screen-space dashed shader for arc construction geometry.
+ * Customized shader for screen-space dashed construction geometry.
+ *
+ * WHY USE A CUSTOMIZED SHADER INSTEAD OF DEFAULT DASHED BEHAVIOR?
+ * ===============================================================
+ *
+ * LineMaterial's built-in `dashed` property uses world-space distance calculations
+ * (via `vLineDistance`), which means dash sizes scale with camera zoom. This is
+ * problematic for construction geometry where we want dashes to maintain constant
+ * pixel size regardless of zoom level.
+ *
+ * We use Three.js's standard `onBeforeCompile` hook with string replacement to
+ * customize the shader. This is a common pattern in Three.js that allows us to:
+ * - Leverage Three.js's built-in shader infrastructure and uniforms
+ * - Use LineMaterial's `dashSize` and `gapSize` properties
+ * - Only modify the specific calculation we need (distance calculation)
+ * - Avoid maintaining a completely custom shader from scratch
+ *
+ * The customization replaces world-space `vLineDistance` with screen-space
+ * distance calculations using `gl_FragCoord` and screen-space segment positions.
+ * This ensures dashes stay constant pixel size regardless of zoom.
+ *
+ * Without this customization, we would need to:
+ * - Dynamically update `dashSize`/`gapSize` based on camera zoom on every frame
+ * - Handle different scaling for orthographic vs perspective cameras
+ * - Deal with visual inconsistencies during zoom transitions
+ * - Still not achieve true pixel-perfect dashes
+ *
+ * This approach applies to both straight lines and arcs, with arcs requiring
+ * additional logic to calculate distance along the arc curve using a constant
+ * centerline radius to prevent skew across the stroke width.
+ */
+
+/**
+ * Sets up a customized screen-space dashed shader for arc construction geometry.
  * This calculates distance along the arc curve using a constant centerline radius,
  * preventing skew that occurs when using per-fragment radius calculations.
  *
@@ -177,11 +210,13 @@ void main() {
 }
 
 /**
- * Sets up a custom screen-space dashed shader for construction geometry.
+ * Sets up a customized screen-space dashed shader for construction geometry.
  * This function injects shader code that calculates dash patterns in screen pixels,
  * ensuring dashes stay constant size regardless of zoom level.
  *
  * Works for straight segments (lines) that can be approximated by start and end points.
+ * Uses LineMaterial's built-in `dashSize` and `gapSize` uniforms, but replaces
+ * world-space `vLineDistance` with screen-space distance calculations.
  */
 export function setupConstructionDashShader(
   material: LineMaterial,
