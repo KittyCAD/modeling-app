@@ -28,14 +28,5 @@ description: Variables in memory after executing asin_crash.kcl
       "len": "mm",
       "angle": "degrees"
     }
-  },
-  "x": {
-    "type": "Number",
-    "value": null,
-    "ty": {
-      "radians": null,
-      "type": "Known",
-      "type": "Angle"
-    }
   }
 }

@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing asin_crash.kcl
+---
+KCL Semantic error
+
+  × semantic: The argument must be between -1 and 1, but it was 265
+   ╭─[5:5]
+ 4 │ a = (270deg - tAngle):number(_)
+ 5 │ x = asin(a)
+   ·     ───┬───┬
+   ·        ╰── tests/asin_crash/input.kcl
+   ·        ╰── tests/asin_crash/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The argument must be between -1 and 1, but it was 265
+         ╭─[5:5]
+       4 │ a = (270deg - tAngle):number(_)
+       5 │ x = asin(a)
+         ·     ───┬───
+         ·        ╰── tests/asin_crash/input.kcl
+         ╰────

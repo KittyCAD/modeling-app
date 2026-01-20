@@ -172,6 +172,13 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the arcsine of a number (in radians).
 pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
+    let in_range = (-1.0..1.0).contains(&input.n);
+    if !in_range {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("The argument must be between -1 and 1, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
     let result = libm::asin(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))

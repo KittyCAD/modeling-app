@@ -89,35 +89,6 @@ description: Operations executed asin_crash.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": null,
-        "ty": {
-          "radians": null,
-          "type": "Known",
-          "type": "Angle"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     }
   ],
   "std::math": [
