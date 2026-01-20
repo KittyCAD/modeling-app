@@ -4,7 +4,7 @@
 
 This section applies to all potential contributors, internal and external to the Zoo team.
 
-### Installing dependencies
+### Installing system dependencies
 
 Install [asdf](https://asdf-vm.com/) to manage all the language runtimes used by this project.
 
@@ -19,13 +19,25 @@ asdf plugin add python
 asdf install
 ```
 
+Then install the Rust toolchain:
+
+```
+# macOS/Linux
+npm run install:rust
+
+# Windows
+npm run install:rust:windows
+```
+
+### Installing project dependencies
+
 Install the NPM dependencies with:
 
 ```
 npm install
 ```
 
-This project uses a lot of Rust compiled to [Wasm](https://webassembly.org/) within it. Make sure Rust is installed (via asdf using `.tool-versions` or your preferred method), then install wasm-pack:
+This project uses a lot of Rust compiled to [Wasm](https://webassembly.org/) within it using wasm-pack:
 
 ```
 npm run install:wasm-pack:cargo

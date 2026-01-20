@@ -26,6 +26,18 @@ else
 WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
 endif
 
+.PHONY: bootstrap
+bootstrap:
+	asdf plugin add just
+	asdf plugin add nodejs
+	asdf plugin add python
+	asdf install
+ifdef WINDOWS
+	npm run install:rust:windows
+else
+	npm run install:rust
+endif
+
 .PHONY: install
 install: node_modules/.package-lock.json $(WASM_PACK) ## Install dependencies
 
