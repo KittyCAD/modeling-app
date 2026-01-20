@@ -41,7 +41,7 @@ flowchart LR
   22["SweepEdge Adjacent"]
   23["SweepEdge Opposite"]
   24["SweepEdge Adjacent"]
-  1 x--> 10
+  1 --- 10
   2 --- 3
   3 --- 4
   3 --- 5
