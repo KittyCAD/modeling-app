@@ -232,14 +232,24 @@ pub(crate) async fn inner_subtract(
     Ok(new_solids)
 }
 
-/// Imprint multiple bodies into one.
-/// From the outside, the result looks visually similar to a union, but where the two solids overlap,
-/// their interiors aren't merged. The internal shells of each solid are maintained. If you then deleted all
-/// the faces of shape A, you'd still be left with all the faces of shape B.
-pub async fn imprint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let bodies: Vec<Solid> = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
+/// Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.
+pub async fn split(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let targets: Vec<Solid> = args.get_unlabeled_kw_arg("targets", &RuntimeType::solids(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tools: Option<Vec<Solid>> = args.get_kw_arg_opt("tools", &RuntimeType::solids(), exec_state)?;
+    let tools = tools.unwrap_or_default();
+    let merge: bool = args.get_kw_arg("merge", &RuntimeType::bool(), exec_state)?;
 
+    if !merge {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Zoo currently only supports merge = true for split".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut bodies = Vec::with_capacity(targets.len() + tools.len());
+    bodies.extend(targets);
+    bodies.extend(tools);
     if bodies.len() < 2 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "At least two bodies are required for an Imprint operation.".to_string(),

@@ -1,6 +1,6 @@
 [package]
 name = "kcl-error"
-version = "0.1.120"
+version = "0.1.121"
 edition = "2024"
 description = "KCL error definitions"
 license = "MIT"

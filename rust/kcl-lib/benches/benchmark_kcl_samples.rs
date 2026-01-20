@@ -6,7 +6,7 @@ use std::{
 
 use criterion::{Criterion, criterion_group, criterion_main};
 
-const IGNORE_DIRS: [&str; 2] = ["step", "screenshots"];
+const IGNORE_DIRS: [&str; 3] = ["step", "screenshots", "models"];
 
 fn discover_benchmark_dirs(base_path: &Path) -> Vec<PathBuf> {
     let mut benchmark_dirs = Vec::new();
