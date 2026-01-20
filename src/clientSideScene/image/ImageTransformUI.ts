@@ -72,37 +72,37 @@ export class ImageTransformUI {
     this._edgeHitAreas = {
       top: this.createHitArea({
         type: IMAGE_TRANSFORM_EDGE,
-        edge: 'top',
+        target: 'top',
       }),
       right: this.createHitArea({
         type: IMAGE_TRANSFORM_EDGE,
-        edge: 'right',
+        target: 'right',
       }),
       bottom: this.createHitArea({
         type: IMAGE_TRANSFORM_EDGE,
-        edge: 'bottom',
+        target: 'bottom',
       }),
       left: this.createHitArea({
         type: IMAGE_TRANSFORM_EDGE,
-        edge: 'left',
+        target: 'left',
       }),
     }
     this._cornerHitAreas = {
       topLeft: this.createHitArea({
         type: IMAGE_TRANSFORM_CORNER,
-        corner: 'topLeft',
+        target: 'top-left',
       }),
       topRight: this.createHitArea({
         type: IMAGE_TRANSFORM_CORNER,
-        corner: 'topRight',
+        target: 'top-right',
       }),
       bottomLeft: this.createHitArea({
         type: IMAGE_TRANSFORM_CORNER,
-        corner: 'bottomLeft',
+        target: 'bottom-left',
       }),
       bottomRight: this.createHitArea({
         type: IMAGE_TRANSFORM_CORNER,
-        corner: 'bottomRight',
+        target: 'bottom-right',
       }),
     }
 
@@ -143,6 +143,7 @@ export class ImageTransformUI {
 
   public update(image: ImageEntry) {
     const { width, height, x, y, visible } = image
+    this.container.userData.image = image
     this.container.visible = visible
     this.container.position.set(x, y, UI_Z_OFFSET)
 
@@ -191,10 +192,10 @@ export function getImageTransformCursor(object: unknown): string | null {
     return null
   }
   const target = object as {
-    userData?: { type?: string; edge?: string; corner?: string }
+    userData?: { type?: string; target?: string }
   }
   if (target.userData?.type === IMAGE_TRANSFORM_EDGE) {
-    switch (target.userData.edge) {
+    switch (target.userData.target) {
       case 'left':
       case 'right':
         return 'ew-resize'
@@ -206,12 +207,12 @@ export function getImageTransformCursor(object: unknown): string | null {
     }
   }
   if (target.userData?.type === IMAGE_TRANSFORM_CORNER) {
-    switch (target.userData.corner) {
-      case 'topLeft':
-      case 'bottomRight':
+    switch (target.userData.target) {
+      case 'top-left':
+      case 'bottom-right':
         return 'nwse-resize'
-      case 'topRight':
-      case 'bottomLeft':
+      case 'top-right':
+      case 'bottom-left':
         return 'nesw-resize'
       default:
         return null

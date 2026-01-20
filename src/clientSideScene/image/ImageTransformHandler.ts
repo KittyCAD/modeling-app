@@ -6,7 +6,11 @@ import type {
 import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/ImageRenderer'
 import type { Coords2d } from '@src/lang/util'
 import { Vector2 } from 'three'
-import { ImageTransformUI } from '@src/clientSideScene/image/ImageTransformUI'
+import {
+  IMAGE_TRANSFORM_CORNER,
+  IMAGE_TRANSFORM_EDGE,
+  ImageTransformUI,
+} from '@src/clientSideScene/image/ImageTransformUI'
 
 type DraggingInfo = {
   image: ImageEntry
@@ -15,12 +19,26 @@ type DraggingInfo = {
   moved: boolean
 }
 
+type ResizingInfo = {
+  image: ImageEntry
+  target:
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-right'
+}
+
 export class ImageTransformHandler {
   private readonly _imageManager: ImageManager
   private readonly _sceneInfra: SceneInfra
 
   private _selected: ImageEntry | undefined
   private _dragging: DraggingInfo | undefined
+  private _resizing: ResizingInfo | undefined
 
   private _ui: ImageTransformUI | undefined
 
@@ -50,7 +68,7 @@ export class ImageTransformHandler {
       const isReferenceImage =
         selected?.object.parent?.name === IMAGE_RENDERER_GROUP
       if (isReferenceImage) {
-        // Start drag
+        // Start dragging the image
         const image = selected.object.userData.image as ImageEntry
         this._dragging = {
           image,
@@ -60,6 +78,21 @@ export class ImageTransformHandler {
         }
         this.setSelected(image)
         return true
+      } else {
+        const image = selected?.object.parent?.userData.image as ImageEntry
+        if (image) {
+          // Start dragging one of the resize handles
+          const resizing =
+            selected?.object.userData.type === IMAGE_TRANSFORM_EDGE ||
+            selected?.object.userData.type === IMAGE_TRANSFORM_CORNER
+          if (resizing) {
+            this._resizing = {
+              image,
+              target: selected?.object.userData.target,
+            }
+          }
+          // TODO implement
+        }
       }
     }
     return false
@@ -69,29 +102,34 @@ export class ImageTransformHandler {
     selected: SceneInfra['selected'],
     intersectionPoint: Vector2 | undefined
   ) {
-    if (this._dragging && intersectionPoint) {
-      const diff = intersectionPoint
-        .clone()
-        .sub(new Vector2(...this._dragging.mousePosAtStartDrag))
-      const x = this._dragging.imagePosAtStartDrag[0] + diff.x
-      const y = this._dragging.imagePosAtStartDrag[1] + diff.y
-      selected?.object.position.set(x, y, 1)
+    if (intersectionPoint) {
+      if (this._dragging) {
+        const diff = intersectionPoint
+          .clone()
+          .sub(new Vector2(...this._dragging.mousePosAtStartDrag))
+        const x = this._dragging.imagePosAtStartDrag[0] + diff.x
+        const y = this._dragging.imagePosAtStartDrag[1] + diff.y
+        selected?.object.position.set(x, y, 1)
 
-      this._dragging.image.x = x
-      this._dragging.image.y = y
-      this._dragging.moved = true
-      this.updateUI()
+        this._dragging.image.x = x
+        this._dragging.image.y = y
+        this._dragging.moved = true
+        this.updateUI()
 
-      return true
-    } else {
-      return false
+        return true
+      } else if (this._resizing) {
+        // TODO implement
+        return true
+      }
     }
+    return false
   }
 
   public processDragEnd() {
     if (this._dragging) {
       this.setSelected(this._dragging.image)
       this._dragging = undefined
+      this._resizing = undefined
       void this._imageManager.saveToFile()
       return true
     } else {
