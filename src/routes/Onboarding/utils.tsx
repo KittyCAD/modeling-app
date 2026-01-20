@@ -376,7 +376,6 @@ export function TutorialRequestToast(
   const quickTipSrc = (index: number) =>
     `/quick-tip${props.theme === Themes.Light ? '-light' : ''}-${index}.jpg`
 
-  console.log('xxxxxxxxxxxxxx')
   return (
     <div
       data-testid="onboarding-toast"

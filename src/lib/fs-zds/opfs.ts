@@ -84,10 +84,8 @@ const scan = async (
     handle: [string, FileSystemDirectoryHandle | FileSystemFileHandle]
   ) => Promise<void>
 ): Promise<[string, string][]> => {
-  console.log('scan', targetPath)
   const startingPoint = await walk(targetPath)
 
-  console.log(startingPoint)
   if (startingPoint === undefined) return Promise.reject('ENOENT')
   if (!(startingPoint instanceof FileSystemDirectoryHandle))
     return Promise.reject('ENOTDIR')
@@ -99,8 +97,6 @@ const scan = async (
       [string, FileSystemDirectoryHandle | FileSystemFileHandle]
     >,
   ][] = [[targetPath, await startingPoint.entries()]]
-
-  console.log('looping entries')
 
   while (asyncIters.length > 0) {
     const asyncIter = asyncIters.pop()
@@ -247,15 +243,12 @@ const readFile = async <T extends ReadFileOptions>(
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   const parts = targetPath.split(path.sep)
 
-  console.log(targetPath, parts)
   if (options?.recursive === true) {
     let current = navigator.storage.getDirectory()
     for (const part of parts) {
       // Indicative we're at /
-      console.log(part)
       if (part === '') continue
       // await
-      console.log('creating', part)
       current = (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
@@ -302,7 +295,6 @@ const writeFile = async (
     create: true,
   })
   const writer = await (await handleFile).createWritable()
-  console.log('xxxxxxxssssssss', data)
   console.trace()
   await writer.write(new Blob([data], { type: 'application/octet-stream' }))
   await writer.close()
@@ -340,22 +332,17 @@ const rename = async (
   sourcePath: string,
   targetPath: string
 ): Promise<undefined> => {
-  console.log('rename', sourcePath, targetPath)
-
   const handle = await walk(sourcePath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
   if (handle instanceof FileSystemFileHandle) {
     await cp(sourcePath, targetPath)
     await rm(sourcePath)
-    console.log('rename file')
   } else {
-    console.log('about to rename directory')
     await mkdir(targetPath)
     await cp(sourcePath, targetPath)
     await rm(sourcePath, { recursive: true })
   }
-  console.log('done')
   return undefined
 }
 
