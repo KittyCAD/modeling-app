@@ -19,7 +19,7 @@ describe('getSweepArtifactFromSelection', () => {
       planeId: 'plane-1',
       segIds: ['segment-1'],
       sweepId: 'sweep-1',
-      sweepIdTrajectory: null,
+      trajectorySweepId: null,
     }
 
     const sweep: Artifact = {
@@ -155,7 +155,7 @@ describe('coerceSelectionsToBody', () => {
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',
       segIds: [],
-      sweepIdTrajectory: null,
+      trajectorySweepId: null,
     }
     artifactGraph.set('path-1', path)
 
@@ -189,7 +189,7 @@ describe('coerceSelectionsToBody', () => {
       planeId: 'plane-1',
       segIds: ['segment-1'],
       sweepId: 'sweep-1',
-      sweepIdTrajectory: null,
+      trajectorySweepId: null,
     }
 
     const sweep: Artifact = {

@@ -110,7 +110,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
       const pathArtifact2: Artifact = {
         id: 'path-2',
@@ -123,7 +123,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -212,7 +212,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -366,7 +366,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -434,7 +434,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -510,7 +510,7 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
-        sweepIdTrajectory: null,
+        trajectorySweepId: null,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
