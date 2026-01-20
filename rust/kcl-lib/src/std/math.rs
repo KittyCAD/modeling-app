@@ -17,6 +17,13 @@ use crate::{
 pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let n: TyF64 = args.get_unlabeled_kw_arg("number to divide", &RuntimeType::num_any(), exec_state)?;
     let d: TyF64 = args.get_kw_arg("divisor", &RuntimeType::num_any(), exec_state)?;
+    let valid_d = d.n != 0.0;
+    if !valid_d {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Divisor cannot be 0"),
+            vec![args.source_range],
+        )));
+    }
 
     let (n, d, ty) = NumericType::combine_mod(n, d);
     if ty == NumericType::Unknown {
@@ -164,6 +171,13 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the arccosine of a number (in radians).
 pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
+    let in_range = (-1.0..1.0).contains(&input.n);
+    if !in_range {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("The argument must be between -1 and 1, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
     let result = libm::acos(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -210,6 +224,27 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
     let base: TyF64 = args.get_kw_arg("base", &RuntimeType::count(), exec_state)?;
+    let valid_input = input.n > 0.0;
+    if !valid_input {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Input must be > 0, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
+    let valid_base = base.n > 0.0;
+    if !valid_base {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Base must be > 0, but it was {}", base.n),
+            vec![args.source_range],
+        )));
+    }
+    let base_not_1 = base.n != 1.0;
+    if !base_not_1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Base cannot be 1"),
+            vec![args.source_range],
+        )));
+    }
     let result = input.n.log(base.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
@@ -218,6 +253,13 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the base 2 logarithm of the number.
 pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
+    let valid_input = input.n > 0.0;
+    if !valid_input {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Input must be > 0, but it was {}", input.n),
+            vec![args.source_range],
+        )));
+    }
     let result = input.n.log2();
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
