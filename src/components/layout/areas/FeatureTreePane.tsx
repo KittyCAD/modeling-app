@@ -66,6 +66,7 @@ import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
+import { sendDeleteCommand } from '@src/lib/featureTree'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
@@ -663,11 +664,17 @@ const OperationItem = (props: OperationProps) => {
       props.item.type === 'VariableDeclaration' ||
       props.item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'deleteOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
+      const maybeArtifact =
+        getArtifactFromRange(
+          props.item.sourceRange,
+          kclManager.artifactGraph
+        ) ?? undefined
+      sendDeleteCommand({
+        artifact: maybeArtifact,
+        targetSourceRange: props.item.sourceRange,
+        systemDeps,
+      }).catch((e) => {
+        toast.error(e)
       })
     }
   }

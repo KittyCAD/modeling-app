@@ -2,13 +2,6 @@ import toast from 'react-hot-toast'
 import { assign, fromPromise, setup } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-
-import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from '@src/lang/modifyAst/deleteSelection'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
@@ -26,10 +19,6 @@ type FeatureTreeEvent =
     }
   | {
       type: 'selectOperation'
-      data: { targetSourceRange: SourceRange }
-    }
-  | {
-      type: 'deleteOperation'
       data: { targetSourceRange: SourceRange }
     }
   | {
@@ -98,50 +87,6 @@ export const featureTreeMachine = setup({
                 return
               }
               input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
-    sendDeleteCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: {
-          artifact: Artifact | undefined
-          targetSourceRange: SourceRange | undefined
-          systemDeps: {
-            kclManager: KclManager
-            rustContext: RustContext
-            sceneEntitiesManager: SceneEntities
-          }
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { targetSourceRange, artifact } = input
-          if (!targetSourceRange) {
-            reject(new Error(deletionErrorMessage))
-            return
-          }
-
-          const pathToNode = getNodePathFromSourceRange(
-            input.systemDeps.kclManager.ast,
-            targetSourceRange
-          )
-          const selection = {
-            codeRef: {
-              range: targetSourceRange,
-              pathToNode,
-            },
-            artifact,
-          }
-          deleteSelectionPromise({ selection, systemDeps: input.systemDeps })
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
               resolve(result)
             })
             .catch(reject)
@@ -239,11 +184,6 @@ export const featureTreeMachine = setup({
             'saveCurrentOperation',
             'sendSelectionEvent',
           ],
-        },
-
-        deleteOperation: {
-          target: 'deletingOperation',
-          actions: ['saveTargetSourceRange'],
         },
 
         goToError: 'goingToError',
@@ -401,54 +341,6 @@ export const featureTreeMachine = setup({
       },
 
       initial: 'prepareEditCommand',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    deletingOperation: {
-      states: {
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        deletingSelection: {
-          invoke: {
-            src: 'sendDeleteCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    context.kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                artifact,
-                targetSourceRange: context.targetSourceRange,
-                systemDeps: {
-                  kclManager: context.kclManager,
-                  rustContext: context.rustContext,
-                  sceneEntitiesManager: context.sceneEntitiesManager,
-                },
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'deletingSelection',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],
     },
