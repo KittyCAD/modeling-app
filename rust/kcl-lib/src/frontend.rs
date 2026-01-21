@@ -5,7 +5,6 @@ use std::{
 };
 
 use indexmap::IndexMap;
-
 use kcl_error::SourceRange;
 
 use crate::{
