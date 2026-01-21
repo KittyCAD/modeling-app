@@ -36,9 +36,11 @@ export class ImageManager {
   }
 
   /**
-   * Signal that increments whenever images are added, deleted, or modified
+   * Signal that increments whenever images are added, deleted, or modified (position, locked, etc)
    */
   readonly imagesChanged = signal(0)
+
+  readonly selected = signal<ImageEntry | undefined>(undefined)
 
   private images:
     | {
@@ -77,6 +79,10 @@ export class ImageManager {
         }
       }
     })
+  }
+
+  public setSelected(image: ImageEntry | undefined) {
+    this.selected.value = image
   }
 
   public getImages() {
@@ -143,16 +149,29 @@ export class ImageManager {
         (img) => img.fileName === imageFileName
       )
       if (index >= 0) {
-        this.images.list[index] = {
-          ...this.images.list[index],
-          ...imageUpdate,
-        }
+        const image = this.images.list[index]
+        // Note: creating a new object is possible too but then we need to stop keeping references to
+        // ImageEntry in mesh.userData and ImageList.tsx
+        Object.assign(image, imageUpdate)
+        this.unselectImageIfLocked()
         await this.saveToFile()
       } else {
         console.error("Can't find image data, maybe project has been closed?")
       }
     } else {
       console.error("Can't find images list, maybe project has been closed?")
+    }
+  }
+
+  private unselectImageIfLocked() {
+    const selected = this.selected.value
+    if (selected) {
+      const selectedImage = this.images?.list.find(
+        (image) => image.fileName === this.selected.value?.fileName
+      )
+      if (selectedImage?.locked) {
+        this.selected.value = undefined
+      }
     }
   }
 

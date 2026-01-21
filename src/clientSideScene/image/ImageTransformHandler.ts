@@ -62,7 +62,6 @@ export class ImageTransformHandler {
   private readonly _imageManager: ImageManager
   private readonly _sceneInfra: SceneInfra
 
-  private _selected: ImageEntry | undefined
   private _dragging: DraggingInfo | undefined
   private _resizing: ResizingInfo | undefined
   private _rotating: RotatingInfo | undefined
@@ -84,6 +83,8 @@ export class ImageTransformHandler {
     globalThis.addEventListener('keydown', this.onModifierChange)
     globalThis.addEventListener('keyup', this.onModifierChange)
     globalThis.addEventListener('blur', this.onModifierReset)
+
+    imageManager.selected.subscribe(this.onSelectionChange)
 
     this.updateSelection()
   }
@@ -117,7 +118,7 @@ export class ImageTransformHandler {
           mousePosAtStartDrag: [intersectionPoint.x, intersectionPoint.y],
           moved: false,
         }
-        this.setSelected(image)
+        this._imageManager.setSelected(image)
         return true
       } else {
         if (image) {
@@ -149,7 +150,7 @@ export class ImageTransformHandler {
             }
             this._dragging = undefined
             this._rotating = undefined
-            this.setSelected(image)
+            this._imageManager.setSelected(image)
             this.applyResize(intersectionPoint)
             return true
           }
@@ -168,7 +169,7 @@ export class ImageTransformHandler {
             }
             this._dragging = undefined
             this._resizing = undefined
-            this.setSelected(image)
+            this._imageManager.setSelected(image)
             this.applyRotation(intersectionPoint)
             return true
           }
@@ -214,27 +215,24 @@ export class ImageTransformHandler {
     if (this._dragging || this._resizing || this._rotating) {
       const image =
         this._dragging?.image ?? this._resizing?.image ?? this._rotating?.image
-      this.setSelected(image)
+      this._imageManager.setSelected(image)
       this._dragging = undefined
       this._resizing = undefined
       this._rotating = undefined
       void this._imageManager.saveToFile()
       return true
     } else {
-      this.setSelected(undefined)
+      this._imageManager.setSelected(undefined)
       return false
     }
   }
 
-  private setSelected(value: ImageEntry | undefined) {
-    if (this._selected !== value) {
-      this._selected = value
-      if (this._selected) {
-        this.attachUI()
-        this.updateUI()
-      } else {
-        this.detachUI()
-      }
+  private readonly onSelectionChange = (selected: ImageEntry | undefined) => {
+    if (selected) {
+      this.attachUI()
+      this.updateUI()
+    } else {
+      this.detachUI()
     }
   }
 
@@ -253,10 +251,11 @@ export class ImageTransformHandler {
   }
 
   private readonly updateUI = () => {
-    if (!this._selected || !this._ui) {
+    const selected = this._imageManager.selected.value
+    if (!selected || !this._ui) {
       return
     }
-    this._ui.update(this._selected)
+    this._ui.update(selected)
   }
 
   private readonly onModifierChange = (event: KeyboardEvent) => {
