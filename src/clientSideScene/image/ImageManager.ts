@@ -55,6 +55,7 @@ export class ImageManager {
     settingsActor.subscribe((state) => {
       const projectPath = state.context.currentProject?.path ?? ''
       if (projectPath !== currentPathValue) {
+        currentPathValue = projectPath
         if (projectPath) {
           readImagesJSON(projectPath)
             .then((imageFileContent) => {
