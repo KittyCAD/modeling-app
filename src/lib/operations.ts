@@ -1792,7 +1792,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   flipSurface: {
     label: 'Flip Surface',
-    icon: 'rotate', // TODO: fix
+    icon: 'flipSurface',
     supportsAppearance: true,
     supportsTransform: true,
   },

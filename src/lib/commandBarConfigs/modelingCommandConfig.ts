@@ -2192,7 +2192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Flip Surface': {
     description:
       'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
-    icon: 'rotate', // TODO: Update
+    icon: 'flipSurface',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {

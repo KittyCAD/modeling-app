@@ -391,6 +391,50 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'surface',
+        array: [
+          {
+            id: 'flip-surface',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Flip Surface', groupId: 'modeling' },
+              }),
+            icon: 'flipSurface',
+            status: 'available',
+            title: 'Flip Surface',
+            description:
+              'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-flipSurface'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'join-surfaces',
+            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Join Surfaces',
+            description: 'Join surfaces together',
+            links: [],
+          },
+          {
+            id: 'delete-face',
+            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Delete Face',
+            description: 'Deletes a face from a body, leaving an open surface.',
+            links: [],
+          },
+        ],
+      },
       'break',
       {
         id: 'planes',
@@ -562,27 +606,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               {
                 label: 'API docs',
                 url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
-              },
-            ],
-          },
-          {
-            id: 'flip-surface',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Flip Surface', groupId: 'modeling' },
-              }),
-            icon: 'rotate', // TODO: Update
-            status: 'available',
-            title: 'Flip Surface',
-            description:
-              'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-flipSurface'
-                ),
               },
             ],
           },
