@@ -329,6 +329,7 @@ const OperationItemWrapper = memo(
     errors?: Diagnostic[]
     selectable?: boolean
     greyedOut?: boolean
+    onContextMenu?: (e: MouseEvent) => void
   } & OpValueProps) => {
     const menuRef = useRef<HTMLDivElement>(null)
 
@@ -384,7 +385,13 @@ const OperationItemWrapper = memo(
         </button>
         {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
         {menuItems && (
-          <ContextMenu menuTargetElement={menuRef} items={menuItems} />
+          <ContextMenu
+            menuTargetElement={menuRef}
+            items={menuItems}
+            callback={(e) => {
+              props.onContextMenu?.(e)
+            }}
+          />
         )}
       </div>
     )
