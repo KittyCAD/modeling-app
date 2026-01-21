@@ -67,7 +67,9 @@ export function setupConstructionArcDashShader(
     shader.uniforms.uArcStartAngle = { value: startAngle }
     shader.uniforms.uArcEndAngle = { value: endAngle }
 
-    // Add uniform declarations to vertex shader
+    // Add uniform and varying declarations to vertex shader
+    // In GLSL, both can be placed anywhere in global scope (before use)
+    // Placing them together right after #include <common> is simpler and clearer
     shader.vertexShader = shader.vertexShader.replace(
       '#include <common>',
       `
@@ -76,33 +78,10 @@ uniform vec3 uArcCenter;
 uniform vec3 uArcStart;
 uniform float uArcStartAngle;
 uniform float uArcEndAngle;
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
       `
     )
-
-    // Add varying declarations to vertex shader
-    const lastIncludeMatch = shader.vertexShader.match(
-      /(#include\s+<[\w]+>[\s\S]*?)$/m
-    )
-    if (lastIncludeMatch) {
-      shader.vertexShader = shader.vertexShader.replace(
-        lastIncludeMatch[0],
-        lastIncludeMatch[0] +
-          `
-varying vec2 vScreenArcCenter;
-varying vec2 vScreenArcStart;
-        `
-      )
-    } else {
-      shader.vertexShader = shader.vertexShader.replace(
-        'void main() {',
-        `
-varying vec2 vScreenArcCenter;
-varying vec2 vScreenArcStart;
-
-void main() {
-        `
-      )
-    }
 
     // Calculate screen-space positions in vertex shader
     shader.vertexShader = shader.vertexShader.replace(
@@ -120,38 +99,18 @@ void main() {
     )
 
     // Add uniform and varying declarations to fragment shader
+    // In GLSL, both can be placed anywhere in global scope (before use)
+    // Placing them together right after #include <common> is simpler and clearer
     shader.fragmentShader = shader.fragmentShader.replace(
       '#include <common>',
       `
 #include <common>
 uniform float uArcStartAngle;
 uniform float uArcEndAngle;
+varying vec2 vScreenArcCenter;
+varying vec2 vScreenArcStart;
       `
     )
-
-    const fragLastIncludeMatch = shader.fragmentShader.match(
-      /(#include\s+<[\w]+>[\s\S]*?)$/m
-    )
-    if (fragLastIncludeMatch) {
-      shader.fragmentShader = shader.fragmentShader.replace(
-        fragLastIncludeMatch[0],
-        fragLastIncludeMatch[0] +
-          `
-varying vec2 vScreenArcCenter;
-varying vec2 vScreenArcStart;
-        `
-      )
-    } else {
-      shader.fragmentShader = shader.fragmentShader.replace(
-        'void main() {',
-        `
-varying vec2 vScreenArcCenter;
-varying vec2 vScreenArcStart;
-
-void main() {
-        `
-      )
-    }
 
     // Replace vLineDistance (world-space) with screen-space distance calculation for arcs
     // Uses constant centerline radius to prevent skew across stroke width
@@ -241,41 +200,19 @@ export function setupConstructionLineDashShader(
     shader.uniforms.uSegmentStart = { value: segmentStart }
     shader.uniforms.uSegmentEnd = { value: segmentEnd }
 
-    // Add uniform declarations to vertex shader
+    // Add uniform and varying declarations to vertex shader
+    // In GLSL, both can be placed anywhere in global scope (before use)
+    // Placing them together right after #include <common> is simpler and clearer
     shader.vertexShader = shader.vertexShader.replace(
       '#include <common>',
       `
 #include <common>
 uniform vec3 uSegmentStart;
 uniform vec3 uSegmentEnd;
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
       `
     )
-
-    // Add varying declarations to vertex shader (must be at top level, before main)
-    const lastIncludeMatch = shader.vertexShader.match(
-      /(#include\s+<[\w]+>[\s\S]*?)$/m
-    )
-    if (lastIncludeMatch) {
-      shader.vertexShader = shader.vertexShader.replace(
-        lastIncludeMatch[0],
-        lastIncludeMatch[0] +
-          `
-varying vec2 vScreenSegmentStart;
-varying vec2 vScreenSegmentEnd;
-        `
-      )
-    } else {
-      // Fallback: add before main()
-      shader.vertexShader = shader.vertexShader.replace(
-        'void main() {',
-        `
-varying vec2 vScreenSegmentStart;
-varying vec2 vScreenSegmentEnd;
-
-void main() {
-        `
-      )
-    }
 
     // Calculate screen-space positions in vertex shader
     shader.vertexShader = shader.vertexShader.replace(
@@ -293,30 +230,16 @@ void main() {
     )
 
     // Add varying declarations to fragment shader (must match vertex shader)
-    const fragLastIncludeMatch = shader.fragmentShader.match(
-      /(#include\s+<[\w]+>[\s\S]*?)$/m
+    // In GLSL, varyings can be placed anywhere in global scope (before use)
+    // Placing them right after #include <common> is simpler and clearer
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <common>',
+      `
+#include <common>
+varying vec2 vScreenSegmentStart;
+varying vec2 vScreenSegmentEnd;
+      `
     )
-    if (fragLastIncludeMatch) {
-      shader.fragmentShader = shader.fragmentShader.replace(
-        fragLastIncludeMatch[0],
-        fragLastIncludeMatch[0] +
-          `
-varying vec2 vScreenSegmentStart;
-varying vec2 vScreenSegmentEnd;
-        `
-      )
-    } else {
-      // Fallback: add before main()
-      shader.fragmentShader = shader.fragmentShader.replace(
-        'void main() {',
-        `
-varying vec2 vScreenSegmentStart;
-varying vec2 vScreenSegmentEnd;
-
-void main() {
-        `
-      )
-    }
 
     // Replace vLineDistance (world-space) with screen-space distance calculation
     // This allows LineMaterial's built-in dashSize/gapSize to work in screen-space
