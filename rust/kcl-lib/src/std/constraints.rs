@@ -953,11 +953,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             );
 
                             // Create parallel constraint
-                            let parallel_constraint = SolverConstraint::LinesAtAngle(
-                                line0_segment,
-                                line1_segment,
-                                AngleKind::Parallel,
-                            );
+                            let parallel_constraint =
+                                SolverConstraint::LinesAtAngle(line0_segment, line1_segment, AngleKind::Parallel);
 
                             // Create perpendicular distance constraint from first line to start point of second line
                             let point_on_line1 =
