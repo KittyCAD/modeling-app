@@ -948,7 +948,15 @@ impl IfExpression {
         lines.push((0, "}".to_owned()));
         let out = lines
             .into_iter()
-            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .enumerate()
+            .map(|(idx, (ind, line))| {
+                let indentation = if ctxt == ExprContext::Pipe && idx == 0 {
+                    String::new()
+                } else {
+                    options.get_indentation(indentation_level + ind)
+                };
+                format!("{indentation}{}", line.trim())
+            })
             .collect::<Vec<_>>()
             .join("\n");
         buf.push_str(&out);
@@ -3255,6 +3263,23 @@ x = 1
     #[test]
     fn module_prefix() {
         let code = "x = std::sweep::SKETCH_PLANE\n";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn inline_ifs() {
+        let code = "y = true
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> if y {
+    yLine(length = 1)
+  } else {
+    xLine(length = 1)
+  }
+";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
