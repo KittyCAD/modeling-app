@@ -31,12 +31,6 @@ export default defineConfig(({ command, mode }) => {
     },
     test: {
       pool: 'forks',
-      poolOptions: {
-        forks: {
-          maxForks: 2,
-          minForks: 1,
-        },
-      },
       setupFiles: ['src/setupTests.ts', '@vitest/web-worker'],
       environment: 'happy-dom',
       coverage: {
