@@ -18,8 +18,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Find tag workflow ID
         id: tag_workflow_id

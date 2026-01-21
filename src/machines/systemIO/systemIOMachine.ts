@@ -76,7 +76,11 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.renameProject
-          data: { requestedProjectName: string; projectName: string }
+          data: {
+            requestedProjectName: string
+            projectName: string
+            redirect: boolean
+          }
         }
       | {
           type: SystemIOMachineEvents.deleteProject
@@ -403,9 +407,15 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          redirect: boolean
         }
-      }): Promise<{ message: string; newName: string; oldName: string }> => {
-        return { message: '', newName: '', oldName: '' }
+      }): Promise<{
+        message: string
+        newName: string
+        oldName: string
+        redirect: boolean
+      }> => {
+        return { message: '', newName: '', oldName: '', redirect: true }
       }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
@@ -717,6 +727,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    pendingRenamedProjectName: undefined,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -838,7 +849,18 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.idle,
           actions: [
             SystemIOMachineActions.setFolders,
-            assign({ hasListedProjects: true }),
+            assign({
+              hasListedProjects: true,
+              requestedProjectName: ({ context }) => {
+                // If we just finished renaming, navigate to the renamed project
+                if (context.pendingRenamedProjectName) {
+                  const newName = context.pendingRenamedProjectName
+                  return { name: newName }
+                }
+                return context.requestedProjectName
+              },
+              pendingRenamedProjectName: () => undefined, // clear after redirect
+            }),
           ],
         },
         onError: {
@@ -884,11 +906,22 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             projectName: event.data.projectName,
+            redirect: event.data.redirect,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              pendingRenamedProjectName: ({ event }) => {
+                // Redirect back to the project if renamed from the current project
+                const redirect = (event.output as { redirect: boolean })
+                  .redirect
+                return redirect ? event.output.newName : undefined
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

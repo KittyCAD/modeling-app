@@ -28,8 +28,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
 
@@ -53,7 +53,7 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Build WASM condition
+      - name: Build Wasm condition
         id: wasm
         run: |
           set -euox pipefail
@@ -169,8 +169,8 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm' # Set this to npm, npm or pnpm.
+          node-version-file: .nvmrc
+          cache: npm # Set this to npm, npm or pnpm.
 
       - run: npm install
 
