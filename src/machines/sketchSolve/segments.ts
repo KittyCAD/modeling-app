@@ -26,7 +26,7 @@ import {
   STRAIGHT_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
-import { isArray } from '@src/lib/utils'
+import { hasProperty, isArray, isRecord } from '@src/lib/utils'
 // Import and re-export pure utility functions
 import {
   getSegmentColor,
@@ -37,29 +37,6 @@ import {
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
-
-/**
- * Type predicate to check if an object has a specific property.
- * Uses runtime checks without type assertions.
- */
-function hasProperty<K extends string>(
-  obj: unknown,
-  key: K
-): obj is Record<K, unknown> {
-  return typeof obj === 'object' && obj !== null && key in obj
-}
-
-/**
- * Type guard to check if a value is a Record with string keys.
- */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !isArray(value) &&
-    Object.getPrototypeOf(value) === Object.prototype
-  )
-}
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.

@@ -1,29 +1,6 @@
-import { isArray } from '@src/lib/utils'
+import { hasProperty, isArray, isRecord } from '@src/lib/utils'
 import { type Object3D, type Group, BufferGeometry, Material } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-
-/**
- * Type predicate to check if an object has a specific property.
- * Uses runtime checks without type assertions.
- */
-function hasProperty<K extends string>(
-  obj: unknown,
-  key: K
-): obj is Record<K, unknown> {
-  return typeof obj === 'object' && obj !== null && key in obj
-}
-
-/**
- * Type guard to check if a value is a Record with string keys.
- */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !isArray(value) &&
-    Object.getPrototypeOf(value) === Object.prototype
-  )
-}
 
 /**
  * Dispose of all children (and grandchildren...) of a THREE.Group or Object3D.
