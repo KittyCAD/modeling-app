@@ -467,7 +467,6 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // 1st time: Merge, Sketch
     // 2nd time: New, Face
-    // dbg!(extrude_method, &being_extruded);
     match (extrude_method, being_extruded) {
         (ExtrudeMethod::Merge, BeingExtruded::Face) => {
             // Merge the IDs.
@@ -487,7 +486,7 @@ pub(crate) async fn do_post_extrude<'a>(
         (ExtrudeMethod::New, BeingExtruded::Face) => {
             // We're creating a new solid, it's not based on any existing sketch (it's based on a face).
             // So we need a new ID, the extrude command ID.
-            sketch.id = dbg!(extrude_cmd_id.into());
+            sketch.id = extrude_cmd_id.into();
         }
         (ExtrudeMethod::New, BeingExtruded::Sketch) => {
             // If we are creating a new body we need to preserve its new id.
@@ -684,7 +683,7 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     Ok(Solid {
-        id: dbg!(sketch.id),
+        id: sketch.id,
         artifact_id: extrude_cmd_id,
         value: new_value,
         meta: sketch.meta.clone(),
