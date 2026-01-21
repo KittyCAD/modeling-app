@@ -10,10 +10,6 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 type FeatureTreeEvent =
   | {
-      type: 'goToKclSource'
-      data: { targetSourceRange: SourceRange }
-    }
-  | {
       type: 'selectOperation'
       data: { targetSourceRange: SourceRange }
     }
@@ -38,9 +34,6 @@ export const featureTreeMachine = setup({
     context: {} as FeatureTreeContext,
     events: {} as FeatureTreeEvent,
   },
-  guards: {
-    codePaneIsOpen: () => false,
-  },
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
@@ -48,16 +41,9 @@ export const featureTreeMachine = setup({
           ? event.data.targetSourceRange
           : undefined,
     }),
-    saveCurrentOperation: assign({
-      currentOperation: ({ event }) =>
-        'data' in event && 'currentOperation' in event.data
-          ? event.data.currentOperation
-          : undefined,
-    }),
     clearContext: assign({
       targetSourceRange: undefined,
     }),
-    openCodePane: () => {},
     scrollToError: () => {},
   },
 }).createMachine({
@@ -68,38 +54,12 @@ export const featureTreeMachine = setup({
   states: {
     idle: {
       on: {
-        goToKclSource: {
-          target: 'goingToKclSource',
-          actions: 'saveTargetSourceRange',
-        },
-
         selectOperation: {
           actions: ['saveTargetSourceRange'],
         },
 
         goToError: 'goingToError',
       },
-    },
-
-    goingToKclSource: {
-      states: {
-        done: {
-          entry: ['clearContext'],
-          always: '#featureTree.idle',
-        },
-
-        openingCodePane: {
-          on: {
-            codePaneOpened: {
-              target: 'done',
-            },
-          },
-
-          entry: 'openCodePane',
-        },
-      },
-
-      initial: 'openingCodePane',
     },
 
     selecting: {
@@ -117,7 +77,6 @@ export const featureTreeMachine = setup({
       },
 
       initial: 'goingToError',
-      entry: ['openCodePane'],
     },
   },
 

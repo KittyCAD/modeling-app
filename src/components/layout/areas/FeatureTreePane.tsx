@@ -97,6 +97,22 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
+function isCodePaneOpen() {
+  return getOpenPanes({ rootLayout: getLayout() }).includes(
+    DefaultLayoutPaneID.Code
+  )
+}
+function openCodePane() {
+  const rootLayout = structuredClone(getLayout())
+  setLayout(
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: DefaultLayoutPaneID.Code,
+      shouldExpand: true,
+    })
+  )
+}
+
 export const FeatureTreePaneContents = memo(() => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const layout = useLayout()
@@ -125,16 +141,6 @@ export const FeatureTreePaneContents = memo(() => {
           ) && kclManager.editorView !== null,
       },
       actions: {
-        openCodePane: () => {
-          const rootLayout = structuredClone(getLayout())
-          setLayout(
-            togglePaneLayoutNode({
-              rootLayout,
-              targetNodeId: DefaultLayoutPaneID.Code,
-              shouldExpand: true,
-            })
-          )
-        },
         scrollToError: () => {
           kclManager.scrollToFirstErrorDiagnosticIfExists()
         },
@@ -497,7 +503,7 @@ const OperationItem = (props: OperationProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [diagnostics.length])
 
-  async function selectOperation() {
+  async function selectOperation(providedSourceRange?: SourceRange) {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
         const artifact = findOperationPlaneArtifact(
@@ -509,6 +515,8 @@ const OperationItem = (props: OperationProps) => {
           console.error(result)
         }
       }
+    } else if (providedSourceRange !== undefined) {
+      props.onSelect(sourceRangeFromRust(providedSourceRange))
     } else {
       if (props.item.type === 'GroupEnd') {
         return
@@ -640,12 +648,10 @@ const OperationItem = (props: OperationProps) => {
           if (props.item.type === 'GroupEnd') {
             return
           }
-          props.send({
-            type: 'goToKclSource',
-            data: {
-              targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-            },
-          })
+          if (!isCodePaneOpen()) {
+            openCodePane()
+          }
+          selectOperation()
         }}
       >
         View KCL source code
@@ -666,12 +672,10 @@ const OperationItem = (props: OperationProps) => {
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
-                props.send({
-                  type: 'goToKclSource',
-                  data: {
-                    targetSourceRange: sourceRangeFromRust(functionRange),
-                  },
-                })
+                if (!isCodePaneOpen()) {
+                  openCodePane()
+                }
+                selectOperation(functionRange)
               }}
             >
               View function definition
