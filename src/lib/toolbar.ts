@@ -371,24 +371,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
-          {
-            id: 'boolean-split',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Boolean Split', groupId: 'modeling' },
-              }),
-            icon: 'split',
-            status: 'available',
-            title: 'Split',
-            description: 'Split a solid into multiple solids.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
-              },
-            ],
-          },
         ],
       },
       {
@@ -412,6 +394,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 url: withSiteBaseURL(
                   '/docs/kcl-std/functions/std-solid-flipSurface'
                 ),
+              },
+            ],
+          },
+          {
+            id: 'boolean-split',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Boolean Split', groupId: 'modeling' },
+              }),
+            icon: 'split',
+            status: 'available',
+            title: 'Split Surfaces',
+            description: 'Split a solid into multiple surfaces.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
               },
             ],
           },
