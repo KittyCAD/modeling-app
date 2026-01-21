@@ -35,9 +35,9 @@ import {
   sceneInfra,
   setLayout,
 } from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, SourceRange } from '@src/lang/wasm'
+import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -427,144 +427,167 @@ interface OperationProps {
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
-const OperationItem = (props: OperationProps) => {
+const OperationItem = ({
+  item,
+  code,
+  sketchNoFace,
+  onSelect,
+}: OperationProps) => {
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const name = getOperationLabel(props.item)
+  const name = getOperationLabel(item)
   const valueDetail = useMemo(() => {
-    return getFeatureTreeValueDetail(props.item, props.code)
-  }, [props.item, props.code])
+    return getFeatureTreeValueDetail(item, code)
+  }, [item, code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast, wasmInstance)
-  }, [props.item, ast, wasmInstance])
+    return getOperationVariableName(item, ast, wasmInstance)
+  }, [item, ast, wasmInstance])
 
   const errors = useMemo(() => {
     return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
-        'sourceRange' in props.item &&
-        diag.from >= toUtf16(props.item.sourceRange[0], props.code) &&
-        diag.to <= toUtf16(props.item.sourceRange[1], props.code)
+        'sourceRange' in item &&
+        diag.from >= toUtf16(item.sourceRange[0], code) &&
+        diag.to <= toUtf16(item.sourceRange[1], code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [diagnostics.length])
 
-  async function selectOperation(providedSourceRange?: SourceRange) {
-    if (props.sketchNoFace) {
-      if (isOffsetPlane(props.item)) {
-        const artifact = findOperationPlaneArtifact(
-          props.item,
-          kclManager.artifactGraph
-        )
-        const result = await selectOffsetSketchPlane(artifact, systemDeps)
-        if (err(result)) {
-          console.error(result)
+  const selectOperation = useCallback(
+    async (providedSourceRange?: SourceRange) => {
+      if (sketchNoFace) {
+        if (isOffsetPlane(item)) {
+          const artifact = findOperationPlaneArtifact(
+            item,
+            kclManager.artifactGraph
+          )
+          const result = await selectOffsetSketchPlane(artifact, systemDeps)
+          if (err(result)) {
+            console.error(result)
+          }
         }
+      } else if (providedSourceRange !== undefined) {
+        onSelect(sourceRangeFromRust(providedSourceRange))
+      } else {
+        if (item.type === 'GroupEnd') {
+          return
+        }
+        onSelect(sourceRangeFromRust(item.sourceRange))
       }
-    } else if (providedSourceRange !== undefined) {
-      props.onSelect(sourceRangeFromRust(providedSourceRange))
-    } else {
-      if (props.item.type === 'GroupEnd') {
-        return
-      }
-      props.onSelect(sourceRangeFromRust(props.item.sourceRange))
-    }
-  }
+    },
+    [sketchNoFace, onSelect, item]
+  )
 
-  function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
-    ) {
-      selectOperation()
-      const artifact =
-        getArtifactFromRange(
-          props.item.sourceRange,
-          systemDeps.kclManager.artifactGraph
-        ) ?? undefined
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarSend: commandBarActor.send,
-        operation: props.item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(e))
-    }
-  }
+  const enterEditFlow = useCallback(() => {
+    selectOperation()
+      .then(() => {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'VariableDeclaration' ||
+          item.type === 'SketchSolve'
+        ) {
+          const artifact =
+            getArtifactFromRange(
+              item.sourceRange,
+              systemDeps.kclManager.artifactGraph
+            ) ?? undefined
+          prepareEditCommand({
+            artifactGraph: systemDeps.kclManager.artifactGraph,
+            code: systemDeps.kclManager.code,
+            commandBarActor,
+            operation: item,
+            rustContext: systemDeps.rustContext,
+            artifact,
+          }).catch((e) => toast.error(e))
+        }
+      })
+      .catch((e) => toast.error(e))
+  }, [item, selectOperation])
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
-    ) {
-      selectOperation()
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Appearance', groupId: 'modeling' },
+    selectOperation()
+      .then(() => {
+        if (
+          item.type === 'StdLibCall' ||
+          (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+        ) {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterTranslateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      selectOperation()
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Translate', groupId: 'modeling' },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterRotateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      selectOperation()
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Rotate', groupId: 'modeling' },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterScaleFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      selectOperation()
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Scale', groupId: 'modeling' },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterCloneFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      selectOperation()
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Clone', groupId: 'modeling' },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function deleteOperation() {
     if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      item.type === 'StdLibCall' ||
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
     ) {
       const maybeArtifact =
-        getArtifactFromRange(
-          props.item.sourceRange,
-          kclManager.artifactGraph
-        ) ?? undefined
+        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
+        undefined
       sendDeleteCommand({
         artifact: maybeArtifact,
-        targetSourceRange: props.item.sourceRange,
+        targetSourceRange: item.sourceRange,
         systemDeps,
       }).catch((e) => {
         toast.error(e)
@@ -573,9 +596,9 @@ const OperationItem = (props: OperationProps) => {
   }
 
   function startSketchOnOffsetPlane() {
-    if (isOffsetPlane(props.item)) {
+    if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
-        props.item,
+        item,
         kclManager.artifactGraph
       )
       if (artifact?.id) {
@@ -593,58 +616,56 @@ const OperationItem = (props: OperationProps) => {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'GroupEnd') {
+          if (item.type === 'GroupEnd') {
             return
           }
           if (!isCodePaneOpen()) {
             openCodePane()
           }
-          selectOperation()
+          selectOperation().catch(reportRejection)
         }}
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'GroupBegin' &&
-      props.item.group.type === 'FunctionCall'
+      ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'GroupBegin') {
+                if (item.type !== 'GroupBegin') {
                   return
                 }
-                if (props.item.group.type !== 'FunctionCall') {
+                if (item.group.type !== 'FunctionCall') {
                   // TODO: Add module instance support.
                   return
                 }
-                const functionRange = props.item.group.functionSourceRange
+                const functionRange = item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
                 if (!isCodePaneOpen()) {
                   openCodePane()
                 }
-                selectOperation(functionRange)
+                selectOperation(functionRange).catch(reportRejection)
               }}
             >
               View function definition
             </ContextMenuItem>,
           ]
         : []),
-      ...(isOffsetPlane(props.item)
+      ...(isOffsetPlane(item)
         ? [
             <ContextMenuItem onClick={startSketchOnOffsetPlane}>
               Start Sketch
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
+      ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
         ? [
             <ContextMenuItem
               onClick={() => {
                 const exportDxf = async () => {
-                  if (props.item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(props.item, {
+                  if (item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -669,15 +690,15 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      ...(item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               disabled={
-                props.item.type !== 'VariableDeclaration' &&
-                props.item.type !== 'SketchSolve' &&
-                stdLibMap[props.item.name]?.prepareToEdit === undefined
+                item.type !== 'VariableDeclaration' &&
+                item.type !== 'SketchSolve' &&
+                stdLibMap[item.name]?.prepareToEdit === undefined
               }
               onClick={enterEditFlow}
               hotkey="Double click"
@@ -686,17 +707,16 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
+      ...(item.type === 'StdLibCall' ||
+      (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
         ? [
             <ContextMenuItem
               disabled={
                 !(
-                  (props.item.type === 'GroupBegin' &&
-                    props.item.group.type === 'FunctionCall') ||
-                  (props.item.type === 'StdLibCall' &&
-                    stdLibMap[props.item.name]?.supportsAppearance)
+                  (item.type === 'GroupBegin' &&
+                    item.group.type === 'FunctionCall') ||
+                  (item.type === 'StdLibCall' &&
+                    stdLibMap[item.name]?.supportsAppearance)
                 )
               }
               onClick={enterAppearanceFlow}
@@ -706,14 +726,14 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
+      ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={enterTranslateFlow}
               data-testid="context-menu-set-translate"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Translate
@@ -722,8 +742,8 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterRotateFlow}
               data-testid="context-menu-set-rotate"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Rotate
@@ -732,8 +752,8 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterScaleFlow}
               data-testid="context-menu-set-scale"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Scale
@@ -742,18 +762,18 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterCloneFlow}
               data-testid="context-menu-clone"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Clone
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      ...(item.type === 'StdLibCall' ||
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               onClick={deleteOperation}
@@ -766,24 +786,24 @@ const OperationItem = (props: OperationProps) => {
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.item]
+    [item]
   )
 
-  const enabled = !props.sketchNoFace || isOffsetPlane(props.item)
+  const enabled = !sketchNoFace || isOffsetPlane(item)
 
   return (
     <OperationItemWrapper
       selectable={enabled}
-      icon={getOperationIcon(props.item)}
+      icon={getOperationIcon(item)}
       name={name}
-      type={props.item.type}
+      type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={() => {
         void selectOperation()
       }}
-      onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
       greyedOut={!enabled}
     />

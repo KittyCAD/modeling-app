@@ -14,8 +14,8 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { ActorRefFrom } from 'xstate'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import type { ActorRefFrom } from 'xstate'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 
 export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
@@ -58,18 +58,18 @@ export function sendDeleteCommand(input: {
 
 export function prepareEditCommand(
   input: EnterEditFlowProps & {
-    commandBarSend: CommandBarActorType['send']
+    commandBarActor: CommandBarActorType
   }
 ) {
   return new Promise((resolve, reject) => {
-    const { commandBarSend, ...editFlowProps } = input
+    const { commandBarActor, ...editFlowProps } = input
     enterEditFlow(editFlowProps)
       .then((result) => {
         if (err(result)) {
           reject(result)
           return
         }
-        input.commandBarSend(result)
+        commandBarActor.send(result)
         resolve(result)
       })
       .catch(reject)
