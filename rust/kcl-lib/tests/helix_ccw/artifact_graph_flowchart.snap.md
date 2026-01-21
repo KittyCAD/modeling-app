@@ -19,10 +19,13 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
+  11["Helix<br>[101, 195, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   1 --- 2
   2 --- 3
   2 --- 4
   2 ---- 5
+  2 <--x 11
   3 --- 6
   3 x--> 7
   3 --- 9
