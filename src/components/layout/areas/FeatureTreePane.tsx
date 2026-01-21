@@ -140,11 +140,6 @@ export const FeatureTreePaneContents = memo(() => {
             DefaultLayoutPaneID.Code
           ) && kclManager.editorView !== null,
       },
-      actions: {
-        scrollToError: () => {
-          kclManager.scrollToFirstErrorDiagnosticIfExists()
-        },
-      },
     }),
     {
       input: {
@@ -197,7 +192,10 @@ export const FeatureTreePaneContents = memo(() => {
   }, [layout, isEditorMounted, featureTreeSend])
 
   function goToError() {
-    featureTreeSend({ type: 'goToError' })
+    if (!isCodePaneOpen()) {
+      openCodePane()
+    }
+    kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
 
   return (
