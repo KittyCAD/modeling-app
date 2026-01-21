@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import CubeGizmo from '@src/components/gizmo/CubeGizmo'
 import AxisGizmo from '@src/components/gizmo/AxisGizmo'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 export default function Gizmo() {
   const { useSettings } = useSingletons()

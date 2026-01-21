@@ -1,4 +1,4 @@
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { useMemo, useState } from 'react'
 import { uuidv4 } from '@src/lib/utils'
 import { processCodeMirrorRanges } from '@src/lib/selections'

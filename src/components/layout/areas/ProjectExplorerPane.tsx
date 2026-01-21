@@ -13,7 +13,7 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import {
   useFolders,
   useProjectDirectoryPath,

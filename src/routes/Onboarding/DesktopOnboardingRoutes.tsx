@@ -33,7 +33,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths

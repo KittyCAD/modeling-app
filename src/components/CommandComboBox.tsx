@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({

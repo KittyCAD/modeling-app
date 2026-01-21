@@ -5,7 +5,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'

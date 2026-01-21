@@ -3,7 +3,7 @@ import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 /**
  * For now we have strict action types but in future

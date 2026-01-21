@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'

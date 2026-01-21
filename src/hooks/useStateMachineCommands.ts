@@ -10,7 +10,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,

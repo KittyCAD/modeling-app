@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {

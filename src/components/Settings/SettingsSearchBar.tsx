@@ -9,7 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'

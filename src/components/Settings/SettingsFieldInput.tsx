@@ -9,7 +9,7 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,

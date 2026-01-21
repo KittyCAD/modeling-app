@@ -27,7 +27,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
@@ -41,7 +41,7 @@ import Loading from '@src/components/Loading'
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
 /**
- * All routes in the app, used in src/index.tsx
+ * All routes in the app, used in src/lib/boot.tsx
  * @returns RouterProvider
  */
 export const Router = () => {

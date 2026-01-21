@@ -2,7 +2,7 @@ import decamelize from 'decamelize'
 
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel

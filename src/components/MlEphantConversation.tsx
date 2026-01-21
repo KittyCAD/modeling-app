@@ -13,7 +13,7 @@ import type {
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 
 const noop = () => {}

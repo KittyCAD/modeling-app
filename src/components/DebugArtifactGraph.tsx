@@ -5,7 +5,7 @@ import { DebugDisplayArray } from '@src/components/DebugDisplayObj'
 import type { PlaneArtifactRich } from '@src/lang/std/artifactGraph'
 import { expandPlane } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 export function DebugArtifactGraph() {
   const { kclManager } = useSingletons()

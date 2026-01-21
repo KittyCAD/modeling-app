@@ -1,5 +1,5 @@
 import Loading from '@src/components/Loading'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {

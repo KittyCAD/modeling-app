@@ -3,7 +3,7 @@ import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 export const CommandBarOpenButton = memo(function CommandBarOpenButton() {
   const platform = usePlatform()

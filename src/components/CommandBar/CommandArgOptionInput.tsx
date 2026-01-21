@@ -8,7 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context

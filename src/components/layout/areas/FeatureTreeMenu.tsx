@@ -2,7 +2,7 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 import styles from './KclEditorMenu.module.css'
 

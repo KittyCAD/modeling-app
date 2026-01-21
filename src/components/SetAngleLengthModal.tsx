@@ -11,7 +11,7 @@ import {
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 
 type ModalResolve = {
   value: string

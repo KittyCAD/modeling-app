@@ -1,5 +1,5 @@
 import { KclManagerEvents } from '@src/lang/KclManager'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { EngineDebugger } from '@src/lib/debugger'

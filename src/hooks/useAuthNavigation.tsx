@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { generateSignInUrl } from '@src/routes/utils'
 
 /**

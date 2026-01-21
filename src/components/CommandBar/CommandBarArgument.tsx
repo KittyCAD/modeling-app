@@ -10,7 +10,7 @@ import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextar
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { use } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {

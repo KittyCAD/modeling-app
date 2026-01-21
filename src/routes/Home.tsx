@@ -56,7 +56,7 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'

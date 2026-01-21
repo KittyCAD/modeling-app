@@ -4,7 +4,7 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 

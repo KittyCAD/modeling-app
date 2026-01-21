@@ -4,7 +4,7 @@ import { ActionIcon } from '@src/components/ActionIcon'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
-import { useSingletons } from '@src/index'
+import { useSingletons } from '@src/lib/boot'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IndexLoaderData } from '@src/lib/types'
