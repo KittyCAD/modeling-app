@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::{
     CompilationError,
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, KclValue, annotations,
         types::{ArrayLen, NumericType, RuntimeType},
@@ -63,16 +63,13 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
 
     if input.n < 0.0 {
-        exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!(
-                    "Attempt to take square root (`sqrt`) of a number less than zero ({})",
-                    input.n
-                ),
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Attempt to take square root (`sqrt`) of a number less than zero ({})",
+                input.n
             ),
-            annotations::WARN_INVALID_MATH,
-        );
+            vec![args.source_range],
+        )));
     }
 
     let result = input.n.sqrt();
