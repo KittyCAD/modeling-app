@@ -257,6 +257,7 @@ export class SceneEntities {
 
     this.sketchSolveGroup.setRotationFromQuaternion(quaternion)
     this.sketchSolveGroup.position.copy(new Vector3(...origin))
+    this.sceneInfra.imageRenderer.setQuaternion(quaternion)
   }
 
   onCamChange = async () => {

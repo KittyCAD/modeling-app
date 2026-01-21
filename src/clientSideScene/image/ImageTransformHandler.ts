@@ -238,15 +238,12 @@ export class ImageTransformHandler {
 
   private attachUI() {
     this._ui ??= new ImageTransformUI(this._sceneInfra)
-    this._sceneInfra.scene.add(this._ui.container)
+    this._sceneInfra.imageRenderer.group.add(this._ui.container)
   }
 
   private detachUI() {
-    if (this._ui) {
-      const parent = this._ui.container.parent
-      if (parent) {
-        parent.remove(this._ui.container)
-      }
+    if (this._ui?.container.parent) {
+      this._ui.container.parent.remove(this._ui.container)
     }
   }
 

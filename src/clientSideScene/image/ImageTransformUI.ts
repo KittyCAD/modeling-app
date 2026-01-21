@@ -22,6 +22,7 @@ export const IMAGE_TRANSFORM_CORNER = 'image-transform-corner'
 export const IMAGE_TRANSFORM_EDGE = 'image-transform-edge'
 export const IMAGE_TRANSFORM_ROTATE = 'image-transform-rotate'
 
+// The UI controlled by ImageTransformHandler
 export class ImageTransformUI {
   public readonly container: Group
 

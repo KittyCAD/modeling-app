@@ -1,4 +1,4 @@
-import type { Quaternion } from 'three'
+import type { Object3D, Quaternion } from 'three'
 import {
   DoubleSide,
   Group,
@@ -28,7 +28,7 @@ export class ImageRenderer {
   public readonly transformHandler: ImageTransformHandler
 
   public readonly planeGeometry: PlaneGeometry
-  private readonly group: Group
+  public readonly group: Group
   private readonly loadedTextures: Map<string, Texture> = new Map()
   private readonly meshes: Map<string, ImageMesh> = new Map()
 
