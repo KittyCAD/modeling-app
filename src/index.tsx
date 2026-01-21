@@ -12,18 +12,16 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import { App } from '@src/lib/app'
+import type { App } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
+import { app } from '@src/lib/boot'
 
-const app = new App()
-/** Hook to gain access to the global app instance's singletons */
-export const useSingletons = () => React.useContext(app.ReactContext)
-init(app)
+initApp(app)
 
 /** The initialization sequence for this app */
-function init(app: App) {
+function initApp(app: App) {
   initSingletonBehavior()
   if (window.electron) {
     initElectronBehavior(window.electron)
