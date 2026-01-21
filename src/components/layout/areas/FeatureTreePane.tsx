@@ -1,13 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
-import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-
-import { use, useCallback, useEffect, useMemo, useRef, memo } from 'react'
-
-import type { Actor, Prop } from 'xstate'
-
+import { use, useCallback, useMemo, useRef, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -40,14 +34,8 @@ import {
   sceneEntitiesManager,
   sceneInfra,
   setLayout,
-  useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
-import {
-  editorIsMountedSelector,
-  kclEditorActor,
-} from '@src/machines/kclEditorMachine'
 import toast from 'react-hot-toast'
 import { base64Decode, SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -114,8 +102,6 @@ function openCodePane() {
 }
 
 export const FeatureTreePaneContents = memo(() => {
-  const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const layout = useLayout()
   const { send: modelingSend, state: modelingState } = useModelingContext()
 
   const selectOperation = useCallback(
@@ -131,26 +117,6 @@ export const FeatureTreePaneContents = memo(() => {
 
   const sketchNoFace = modelingState.matches('Sketch no face')
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_featureTreeState, featureTreeSend] = useMachine(
-    featureTreeMachine.provide({
-      guards: {
-        codePaneIsOpen: () =>
-          getOpenPanes({ rootLayout: getLayout() }).includes(
-            DefaultLayoutPaneID.Code
-          ) && kclManager.editorView !== null,
-      },
-    }),
-    {
-      input: {
-        rustContext,
-        kclManager,
-        sceneEntitiesManager,
-        commandBarActor,
-      },
-      // devTools: true,
-    }
-  )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -179,17 +145,6 @@ export const FeatureTreePaneContents = memo(() => {
     filterOperations(unfilteredOperationList),
     ['VariableDeclaration']
   )
-
-  // Watch for changes in the open panes and send an event to the feature tree machine
-  useEffect(() => {
-    const codeOpen = getOpenPanes({ rootLayout: layout }).includes(
-      DefaultLayoutPaneID.Code
-    )
-    if (codeOpen && isEditorMounted) {
-      featureTreeSend({ type: 'codePaneOpened' })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [layout, isEditorMounted, featureTreeSend])
 
   function goToError() {
     if (!isCodePaneOpen()) {
@@ -245,7 +200,6 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   items={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
                   onSelect={selectOperation}
                 />
@@ -254,7 +208,6 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   item={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
                   onSelect={selectOperation}
                 />
@@ -304,7 +257,6 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 function OperationItemGroup({
   items,
   code,
-  send,
   sketchNoFace,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
@@ -331,7 +283,6 @@ function OperationItemGroup({
                 key={key}
                 item={op}
                 code={code}
-                send={send}
                 sketchNoFace={sketchNoFace}
                 onSelect={onSelect}
               />
@@ -469,7 +420,6 @@ function VariableTooltipContents({
 interface OperationProps {
   item: Operation
   code: string
-  send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
   onSelect: (sourceRange: SourceRange) => void
 }
@@ -816,7 +766,7 @@ const OperationItem = (props: OperationProps) => {
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.item, props.send]
+    [props.item]
   )
 
   const enabled = !props.sketchNoFace || isOffsetPlane(props.item)
