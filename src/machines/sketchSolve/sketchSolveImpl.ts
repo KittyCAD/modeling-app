@@ -48,10 +48,7 @@ import {
   ARC_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import {
-  deriveSegmentFreedom,
-  type SegmentMode,
-} from '@src/machines/sketchSolve/segmentsUtils'
+import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -272,21 +269,17 @@ export function updateSegmentGroup({
     return
   }
 
-  // Determine mode: check if draft, then check if construction, otherwise normal
-  let mode: SegmentMode = 'normal'
-  if (draftEntityIds?.includes(idNum)) {
-    mode = 'draft'
-  } else if (objects) {
+  // Determine isDraft and isConstruction separately
+  const isDraft = draftEntityIds?.includes(idNum) ?? false
+  let isConstruction = false
+  if (objects) {
     const segmentObj = objects[idNum]
     if (
       segmentObj?.kind?.type === 'Segment' &&
       (segmentObj.kind.segment.type === 'Line' ||
         segmentObj.kind.segment.type === 'Arc')
     ) {
-      const constructionValue = segmentObj.kind.segment.construction
-      if (constructionValue === true) {
-        mode = 'construction'
-      }
+      isConstruction = segmentObj.kind.segment.construction === true
     }
   }
 
@@ -310,7 +303,8 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      mode,
+      isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -321,7 +315,8 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      mode,
+      isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -332,7 +327,8 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
-      mode,
+      isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -357,21 +353,17 @@ function initSegmentGroup({
   isDraft?: boolean
   objects?: Array<ApiObject>
 }): Group | Error {
-  // Determine mode: check if draft, then check if construction, otherwise normal
-  let mode: SegmentMode = 'normal'
-  if (isDraft) {
-    mode = 'draft'
-  } else if (objects) {
+  // Determine isDraft and isConstruction separately
+  const isDraftValue = isDraft ?? false
+  let isConstruction = false
+  if (objects) {
     const segmentObj = objects[id]
     if (
       segmentObj?.kind?.type === 'Segment' &&
       (segmentObj.kind.segment.type === 'Line' ||
         segmentObj.kind.segment.type === 'Arc')
     ) {
-      const constructionValue = segmentObj.kind.segment.construction
-      if (constructionValue === true) {
-        mode = 'construction'
-      }
+      isConstruction = segmentObj.kind.segment.construction === true
     }
   }
 
@@ -391,7 +383,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      mode,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -400,7 +393,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      mode,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -409,7 +403,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      mode,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   }

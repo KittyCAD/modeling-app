@@ -28,10 +28,7 @@ import {
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 import { hasProperty, isArray, isRecord } from '@src/lib/utils'
 // Import and re-export pure utility functions
-import {
-  getSegmentColor,
-  type SegmentMode,
-} from '@src/machines/sketchSolve/segmentsUtils'
+import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
@@ -47,16 +44,6 @@ function isUniformValue(value: unknown): value is { value: unknown } {
     value !== null &&
     'value' in value &&
     Object.keys(value).length >= 1
-  )
-}
-
-/**
- * Type guard to check if a value is a valid SegmentMode.
- */
-function isSegmentMode(value: unknown): value is SegmentMode {
-  return (
-    typeof value === 'string' &&
-    (value === 'normal' || value === 'draft' || value === 'construction')
   )
 }
 
@@ -169,7 +156,8 @@ interface CreateSegmentArgs {
   theme: Themes
   id: number
   scale: number
-  mode: SegmentMode
+  isDraft: boolean
+  isConstruction: boolean
   freedom?: Freedom | null
 }
 
@@ -180,7 +168,8 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
-  mode: SegmentMode
+  isDraft: boolean
+  isConstruction: boolean
   freedom?: Freedom | null
 }
 
@@ -238,13 +227,13 @@ class PointSegment implements SketchEntityUtils {
     status: {
       isSelected: boolean
       isHovered: boolean
-      mode: SegmentMode
+      isDraft: boolean
       freedom?: Freedom | null
     }
   ): void {
     // Use color precedence system
     const color = getSegmentColor({
-      mode: status.mode,
+      isDraft: status.isDraft,
       isHovered: status.isHovered,
       isSelected: status.isSelected,
       freedom: status.freedom,
@@ -257,7 +246,7 @@ class PointSegment implements SketchEntityUtils {
     const rgbStr = `${r}, ${g}, ${b}`
 
     // Draft segments are grey
-    if (status.mode === 'draft') {
+    if (status.isDraft) {
       innerCircle.style.backgroundColor = '#888888'
       innerCircle.style.border = '0px solid #CCCCCC'
       return // draft styles take precedence
@@ -325,14 +314,13 @@ class PointSegment implements SketchEntityUtils {
     handleDiv.addEventListener('mouseenter', () => {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const modeValue = handleDiv.dataset.mode
-      const mode = isSegmentMode(modeValue) ? modeValue : 'normal'
+      const isDraft = handleDiv.dataset.isDraft === 'true'
       const freedomValue = handleDiv.dataset.freedom
       const freedom = isFreedom(freedomValue) ? freedomValue : null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
-        mode,
+        isDraft,
         freedom,
       })
     })
@@ -342,14 +330,13 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, isHovered)
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      const modeValue = handleDiv.dataset.mode
-      const mode = isSegmentMode(modeValue) ? modeValue : 'normal'
+      const isDraft = handleDiv.dataset.isDraft === 'true'
       const freedomValue = handleDiv.dataset.freedom
       const freedom = isFreedom(freedomValue) ? freedomValue : null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered,
-        mode,
+        isDraft,
         freedom,
       })
     })
@@ -374,7 +361,8 @@ class PointSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      mode: args.mode,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
     return segmentGroup
@@ -384,7 +372,8 @@ class PointSegment implements SketchEntityUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, scale, selectedIds, id, mode } = args
+    const { input, group, scale, selectedIds, id, isDraft, isConstruction } =
+      args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -404,12 +393,13 @@ class PointSegment implements SketchEntityUtils {
       const freedom = args.freedom ?? group.userData.freedom ?? null
       // Update userData for consistency
       group.userData.freedom = freedom
-      group.userData.mode = mode
+      group.userData.isDraft = isDraft
+      group.userData.isConstruction = isConstruction
 
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
-      // Store mode in data attribute for hover handlers
-      el.dataset.mode = mode
+      // Store isDraft in data attribute for hover handlers
+      el.dataset.isDraft = String(isDraft)
       // Store freedom state in data attribute for hover handlers
       el.dataset.freedom = freedom ?? ''
 
@@ -418,7 +408,7 @@ class PointSegment implements SketchEntityUtils {
         this.updatePointColors(innerCircle, {
           isSelected,
           isHovered: false,
-          mode,
+          isDraft,
           freedom,
         })
       }
@@ -434,13 +424,13 @@ class LineSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    mode: SegmentMode,
+    isDraft: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
-      mode,
+      isDraft,
       freedom,
     })
   }
@@ -469,11 +459,10 @@ class LineSegment implements SketchEntityUtils {
     geometry.setPositions([startX, startY, 0, endX, endY, 0])
     // Construction geometry uses dashed pattern
     // LineMaterial uses screen-space units (pixels) when worldUnits is false
-    const isConstruction = args.mode === 'construction'
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-      dashed: isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
       dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
       gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
@@ -482,7 +471,7 @@ class LineSegment implements SketchEntityUtils {
 
     // For construction geometry, inject custom screen-space dash shader
     // This ensures dashes stay constant pixel size regardless of zoom
-    if (isConstruction) {
+    if (args.isConstruction) {
       const lineStart = new Vector3(startX, startY, 0)
       const lineEnd = new Vector3(endX, endY, 0)
       setupConstructionLineDashShader(
@@ -500,7 +489,8 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
-      mode: args.mode,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
@@ -515,7 +505,8 @@ class LineSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      mode: args.mode,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -525,7 +516,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, selectedIds, mode } = args
+    const { input, group, id, selectedIds, isDraft, isConstruction } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -561,24 +552,19 @@ class LineSegment implements SketchEntityUtils {
     const isHovered = straightSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
-    // Check previous mode BEFORE updating it
-    const previousModeValue = group.userData.mode
-    const previousMode = isSegmentMode(previousModeValue)
-      ? previousModeValue
-      : undefined
-    const modeChanged = previousMode !== mode
+    // Check previous draft and construction state BEFORE updating it
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
     // Update userData for consistency
     group.userData.freedom = freedom
-    group.userData.mode = mode
-
-    // Update material dash pattern for construction geometry
-    const isConstruction = mode === 'construction'
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
 
     if (straightSegmentBody.material instanceof LineMaterial) {
       straightSegmentBody.material.dashed = isConstruction
 
-      // If mode changed, we need to set up or remove the custom shader
-      if (modeChanged) {
+      // If construction state changed, we need to set up or remove the custom shader
+      if (constructionChanged) {
         if (isConstruction) {
           // Switching to construction: set up the custom shader
           const lineStart = new Vector3(
@@ -597,7 +583,7 @@ class LineSegment implements SketchEntityUtils {
           // Switching away from construction: remove the custom shader
           removeCustomShaderProperties(straightSegmentBody.material)
         }
-        // Force shader recompilation when mode changes
+        // Force shader recompilation when construction state changes
         straightSegmentBody.material.needsUpdate = true
         const program = getMaterialProgram(straightSegmentBody.material)
         if (program !== null && program !== undefined) {
@@ -607,7 +593,7 @@ class LineSegment implements SketchEntityUtils {
           }
         }
       } else if (isConstruction) {
-        // Mode didn't change but we're in construction mode: just update uniforms
+        // Construction state didn't change but we're in construction mode: just update uniforms
         const lineStart = new Vector3(
           input.start.x.value,
           input.start.y.value,
@@ -644,7 +630,7 @@ class LineSegment implements SketchEntityUtils {
       straightSegmentBody,
       isSelected,
       isHovered,
-      mode,
+      isDraft,
       freedom
     )
   }
@@ -729,13 +715,13 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    mode: SegmentMode,
+    isDraft: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
-      mode,
+      isDraft,
       freedom,
     })
   }
@@ -815,11 +801,10 @@ class ArcSegment implements SketchEntityUtils {
     const geometry = new LineGeometry()
     // Construction geometry uses dashed pattern
     // LineMaterial uses screen-space units (pixels) when worldUnits is false
-    const isConstruction = args.mode === 'construction'
     const material = new LineMaterial({
       color: KCL_DEFAULT_COLOR,
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-      dashed: isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
       dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
       gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
       worldUnits: false, // Use screen-space units for consistent dash size
@@ -829,7 +814,7 @@ class ArcSegment implements SketchEntityUtils {
     // For construction geometry, inject custom screen-space dash shader
     // This ensures dashes stay constant pixel size regardless of zoom
     // For arcs, we use the center and start point to calculate constant radius
-    if (isConstruction) {
+    if (args.isConstruction) {
       const arcData = this.extractArcData(input)
       if (!(arcData instanceof Error)) {
         const arcCenter = new Vector3(arcData.centerX, arcData.centerY, 0)
@@ -852,7 +837,8 @@ class ArcSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      mode: args.mode,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
@@ -867,7 +853,8 @@ class ArcSegment implements SketchEntityUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
-      mode: args.mode,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
       freedom: args.freedom,
     })
 
@@ -875,7 +862,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, selectedIds, mode } = args
+    const { input, group, id, selectedIds, isDraft, isConstruction } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -914,24 +901,19 @@ class ArcSegment implements SketchEntityUtils {
     const isHovered = arcSegmentBody.userData.isHovered === true
     // Get freedom from args or group userData
     const freedom = args.freedom ?? group.userData.freedom ?? null
-    // Check previous mode BEFORE updating it
-    const previousModeValue = group.userData.mode
-    const previousMode = isSegmentMode(previousModeValue)
-      ? previousModeValue
-      : undefined
-    const modeChanged = previousMode !== mode
+    // Check previous draft and construction state BEFORE updating it
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
     // Update userData for consistency
     group.userData.freedom = freedom
-    group.userData.mode = mode
-
-    // Update material dash pattern for construction geometry
-    const isConstruction = mode === 'construction'
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
 
     if (arcSegmentBody.material instanceof LineMaterial) {
       arcSegmentBody.material.dashed = isConstruction
 
-      // If mode changed, we need to set up or remove the custom shader
-      if (modeChanged) {
+      // If construction state changed, we need to set up or remove the custom shader
+      if (constructionChanged) {
         if (isConstruction) {
           // Switching to construction: set up the custom shader
           const arcCenter = new Vector3(centerX, centerY, 0)
@@ -948,7 +930,7 @@ class ArcSegment implements SketchEntityUtils {
           // Switching away from construction: remove the custom shader
           removeCustomShaderProperties(arcSegmentBody.material)
         }
-        // Force shader recompilation when mode changes
+        // Force shader recompilation when construction state changes
         arcSegmentBody.material.needsUpdate = true
         const program = getMaterialProgram(arcSegmentBody.material)
         if (program !== null && program !== undefined) {
@@ -958,7 +940,7 @@ class ArcSegment implements SketchEntityUtils {
           }
         }
       } else if (isConstruction) {
-        // Mode didn't change but we're in construction mode: just update uniforms
+        // Construction state didn't change but we're in construction mode: just update uniforms
         const arcCenter = new Vector3(centerX, centerY, 0)
         const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
         const uniforms = getMaterialUniforms(arcSegmentBody.material)
@@ -993,7 +975,13 @@ class ArcSegment implements SketchEntityUtils {
       }
     }
 
-    this.updateArcColors(arcSegmentBody, isSelected, isHovered, mode, freedom)
+    this.updateArcColors(
+      arcSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -1002,19 +990,19 @@ function updateLineMaterial(
   {
     isSelected,
     isHovered,
-    mode,
+    isDraft,
     freedom,
   }: {
     isSelected: boolean
     isHovered: boolean
-    mode: SegmentMode
+    isDraft: boolean
     freedom?: Freedom | null
   }
 ) {
   if (!material) return
 
   const color = getSegmentColor({
-    mode,
+    isDraft,
     isHovered,
     isSelected,
     freedom,
@@ -1050,11 +1038,10 @@ export function updateSegmentHover(
   }
 
   const isSelected = selectedIds.includes(segmentId)
-  // Get mode from group userData, or determine from draftEntityIds as fallback
-  let mode: SegmentMode = group.userData.mode || 'normal'
-  if (!group.userData.mode && draftEntityIds?.includes(segmentId)) {
-    mode = 'draft'
-  }
+  // Get isDraft from group userData, or determine from draftEntityIds as fallback
+  const isDraft =
+    group.userData.isDraft === true ||
+    draftEntityIds?.includes(segmentId) === true
   const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
@@ -1064,7 +1051,7 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        mode,
+        isDraft,
         freedom
       )
     } else {
@@ -1076,7 +1063,7 @@ export function updateSegmentHover(
         mesh,
         isSelected,
         isHovered,
-        mode,
+        isDraft,
         freedom
       )
     } else {

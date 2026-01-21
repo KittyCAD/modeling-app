@@ -127,8 +127,6 @@ export function deriveSegmentFreedom(
   return null
 }
 
-export type SegmentMode = 'normal' | 'draft' | 'construction'
-
 /**
  * Color precedence system:
  * 1. Draft color (priority 1) - grey
@@ -140,18 +138,18 @@ export type SegmentMode = 'normal' | 'draft' | 'construction'
  * 7. Default color (lowest priority) - UNCONSTRAINED_COLOR
  */
 export function getSegmentColor({
-  mode = 'normal',
+  isDraft = false,
   isHovered,
   isSelected,
   freedom,
 }: {
-  mode?: SegmentMode
+  isDraft?: boolean
   isHovered?: boolean
   isSelected?: boolean
   freedom?: Freedom | null
 }): number {
   // Priority 1: Draft color
-  if (mode === 'draft') {
+  if (isDraft) {
     return 0x888888 // Grey for draft
   }
 
