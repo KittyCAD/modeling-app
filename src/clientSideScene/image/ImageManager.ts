@@ -120,7 +120,7 @@ export class ImageManager {
       const imagePath = getImageFilePath(images.projectPath, imageFileName)
       await window.electron.writeFile(imagePath, new Uint8Array(arrayBuffer))
 
-      images.list.push({
+      const image = {
         fileName: imageFileName,
         x: position.x,
         y: position.y,
@@ -129,7 +129,9 @@ export class ImageManager {
         rotation: 0,
         visible: true,
         locked: false,
-      })
+      }
+      images.list.unshift(image)
+      this.setSelected(image)
 
       this.dispatchImageChange()
       await this.saveToFile()
