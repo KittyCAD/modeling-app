@@ -1,11 +1,11 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[31, 56, 0]"]
+    2["Path<br>[31, 56, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   end
   subgraph path3 [Path]
-    3["Path<br>[62, 113, 0]"]
+    3["Path<br>[62, 113, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     4["Segment<br>[62, 113, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]

@@ -41,6 +41,14 @@ export function ProjectSearchBar({
     },
     { enableOnFormTags: true }
   )
+  useHotkeys(
+    'mod+f',
+    (event) => {
+      event.preventDefault()
+      inputRef.current?.focus()
+    },
+    { enableOnFormTags: true }
+  )
 
   return (
     <div className="relative group">

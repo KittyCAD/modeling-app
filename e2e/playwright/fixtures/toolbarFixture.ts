@@ -247,7 +247,9 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
-  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
+  selectBoolean = async (
+    operation: 'union' | 'subtract' | 'intersect' | 'split'
+  ) => {
     await this.page
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()

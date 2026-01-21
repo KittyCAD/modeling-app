@@ -660,7 +660,8 @@ const OperationItem = (props: OperationProps) => {
     if (
       props.item.type === 'StdLibCall' ||
       props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
     ) {
       props.send({
         type: 'deleteOperation',
@@ -773,14 +774,14 @@ const OperationItem = (props: OperationProps) => {
           ]
         : []),
       ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               disabled={
-                !(
-                  stdLibMap[props.item.name]?.prepareToEdit ||
-                  props.item.type === 'VariableDeclaration'
-                )
+                props.item.type !== 'VariableDeclaration' &&
+                props.item.type !== 'SketchSolve' &&
+                stdLibMap[props.item.name]?.prepareToEdit === undefined
               }
               onClick={enterEditFlow}
               hotkey="Double click"
@@ -855,7 +856,8 @@ const OperationItem = (props: OperationProps) => {
         : []),
       ...(props.item.type === 'StdLibCall' ||
       props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               onClick={deleteOperation}
@@ -863,13 +865,6 @@ const OperationItem = (props: OperationProps) => {
               data-testid="context-menu-delete"
             >
               Delete
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'SketchSolve'
-        ? [
-            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
-              Edit
             </ContextMenuItem>,
           ]
         : []),

@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  SPLIT: 'split',
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',

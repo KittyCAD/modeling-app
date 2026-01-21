@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[544, 605, 0]"]
+    2["Path<br>[544, 605, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     3["Segment<br>[621, 672, 0]"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -38,7 +38,7 @@ flowchart LR
     19[Solid2d]
   end
   subgraph path68 [Path]
-    68["Path<br>[1615, 1713, 0]"]
+    68["Path<br>[1615, 1713, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     69["Segment<br>[1615, 1713, 0]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -46,7 +46,7 @@ flowchart LR
   end
   1["Plane<br>[446, 489, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  20["Sweep Extrusion<br>[1392, 1437, 0]"]
+  20["Sweep Extrusion<br>[1392, 1437, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21[Wall]
     %% face_code_ref=Missing NodePath
@@ -112,13 +112,13 @@ flowchart LR
   65["SweepEdge Adjacent"]
   66["SweepEdge Opposite"]
   67["SweepEdge Adjacent"]
-  71["Sweep Extrusion<br>[1845, 1892, 0]"]
+  71["Sweep Extrusion<br>[1845, 1892, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   72[Wall]
     %% face_code_ref=Missing NodePath
   73["SweepEdge Opposite"]
   74["SweepEdge Adjacent"]
-  75["Sweep Extrusion<br>[1845, 1892, 0]"]
+  75["Sweep Extrusion<br>[1845, 1892, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   76["StartSketchOnPlane<br>[432, 490, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]

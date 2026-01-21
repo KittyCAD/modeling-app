@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[1360, 1419, 0]"]
+    2["Path<br>[1360, 1419, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[967, 995, 0]"]
       %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -22,7 +22,7 @@ flowchart LR
     11[Solid2d]
   end
   subgraph path13 [Path]
-    13["Path<br>[1632, 1727, 0]"]
+    13["Path<br>[1632, 1727, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     14["Segment<br>[967, 995, 0]"]
       %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -46,7 +46,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["Plane<br>[1609, 1626, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  23["Sweep Extrusion<br>[1949, 2007, 0]"]
+  23["Sweep Extrusion<br>[1949, 2007, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   24[Wall]
     %% face_code_ref=Missing NodePath
@@ -84,7 +84,7 @@ flowchart LR
   47["SweepEdge Adjacent"]
   48["SweepEdge Opposite"]
   49["SweepEdge Adjacent"]
-  50["Sweep Extrusion<br>[1949, 2007, 0]"]
+  50["Sweep Extrusion<br>[1949, 2007, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   51[Wall]
     %% face_code_ref=Missing NodePath

@@ -1,14 +1,14 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[562, 632, 0]"]
+    2["Path<br>[562, 632, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[562, 632, 0]"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     4[Solid2d]
   end
   subgraph path12 [Path]
-    12["Path<br>[750, 799, 0]"]
+    12["Path<br>[750, 799, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     13["Segment<br>[805, 831, 0]"]
       %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -31,14 +31,14 @@ flowchart LR
     22[Solid2d]
   end
   subgraph path39 [Path]
-    39["Path<br>[1641, 1689, 0]"]
+    39["Path<br>[1641, 1689, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     40["Segment<br>[1641, 1689, 0]"]
       %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     41[Solid2d]
   end
   subgraph path49 [Path]
-    49["Path<br>[1882, 1916, 0]"]
+    49["Path<br>[1882, 1916, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     50["Segment<br>[1922, 1954, 0]"]
       %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -58,7 +58,7 @@ flowchart LR
   end
   1["Plane<br>[539, 556, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  5["Sweep Extrusion<br>[638, 666, 0]"]
+  5["Sweep Extrusion<br>[638, 666, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   6[Wall]
     %% face_code_ref=Missing NodePath
@@ -70,7 +70,7 @@ flowchart LR
   10["SweepEdge Adjacent"]
   11["Plane<br>[727, 744, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  23["Sweep Revolve<br>[1303, 1320, 0]"]
+  23["Sweep Revolve<br>[1303, 1320, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 11 }]
   24[Wall]
     %% face_code_ref=Missing NodePath
@@ -92,11 +92,11 @@ flowchart LR
   34["SweepEdge Adjacent"]
   35["SweepEdge Adjacent"]
   36["SweepEdge Adjacent"]
-  37["CompositeSolid Subtract<br>[1402, 1528, 0]"]
+  37["CompositeSolid Subtract<br>[1402, 1528, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 12 }]
   38["Plane<br>[1618, 1635, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  42["Sweep Extrusion<br>[1695, 1762, 0]"]
+  42["Sweep Extrusion<br>[1695, 1762, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   43[Wall]
     %% face_code_ref=Missing NodePath
@@ -108,7 +108,7 @@ flowchart LR
   47["SweepEdge Adjacent"]
   48["Plane<br>[1859, 1876, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  58["Sweep Revolve<br>[2186, 2203, 0]"]
+  58["Sweep Revolve<br>[2186, 2203, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 9 }]
   59[Wall]
     %% face_code_ref=Missing NodePath
@@ -124,9 +124,9 @@ flowchart LR
   65["SweepEdge Adjacent"]
   66["SweepEdge Adjacent"]
   67["SweepEdge Adjacent"]
-  68["CompositeSolid Subtract<br>[2209, 2234, 0]"]
+  68["CompositeSolid Subtract<br>[2209, 2234, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 10 }]
-  69["CompositeSolid Subtract<br>[2240, 2268, 0]"]
+  69["CompositeSolid Subtract<br>[2240, 2268, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 11 }]
   1 --- 2
   2 --- 3

@@ -22,6 +22,10 @@ test.describe(
         name: 'intersect',
         code: 'intersect([extrude001, extrude006])',
       },
+      {
+        name: 'split',
+        code: 'split([extrude001, extrude006], merge = true)',
+      },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {
       const operation = booleanOperations[i]
@@ -115,6 +119,14 @@ test.describe(
               },
               commandName,
             })
+          } else if (operationName === 'split') {
+            await cmdBar.expectState({
+              stage: 'review',
+              headerArguments: {
+                Targets: '2 paths',
+              },
+              commandName,
+            })
           }
 
           await cmdBar.submit()
@@ -126,7 +138,10 @@ test.describe(
 
         await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation('solid001', 0)
+          const op = await toolbar.getFeatureTreeOperation(
+            operationName === 'split' ? 'split001' : 'solid001',
+            0
+          )
           await op.click({ button: 'right' })
           await page.getByTestId('context-menu-delete').click()
           await scene.settled(cmdBar)

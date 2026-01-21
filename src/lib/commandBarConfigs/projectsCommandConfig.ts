@@ -1,9 +1,11 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
@@ -142,11 +144,18 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
+        // Only redirect back to the project when not on the home page
+        const hash = window.location.hash
+        const pathname = hash
+          ? hash.replace(/^#/, '')
+          : window.location.pathname
+        const isOnHomePage = pathname.startsWith(PATHS.HOME)
         systemIOActor.send({
           type: SystemIOMachineEvents.renameProject,
           data: {
             requestedProjectName: record.newName,
             projectName: record.oldName,
+            redirect: !isOnHomePage, // only redirect when renaming from within a project
           },
         })
       }
@@ -171,7 +180,13 @@ export function createProjectCommands({
       newName: {
         inputType: 'string',
         required: true,
-        defaultValue: defaultProjectFolderNameSnapshot,
+        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
+          // Prefill with the old project name if it's already selected
+          const oldName = context.argumentsToSubmit.oldName as
+            | string
+            | undefined
+          return oldName || defaultProjectFolderNameSnapshot()
+        },
       },
     },
   }

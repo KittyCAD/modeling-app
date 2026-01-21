@@ -105,10 +105,13 @@ export const CommandBar = () => {
         // We're on the first entry, just close
         commandBarActor.send({ type: 'Close' })
       } else {
+        // Either go to the previous argument if we could locate the current one,
+        // or to the last one (likely a case of unconfirmed optional arg)
+        const prevIndex = index === -1 ? entries.length - 1 : index - 1
         commandBarActor.send({
           type: 'Change current argument',
           data: {
-            arg: { name: entries[index - 1][0], ...entries[index - 1][1] },
+            arg: { name: entries[prevIndex][0], ...entries[prevIndex][1] },
           },
         })
       }
