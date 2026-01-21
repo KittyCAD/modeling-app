@@ -1,7 +1,7 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/app'
+import type { SystemIOActor } from '@src/lib/singletons'
 import { useSingletons } from '@src/index'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {

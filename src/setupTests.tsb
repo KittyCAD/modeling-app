@@ -77,7 +77,7 @@ vi.mock('three', async () => {
 /// Cleanup the engine connection if we had one.
 /*
 import { afterAll } from 'vitest'
-import { singletons } from '@src/lib/app'
+import { singletons } from '@src/lib/singletons'
 
 afterEach(async () => {
   const ws = singletons.engineCommandManager.engineConnection?.websocket as any

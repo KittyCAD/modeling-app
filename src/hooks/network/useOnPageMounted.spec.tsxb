@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { expect, vi, describe, test } from 'vitest'
-import { App } from '@src/lib/app'
+import { App } from '@src/lib/singletons'
 
 describe('useOnPageMounted', () => {
   const singletons = new App().singletons
