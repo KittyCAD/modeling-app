@@ -12,6 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::{
     shapes::{get_radius, get_radius_labelled},
@@ -272,7 +273,7 @@ async fn inner_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute,
@@ -316,7 +317,18 @@ impl StraightLineParams {
     }
 }
 
+pub(super) async fn straight_line_with_new_id(
+    straight_line_params: StraightLineParams,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    straight_line(id, straight_line_params, exec_state, ctx, source_range).await
+}
+
 pub(super) async fn straight_line(
+    id: Uuid,
     StraightLineParams {
         sketch,
         end,
@@ -346,7 +358,6 @@ pub(super) async fn straight_line(
         }
     };
 
-    let id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
@@ -427,7 +438,7 @@ async fn inner_x_line(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute: end_absolute.map(|x| [x, from.into_y()]),
@@ -464,7 +475,7 @@ async fn inner_y_line(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute: end_absolute.map(|y| [from.into_x(), y]),
@@ -655,7 +666,7 @@ async fn inner_angled_line_of_x_length(
     let to = get_y_component(Angle::from_degrees(angle_degrees), length.n);
     let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::relative(to, sketch, tag),
         exec_state,
         &args.ctx,
@@ -694,7 +705,7 @@ async fn inner_angled_line_to_x(
     let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::absolute([x_to, TyF64::new(y_to, from.units.into())], sketch, tag),
         exec_state,
         &args.ctx,
@@ -729,7 +740,7 @@ async fn inner_angled_line_of_y_length(
     let to = get_x_component(Angle::from_degrees(angle_degrees), length.n);
     let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::relative(to, sketch, tag),
         exec_state,
         &args.ctx,
@@ -768,7 +779,7 @@ async fn inner_angled_line_to_y(
     let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::absolute([TyF64::new(x_to, from.units.into()), y_to], sketch, tag),
         exec_state,
         &args.ctx,
@@ -824,7 +835,7 @@ pub async fn inner_angled_line_that_intersects(
         TyF64::new(to[1], from.units.into()),
     ];
 
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams::absolute(to, sketch, tag),
         exec_state,
         &args.ctx,

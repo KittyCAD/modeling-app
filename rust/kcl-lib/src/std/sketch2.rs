@@ -84,6 +84,7 @@ pub(crate) async fn create_segments_in_engine(
             }
             SegmentKind::Line { end, .. } => {
                 let sketch = straight_line(
+                    segment.id,
                     StraightLineParams::absolute(end.clone(), sketch.clone(), None),
                     exec_state,
                     ctx,
