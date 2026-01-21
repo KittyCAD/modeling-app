@@ -474,12 +474,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.isConstruction) {
       const lineStart = new Vector3(startX, startY, 0)
       const lineEnd = new Vector3(endX, endY, 0)
-      setupConstructionLineDashShader(
-        material,
-        lineStart,
-        lineEnd,
-        `construction-dashed-${id}`
-      )
+      setupConstructionLineDashShader(material, lineStart, lineEnd)
     }
 
     const mesh = new Line2(geometry, material)
@@ -576,8 +571,7 @@ class LineSegment implements SketchEntityUtils {
           setupConstructionLineDashShader(
             straightSegmentBody.material,
             lineStart,
-            lineEnd,
-            `construction-dashed-${id}`
+            lineEnd
           )
         } else {
           // Switching away from construction: remove the custom shader
@@ -824,8 +818,7 @@ class ArcSegment implements SketchEntityUtils {
           arcCenter,
           arcStart,
           arcData.startAngle,
-          arcData.endAngle,
-          `construction-dashed-arc-${id}`
+          arcData.endAngle
         )
       }
     }
@@ -923,8 +916,7 @@ class ArcSegment implements SketchEntityUtils {
             arcCenter,
             arcStart,
             startAngle,
-            endAngle,
-            `construction-dashed-arc-${id}`
+            endAngle
           )
         } else {
           // Switching away from construction: remove the custom shader

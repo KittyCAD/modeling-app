@@ -51,11 +51,14 @@ export function setupConstructionArcDashShader(
   arcCenter: Vector3,
   arcStart: Vector3,
   startAngle: number,
-  endAngle: number,
-  cacheKey: string
+  endAngle: number
 ): void {
-  // Set a unique cache key so each material gets its own shader program
-  material.customProgramCacheKey = () => cacheKey
+  // Use a shared cache key for all arc construction segments
+  // This allows Three.js to reuse the same shader program across all arcs,
+  // reducing shader program switches and improving rendering performance.
+  // Each segment's uniqueness comes from uniforms (uArcCenter, uArcStart, etc.),
+  // not from the shader program itself.
+  material.customProgramCacheKey = () => 'construction-dashed-arc'
 
   material.onBeforeCompile = (shader) => {
     // Add uniforms for arc center and start point (used to calculate constant radius)
@@ -224,11 +227,14 @@ void main() {
 export function setupConstructionLineDashShader(
   material: LineMaterial,
   segmentStart: Vector3,
-  segmentEnd: Vector3,
-  cacheKey: string
+  segmentEnd: Vector3
 ): void {
-  // Set a unique cache key so each material gets its own shader program
-  material.customProgramCacheKey = () => cacheKey
+  // Use a shared cache key for all line construction segments
+  // This allows Three.js to reuse the same shader program across all lines,
+  // reducing shader program switches and improving rendering performance.
+  // Each segment's uniqueness comes from uniforms (uSegmentStart, uSegmentEnd),
+  // not from the shader program itself.
+  material.customProgramCacheKey = () => 'construction-dashed-line'
 
   material.onBeforeCompile = (shader) => {
     // Add uniforms for segment start/end positions in world space
