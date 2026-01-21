@@ -1,4 +1,4 @@
-name: Build WASM
+name: Build Wasm
 
 on:
   workflow_call:
@@ -25,37 +25,88 @@ jobs:
           CI_SUITE: integration
           CI_STEP: setup
 
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
+        continue-on-error: true # this step fails when invoked as 'workflow_call'
+        with:
+          filters: |
+            rust:
+              - 'rust/**'
+
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
 
+      - name: Download Wasm cache
+        id: download-wasm
+        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
+        uses: dawidd6/action-download-artifact@v12
+        continue-on-error: true
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          name: wasm-bundle
+          workflow: build-and-store-wasm.yml
+          branch: main
+          path: rust/kcl-wasm-lib/pkg
+
+      - name: Build Wasm condition
+        id: wasm
+        run: |
+          set -euox pipefail
+          # Build Wasm if this is a scheduled run, there are Rust changes, or
+          # downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Use correct Rust toolchain
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
-      - name: Install rust
+      - name: Install Rust
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # configured below
-          rustflags: '' # Use .cargo/config.toml
+          rustflags: '' # use .cargo/config.toml
 
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
       - name: Use Rust cache
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './rust'
+          workspaces: "./rust"
 
       - name: Build Wasm
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: npm run build:wasm
+
+      - name: Generate TypeScript bindings
+        if: ${{ steps.wasm.outputs.should-build-wasm != 'true' }}
+        shell: bash
+        run: |
+          cd rust
+          cargo test -p kcl-lib --features artifact-graph export_bindings
+          cd ..
+
+      - name: Copy Wasm to public
+        run: |
+          ls -R rust/kcl-wasm-lib/pkg
+          cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 
       - uses: actions/upload-artifact@v6
         with:
