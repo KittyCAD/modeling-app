@@ -156,12 +156,6 @@ export const FeatureTreePaneContents = memo(() => {
             data: { name: 'Clone', groupId: 'modeling' },
           })
         },
-        sendAppearanceCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
-          })
-        },
       },
     }),
     {
@@ -571,12 +565,9 @@ const OperationItem = (props: OperationProps) => {
         props.item.group.type === 'FunctionCall')
     ) {
       selectOperation()
-      props.send({
-        type: 'enterAppearanceFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Appearance', groupId: 'modeling' },
       })
     }
   }
