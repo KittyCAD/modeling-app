@@ -4,6 +4,8 @@ use std::{
     ops::ControlFlow,
 };
 
+use indexmap::IndexMap;
+
 use kcl_error::SourceRange;
 
 use crate::{
@@ -399,9 +401,8 @@ impl SketchApi for FrontendState {
         // - the first start point edit creates a new line edit entry in final_edits
         // - the second end point edit finds this line edit and mutates the end position only.
         //
-        // The result is that segments are flattened into a single Vec of edits by their owners, later edits overriding earlier ones
-        // Note: this is a Vec so complexity is O(n^2), if segments can be large we can introduce a HashMap.
-        let mut final_edits: Vec<ExistingSegmentCtor> = Vec::new();
+        // The result is that segments are flattened into a single IndexMap of edits by their owners, later edits overriding earlier ones.
+        let mut final_edits: IndexMap<ObjectId, SegmentCtor> = IndexMap::new();
 
         for segment in segments {
             let segment_id = segment.id;
@@ -417,11 +418,12 @@ impl SketchApi for FrontendState {
                     {
                         match owner_segment {
                             Segment::Line(line) if line.start == segment_id || line.end == segment_id => {
-                                if let Some(SegmentCtor::Line(line_ctor)) = final_edits
-                                    .iter_mut()
-                                    .find(|edit| edit.id == owner_id)
-                                    .map(|edit| &mut edit.ctor)
-                                {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Line(line_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected line ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
                                     // Line owner is already in final_edits -> apply this point edit
                                     if line.start == segment_id {
                                         line_ctor.start = ctor.position;
@@ -436,10 +438,7 @@ impl SketchApi for FrontendState {
                                     } else {
                                         line_ctor.end = ctor.position;
                                     }
-                                    final_edits.push(ExistingSegmentCtor {
-                                        id: owner_id,
-                                        ctor: SegmentCtor::Line(line_ctor),
-                                    });
+                                    final_edits.insert(owner_id, SegmentCtor::Line(line_ctor));
                                 } else {
                                     // This should never run..
                                     return Err(Error {
@@ -451,11 +450,12 @@ impl SketchApi for FrontendState {
                             Segment::Arc(arc)
                                 if arc.start == segment_id || arc.end == segment_id || arc.center == segment_id =>
                             {
-                                if let Some(SegmentCtor::Arc(arc_ctor)) = final_edits
-                                    .iter_mut()
-                                    .find(|edit| edit.id == owner_id)
-                                    .map(|edit| &mut edit.ctor)
-                                {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Arc(arc_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected arc ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
                                     if arc.start == segment_id {
                                         arc_ctor.start = ctor.position;
                                     } else if arc.end == segment_id {
@@ -472,10 +472,7 @@ impl SketchApi for FrontendState {
                                     } else {
                                         arc_ctor.center = ctor.position;
                                     }
-                                    final_edits.push(ExistingSegmentCtor {
-                                        id: owner_id,
-                                        ctor: SegmentCtor::Arc(arc_ctor),
-                                    });
+                                    final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
                                 } else {
                                     return Err(Error {
                                         msg: format!("Internal: Arc does not have arc ctor: {owner_object:?}"),
@@ -488,50 +485,30 @@ impl SketchApi for FrontendState {
                     }
 
                     // No owner, it's an individual point
-                    final_edits.push(ExistingSegmentCtor {
-                        id: segment_id,
-                        ctor: SegmentCtor::Point(ctor),
-                    });
+                    final_edits.insert(segment_id, SegmentCtor::Point(ctor));
                 }
                 SegmentCtor::Line(ctor) => {
-                    if let Some(edit) = final_edits.iter_mut().find(|edit| edit.id == segment_id) {
-                        edit.ctor = SegmentCtor::Line(ctor);
-                    } else {
-                        final_edits.push(ExistingSegmentCtor {
-                            id: segment_id,
-                            ctor: SegmentCtor::Line(ctor),
-                        });
-                    }
+                    final_edits.insert(segment_id, SegmentCtor::Line(ctor));
                 }
                 SegmentCtor::Arc(ctor) => {
-                    if let Some(edit) = final_edits.iter_mut().find(|edit| edit.id == segment_id) {
-                        edit.ctor = SegmentCtor::Arc(ctor);
-                    } else {
-                        final_edits.push(ExistingSegmentCtor {
-                            id: segment_id,
-                            ctor: SegmentCtor::Arc(ctor),
-                        });
-                    }
+                    final_edits.insert(segment_id, SegmentCtor::Arc(ctor));
                 }
                 other_ctor => {
-                    final_edits.push(ExistingSegmentCtor {
-                        id: segment_id,
-                        ctor: other_ctor,
-                    });
+                    final_edits.insert(segment_id, other_ctor);
                 }
             }
         }
 
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(final_edits.len(), Default::default());
-        for segment in final_edits {
-            segment_ids_edited.insert(segment.id);
-            match segment.ctor {
-                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
-                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
-                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
+        for (segment_id, ctor) in final_edits {
+            segment_ids_edited.insert(segment_id);
+            match ctor {
+                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
+                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
+                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment_id, ctor)?,
                 _ => {
                     return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
+                        msg: format!("segment ctor not implemented yet: {ctor:?}"),
                     });
                 }
             }
