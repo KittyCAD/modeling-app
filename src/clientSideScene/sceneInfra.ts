@@ -772,12 +772,21 @@ export class SceneInfra {
       )
     }
 
-    // Convert the map values to an array and sort by priority/distance
+    // Convert the map values to an array and sort by priority/renderOrder/distance
     return Array.from(intersectionsMap.values()).sort((a, b) => {
       const aPriority = getIntersectionPriority(a.object)
       const bPriority = getIntersectionPriority(b.object)
       if (aPriority !== bPriority) {
         return aPriority - bPriority
+      }
+      const aIsImage = Boolean(a.object.userData?.image)
+      const bIsImage = Boolean(b.object.userData?.image)
+      if (aIsImage && bIsImage) {
+        const aRenderOrder = a.object.renderOrder ?? 0
+        const bRenderOrder = b.object.renderOrder ?? 0
+        if (aRenderOrder !== bRenderOrder) {
+          return bRenderOrder - aRenderOrder
+        }
       }
       // Priority is the same -> sort by distance
       return a.distance - b.distance
