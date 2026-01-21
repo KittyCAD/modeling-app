@@ -59,9 +59,10 @@ leg3 = clone(legExtrude)
 leg4 = clone(legExtrude)
   |> translate(x = distanceBetweenLegAxisWidth, y = tableLength - legThickness - (legOffset * 2), z = 0)
 
-  // ──────────────
-  // APRONS
 // ──────────────
+// APRONS
+// ──────────────
+
 
 longApronLength = tableLength - (legThickness * 2) - (legOffset * 2)
 shortApronLength = tableWidth - (legThickness * 2) - (legOffset * 2)

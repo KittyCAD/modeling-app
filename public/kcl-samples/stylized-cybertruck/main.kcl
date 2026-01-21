@@ -84,7 +84,7 @@ fenderProfile = startProfile(fenderPlane, at = [-fenderLength / 2, groundClearan
 fenderBody = extrude([fenderProfile], length = -chassisWidth - (fenderInset * 2))
   |> appearance(%, color = "#e0e0e0")
 
-  // Wheel Cutouts
+// Wheel Cutouts
 // Hexagonal recesses subtracted from the fenders to make space for the wheels.
 fn makeWheelCutout(size) {
   wheelSketch = startSketchOn(XZ)
@@ -128,8 +128,8 @@ fenderWithCutouts = subtract(
      )
   |> appearance(%, color = "#1a1a1a")
 
-  // Chassis
-  // The main structural body of the vehicle, sitting above the fenders.
+// Chassis
+// The main structural body of the vehicle, sitting above the fenders.
 // Defines the base frame on which the cabin and roof are mounted.
 chassisProfile = startProfile(chassisPlane, at = [-chassisLength / 2, chassisElevation])
   |> yLine(length = chassisHeight)
@@ -141,8 +141,9 @@ chassisProfile = startProfile(chassisPlane, at = [-chassisLength / 2, chassisEle
 chassis = extrude([chassisProfile], length = -chassisWidth)
   |> appearance(%, color = "#757575") // gray body
 
-  // Cabin (angular upper body)
-  // Defined by intersecting sloped front, back, and side profiles.
+
+// Cabin (angular upper body)
+// Defined by intersecting sloped front, back, and side profiles.
 // Emulates the faceted, wedge-like shape of the Cybertruck.
 cabinSideProfile = startProfile(
        chassisPlane,
@@ -171,8 +172,8 @@ cabinFrontBody = extrude([cabinFrontProfile], length = chassisLength * 1.1)
 cabinBody = intersect([cabinSideBody, cabinFrontBody])
   |> appearance(%, color = "#9ce8f2")
 
-  // Wheels
-  // Cylindrical wheels with a central hubcap detail.
+// Wheels
+// Cylindrical wheels with a central hubcap detail.
 // Created as separate parts and positioned under the fender cutouts.
 fn wheelFn(diameter, width) {
   wheelSketch = startSketchOn(XZ)
@@ -206,7 +207,7 @@ wheelRearRight = wheelFn(diameter = wheelDiameter, width = wheelWidth)
      )
   |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
 
-  // Headlights
+// Headlights
 // Two circular front lights mounted on the front face of the chassis.
 headlightsPlane = offsetPlane(YZ, offset = -chassisLength / 2)
 headlightsSketch = startSketchOn(headlightsPlane)
@@ -219,7 +220,7 @@ headlightsProfile = startProfile(headlightsSketch, at = [-chassisWidth / 2, head
 headlightsBody = extrude(headlightsProfile, length = -lightDepth)
   |> appearance(%, color = "#ededed")
 
-  // Taillights
+// Taillights
 // Two rectangular rear lights mounted on the back face of the chassis.
 taillightsPlane = offsetPlane(YZ, offset = chassisLength / 2)
 taillightsSketch = startSketchOn(taillightsPlane)

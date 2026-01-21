@@ -142,7 +142,8 @@ describe('deriveSegmentFreedom', () => {
       id: 1,
       kind: {
         type: 'Sketch',
-        args: { on: { default: 'xy' } },
+        args: { on: 'XY' },
+        plane: 0,
         segments: [],
         constraints: [],
       },

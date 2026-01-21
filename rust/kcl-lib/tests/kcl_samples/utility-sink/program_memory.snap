@@ -172,6 +172,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -179,7 +181,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -337,6 +338,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -344,7 +347,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -473,6 +475,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -480,7 +484,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -609,6 +612,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -616,7 +621,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -705,13 +709,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 165.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -755,13 +760,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -831,6 +837,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 13,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -838,7 +846,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -930,6 +937,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 13,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -937,7 +946,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1044,13 +1052,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 12,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 780.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1176,6 +1185,8 @@ description: Variables in memory after executing utility-sink.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 12,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1183,7 +1194,6 @@ description: Variables in memory after executing utility-sink.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1258,6 +1268,8 @@ description: Variables in memory after executing utility-sink.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 13,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1265,7 +1277,6 @@ description: Variables in memory after executing utility-sink.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1311,13 +1322,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 13,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1462,6 +1474,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1469,7 +1483,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1598,6 +1611,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1605,7 +1620,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1734,6 +1748,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1741,7 +1757,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1870,6 +1885,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1877,7 +1894,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2058,6 +2074,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2065,7 +2083,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2194,6 +2211,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2201,7 +2220,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2364,6 +2382,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2371,7 +2391,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2500,6 +2519,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2507,7 +2528,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2587,13 +2607,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 150.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2738,6 +2759,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2745,7 +2768,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2874,6 +2896,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2881,7 +2905,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3071,6 +3094,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3078,7 +3103,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3207,6 +3231,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3214,7 +3240,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3276,13 +3301,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 163.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3434,6 +3460,7 @@ description: Variables in memory after executing utility-sink.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3557,6 +3584,8 @@ description: Variables in memory after executing utility-sink.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 4,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3564,7 +3593,6 @@ description: Variables in memory after executing utility-sink.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3750,6 +3778,7 @@ description: Variables in memory after executing utility-sink.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -3873,6 +3902,8 @@ description: Variables in memory after executing utility-sink.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 4,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3880,7 +3911,6 @@ description: Variables in memory after executing utility-sink.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4003,6 +4033,7 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 6,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -4126,6 +4157,8 @@ description: Variables in memory after executing utility-sink.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 4,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -4133,7 +4166,6 @@ description: Variables in memory after executing utility-sink.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4186,6 +4218,7 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 5,
       "value": "start",
       "xAxis": {
         "x": 1.0,
@@ -4309,6 +4342,8 @@ description: Variables in memory after executing utility-sink.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 4,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -4316,7 +4351,6 @@ description: Variables in memory after executing utility-sink.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4512,6 +4546,8 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4519,7 +4555,6 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4570,13 +4605,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 850.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4652,6 +4688,8 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 545.0,
@@ -4659,7 +4697,6 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4751,6 +4788,8 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 545.0,
@@ -4758,7 +4797,6 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4850,6 +4888,8 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4857,7 +4897,6 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4949,6 +4988,8 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4956,7 +4997,6 @@ description: Variables in memory after executing utility-sink.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5117,6 +5157,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5124,7 +5166,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5253,6 +5294,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5260,7 +5303,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5423,6 +5465,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5430,7 +5474,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5559,6 +5602,8 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5566,7 +5611,6 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5628,13 +5672,14 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 847.5,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

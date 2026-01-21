@@ -72,12 +72,12 @@ sketch2::distance([line3.start, line3.end]) == 6mm
     // Format: (ObjectId, Freedom)
 
     let expected = vec![
-        (ObjectId(1), Freedom::Fixed),
         (ObjectId(2), Freedom::Fixed),
-        (ObjectId(4), Freedom::Fixed),
-        (ObjectId(5), Freedom::Free),
-        (ObjectId(7), Freedom::Conflict),
+        (ObjectId(3), Freedom::Fixed),
+        (ObjectId(5), Freedom::Fixed),
+        (ObjectId(6), Freedom::Free),
         (ObjectId(8), Freedom::Conflict),
+        (ObjectId(9), Freedom::Conflict),
     ];
 
     // This assertion will fail until the bug is fixed
@@ -117,12 +117,12 @@ sketch2::distance([line3.start, line3.end]) == 4mm
 
     // Expected: Fixed, Fixed, Fixed, Free, Free, Free
     let expected = vec![
-        (ObjectId(1), Freedom::Fixed),
         (ObjectId(2), Freedom::Fixed),
-        (ObjectId(4), Freedom::Fixed),
-        (ObjectId(5), Freedom::Free),
-        (ObjectId(7), Freedom::Free),
+        (ObjectId(3), Freedom::Fixed),
+        (ObjectId(5), Freedom::Fixed),
+        (ObjectId(6), Freedom::Free),
         (ObjectId(8), Freedom::Free),
+        (ObjectId(9), Freedom::Free),
     ];
 
     assert_eq!(point_freedoms, expected, "Point freedoms should match expected values");
@@ -158,12 +158,12 @@ line2.start.at[1] == 1
     //           line2 has one end constrained -> Fixed, Free
 
     let expected = vec![
-        (ObjectId(1), Freedom::Fixed),
         (ObjectId(2), Freedom::Fixed),
-        (ObjectId(4), Freedom::Conflict),
+        (ObjectId(3), Freedom::Fixed),
         (ObjectId(5), Freedom::Conflict),
-        (ObjectId(9), Freedom::Fixed),
-        (ObjectId(10), Freedom::Free),
+        (ObjectId(6), Freedom::Conflict),
+        (ObjectId(10), Freedom::Fixed),
+        (ObjectId(11), Freedom::Free),
     ];
 
     // This assertion will fail until the bug is fixed

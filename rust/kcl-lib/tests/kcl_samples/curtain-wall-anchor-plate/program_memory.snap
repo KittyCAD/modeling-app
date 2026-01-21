@@ -264,6 +264,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 100.0,
@@ -271,7 +273,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -538,6 +539,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -661,6 +663,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -668,7 +672,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -902,6 +905,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -1025,6 +1029,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1032,7 +1038,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1332,6 +1337,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 100.0,
@@ -1339,7 +1346,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1649,6 +1655,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 100.0,
@@ -1656,7 +1664,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1791,13 +1798,14 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1906,6 +1914,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1913,7 +1923,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2076,6 +2085,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2083,7 +2094,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2251,6 +2261,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2258,7 +2270,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
