@@ -22,10 +22,6 @@ type FeatureTreeEvent =
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | {
-      type: 'enterTranslateFlow'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
-    }
-  | {
       type: 'enterRotateFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
@@ -77,7 +73,6 @@ export const featureTreeMachine = setup({
     clearContext: assign({
       targetSourceRange: undefined,
     }),
-    sendTranslateCommand: () => {},
     sendRotateCommand: () => {},
     sendScaleCommand: () => {},
     sendCloneCommand: () => {},
@@ -104,11 +99,6 @@ export const featureTreeMachine = setup({
 
         enterAppearanceFlow: {
           target: 'enteringAppearanceFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
-        },
-
-        enterTranslateFlow: {
-          target: 'enteringTranslateFlow',
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
@@ -155,22 +145,6 @@ export const featureTreeMachine = setup({
     selecting: {
       always: '#featureTree.idle',
       exit: 'clearContext',
-    },
-
-    enteringTranslateFlow: {
-      states: {
-        enteringTranslateFlow: {
-          always: 'done',
-          entry: 'sendTranslateCommand',
-        },
-
-        done: {
-          always: '#featureTree.idle',
-          entry: 'clearContext',
-        },
-      },
-
-      initial: 'enteringTranslateFlow',
     },
 
     enteringRotateFlow: {
