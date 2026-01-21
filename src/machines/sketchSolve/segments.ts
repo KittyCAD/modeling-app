@@ -26,7 +26,7 @@ import {
   STRAIGHT_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
-import { hasProperty, isArray, isRecord } from '@src/lib/utils'
+import { hasProperty, isArray } from '@src/lib/utils'
 // Import and re-export pure utility functions
 import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import {
@@ -81,28 +81,22 @@ function removeCustomShaderProperties(material: LineMaterial): void {
 /**
  * Safely accesses the program property if it exists.
  * Uses runtime type checking without assertions.
+ * Returns the program object if it exists (can be a class instance like WebGLProgram),
+ * or null/undefined if it doesn't exist.
  */
-function getMaterialProgram(
-  material: LineMaterial
-): { [key: string]: unknown } | null | undefined {
+function getMaterialProgram(material: LineMaterial): unknown {
   if (!hasProperty(material, 'program')) {
     return undefined
   }
   const program = material.program
-  // Runtime type check to ensure it's the expected type
+  // Runtime type check to ensure it's an object-like value (not null/undefined)
+  // Accepts both plain objects and class instances (like WebGLProgram)
   if (program === null || program === undefined) {
     return program
   }
-  if (isRecord(program)) {
-    // Verify it has index signature by checking it's a plain object
-    // Construct return type from verified object
-    const result: { [key: string]: unknown } = {}
-    for (const key in program) {
-      if (Object.prototype.hasOwnProperty.call(program, key)) {
-        result[key] = program[key]
-      }
-    }
-    return result
+  // Check if it's an object-like value (including class instances)
+  if (typeof program === 'object') {
+    return program
   }
   return undefined
 }
