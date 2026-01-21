@@ -38,40 +38,24 @@ async fn inner_flip_surface(
 
 /// Check if this object is a solid or not.
 pub async fn is_solid(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let argument = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state);
-    let kcl_false = Ok(KclValue::Bool {
-        value: false,
-        meta: Default::default(),
-    });
+    let argument = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let meta = vec![crate::execution::Metadata {
+        source_range: args.source_range,
+    }];
 
-    match argument {
-        Err(_) => kcl_false,
-        Ok(val) => inner_is_equal_body_type(val, exec_state, args, BodyType::Solid)
-            .await
-            .map(|b| KclValue::Bool {
-                value: b,
-                meta: Default::default(),
-            }),
-    }
+    let res = inner_is_equal_body_type(argument, exec_state, args, BodyType::Solid).await?;
+    Ok(KclValue::Bool { value: res, meta })
 }
 
 /// Check if this object is a surface or not.
 pub async fn is_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let argument = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state);
-    let kcl_false = Ok(KclValue::Bool {
-        value: false,
-        meta: Default::default(),
-    });
+    let argument = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let meta = vec![crate::execution::Metadata {
+        source_range: args.source_range,
+    }];
 
-    match argument {
-        Err(_) => kcl_false,
-        Ok(val) => inner_is_equal_body_type(val, exec_state, args, BodyType::Surface)
-            .await
-            .map(|b| KclValue::Bool {
-                value: b,
-                meta: Default::default(),
-            }),
-    }
+    let res = inner_is_equal_body_type(argument, exec_state, args, BodyType::Surface).await?;
+    Ok(KclValue::Bool { value: res, meta })
 }
 
 async fn inner_is_equal_body_type(
