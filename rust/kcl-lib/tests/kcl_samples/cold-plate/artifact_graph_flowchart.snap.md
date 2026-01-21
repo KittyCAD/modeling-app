@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[633, 673, 0]"]
+    2["Path<br>[633, 673, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[679, 726, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -60,7 +60,7 @@ flowchart LR
     30[Solid2d]
   end
   subgraph path113 [Path]
-    113["Path<br>[1585, 1628, 0]"]
+    113["Path<br>[1585, 1628, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     114["Segment<br>[1634, 1669, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -78,21 +78,21 @@ flowchart LR
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   end
   subgraph path122 [Path]
-    122["Path<br>[2239, 2314, 0]"]
+    122["Path<br>[2239, 2314, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     123["Segment<br>[2239, 2314, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     124[Solid2d]
   end
   subgraph path125 [Path]
-    125["Path<br>[2338, 2429, 0]"]
+    125["Path<br>[2338, 2429, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }, CallKwArg { index: 0 }]
     126["Segment<br>[2338, 2429, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }, CallKwArg { index: 0 }]
     127[Solid2d]
   end
   subgraph path135 [Path]
-    135["Path<br>[2626, 2658, 0]"]
+    135["Path<br>[2626, 2658, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     136["Segment<br>[2664, 2754, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -108,7 +108,7 @@ flowchart LR
   end
   1["Plane<br>[610, 627, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  31["Sweep Extrusion<br>[1420, 1458, 0]"]
+  31["Sweep Extrusion<br>[1420, 1458, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 18 }]
   32[Wall]
     %% face_code_ref=Missing NodePath
@@ -222,7 +222,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
   121["Plane<br>[2201, 2232, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
-  128["Sweep Sweep<br>[2436, 2464, 0]"]
+  128["Sweep Sweep<br>[2436, 2464, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   129[Wall]
     %% face_code_ref=Missing NodePath
@@ -234,7 +234,7 @@ flowchart LR
   133["SweepEdge Adjacent"]
   134["Plane<br>[2603, 2620, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  142["Sweep Extrusion<br>[3037, 3075, 0]"]
+  142["Sweep Extrusion<br>[3037, 3075, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   143[Wall]
     %% face_code_ref=Missing NodePath
