@@ -2480,10 +2480,7 @@ impl Node<BinaryExpression> {
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
                                     debug_assert!(false, "{}", &message);
-                                    return Err(KclError::new_internal(KclErrorDetails::new(
-                                        message,
-                                        vec![range],
-                                    )));
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                                 };
                                 let sketch_constraint = crate::front::Constraint::Distance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
