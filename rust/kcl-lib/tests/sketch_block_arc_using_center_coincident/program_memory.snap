@@ -112,7 +112,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "center_object_id": 4,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed"
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
@@ -194,7 +195,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "start_object_id": 8,
                     "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
@@ -276,7 +278,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "start_object_id": 12,
                     "end_object_id": 13,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
