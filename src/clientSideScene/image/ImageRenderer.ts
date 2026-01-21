@@ -1,4 +1,4 @@
-import type { Object3D, Quaternion } from 'three'
+import type { Quaternion } from 'three'
 import {
   DoubleSide,
   Group,

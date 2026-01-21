@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals-core'
+import type { IElectronAPI } from '@root/interface'
 import { joinOSPaths } from '@src/lib/paths'
 import type { settingsActor } from '@src/lib/singletons'
 
@@ -114,28 +115,32 @@ export class ImageManager {
     const images = await this.ensureImagesFolderExists()
     if (!images) return
 
-    const imageFileName = file.name
-    if (!images.list.some((img) => img.fileName === imageFileName)) {
-      const arrayBuffer = await file.arrayBuffer()
-      const imagePath = getImageFilePath(images.projectPath, imageFileName)
-      await window.electron.writeFile(imagePath, new Uint8Array(arrayBuffer))
+    const existingNames = new Set(images.list.map((img) => img.fileName))
+    const imageFileName = getUniqueImageFileName(
+      file.name,
+      existingNames,
+      images.projectPath,
+      window.electron
+    )
+    const arrayBuffer = await file.arrayBuffer()
+    const imagePath = getImageFilePath(images.projectPath, imageFileName)
+    await window.electron.writeFile(imagePath, new Uint8Array(arrayBuffer))
 
-      const image = {
-        fileName: imageFileName,
-        x: position.x,
-        y: position.y,
-        width: position.width,
-        height: position.height,
-        rotation: 0,
-        visible: true,
-        locked: false,
-      }
-      images.list.unshift(image)
-      this.setSelected(image)
-
-      this.dispatchImageChange()
-      await this.saveToFile()
+    const image = {
+      fileName: imageFileName,
+      x: position.x,
+      y: position.y,
+      width: position.width,
+      height: position.height,
+      rotation: 0,
+      visible: true,
+      locked: false,
     }
+    images.list.unshift(image)
+    this.setSelected(image)
+
+    this.dispatchImageChange()
+    await this.saveToFile()
   }
 
   // async getImages(): Promise<ImageEntry[]> {
@@ -275,4 +280,40 @@ function getImageJSONPath(projectPath: string) {
 
 export function getImageFilePath(projectPath: string, imageFileName: string) {
   return joinOSPaths(getImageFolderPath(projectPath), imageFileName)
+}
+
+function getUniqueImageFileName(
+  fileName: string,
+  existingNames: Set<string>,
+  projectPath: string,
+  electron: IElectronAPI
+): string {
+  if (
+    !existingNames.has(fileName) &&
+    !imageExistsOnDisk(fileName, projectPath, electron)
+  ) {
+    return fileName
+  }
+
+  const lastDot = fileName.lastIndexOf('.')
+  const baseName = lastDot > 0 ? fileName.slice(0, lastDot) : fileName
+  const extension = lastDot > 0 ? fileName.slice(lastDot) : ''
+  let suffix = 1
+  let candidate = `${baseName}_${suffix}${extension}`
+  while (
+    existingNames.has(candidate) ||
+    imageExistsOnDisk(candidate, projectPath, electron)
+  ) {
+    suffix += 1
+    candidate = `${baseName}_${suffix}${extension}`
+  }
+  return candidate
+}
+
+function imageExistsOnDisk(
+  fileName: string,
+  projectPath: string,
+  electron: IElectronAPI
+) {
+  return electron.exists(getImageFilePath(projectPath, fileName))
 }
