@@ -1,4 +1,5 @@
 import { App } from '@src/lib/app'
+import React from 'react'
 
 /**
  * This separates the instantiation of the app used by the frontend codebase
@@ -9,6 +10,5 @@ export const app = new App()
 
 /**
  * Hook to gain access to the global app instance's singletons
- * Available on App instances, just exported directly here for convenience.
  */
-export const useSingletons = app.useSingletons
+export const useSingletons = () => React.useContext(app.ReactContext)

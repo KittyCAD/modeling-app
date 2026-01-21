@@ -67,13 +67,10 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
   ReactContext: React.Context<typeof this.singletons>
-  /** Hook to gain access to the global app instance's singletons */
-  useSingletons: () => typeof this.singletons
 
   constructor() {
     this.singletons = this.buildSingletons()
     this.ReactContext = React.createContext(this.singletons)
-    this.useSingletons = () => React.useContext(this.ReactContext)
   }
 
   /**
