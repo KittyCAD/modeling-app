@@ -482,30 +482,26 @@ const OperationItem = ({
   )
 
   const enterEditFlow = useCallback(() => {
-    selectOperation()
-      .then(() => {
-        if (
-          item.type === 'StdLibCall' ||
-          item.type === 'VariableDeclaration' ||
-          item.type === 'SketchSolve'
-        ) {
-          const artifact =
-            getArtifactFromRange(
-              item.sourceRange,
-              systemDeps.kclManager.artifactGraph
-            ) ?? undefined
-          prepareEditCommand({
-            artifactGraph: systemDeps.kclManager.artifactGraph,
-            code: systemDeps.kclManager.code,
-            commandBarActor,
-            operation: item,
-            rustContext: systemDeps.rustContext,
-            artifact,
-          }).catch((e) => toast.error(e))
-        }
-      })
-      .catch((e) => toast.error(e))
-  }, [item, selectOperation])
+    if (
+      item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
+    ) {
+      const artifact =
+        getArtifactFromRange(
+          item.sourceRange,
+          systemDeps.kclManager.artifactGraph
+        ) ?? undefined
+      prepareEditCommand({
+        artifactGraph: systemDeps.kclManager.artifactGraph,
+        code: systemDeps.kclManager.code,
+        commandBarActor,
+        operation: item,
+        rustContext: systemDeps.rustContext,
+        artifact,
+      }).catch((e) => toast.error(e))
+    }
+  }, [item])
 
   function enterAppearanceFlow() {
     selectOperation()
@@ -801,6 +797,9 @@ const OperationItem = ({
       valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={() => {
+        void selectOperation()
+      }}
+      onContextMenu={() => {
         void selectOperation()
       }}
       onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
