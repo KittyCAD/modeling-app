@@ -954,8 +954,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
                             // Create parallel constraint
                             let parallel_constraint = SolverConstraint::LinesAtAngle(
-                                line0_segment.clone(),
-                                line1_segment.clone(),
+                                line0_segment,
+                                line1_segment,
                                 AngleKind::Parallel,
                             );
 
