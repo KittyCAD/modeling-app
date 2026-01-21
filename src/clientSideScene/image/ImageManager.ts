@@ -154,7 +154,8 @@ export class ImageManager {
         // Note: creating a new object is possible too but then we need to stop keeping references to
         // ImageEntry in mesh.userData and ImageList.tsx
         Object.assign(image, imageUpdate)
-        this.unselectImageIfLocked()
+        this.deselectImageIfDeletedOrLocked()
+        //this.dispatchImageChange()
         await this.saveToFile()
       } else {
         console.error("Can't find image data, maybe project has been closed?")
@@ -164,13 +165,13 @@ export class ImageManager {
     }
   }
 
-  private unselectImageIfLocked() {
+  private deselectImageIfDeletedOrLocked() {
     const selected = this.selected.value
     if (selected) {
       const selectedImage = this.images?.list.find(
         (image) => image.fileName === this.selected.value?.fileName
       )
-      if (selectedImage?.locked) {
+      if (!selectedImage || selectedImage.locked) {
         this.selected.value = undefined
       }
     }
@@ -218,6 +219,7 @@ export class ImageManager {
     this.images.list = this.images.list.filter(
       (img) => img.fileName !== imageFileName
     )
+    this.deselectImageIfDeletedOrLocked()
     this.dispatchImageChange()
     await this.saveToFile()
   }
