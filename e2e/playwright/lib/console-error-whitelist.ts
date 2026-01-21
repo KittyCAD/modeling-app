@@ -166,17 +166,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'webkit',
     },
     {
-      name: 'TypeError',
-      message: `$n is not a function`,
-      stack: `TypeError: $n is not a function
-    at new WebGLRenderer (file:///home/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DmRaimbZ.js:87474:15)
-    at new SceneInfra (file:///home/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DmRaimbZ.js:102743:150)
-    at file:///home/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DmRaimbZ.js:218819:22
-    at file:///home/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DmRaimbZ.js:277332:3`,
-      project: 'Google Chrome',
-      foundInSpec: '', // many tests are impacted by this error during the electron v40 migration, unclear why
-    },
-    {
       name: 'Unhandled Promise Rejection',
       message:
         '{"kind":"engine","sourceRanges":[[0,0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
