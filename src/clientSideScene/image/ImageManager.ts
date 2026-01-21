@@ -156,6 +156,30 @@ export class ImageManager {
     }
   }
 
+  async moveImage(imageFileName: string, targetIndex: number) {
+    if (!this.images) {
+      console.error("Can't find images list, maybe project has been closed?")
+      return
+    }
+
+    const list = this.images.list
+    const index = list.findIndex((img) => img.fileName === imageFileName)
+    if (index < 0) {
+      console.error("Can't find image data, maybe project has been closed?")
+      return
+    }
+
+    const clampedIndex = Math.max(0, Math.min(targetIndex, list.length - 1))
+    if (clampedIndex === index) {
+      return
+    }
+
+    const [image] = list.splice(index, 1)
+    list.splice(clampedIndex, 0, image)
+    await this.saveToFile()
+    this.imagesChanged.value++
+  }
+
   async deleteImage(imageFileName: string): Promise<void> {
     if (!window.electron) return
     if (!this.images) return

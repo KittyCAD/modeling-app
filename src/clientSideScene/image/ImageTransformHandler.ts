@@ -189,7 +189,7 @@ export class ImageTransformHandler {
           .sub(new Vector2(...this._dragging.mousePosAtStartDrag))
         const x = this._dragging.imagePosAtStartDrag[0] + diff.x
         const y = this._dragging.imagePosAtStartDrag[1] + diff.y
-        selected?.object.position.set(x, y, 1)
+        selected?.object.position.set(x, y, selected.object.position.z)
 
         this._dragging.image.x = x
         this._dragging.image.y = y

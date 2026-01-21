@@ -18,6 +18,7 @@ import { ImageTransformHandler } from '@src/clientSideScene/image/ImageTransform
 import { getEXTNoPeriod } from '@src/lib/paths'
 
 export const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
+const IMAGE_RENDER_ORDER_BASE = -1000
 
 type ImageMesh = Mesh<PlaneGeometry, MeshBasicMaterial>
 
@@ -53,8 +54,9 @@ export class ImageRenderer {
 
   private readonly updateImages = async () => {
     const images = this.imageManager.getImages()
+    const imageList = images?.list || []
     if (images) {
-      for (const image of images.list) {
+      for (const [index, image] of imageList.entries()) {
         let mesh = this.meshes.get(image.fileName)
         if (!mesh) {
           mesh = this.createImageMesh(image, images.projectPath)
@@ -64,15 +66,17 @@ export class ImageRenderer {
           }
         }
         if (mesh) {
+          mesh.userData.image = image
           mesh.visible = image.visible
           mesh.scale.set(image.width, image.height, 1)
           mesh.position.set(image.x, image.y, 0)
           mesh.rotation.z = image.rotation ?? 0
+          mesh.renderOrder =
+            IMAGE_RENDER_ORDER_BASE + (imageList.length - 1 - index)
         }
       }
     }
 
-    const imageList = images?.list || []
     const unusedMeshes = Array.from(this.meshes)
       .filter(([path]) => !imageList.some((image) => image.fileName === path))
       .map(([_path, mesh]) => mesh)
@@ -83,8 +87,11 @@ export class ImageRenderer {
     const material = new MeshBasicMaterial({
       transparent: true,
       side: DoubleSide,
-      depthTest: false,
+      depthTest: true,
       depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
     })
 
     const mesh = new Mesh(this.planeGeometry, material)
@@ -93,9 +100,8 @@ export class ImageRenderer {
     }
     mesh.name = `ReferenceImage_${image.fileName}`
     mesh.layers.set(SKETCH_LAYER)
-    mesh.renderOrder = 999
     mesh.scale.set(image.width, image.height, 1)
-    mesh.position.set(image.x, image.y, 0.1)
+    mesh.position.set(image.x, image.y, 0)
     mesh.rotation.z = image.rotation ?? 0
 
     const fullImagePath = getImageFilePath(projectPath, image.fileName)
