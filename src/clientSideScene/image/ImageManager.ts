@@ -107,16 +107,14 @@ export class ImageManager {
     const images = await this.ensureImagesFolderExists()
     if (!images) return
 
-    if (!images.list.some((img) => img.fileName === file.name)) {
+    const imageFileName = file.name
+    if (!images.list.some((img) => img.fileName === imageFileName)) {
       const arrayBuffer = await file.arrayBuffer()
-      const destinationPath = joinOSPaths(images.projectPath, file.name)
-      await window.electron.writeFile(
-        destinationPath,
-        new Uint8Array(arrayBuffer)
-      )
+      const imagePath = getImageFilePath(images.projectPath, imageFileName)
+      await window.electron.writeFile(imagePath, new Uint8Array(arrayBuffer))
 
       images.list.push({
-        fileName: file.name,
+        fileName: imageFileName,
         x: position.x,
         y: position.y,
         width: position.width,
@@ -182,7 +180,7 @@ export class ImageManager {
     if (!this.images) return
 
     const fileContent: ImagesJSON = {
-      images: this.images.list
+      images: this.images.list,
     }
 
     const imageFilePath = getImageJSONPath(this.images.projectPath)

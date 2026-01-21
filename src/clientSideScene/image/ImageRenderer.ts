@@ -15,6 +15,7 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { ImageTransformHandler } from '@src/clientSideScene/image/ImageTransformHandler'
+import { getEXTNoPeriod } from '@src/lib/paths'
 
 export const IMAGE_RENDERER_GROUP = 'ImageRendererGroup'
 
@@ -52,7 +53,6 @@ export class ImageRenderer {
 
   private readonly updateImages = async () => {
     const images = this.imageManager.getImages()
-
     if (images) {
       for (const image of images.list) {
         let mesh = this.meshes.get(image.fileName)
@@ -68,7 +68,6 @@ export class ImageRenderer {
           mesh.scale.set(image.width, image.height, 1)
           mesh.position.set(image.x, image.y, 0)
           mesh.rotation.z = image.rotation ?? 0
-          console.log(image.x, image.y)
         }
       }
     }
@@ -130,7 +129,7 @@ export class ImageRenderer {
 
     // Read the file as binary data and create a Blob URL
     const imageData = await window.electron.readFile(path)
-    const extension = path.split('.').pop()?.toLowerCase() ?? 'png'
+    const extension = getEXTNoPeriod(path)?.toLowerCase() ?? 'png'
     const mimeType = getMimeType(extension)
     const blob = new Blob([new Uint8Array(imageData)], { type: mimeType })
     const blobUrl = URL.createObjectURL(blob)
