@@ -138,12 +138,6 @@ export const FeatureTreePaneContents = memo(() => {
         scrollToError: () => {
           kclManager.scrollToFirstErrorDiagnosticIfExists()
         },
-        sendCloneCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
-        },
       },
     }),
     {
@@ -593,12 +587,9 @@ const OperationItem = (props: OperationProps) => {
   function enterCloneFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       selectOperation()
-      props.send({
-        type: 'enterCloneFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Clone', groupId: 'modeling' },
       })
     }
   }

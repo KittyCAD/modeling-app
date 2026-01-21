@@ -17,10 +17,6 @@ type FeatureTreeEvent =
       type: 'selectOperation'
       data: { targetSourceRange: SourceRange }
     }
-  | {
-      type: 'enterCloneFlow'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
-    }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
   | { type: 'done' }
@@ -61,7 +57,6 @@ export const featureTreeMachine = setup({
     clearContext: assign({
       targetSourceRange: undefined,
     }),
-    sendCloneCommand: () => {},
     openCodePane: () => {},
     scrollToError: () => {},
   },
@@ -80,11 +75,6 @@ export const featureTreeMachine = setup({
 
         selectOperation: {
           actions: ['saveTargetSourceRange'],
-        },
-
-        enterCloneFlow: {
-          target: 'enteringCloneFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         goToError: 'goingToError',
@@ -115,21 +105,6 @@ export const featureTreeMachine = setup({
     selecting: {
       always: '#featureTree.idle',
       exit: 'clearContext',
-    },
-
-    enteringCloneFlow: {
-      states: {
-        enteringCloneFlow: {
-          entry: 'sendCloneCommand',
-        },
-
-        done: {
-          always: '#featureTree.idle',
-          entry: 'clearContext',
-        },
-      },
-
-      initial: 'enteringCloneFlow',
     },
 
     goingToError: {
