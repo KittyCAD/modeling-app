@@ -2,14 +2,16 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
 
 use crate::{
-    ExecState, ExecutorContext, KclError,
+    ExecState, ExecutorContext, KclError, Point2d,
     errors::KclErrorDetails,
-    exec::Sketch,
+    exec::{NumericType, Sketch},
     execution::{BasePath, GeoMeta, ModelingCmdMeta, Path, Segment, SegmentKind, SketchSurface},
     std::{
-        sketch::{StraightLineParams, inner_start_profile, straight_line},
-        utils::{point_to_len_unit, point_to_mm},
+        args::TyF64,
+        sketch::{StraightLineParams, inner_start_profile, relative_arc, straight_line},
+        utils::{distance, point_to_len_unit, point_to_mm, untype_point},
     },
+    std_utils::untyped_point_to_unit,
 };
 
 pub(crate) async fn create_segments_in_engine(
@@ -93,11 +95,53 @@ pub(crate) async fn create_segments_in_engine(
                 .await?;
                 outer_sketch = Some(sketch);
             }
-            SegmentKind::Arc { .. } => {
-                return Err(KclError::new_internal(KclErrorDetails::new(
-                    "Arc segments are not yet implemented in create_segments_in_engine".to_owned(),
-                    vec![range],
-                )));
+            SegmentKind::Arc { start, end, center, .. } => {
+                let (start, start_ty) = untype_point(start.clone());
+                let Some(start_unit) = start_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Start point of arc must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let start_point2d = Point2d::new(start[0], start[1], start_unit);
+                let (end, end_ty) = untype_point(end.clone());
+                let Some(end_unit) = end_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "End point of arc must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let (center, center_ty) = untype_point(center.clone());
+                let Some(center_unit) = center_ty.as_length() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Center point of arc must have length units".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let start_in_center_unit = untyped_point_to_unit(start, start_unit, center_unit);
+                let end_in_center_unit = untyped_point_to_unit(end, end_unit, center_unit);
+                let start_radians =
+                    libm::atan2(start_in_center_unit[1] - center[1], start_in_center_unit[0] - center[0]);
+                let mut end_radians = libm::atan2(end_in_center_unit[1] - center[1], end_in_center_unit[0] - center[0]);
+                // Sketch-solve arcs always go counterclockwise.
+                if end_radians <= start_radians {
+                    end_radians += std::f64::consts::TAU;
+                }
+                let radius_in_center_unit = distance(center, start_in_center_unit);
+                let sketch = relative_arc(
+                    segment.id,
+                    exec_state,
+                    sketch.clone(),
+                    start_point2d,
+                    TyF64::new(start_radians, NumericType::radians()),
+                    TyF64::new(end_radians, NumericType::radians()),
+                    TyF64::new(radius_in_center_unit, center_ty),
+                    None,
+                    ctx,
+                    range,
+                )
+                .await?;
+                outer_sketch = Some(sketch);
             }
         }
     }

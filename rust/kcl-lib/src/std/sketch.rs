@@ -1456,7 +1456,7 @@ pub(crate) async fn inner_arc(
     match (angle_start, angle_end, radius, diameter, interior_absolute, end_absolute) {
         (Some(angle_start), Some(angle_end), radius, diameter, None, None) => {
             let radius = get_radius(radius, diameter, args.source_range)?;
-            relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
+            relative_arc(id, exec_state, sketch, from, angle_start, angle_end, radius, tag, &args.ctx, args.source_range).await
         }
         (None, None, None, None, Some(interior_absolute), Some(end_absolute)) => {
             absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
@@ -1541,7 +1541,6 @@ pub async fn absolute_arc(
 
 #[allow(clippy::too_many_arguments)]
 pub async fn relative_arc(
-    args: &Args,
     id: uuid::Uuid,
     exec_state: &mut ExecState,
     sketch: Sketch,
@@ -1550,22 +1549,24 @@ pub async fn relative_arc(
     angle_end: TyF64,
     radius: TyF64,
     tag: Option<TagNode>,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
-    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
+    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, source_range));
+    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, source_range));
     let radius = radius.to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
         return Err(KclError::new_type(KclErrorDetails::new(
             "Arc start and end angles must be different".to_string(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     }
     let ccw = a_start < a_end;
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, id),
+            ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
                     .path(sketch.id.into())
@@ -1592,7 +1593,7 @@ pub async fn relative_arc(
             units: from.units,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: source_range.into(),
             },
         },
         center,
