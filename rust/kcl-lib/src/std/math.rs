@@ -20,7 +20,7 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_d = d.n != 0.0;
     if !valid_d {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Divisor cannot be 0")),
+            CompilationError::err(args.source_range, "Divisor cannot be 0".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -182,7 +182,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_input = !(input.n == 0.0 && exp.n < 0.0);
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Input cannot be 0 when exp < 0")),
+            CompilationError::err(args.source_range, "Input cannot be 0 when exp < 0".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -256,27 +256,21 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!("Input must be > 0, but it was {}", input.n),
-            ),
+            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
     let valid_base = base.n > 0.0;
     if !valid_base {
         exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!("Base must be > 0, but it was {}", base.n),
-            ),
+            CompilationError::err(args.source_range, format!("Base must be > 0, but it was {}", base.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
     let base_not_1 = base.n != 1.0;
     if !base_not_1 {
         exec_state.warn(
-            CompilationError::err(args.source_range, format!("Base cannot be 1")),
+            CompilationError::err(args.source_range, "Base cannot be 1".to_string()),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -291,10 +285,7 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!("Input must be > 0, but it was {}", input.n),
-            ),
+            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -309,10 +300,7 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!("Input must be > 0, but it was {}", input.n),
-            ),
+            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
@@ -327,10 +315,7 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
     let valid_input = input.n > 0.0;
     if !valid_input {
         exec_state.warn(
-            CompilationError::err(
-                args.source_range,
-                format!("Input must be > 0, but it was {}", input.n),
-            ),
+            CompilationError::err(args.source_range, format!("Input must be > 0, but it was {}", input.n)),
             annotations::WARN_INVALID_MATH,
         );
     }
