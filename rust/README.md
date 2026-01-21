@@ -1,5 +1,3 @@
-<edit 1>
-
 # Rust Crates
 
 ### Releasing
@@ -7,7 +5,7 @@
 1. Make sure your working directory is this directory.
 1. Bump the versions of the crates:
     ```bash
-    just bump-kcl-crate-versions
+    just bump-kcl-crate-versions 
     ```
 3. Commit the changes:
     ```bash
