@@ -3,6 +3,29 @@ import { type Object3D, type Group, BufferGeometry, Material } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
+ * Type predicate to check if an object has a specific property.
+ * Uses runtime checks without type assertions.
+ */
+function hasProperty<K extends string>(
+  obj: unknown,
+  key: K
+): obj is Record<K, unknown> {
+  return typeof obj === 'object' && obj !== null && key in obj
+}
+
+/**
+ * Type guard to check if a value is a Record with string keys.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !isArray(value) &&
+    Object.getPrototypeOf(value) === Object.prototype
+  )
+}
+
+/**
  * Dispose of all children (and grandchildren...) of a THREE.Group or Object3D.
  * Frees geometries, materials, and textures to prevent memory leaks.
  * @param rootGroup The THREE.Group whose children will be disposed and removed.
@@ -55,27 +78,41 @@ function disposeObject(obj: Object3D): void {
 function disposeMaterial(material: Material): void {
   // Clean up custom shader properties before disposal
   // This ensures shader programs and callbacks are properly released
-  // Note: delete is safe even if the property doesn't exist
-  if ('onBeforeCompile' in material) {
-    delete (material as any).onBeforeCompile
+  // Use Reflect.deleteProperty to avoid TypeScript's delete operator restrictions
+  if (hasProperty(material, 'onBeforeCompile')) {
+    Reflect.deleteProperty(material, 'onBeforeCompile')
   }
-  if ('customProgramCacheKey' in material) {
-    delete (material as any).customProgramCacheKey
+  if (hasProperty(material, 'customProgramCacheKey')) {
+    Reflect.deleteProperty(material, 'customProgramCacheKey')
   }
 
   // Clear any custom uniforms that might hold references
   // (Three.js will handle standard uniforms, but custom ones from onBeforeCompile need cleanup)
   // Note: Uniforms are stored in the shader object, not directly on material,
   // but we clear them defensively in case they're accessible
-  if ('uniforms' in material && (material as any).uniforms) {
-    const uniforms = (material as any).uniforms
-    // Clear custom uniforms that we added (uSegmentStart, uSegmentEnd, uArcCenter, etc.)
-    if (uniforms.uSegmentStart) delete uniforms.uSegmentStart
-    if (uniforms.uSegmentEnd) delete uniforms.uSegmentEnd
-    if (uniforms.uArcCenter) delete uniforms.uArcCenter
-    if (uniforms.uArcStart) delete uniforms.uArcStart
-    if (uniforms.uArcStartAngle) delete uniforms.uArcStartAngle
-    if (uniforms.uArcEndAngle) delete uniforms.uArcEndAngle
+  if (hasProperty(material, 'uniforms')) {
+    const uniformsValue = material.uniforms
+    if (isRecord(uniformsValue)) {
+      // Clear custom uniforms that we added (uSegmentStart, uSegmentEnd, uArcCenter, etc.)
+      if (hasProperty(uniformsValue, 'uSegmentStart')) {
+        Reflect.deleteProperty(uniformsValue, 'uSegmentStart')
+      }
+      if (hasProperty(uniformsValue, 'uSegmentEnd')) {
+        Reflect.deleteProperty(uniformsValue, 'uSegmentEnd')
+      }
+      if (hasProperty(uniformsValue, 'uArcCenter')) {
+        Reflect.deleteProperty(uniformsValue, 'uArcCenter')
+      }
+      if (hasProperty(uniformsValue, 'uArcStart')) {
+        Reflect.deleteProperty(uniformsValue, 'uArcStart')
+      }
+      if (hasProperty(uniformsValue, 'uArcStartAngle')) {
+        Reflect.deleteProperty(uniformsValue, 'uArcStartAngle')
+      }
+      if (hasProperty(uniformsValue, 'uArcEndAngle')) {
+        Reflect.deleteProperty(uniformsValue, 'uArcEndAngle')
+      }
+    }
   }
 
   // Dispose of textures associated with the material
