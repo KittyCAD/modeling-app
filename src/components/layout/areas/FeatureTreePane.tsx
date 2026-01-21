@@ -15,10 +15,7 @@ import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import {
-  codeRefFromRange,
-  getArtifactFromRange,
-} from '@src/lang/std/artifactGraph'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
   getOperationCalculatedDisplay,
@@ -52,7 +49,7 @@ import {
   kclEditorActor,
 } from '@src/machines/kclEditorMachine'
 import toast from 'react-hot-toast'
-import { base64Decode } from '@src/lang/wasm'
+import { base64Decode, SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -66,7 +63,11 @@ import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
-import { prepareEditCommand, sendDeleteCommand } from '@src/lib/featureTree'
+import {
+  prepareEditCommand,
+  sendDeleteCommand,
+  sendSelectionEvent,
+} from '@src/lib/featureTree'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
@@ -100,6 +101,17 @@ export const FeatureTreePaneContents = memo(() => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const layout = useLayout()
   const { send: modelingSend, state: modelingState } = useModelingContext()
+
+  const selectOperation = useCallback(
+    (sourceRange: SourceRange) => {
+      sendSelectionEvent({
+        sourceRange,
+        kclManager,
+        modelingSend,
+      })
+    },
+    [modelingSend]
+  )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -155,48 +167,6 @@ export const FeatureTreePaneContents = memo(() => {
             type: 'Find and select command',
             data: { name: 'Appearance', groupId: 'modeling' },
           })
-        },
-        sendSelectionEvent: ({ context }) => {
-          if (!context.targetSourceRange) {
-            return
-          }
-          const artifact = context.targetSourceRange
-            ? getArtifactFromRange(
-                context.targetSourceRange,
-                kclManager.artifactGraph
-              )
-            : null
-
-          if (!artifact) {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          } else {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: artifact,
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          }
         },
       },
     }),
@@ -303,6 +273,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  onSelect={selectOperation}
                 />
               ) : (
                 <OperationItem
@@ -311,6 +282,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  onSelect={selectOperation}
                 />
               )
             })}
@@ -360,6 +332,7 @@ function OperationItemGroup({
   code,
   send,
   sketchNoFace,
+  onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
     <Disclosure>
@@ -386,6 +359,7 @@ function OperationItemGroup({
                 code={code}
                 send={send}
                 sketchNoFace={sketchNoFace}
+                onSelect={onSelect}
               />
             )
           })}
@@ -523,6 +497,7 @@ interface OperationProps {
   code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
+  onSelect: (sourceRange: SourceRange) => void
 }
 /**
  * A button with an icon, name, and context menu
@@ -568,12 +543,7 @@ const OperationItem = (props: OperationProps) => {
       if (props.item.type === 'GroupEnd') {
         return
       }
-      props.send({
-        type: 'selectOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
-      })
+      props.onSelect(sourceRangeFromRust(props.item.sourceRange))
     }
   }
 
@@ -583,6 +553,7 @@ const OperationItem = (props: OperationProps) => {
       props.item.type === 'VariableDeclaration' ||
       props.item.type === 'SketchSolve'
     ) {
+      selectOperation()
       const artifact =
         getArtifactFromRange(
           props.item.sourceRange,
@@ -605,6 +576,7 @@ const OperationItem = (props: OperationProps) => {
       (props.item.type === 'GroupBegin' &&
         props.item.group.type === 'FunctionCall')
     ) {
+      selectOperation()
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -617,6 +589,7 @@ const OperationItem = (props: OperationProps) => {
 
   function enterTranslateFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      selectOperation()
       props.send({
         type: 'enterTranslateFlow',
         data: {
@@ -629,6 +602,7 @@ const OperationItem = (props: OperationProps) => {
 
   function enterRotateFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      selectOperation()
       props.send({
         type: 'enterRotateFlow',
         data: {
@@ -641,6 +615,7 @@ const OperationItem = (props: OperationProps) => {
 
   function enterScaleFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      selectOperation()
       props.send({
         type: 'enterScaleFlow',
         data: {
@@ -653,6 +628,7 @@ const OperationItem = (props: OperationProps) => {
 
   function enterCloneFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      selectOperation()
       props.send({
         type: 'enterCloneFlow',
         data: {

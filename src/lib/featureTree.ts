@@ -10,6 +10,12 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { err } from '@src/lib/trap'
 import { type CommandBarActorType } from '@src/machines/commandBarMachine'
 import { type EnterEditFlowProps, enterEditFlow } from '@src/lib/operations'
+import {
+  codeRefFromRange,
+  getArtifactFromRange,
+} from '@src/lang/std/artifactGraph'
+import { ActorRefFrom } from 'xstate'
+import { modelingMachine } from '@src/machines/modelingMachine'
 
 export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
@@ -67,5 +73,29 @@ export function prepareEditCommand(
         resolve(result)
       })
       .catch(reject)
+  })
+}
+
+export function sendSelectionEvent(input: {
+  sourceRange: SourceRange
+  kclManager: KclManager
+  modelingSend: ActorRefFrom<typeof modelingMachine>['send']
+}) {
+  const artifact =
+    getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
+    undefined
+
+  const selection = {
+    codeRef: codeRefFromRange(input.sourceRange, input.kclManager.ast),
+    artifact,
+  }
+
+  input.modelingSend({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection,
+      scrollIntoView: true,
+    },
   })
 }

@@ -77,7 +77,6 @@ export const featureTreeMachine = setup({
     clearContext: assign({
       targetSourceRange: undefined,
     }),
-    sendSelectionEvent: () => {},
     sendTranslateCommand: () => {},
     sendRotateCommand: () => {},
     sendScaleCommand: () => {},
@@ -100,52 +99,32 @@ export const featureTreeMachine = setup({
         },
 
         selectOperation: {
-          actions: ['saveTargetSourceRange', 'sendSelectionEvent'],
+          actions: ['saveTargetSourceRange'],
         },
 
         enterAppearanceFlow: {
           target: 'enteringAppearanceFlow',
-          actions: [
-            'saveTargetSourceRange',
-            'saveCurrentOperation',
-            'sendSelectionEvent',
-          ],
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterTranslateFlow: {
           target: 'enteringTranslateFlow',
-          actions: [
-            'saveTargetSourceRange',
-            'saveCurrentOperation',
-            'sendSelectionEvent',
-          ],
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterRotateFlow: {
           target: 'enteringRotateFlow',
-          actions: [
-            'saveTargetSourceRange',
-            'saveCurrentOperation',
-            'sendSelectionEvent',
-          ],
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterScaleFlow: {
           target: 'enteringScaleFlow',
-          actions: [
-            'saveTargetSourceRange',
-            'saveCurrentOperation',
-            'sendSelectionEvent',
-          ],
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterCloneFlow: {
           target: 'enteringCloneFlow',
-          actions: [
-            'saveTargetSourceRange',
-            'saveCurrentOperation',
-            'sendSelectionEvent',
-          ],
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         goToError: 'goingToError',
@@ -163,7 +142,6 @@ export const featureTreeMachine = setup({
           on: {
             codePaneOpened: {
               target: 'done',
-              actions: ['sendSelectionEvent'],
             },
           },
 
@@ -176,7 +154,6 @@ export const featureTreeMachine = setup({
 
     selecting: {
       always: '#featureTree.idle',
-      entry: 'sendSelectionEvent',
       exit: 'clearContext',
     },
 
