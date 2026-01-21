@@ -65,7 +65,7 @@ export class ImageManager {
                 projectPath,
                 list: imageFileContent.images,
               }
-              this.imagesChanged.value++
+              this.dispatchImageChange()
             })
             .catch((e) => {
               console.error(e)
@@ -75,7 +75,7 @@ export class ImageManager {
           // Start waiting for a new valid path (when user opens a project)
           currentPathValue = ''
           this.images = undefined
-          this.imagesChanged.value++
+          this.dispatchImageChange()
         }
       }
     })
@@ -131,6 +131,7 @@ export class ImageManager {
         locked: false,
       })
 
+      this.dispatchImageChange()
       await this.saveToFile()
     }
   }
@@ -195,8 +196,9 @@ export class ImageManager {
 
     const [image] = list.splice(index, 1)
     list.splice(clampedIndex, 0, image)
+
+    this.dispatchImageChange()
     await this.saveToFile()
-    this.imagesChanged.value++
   }
 
   async deleteImage(imageFileName: string): Promise<void> {
@@ -216,6 +218,7 @@ export class ImageManager {
     this.images.list = this.images.list.filter(
       (img) => img.fileName !== imageFileName
     )
+    this.dispatchImageChange()
     await this.saveToFile()
   }
 
@@ -230,6 +233,10 @@ export class ImageManager {
     const imageFilePath = getImageJSONPath(this.images.projectPath)
     const jsonString = JSON.stringify(fileContent, null, 2)
     await window.electron.writeFile(imageFilePath, jsonString)
+  }
+
+  private dispatchImageChange() {
+    this.imagesChanged.value++
   }
 }
 
