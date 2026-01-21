@@ -1310,25 +1310,6 @@ description: Result of parsing cassette.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "7": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "build the sprocket",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1341,8 +1322,6 @@ description: Result of parsing cassette.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Sketch the central mounting spine to be cut from each sprocket profile"
                   ],
                   "start": 0,
@@ -2737,25 +2716,6 @@ description: Result of parsing cassette.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "9": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Place a mounting spacer between each sprocket body",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -2767,6 +2727,9 @@ description: Result of parsing cassette.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// build the sprocket"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -3301,6 +3264,9 @@ description: Result of parsing cassette.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Place a mounting spacer between each sprocket body"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -3337,6 +3303,42 @@ description: Result of parsing cassette.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "1": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "2": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "3": [
                     {
                       "commentStart": 0,
@@ -3402,8 +3404,6 @@ description: Result of parsing cassette.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function to create a sprocket with a specific number of teeth"
         ],
         "start": 0,
@@ -3774,8 +3774,6 @@ description: Result of parsing cassette.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a 7-speed cassette from 11 to 36 teeth"
         ],
         "start": 0,
@@ -3847,7 +3845,32 @@ description: Result of parsing cassette.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

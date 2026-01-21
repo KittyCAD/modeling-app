@@ -10,6 +10,7 @@ use crate::{
     errors::KclError,
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
+    walk::{Node, walk},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
@@ -171,6 +172,23 @@ fn parse_test(test: &Test) {
             ".**.commentStart" => 0,
         });
     });
+    if let Ok(program) = parse_res {
+        let input = input.as_bytes();
+        walk(&program, |node| {
+            match node {
+                Node::Program(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::PipeExpression(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::SketchBlock(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::Block(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::CallExpressionKw(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::ArrayExpression(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                Node::ObjectExpression(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
+                _ => {}
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+    }
 }
 
 async fn unparse(test_name: &str) {
