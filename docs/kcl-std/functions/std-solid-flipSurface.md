@@ -37,13 +37,13 @@ fn square(@plane, offset, y) {
   }
   return startSketchOn(plane)
     |> startProfile(at)
-    |>     if y {
+    |> if y {
       yLine(length = sideLen)
     } else {
       xLine(length = sideLen)
     }
     |> extrude(
-         length =       if y {
+         length = if y {
         -sideLen
       } else {
         sideLen
@@ -90,13 +90,13 @@ fn square(@plane, offset, y) {
   }
   return startSketchOn(plane)
     |> startProfile(at)
-    |>     if y {
+    |> if y {
       yLine(length = sideLen)
     } else {
       xLine(length = sideLen)
     }
     |> extrude(
-         length =       if y {
+         length = if y {
         -sideLen
       } else {
         sideLen
