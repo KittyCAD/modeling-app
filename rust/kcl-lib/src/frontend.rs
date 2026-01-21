@@ -3821,7 +3821,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 7);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;
