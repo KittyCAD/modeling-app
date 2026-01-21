@@ -138,12 +138,6 @@ export const FeatureTreePaneContents = memo(() => {
         scrollToError: () => {
           kclManager.scrollToFirstErrorDiagnosticIfExists()
         },
-        sendRotateCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
-          })
-        },
         sendScaleCommand: () => {
           commandBarActor.send({
             type: 'Find and select command',
@@ -585,12 +579,9 @@ const OperationItem = (props: OperationProps) => {
   function enterRotateFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       selectOperation()
-      props.send({
-        type: 'enterRotateFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Rotate', groupId: 'modeling' },
       })
     }
   }

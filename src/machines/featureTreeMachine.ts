@@ -18,10 +18,6 @@ type FeatureTreeEvent =
       data: { targetSourceRange: SourceRange }
     }
   | {
-      type: 'enterRotateFlow'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
-    }
-  | {
       type: 'enterScaleFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
@@ -69,7 +65,6 @@ export const featureTreeMachine = setup({
     clearContext: assign({
       targetSourceRange: undefined,
     }),
-    sendRotateCommand: () => {},
     sendScaleCommand: () => {},
     sendCloneCommand: () => {},
     openCodePane: () => {},
@@ -90,11 +85,6 @@ export const featureTreeMachine = setup({
 
         selectOperation: {
           actions: ['saveTargetSourceRange'],
-        },
-
-        enterRotateFlow: {
-          target: 'enteringRotateFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         enterScaleFlow: {
@@ -135,22 +125,6 @@ export const featureTreeMachine = setup({
     selecting: {
       always: '#featureTree.idle',
       exit: 'clearContext',
-    },
-
-    enteringRotateFlow: {
-      states: {
-        enteringRotateFlow: {
-          always: 'done',
-          entry: 'sendRotateCommand',
-        },
-
-        done: {
-          always: '#featureTree.idle',
-          entry: 'clearContext',
-        },
-      },
-
-      initial: 'enteringRotateFlow',
     },
 
     enteringScaleFlow: {
