@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::{
     CompilationError,
-    errors::{KclError, KclErrorDetails},
+    errors::KclError,
     execution::{
         ExecState, KclValue, annotations,
         types::{ArrayLen, NumericType, RuntimeType},
@@ -19,10 +19,10 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let d: TyF64 = args.get_kw_arg("divisor", &RuntimeType::num_any(), exec_state)?;
     let valid_d = d.n != 0.0;
     if !valid_d {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Divisor cannot be 0"),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(args.source_range, format!("Divisor cannot be 0")),
+            annotations::WARN_INVALID_MATH,
+        );
     }
 
     let (n, d, ty) = NumericType::combine_mod(n, d);
@@ -63,13 +63,16 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
 
     if input.n < 0.0 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Attempt to take square root (`sqrt`) of a number less than zero ({})",
-                input.n
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!(
+                    "Attempt to take square root (`sqrt`) of a number less than zero ({})",
+                    input.n
+                ),
             ),
-            vec![args.source_range],
-        )));
+            annotations::WARN_INVALID_MATH,
+        );
     }
 
     let result = input.n.sqrt();
@@ -165,20 +168,23 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let exp: TyF64 = args.get_kw_arg("exp", &RuntimeType::count(), exec_state)?;
     let exp_is_int = exp.n.fract() == 0.0;
     if input.n < 0.0 && !exp_is_int {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Exponent must be an integer when input is negative, but it was {}",
-                exp.n
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!(
+                    "Exponent must be an integer when input is negative, but it was {}",
+                    exp.n
+                ),
             ),
-            vec![args.source_range],
-        )));
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let valid_input = !(input.n == 0.0 && exp.n < 0.0);
     if !valid_input {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Input cannot be 0 when exp < 0"),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(args.source_range, format!("Input cannot be 0 when exp < 0")),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = input.n.powf(exp.n);
 
@@ -190,10 +196,13 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
     let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("The argument must be between -1 and 1, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("The argument must be between -1 and 1, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = libm::acos(input.n);
 
@@ -205,10 +214,13 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
     let in_range = (-1.0..=1.0).contains(&input.n);
     if !in_range {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("The argument must be between -1 and 1, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("The argument must be between -1 and 1, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = libm::asin(input.n);
 
@@ -243,24 +255,30 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let base: TyF64 = args.get_kw_arg("base", &RuntimeType::count(), exec_state)?;
     let valid_input = input.n > 0.0;
     if !valid_input {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Input must be > 0, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Input must be > 0, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let valid_base = base.n > 0.0;
     if !valid_base {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Base must be > 0, but it was {}", base.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Base must be > 0, but it was {}", base.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let base_not_1 = base.n != 1.0;
     if !base_not_1 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Base cannot be 1"),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(args.source_range, format!("Base cannot be 1")),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = input.n.log(base.n);
 
@@ -272,10 +290,13 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
     let valid_input = input.n > 0.0;
     if !valid_input {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Input must be > 0, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Input must be > 0, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = input.n.log2();
 
@@ -287,10 +308,13 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
     let valid_input = input.n > 0.0;
     if !valid_input {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Input must be > 0, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Input must be > 0, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = input.n.log10();
 
@@ -302,10 +326,13 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::num_any(), exec_state)?;
     let valid_input = input.n > 0.0;
     if !valid_input {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Input must be > 0, but it was {}", input.n),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Input must be > 0, but it was {}", input.n),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = input.n.ln();
 
@@ -328,18 +355,24 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
     let valid_hypotenuse = hypotenuse > 0.0;
     if !valid_hypotenuse {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let ratio = leg.min(hypotenuse) / hypotenuse;
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("The argument must be between -1 and 1, but it was {}", ratio),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("The argument must be between -1 and 1, but it was {}", ratio),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = libm::acos(ratio).to_degrees();
     Ok(KclValue::from_number_with_type(
@@ -356,18 +389,24 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
     let valid_hypotenuse = hypotenuse > 0.0;
     if !valid_hypotenuse {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("Hypotenuse must be > 0, but it was {}", hypotenuse),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let ratio = leg.min(hypotenuse) / hypotenuse;
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("The argument must be between -1 and 1, but it was {}", ratio),
-            vec![args.source_range],
-        )));
+        exec_state.warn(
+            CompilationError::err(
+                args.source_range,
+                format!("The argument must be between -1 and 1, but it was {}", ratio),
+            ),
+            annotations::WARN_INVALID_MATH,
+        );
     }
     let result = libm::asin(ratio).to_degrees();
     Ok(KclValue::from_number_with_type(
