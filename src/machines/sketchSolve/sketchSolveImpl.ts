@@ -77,6 +77,7 @@ export type SketchSolveMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'construction'
     }
   | {
       type: 'update selected ids'
@@ -265,7 +266,19 @@ export function updateSegmentGroup({
     return
   }
 
+  // Determine isDraft and isConstruction separately
   const isDraft = draftEntityIds?.includes(idNum) ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
 
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
@@ -288,6 +301,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -299,6 +313,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -310,6 +325,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -334,6 +350,20 @@ function initSegmentGroup({
   isDraft?: boolean
   objects?: Array<ApiObject>
 }): Group | Error {
+  // Determine isDraft and isConstruction separately
+  const isDraftValue = isDraft ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[id]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
+
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
   if (objects) {
@@ -350,7 +380,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -359,7 +390,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -368,7 +400,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   }
