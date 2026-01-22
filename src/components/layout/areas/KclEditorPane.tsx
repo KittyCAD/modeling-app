@@ -1,5 +1,4 @@
 import { Menu } from '@headlessui/react'
-import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -12,7 +11,6 @@ import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -49,11 +47,7 @@ export const KclEditorPaneContents = () => {
   const { kclManager } = useSingletons()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     editorParent.current?.appendChild(kclManager.editorView.dom)
-
-    return () =>
-      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
   }, [kclManager.editorView.dom])
 
   return (
@@ -86,7 +80,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
     )
 }
 
-export const KclEditorMenu = ({ children }: PropsWithChildren) => {
+export const KclEditorMenu = () => {
   const { commandBarActor, kclManager, settingsActor } = useSingletons()
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)

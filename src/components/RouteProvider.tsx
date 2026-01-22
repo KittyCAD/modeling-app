@@ -19,15 +19,15 @@ import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { useSelector } from '@xstate/react'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   const { engineCommandManager, kclManager, sceneInfra, settingsActor } =
     useSingletons()
+  useSignals()
   useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [first, setFirstState] = useState(true)
@@ -37,10 +37,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
-  const livePathsToWatch = useSelector(
-    kclEditorActor,
-    (state) => state.context.livePathsToWatch
-  )
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -151,7 +147,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    livePathsToWatch
+    kclManager.livePathsToWatch.value
   )
 
   useFileSystemWatcher(
