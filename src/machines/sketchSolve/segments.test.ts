@@ -58,6 +58,7 @@ function createLineSegmentObject(
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -99,6 +100,7 @@ function createArcSegmentObject(
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',
@@ -416,7 +418,7 @@ describe('getSegmentColor', () => {
   const TEXT_COLOR = 0xffffff // White
   const DRAFT_COLOR = 0x888888 // Grey
 
-  it('should return draft color when isDraft is true (highest priority)', () => {
+  it('should return draft color when mode is draft (highest priority)', () => {
     const color = getSegmentColor({
       isDraft: true,
       isHovered: true,
