@@ -978,6 +978,22 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  horizontalDimension: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="horizontal dimension"
+      transform="translate(-10, 5) rotate(45 10 10)"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   horizontalVertical: (
     <svg
       viewBox="0 0 20 20"
@@ -1856,6 +1872,22 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10 16H9V4H10V16Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  verticalDimension: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="vertical dimension"
+      transform="translate(5, -10) rotate(-45 10 10)"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.6455 3.64551L15.6475 3.64355L16.3545 4.35059L16.3525 4.35254L18 6H14.7051L6 14.7051V18L2 14H5.29102L14 5.29102V2L15.6455 3.64551Z"
         fill="currentColor"
       />
     </svg>

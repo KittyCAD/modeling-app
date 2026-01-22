@@ -281,6 +281,146 @@ export const sketchSolveMachine = setup({
         }
       },
     },
+    HorizontalDistance: {
+      actions: async ({ self, context }) => {
+        let segmentsToConstrain = context.selectedIds
+        if (segmentsToConstrain.length === 1) {
+          const first =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+              segmentsToConstrain[0]
+            ]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            segmentsToConstrain = [
+              first.kind.segment.start,
+              first.kind.segment.end,
+            ]
+          }
+        }
+        const currentSelections = segmentsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
+          )
+          .filter(Boolean)
+        let distance = 5
+        const units = baseUnitToNumericSuffix(
+          context.kclManager.fileSettings.defaultLengthUnit
+        )
+        // Calculate horizontal distance between two points if both are point segments
+        if (currentSelections.length === 2) {
+          const first = currentSelections[0]
+          const second = currentSelections[1]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind.segment?.type === 'Point' &&
+            second?.kind?.type === 'Segment' &&
+            second?.kind.segment?.type === 'Point'
+          ) {
+            const point1 = {
+              x: first.kind.segment.position.x,
+              y: first.kind.segment.position.y,
+            }
+            const point2 = {
+              x: second.kind.segment.position.x,
+              y: second.kind.segment.position.y,
+            }
+            // Calculate horizontal distance: x2 - x1 (preserve sign)
+            const x1 = point1.x.value
+            const x2 = point2.x.value
+            distance = roundOff(x2 - x1)
+          }
+        }
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'HorizontalDistance',
+            distance: { value: distance, units },
+            points: segmentsToConstrain,
+          },
+          await jsAppSettings(context.rustContext.settingsActor)
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    VerticalDistance: {
+      actions: async ({ self, context }) => {
+        let segmentsToConstrain = context.selectedIds
+        if (segmentsToConstrain.length === 1) {
+          const first =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+              segmentsToConstrain[0]
+            ]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            segmentsToConstrain = [
+              first.kind.segment.start,
+              first.kind.segment.end,
+            ]
+          }
+        }
+        const currentSelections = segmentsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
+          )
+          .filter(Boolean)
+        let distance = 5
+        const units = baseUnitToNumericSuffix(
+          context.kclManager.fileSettings.defaultLengthUnit
+        )
+        // Calculate vertical distance between two points if both are point segments
+        if (currentSelections.length === 2) {
+          const first = currentSelections[0]
+          const second = currentSelections[1]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind.segment?.type === 'Point' &&
+            second?.kind?.type === 'Segment' &&
+            second?.kind.segment?.type === 'Point'
+          ) {
+            const point1 = {
+              x: first.kind.segment.position.x,
+              y: first.kind.segment.position.y,
+            }
+            const point2 = {
+              x: second.kind.segment.position.x,
+              y: second.kind.segment.position.y,
+            }
+            // Calculate vertical distance: y2 - y1 (preserve sign)
+            const y1 = point1.y.value
+            const y2 = point2.y.value
+            distance = roundOff(y2 - y1)
+          }
+        }
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'VerticalDistance',
+            distance: { value: distance, units },
+            points: segmentsToConstrain,
+          },
+          await jsAppSettings(context.rustContext.settingsActor)
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
     Parallel: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool

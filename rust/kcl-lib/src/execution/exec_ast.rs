@@ -2490,6 +2490,118 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
+                        SketchConstraintKind::HorizontalDistance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            // Horizontal distance: p1.x - p0.x = n
+                            // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
+                            // So we swap the points to get p1.x - p0.x = n
+                            let solver_constraint = kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(KclError::new_internal(KclErrorDetails::new(
+                                    message,
+                                    vec![SourceRange::from(self)],
+                                )));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::HorizontalDistance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        KclError::new_internal(KclErrorDetails::new(
+                                            "Failed to convert distance units numeric suffix:".to_owned(),
+                                            vec![range],
+                                        ))
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::VerticalDistance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            // Vertical distance: p1.y - p0.y = n
+                            // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
+                            // So we swap the points to get p1.y - p0.y = n
+                            let solver_constraint = kcl_ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(KclError::new_internal(KclErrorDetails::new(
+                                    message,
+                                    vec![SourceRange::from(self)],
+                                )));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::VerticalDistance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        KclError::new_internal(KclErrorDetails::new(
+                                            "Failed to convert distance units numeric suffix:".to_owned(),
+                                            vec![range],
+                                        ))
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
                     }
                     return Ok(KclValue::Bool { value: true, meta });
                 }

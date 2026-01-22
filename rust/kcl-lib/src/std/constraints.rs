@@ -1050,6 +1050,166 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     }
 }
 
+pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    if points.len() != 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "must have two input points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    match (&points[0], &points[1]) {
+        (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
+            let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "first point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved1 } = &seg1.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "second point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            match (&unsolved0.kind, &unsolved1.kind) {
+                (
+                    UnsolvedSegmentKind::Point { position: pos0, .. },
+                    UnsolvedSegmentKind::Point { position: pos1, .. },
+                ) => {
+                    // Both segments are points. Create a horizontal distance constraint
+                    // between them.
+                    match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
+                        (
+                            UnsolvedExpr::Unknown(p0_x),
+                            UnsolvedExpr::Unknown(p0_y),
+                            UnsolvedExpr::Unknown(p1_x),
+                            UnsolvedExpr::Unknown(p1_y),
+                        ) => {
+                            // All coordinates are sketch vars. Proceed.
+                            let sketch_constraint = SketchConstraint {
+                                kind: SketchConstraintKind::HorizontalDistance {
+                                    points: [
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            object_id: unsolved0.object_id,
+                                        },
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            object_id: unsolved1.object_id,
+                                        },
+                                    ],
+                                },
+                                meta: vec![args.source_range.into()],
+                            };
+                            Ok(KclValue::SketchConstraint {
+                                value: Box::new(sketch_constraint),
+                            })
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "unimplemented: horizontalDistance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "horizontalDistance() arguments must be unsolved points".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "horizontalDistance() arguments must be point segments".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    if points.len() != 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "must have two input points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    match (&points[0], &points[1]) {
+        (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
+            let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "first point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved1 } = &seg1.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "second point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            match (&unsolved0.kind, &unsolved1.kind) {
+                (
+                    UnsolvedSegmentKind::Point { position: pos0, .. },
+                    UnsolvedSegmentKind::Point { position: pos1, .. },
+                ) => {
+                    // Both segments are points. Create a vertical distance constraint
+                    // between them.
+                    match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
+                        (
+                            UnsolvedExpr::Unknown(p0_x),
+                            UnsolvedExpr::Unknown(p0_y),
+                            UnsolvedExpr::Unknown(p1_x),
+                            UnsolvedExpr::Unknown(p1_y),
+                        ) => {
+                            // All coordinates are sketch vars. Proceed.
+                            let sketch_constraint = SketchConstraint {
+                                kind: SketchConstraintKind::VerticalDistance {
+                                    points: [
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            object_id: unsolved0.object_id,
+                                        },
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            object_id: unsolved1.object_id,
+                                        },
+                                    ],
+                                },
+                                meta: vec![args.source_range.into()],
+                            };
+                            Ok(KclValue::SketchConstraint {
+                                value: Box::new(sketch_constraint),
+                            })
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "unimplemented: verticalDistance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "verticalDistance() arguments must be unsolved points".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "verticalDistance() arguments must be point segments".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "lines",

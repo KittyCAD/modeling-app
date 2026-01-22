@@ -82,6 +82,8 @@ export type SketchSolveMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
     }
   | {
       type: 'update selected ids'
