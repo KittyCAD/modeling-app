@@ -492,6 +492,17 @@ async fn take_snaps(
 }
 
 async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
+    // Set orthographic projection
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::DefaultCameraSetOrthographic(
+                kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build()
+            ),
+        )
+        .await?;
+
     // Zoom to fit.
     ctx.engine
         .send_modeling_cmd(
