@@ -67,7 +67,7 @@
               postgresql.lib
               openssl
               pkg-config
-              nodejs_22
+              nodejs_24
               electron
               playwright-driver.browsers
               chromedriver

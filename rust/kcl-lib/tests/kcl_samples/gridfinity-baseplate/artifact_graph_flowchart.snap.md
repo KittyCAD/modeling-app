@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[839, 864, 0]"]
+    2["Path<br>[839, 864, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[872, 894, 0]"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -16,7 +16,7 @@ flowchart LR
     8[Solid2d]
   end
   subgraph path28 [Path]
-    28["Path<br>[839, 864, 0]"]
+    28["Path<br>[839, 864, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     29["Segment<br>[872, 894, 0]"]
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -32,7 +32,7 @@ flowchart LR
   end
   1["Plane<br>[1134, 1172, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg, CallKwUnlabeledArg]
-  9["Sweep Extrusion<br>[1121, 1215, 0]"]
+  9["Sweep Extrusion<br>[1121, 1215, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10[Wall]
     %% face_code_ref=Missing NodePath
@@ -60,7 +60,7 @@ flowchart LR
   26["SweepEdge Adjacent"]
   27["Plane<br>[1628, 1666, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg, CallKwUnlabeledArg]
-  35["Sweep Revolve<br>[1615, 1697, 0]"]
+  35["Sweep Revolve<br>[1615, 1697, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   36[Wall]
     %% face_code_ref=Missing NodePath
