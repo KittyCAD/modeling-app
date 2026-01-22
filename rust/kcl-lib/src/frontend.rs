@@ -452,8 +452,12 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
-            Constraint::HorizontalDistance(distance) => self.add_horizontal_distance(sketch, distance, &mut new_ast).await?,
-            Constraint::VerticalDistance(distance) => self.add_vertical_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::HorizontalDistance(distance) => {
+                self.add_horizontal_distance(sketch, distance, &mut new_ast).await?
+            }
+            Constraint::VerticalDistance(distance) => {
+                self.add_vertical_distance(sketch, distance, &mut new_ast).await?
+            }
             Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, &mut new_ast).await?,
             Constraint::LinesEqualLength(lines_equal_length) => {
                 self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)

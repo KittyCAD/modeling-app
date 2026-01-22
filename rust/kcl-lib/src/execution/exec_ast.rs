@@ -2505,7 +2505,8 @@ impl Node<BinaryExpression> {
                             // Horizontal distance: p1.x - p0.x = n
                             // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
                             // So we swap the points to get p1.x - p0.x = n
-                            let solver_constraint = kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
+                            let solver_constraint =
+                                kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();

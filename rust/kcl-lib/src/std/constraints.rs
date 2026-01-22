@@ -1112,7 +1112,8 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                             })
                         }
                         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                            "unimplemented: horizontalDistance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            "unimplemented: horizontalDistance() arguments must be all sketch vars in all coordinates"
+                                .to_owned(),
                             vec![args.source_range],
                         ))),
                     }
@@ -1192,7 +1193,8 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                             })
                         }
                         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                            "unimplemented: verticalDistance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            "unimplemented: verticalDistance() arguments must be all sketch vars in all coordinates"
+                                .to_owned(),
                             vec![args.source_range],
                         ))),
                     }
