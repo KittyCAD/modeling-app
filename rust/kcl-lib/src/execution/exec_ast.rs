@@ -1308,7 +1308,7 @@ impl Node<SketchBlock> {
         let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
             kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
-                let freedom_analysis = FreedomAnalysis::from(outcome.analysis);
+                let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
                 (outcome.outcome, Some(freedom_analysis))
             })
         } else {
@@ -1324,10 +1324,10 @@ impl Node<SketchBlock> {
             .collect();
 
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok((solved, freedom)) => (
-                Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints),
-                freedom,
-            ),
+            Ok((solved, freedom)) => {
+                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                (outcome, freedom)
+            }
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
