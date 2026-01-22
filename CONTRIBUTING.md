@@ -6,16 +6,17 @@ This section applies to all potential contributors, internal and external to the
 
 ### Installing system dependencies
 
-Install [asdf](https://asdf-vm.com/) to manage all the language runtimes used by this project.
+Install [asdf](https://asdf-vm.com/) to manage system dependencies for this project.
 
 On Windows, it's also recommended to [upgrade your PowerShell version](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5#winget), we're using 7.
 
 Then in the repo run the following to install and use the versions specified in `.tool-versions`:
 
 ```
+asdf plugin add just
 asdf plugin add nodejs
-asdf plugin add rust
 asdf plugin add python
+echo "legacy_version_file = true" > ~/.asdfrc  # enable .nvmrc support
 asdf install
 ```
 
