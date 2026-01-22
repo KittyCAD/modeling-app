@@ -448,6 +448,10 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
 
+        // Save the original state as a backup - we'll restore it if anything fails
+        let original_program = self.program.clone();
+        let original_scene_graph = self.scene_graph.clone();
+
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
@@ -463,8 +467,18 @@ impl SketchApi for FrontendState {
             }
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
         };
-        self.execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
-            .await
+
+        let result = self
+            .execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
+            .await;
+
+        // If execution failed, restore the original state to prevent corruption
+        if result.is_err() {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+        }
+
+        result
     }
 
     async fn chain_segment(
@@ -1919,14 +1933,12 @@ impl FrontendState {
                 ),
             })?;
 
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
         // Truncate after the sketch block for mock execution.
-        let mut truncated_program = new_program;
+        // Use a clone so we don't mutate new_program yet
+        let mut truncated_program = new_program.clone();
         self.only_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
 
-        // Execute.
+        // Execute - if this fails, we haven't modified self yet, so state is safe
         let outcome = ctx
             .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch_id))
             .await
@@ -1953,9 +1965,14 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        let src_delta = SourceDelta { text: new_source };
+        // Only now, after all operations succeeded, update self.program
+        // This ensures state is only modified if everything succeeds
+        self.program = new_program;
+
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
+
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
