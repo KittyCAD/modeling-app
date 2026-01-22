@@ -813,7 +813,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
       }) => {
-        const next: Map<any, any> = new Map(args.input.context.mlEphantConversations)
+        const next: Map<any, any> = new Map(
+          args.input.context.mlEphantConversations
+        )
         next.set(
           args.input.event.data.projectId,
           args.input.event.data.conversationId

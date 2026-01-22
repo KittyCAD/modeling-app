@@ -8,7 +8,6 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
   getUtils,
-  runningOnWindows,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -92,9 +91,10 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
-      await fs.writeFile(join(bracketDir, 'main.kcl'), bracket, {
-        encoding: 'utf-8',
-      })
+      await fs.writeFile(
+        join(bracketDir, 'main.kcl'),
+        new TextEncoder().encode(bracket)
+      )
     })
     const u = await getUtils(page)
 

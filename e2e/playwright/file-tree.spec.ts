@@ -105,7 +105,7 @@ test.describe(
       await pasteCodeInEditor(kclCube)
       await scene.settled(cmdBar)
       await renameFile(fromFile, toFile)
-      await goToHomePageFromModeling(page)
+      await goToHomePageFromModeling()
       await homePage.openProject(projectName)
 
       await test.step('Postcondition: editor has same content as before the rename', async () => {
@@ -157,13 +157,8 @@ test.describe(
         )
       })
 
-      const {
-        openFilePanel,
-        renameFile,
-        selectFile,
-        editorTextMatches,
-        waitForPageLoad,
-      } = await getUtils(page, test)
+      const { openFilePanel, renameFile, selectFile, editorTextMatches } =
+        await getUtils(page, test)
 
       await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
         await homePage.expectState({
