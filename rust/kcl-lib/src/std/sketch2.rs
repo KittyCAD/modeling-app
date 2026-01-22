@@ -2,7 +2,7 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
 
 use crate::{
-    ExecState, ExecutorContext, KclError, Point2d,
+    ExecState, ExecutorContext, KclError,
     errors::KclErrorDetails,
     exec::{NumericType, Sketch},
     execution::{BasePath, GeoMeta, ModelingCmdMeta, Path, Segment, SegmentKind, SketchSurface},
@@ -103,7 +103,6 @@ pub(crate) async fn create_segments_in_engine(
                         vec![range],
                     )));
                 };
-                let start_point2d = Point2d::new(start[0], start[1], start_unit);
                 let (end, end_ty) = untype_point(end.clone());
                 let Some(end_unit) = end_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -132,7 +131,7 @@ pub(crate) async fn create_segments_in_engine(
                     segment.id,
                     exec_state,
                     sketch.clone(),
-                    start_point2d,
+                    sketch.current_pen_position()?,
                     TyF64::new(start_radians, NumericType::radians()),
                     TyF64::new(end_radians, NumericType::radians()),
                     TyF64::new(radius_in_center_unit, center_ty),
