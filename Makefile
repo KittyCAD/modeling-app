@@ -27,20 +27,20 @@ WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
 endif
 
 .PHONY: bootstrap
+ifdef WINDOWS
+bootstrap:
+	npm run install:rust:windows
+else
 bootstrap: ~/.asdfrc
 	asdf plugin add just
 	asdf plugin add nodejs
 	asdf plugin add python
 	@ echo
 	asdf install
-ifdef WINDOWS
-	npm run install:rust:windows
-else
 	npm run install:rust
-endif
-
 ~/.asdfrc:
 	echo "legacy_version_file = true" > $@
+endif
 
 .PHONY: install
 install: node_modules/.package-lock.json $(WASM_PACK) ## Install dependencies
