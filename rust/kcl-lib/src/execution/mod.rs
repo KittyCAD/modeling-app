@@ -1605,19 +1605,6 @@ impl ExecutorContext {
         Ok(files)
     }
 
-    pub async fn export_gltf(&self) -> Result<Vec<kcmc::websocket::RawFile>, KclError> {
-        let files = self
-            .export(kcmc::format::OutputFormat3d::Gltf(
-                kcmc::format::gltf::export::Options {
-                    storage: kcmc::format::gltf::export::Storage::Binary,
-                    ..Default::default()
-                },
-            ))
-            .await?;
-
-        Ok(files)
-    }
-
     pub async fn close(&self) {
         self.engine.close().await;
     }

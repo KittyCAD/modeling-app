@@ -90,7 +90,13 @@ impl Artifact {
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::SketchConstraint(_) => Vec::new(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
-            Artifact::Sweep(a) => vec![a.path_id],
+            Artifact::Sweep(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(trajectory_id) = a.trajectory_id {
+                    ids.push(trajectory_id);
+                }
+                ids
+            }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
@@ -120,6 +126,9 @@ impl Artifact {
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
+                }
+                if let Some(sweep_id_trajectory) = a.trajectory_sweep_id {
+                    ids.push(sweep_id_trajectory);
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
                     ids.push(solid2d_id);
@@ -209,9 +218,13 @@ impl Artifact {
                 // Note: Don't include these since they're parents: edge_cut_id.
                 vec![a.surface_id]
             }
-            Artifact::Helix(_) => {
+            Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(sweep_id) = a.trajectory_sweep_id {
+                    ids.push(sweep_id);
+                }
+                ids
             }
         }
     }
@@ -345,9 +358,10 @@ impl ArtifactGraph {
             Artifact::CompositeSolid(composite_solid) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     composite_solid.sub_type,
-                    code_ref_display(&composite_solid.code_ref)
+                    code_ref_display(&composite_solid.code_ref),
+                    composite_solid.consumed
                 )?;
                 node_path_display(output, prefix, None, &composite_solid.code_ref)?;
             }
@@ -362,8 +376,9 @@ impl ArtifactGraph {
             Artifact::Path(path) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}\"]",
-                    code_ref_display(&path.code_ref)
+                    "{prefix}{id}[\"Path<br>{:?}<br>Consumed: {:?}\"]",
+                    code_ref_display(&path.code_ref),
+                    path.consumed
                 )?;
                 node_path_display(output, prefix, None, &path.code_ref)?;
             }
@@ -421,9 +436,10 @@ impl ArtifactGraph {
             Artifact::Sweep(sweep) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Sweep {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"Sweep {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     sweep.sub_type,
-                    code_ref_display(&sweep.code_ref)
+                    code_ref_display(&sweep.code_ref),
+                    sweep.consumed,
                 )?;
                 node_path_display(output, prefix, None, &sweep.code_ref)?;
             }
@@ -453,8 +469,9 @@ impl ArtifactGraph {
             Artifact::Helix(helix) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Helix<br>{:?}\"]",
-                    code_ref_display(&helix.code_ref)
+                    "{prefix}{id}[\"Helix<br>{:?}: Consumed: {:?}\"]",
+                    code_ref_display(&helix.code_ref),
+                    helix.consumed
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }

@@ -6,7 +6,10 @@ import {
   setup,
   fromPromise,
 } from 'xstate'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  SceneGraphDelta,
+  SegmentCtor,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
@@ -40,6 +43,7 @@ import {
   deleteDraftEntities,
   deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
+  buildSegmentCtorFromObject,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { SKETCH_API_VERSION } from '@src/lib/constants'
@@ -380,6 +384,97 @@ export const sketchSolveMachine = setup({
             await jsAppSettings(context.rustContext.settingsActor)
           )
         }
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    construction: {
+      actions: async ({ self, context }) => {
+        const selectedIds = context.selectedIds
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+        if (selectedIds.length === 0) {
+          return
+        }
+
+        const segmentsToEdit: Array<{
+          id: number
+          ctor: SegmentCtor
+        }> = []
+
+        for (const id of selectedIds) {
+          const obj = objects[id]
+          if (!obj || obj.kind.type !== 'Segment') {
+            continue
+          }
+
+          // Only Line and Arc segments support construction geometry
+          if (
+            obj.kind.segment.type !== 'Line' &&
+            obj.kind.segment.type !== 'Arc'
+          ) {
+            continue
+          }
+
+          // Build the base segment ctor
+          const baseCtor = buildSegmentCtorFromObject(obj, objects)
+          if (!baseCtor) {
+            continue
+          }
+
+          // Get current construction state
+          const currentConstruction =
+            obj.kind.segment.type === 'Line'
+              ? obj.kind.segment.construction
+              : obj.kind.segment.type === 'Arc'
+                ? obj.kind.segment.construction
+                : false
+
+          // Toggle construction state
+          const newConstruction = !currentConstruction
+
+          // Add construction property to Line or Arc ctors
+          if (baseCtor.type === 'Line') {
+            segmentsToEdit.push({
+              id,
+              ctor: {
+                ...baseCtor,
+                construction: newConstruction,
+              },
+            })
+          } else if (baseCtor.type === 'Arc') {
+            segmentsToEdit.push({
+              id,
+              ctor: {
+                ...baseCtor,
+                construction: newConstruction,
+              },
+            })
+          }
+        }
+
+        if (segmentsToEdit.length === 0) {
+          return
+        }
+
+        // Edit segments via Rust context
+        const result = await context.rustContext
+          .editSegments(
+            0,
+            context.sketchId,
+            segmentsToEdit,
+            await jsAppSettings(context.rustContext.settingsActor)
+          )
+          .catch((err) => {
+            console.error('failed to toggle construction geometry', err)
+            return null
+          })
+
         if (result) {
           self.send({
             type: 'update sketch outcome',

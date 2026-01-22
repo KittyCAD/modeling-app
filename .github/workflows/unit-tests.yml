@@ -30,8 +30,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
@@ -61,8 +61,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
