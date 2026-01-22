@@ -388,6 +388,10 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
+        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
+        for segment in &segments {
+            segment_ids_edited.insert(segment.id);
+        }
 
         // Preprocess segments into a final_edits vector to handle if segments contains:
         // - edit start point of line1 (as SegmentCtor::Point)
@@ -500,9 +504,7 @@ impl SketchApi for FrontendState {
             }
         }
 
-        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(final_edits.len(), Default::default());
         for (segment_id, ctor) in final_edits {
-            segment_ids_edited.insert(segment_id);
             match ctor {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
