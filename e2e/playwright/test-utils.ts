@@ -1053,11 +1053,11 @@ export async function createProject({
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
+    await closeOnboardingModalIfPresent(page)
+
     if (returnHome) {
       await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
       await page.getByTestId('app-logo').click()
-    } else {
-      await closeOnboardingModalIfPresent(page)
     }
   })
 }

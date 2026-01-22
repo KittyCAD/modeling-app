@@ -760,6 +760,7 @@ export exported = 2`,
     'Command palette can be opened via query parameter - web',
     { tag: '@web' },
     async ({ page, cmdBar }) => {
+      await expect(page.getByTestId('app-logo')).toBeVisible()
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
       await cmdBar.expectCommandName('Settings · app · theme')
       await cmdBar.expectState({

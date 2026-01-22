@@ -1722,6 +1722,7 @@ test(
 
     await test.step('Should create and name a project called wrist brace', async () => {
       await createProject({ name: 'wrist brace', page, returnHome: true })
+      await expect(page.getByTestId('project-link').first()).toBeVisible()
     })
 
     await test.step('Should go through onboarding', async () => {
@@ -1879,12 +1880,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // Exit sketch mode
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(100)
+      await scene.settled(cmdBar)
     })
 
     await test.step('Going back to dashboard', async () => {
       await page.getByTestId('app-logo').click()
-      await page.waitForTimeout(1000)
     })
 
     await test.step('Reopening the project and verifying changes are saved', async () => {
