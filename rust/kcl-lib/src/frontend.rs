@@ -2097,9 +2097,8 @@ impl FrontendState {
                                         // Keep it as Free
                                     }
                                     Some(Freedom::Fixed) => {
-                                        // Don't preserve Fixed when freedom_analysis didn't run.
-                                        // Without fresh analysis, we can't trust cached Fixed values.
-                                        // Keep it as Free (the default when no analysis ran).
+                                        // Preserve Fixed cached value
+                                        point.freedom = Freedom::Fixed;
                                     }
                                     Some(Freedom::Free) => {
                                         // If stored is also Free, keep Free (no change needed)
