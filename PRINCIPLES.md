@@ -46,3 +46,7 @@ These are principles we try to follow as a team working on this product. Anyone 
     - All the codemods were rewritten during [this effort](https://github.com/KittyCAD/modeling-app/milestone/4), to ensure consistency with respect to these principles and scalable testing.
 
 <img width="4550" height="3271" alt="image" src="https://github.com/user-attachments/assets/7cbb945d-ca4e-4b13-8be3-51343cb6dcf1" />
+
+## 3. Code style
+
+1. Never use `any` or `as` in typescript. We do not want leave things untyped or coerce types. You should instead type narrow or use helpers like `hasProperty` and `isRecord` from `@src/lib/utils.ts` where needed.
