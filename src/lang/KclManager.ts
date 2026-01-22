@@ -549,7 +549,7 @@ export class KclManager extends EventTarget {
       if (shouldWriteToFile) {
         // Need to close over `this._currentFilePath`'s value before deferrment,
         // otherwise the deferred write could have a changed value after rapid navigation
-        void this.deferredWriteToFile({ newCode, path: this._currentFilePath })
+        void this.writeToFile(newCode, this._currentFilePath)
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
@@ -615,12 +615,6 @@ export class KclManager extends EventTarget {
       }
     },
     300
-  )
-
-  private deferredWriteToFile = deferredCallback(
-    ({ newCode, path }: { newCode: string; path: string | null }) =>
-      this.writeToFile(newCode, path),
-    1_000
   )
 
   private createEditorExtensions() {
