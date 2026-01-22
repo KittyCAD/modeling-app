@@ -79,8 +79,6 @@ pub(crate) async fn create_segments_in_engine(
 
         match &segment.kind {
             SegmentKind::Point { .. } => {
-                // TODO: In the engine, points currently need to be their own
-                // path. Skipping them for now.
                 debug_assert!(false, "Points should have been skipped earlier");
                 continue;
             }
