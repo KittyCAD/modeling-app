@@ -199,6 +199,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             ctor,
             start_object_id,
             end_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -220,6 +221,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     end_object_id: *end_object_id,
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -232,6 +234,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -261,6 +264,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -525,6 +529,7 @@ pub(super) fn create_segment_scene_objects(
                 end_object_id,
                 start_freedom,
                 end_freedom,
+                construction,
             } => {
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -587,6 +592,7 @@ pub(super) fn create_segment_scene_objects(
                             end: end_point_object_id,
                             ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),
@@ -607,6 +613,7 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                construction,
             } => {
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -696,6 +703,7 @@ pub(super) fn create_segment_scene_objects(
                             center: center_point_object_id,
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),

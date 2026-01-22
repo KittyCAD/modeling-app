@@ -1832,6 +1832,7 @@ pub enum UnsolvedSegmentKind {
         ctor: Box<LineCtor>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
+        construction: bool,
     },
     Arc {
         start: UnsolvedPoint2dExpr,
@@ -1841,6 +1842,7 @@ pub enum UnsolvedSegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
+        construction: bool,
     },
 }
 
@@ -1874,6 +1876,7 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         end_freedom: Option<Freedom>,
+        construction: bool,
     },
     Arc {
         start: [TyF64; 2],
@@ -1889,6 +1892,7 @@ pub enum SegmentKind {
         end_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
     },
 }
 

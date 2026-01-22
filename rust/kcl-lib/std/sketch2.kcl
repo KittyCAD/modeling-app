@@ -15,6 +15,7 @@ export fn line(
   start: Point2d,
   end?: Point2d,
   midpoint?: Point2d,
+  construction?: bool,
 ): Segment {}
 
 /// A circular arc. The arc segment always sweeps counterclockwise from start to end.
@@ -24,6 +25,7 @@ export fn arc(
   start: Point2d,
   end: Point2d,
   center: Point2d,
+  construction?: bool,
 ): Segment {}
 
 /// Constrain points, or a point and a segment to be coincident.

@@ -532,6 +532,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
         ),
+        ("solid", "isSurface") => (
+            |e, a| Box::pin(crate::std::surfaces::is_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSurface"),
+        ),
+        ("solid", "isSolid") => (
+            |e, a| Box::pin(crate::std::surfaces::is_solid(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSolid"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
