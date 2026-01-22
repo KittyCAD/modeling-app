@@ -1486,3 +1486,19 @@ export fn isSurface(
   /// Value to check if it is a surface or not
   @val: Solid,
 ): bool {}
+
+/// Delete a face, by its index (number).
+/// For pure KCL users, these IDs are difficult to guess.
+/// ```kcl
+/// startSketchOn(XY)
+/// |> polygon(radius = 10, numSides = 4, center = [0, 0])
+/// |> extrude(length = 2)
+/// |> deleteFace(faceIndices = [0, 5])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn deleteFace(
+  /// Target to delete a surface from.
+  @val: body,
+  /// Face to delete.
+  faceIndices: [number(Count); 1+],
+): Solid {}

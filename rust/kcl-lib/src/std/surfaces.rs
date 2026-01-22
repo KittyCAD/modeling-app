@@ -1,15 +1,21 @@
 //! Standard library appearance.
 
+use std::collections::HashSet;
+
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, shared::BodyType, websocket::OkWebSocketResponseData,
+    self as kcmc, ok_response::OkModelingCmdResponse, output as mout, shared::BodyType,
+    websocket::OkWebSocketResponseData,
 };
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, ModelingCmdMeta, Solid, types::RuntimeType},
-    std::Args,
+    execution::{
+        ExecState, KclValue, ModelingCmdMeta, Solid,
+        types::{ArrayLen, RuntimeType},
+    },
+    std::{Args, args::TyF64},
 };
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
@@ -82,4 +88,92 @@ async fn inner_is_equal_body_type(
     };
 
     Ok(expected == body.body_type)
+}
+
+pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let face_indices: Vec<TyF64> = args.get_kw_arg(
+        "faceIndices",
+        &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let face_indices = face_indices
+        .into_iter()
+        .map(|num| {
+            crate::try_f64_to_u32(num.n).ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("Face indices must be whole numbers, got {}", num.n),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    inner_delete_face(body, face_indices, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_delete_face(
+    body: Solid,
+    face_indices: Vec<u32>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Solid, KclError> {
+    // Get the face's ID
+    let mut face_ids = HashSet::with_capacity(face_indices.len());
+
+    for face_index in face_indices {
+        let face_uuid_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::Solid3dGetFaceUuid::builder()
+                        .object_id(body.id)
+                        .face_index(face_index)
+                        .build(),
+                ),
+            )
+            .await?;
+
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(mout::Solid3dGetFaceUuid { face_id }),
+        } = face_uuid_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned Solid3dGetFaceUuid but it returned {face_uuid_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+        face_ids.insert(face_id);
+    }
+
+    // Delete the face
+    let delete_face_response = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+                mcmd::EntityDeleteChildren::builder()
+                    .entity_id(body.id)
+                    .child_entity_ids(face_ids)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityDeleteChildren(mout::EntityDeleteChildren { .. }),
+    } = delete_face_response
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Engine returned invalid response, it should have returned EntityDeleteChildren but it returned {delete_face_response:?}"
+            ),
+            vec![args.source_range],
+        )));
+    };
+
+    Ok(body)
 }
