@@ -66,16 +66,6 @@ describe('testing parseProjectRoute', () => {
       currentFilePath: route,
     })
   })
-  it('should work in the browser context', async () => {
-    let config = {}
-    const route = '/browser/main.kcl'
-    expect(parseProjectRoute(config, route)).toEqual({
-      projectName: 'browser',
-      projectPath: '/browser',
-      currentFileName: 'main.kcl',
-      currentFilePath: route,
-    })
-  })
 })
 
 describe('testing getFilePathRelativeToProject', () => {

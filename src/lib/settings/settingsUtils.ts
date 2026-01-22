@@ -4,10 +4,6 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
-  defaultAppSettings,
-  defaultProjectSettings,
-  parseAppSettings,
-  parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
@@ -15,7 +11,6 @@ import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
 } from '@src/lib/cameraControls'
-import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
   readAppSettingsFile,
@@ -268,65 +263,6 @@ export function settingsPayloadToProjectConfiguration(
         include_settings: configuration?.commandBar?.includeSettings,
       },
     },
-  }
-}
-
-function localStorageAppSettingsPath() {
-  return '/settings.toml'
-}
-
-function localStorageProjectSettingsPath() {
-  return '/' + BROWSER_PROJECT_NAME + '/project.toml'
-}
-
-export function readLocalStorageAppSettingsFile(
-  wasmInstance: ModuleType
-): DeepPartial<Configuration> | Error {
-  // TODO: Remove backwards compatibility after a few releases.
-  let stored =
-    localStorage.getItem(localStorageAppSettingsPath()) ??
-    localStorage.getItem('/user.toml') ??
-    ''
-
-  if (stored === '') {
-    return defaultAppSettings(wasmInstance)
-  }
-
-  try {
-    return parseAppSettings(stored, wasmInstance)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    const settings = defaultAppSettings(wasmInstance)
-    if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings, wasmInstance)
-    if (err(tomlStr)) return tomlStr
-
-    localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
-    return settings
-  }
-}
-
-export function readLocalStorageProjectSettingsFile(
-  wasmInstance: ModuleType
-): DeepPartial<ProjectConfiguration> | Error {
-  // TODO: Remove backwards compatibility after a few releases.
-  let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
-
-  if (stored === '') {
-    return defaultProjectSettings(wasmInstance)
-  }
-
-  const projectSettings = parseProjectSettings(stored, wasmInstance)
-  if (err(projectSettings)) {
-    const settings = defaultProjectSettings(wasmInstance)
-    if (err(settings)) return settings
-    const tomlStr = serializeProjectConfiguration(settings, wasmInstance)
-    if (err(tomlStr)) return tomlStr
-
-    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
-    return settings
-  } else {
-    return projectSettings
   }
 }
 

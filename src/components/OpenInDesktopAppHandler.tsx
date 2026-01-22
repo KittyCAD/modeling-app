@@ -1,5 +1,4 @@
 import { Transition } from '@headlessui/react'
-import { base64ToString } from '@src/lib/base64'
 import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -9,7 +8,6 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { kclManager } from '@src/lib/singletons'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -39,18 +37,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     darkModeMatcher?.addEventListener('change', listener)
     return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [])
-
-  useEffect(() => {
-    if (!hasAskToOpenParam) {
-      return
-    }
-
-    const codeB64 = base64ToString(
-      decodeURIComponent(searchParams.get('code') ?? '')
-    )
-    kclManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasAskToOpenParam])
 
   /**
    * This function removes the query param to ask to open in desktop app

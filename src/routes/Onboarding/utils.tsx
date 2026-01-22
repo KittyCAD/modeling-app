@@ -49,7 +49,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
   slug?: OnboardingPath,
-  platform: keyof typeof onboardingPaths = 'browser'
+  platform: keyof typeof onboardingPaths = 'desktop'
 ) {
   return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
 }
@@ -72,6 +72,10 @@ export function useNextClick(newStatus: OnboardingStatus) {
   const navigate = useNavigate()
 
   return useCallback(() => {
+    if (!filePath) {
+      return new Error(`filePath is undefined`)
+    }
+
     if (!isOnboardingPath(newStatus)) {
       return new Error(
         `Failed to navigate to invalid onboarding status ${newStatus}`
@@ -97,6 +101,10 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
+      if (!filePath) {
+        return new Error('filePath is undefined')
+      }
+
       send({
         type: 'set.app.onboardingStatus',
         data: { level: 'user', value: dismissalType },
@@ -121,7 +129,7 @@ export function useDismiss() {
 
 export function useAdjacentOnboardingSteps(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const onboardingPathsArray = Object.values(onboardingPaths[platform])
   const stepNumber = getStepNumber(currentSlug, platform)
@@ -140,7 +148,7 @@ export function useAdjacentOnboardingSteps(
 
 export function useOnboardingClicks(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [previousOnboardingStatus, nextOnboardingStatus] =
     useAdjacentOnboardingSteps(currentSlug, platform)
@@ -152,7 +160,7 @@ export function useOnboardingClicks(
 
 export function OnboardingButtons({
   currentSlug,
-  platform = 'browser',
+  platform = 'desktop',
   dismissPosition = 'left',
   className,
   dismissClassName,
@@ -628,7 +636,7 @@ export function useOnModelingCmdGroupReadyOnce(
  */
 export function useAdvanceOnboardingOnFormSubmit(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [_prev, goToNext] = useOnboardingClicks(currentSlug, platform)
 

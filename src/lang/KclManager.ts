@@ -1826,14 +1826,6 @@ export class KclManager extends EventTarget {
     }
     this.updateCodeEditor(newCode, resolvedOptions)
   }
-  goIntoTemporaryWorkspaceModeWithCode(code: string) {
-    this.isBufferMode = true
-    this.updateCodeEditor(code, { shouldClearHistory: true })
-  }
-  exitFromTemporaryWorkspaceMode() {
-    this.isBufferMode = false
-    this.writeToFile().catch(reportRejection)
-  }
 }
 
 function safeLSGetItem(key: string) {

@@ -17,10 +17,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  BROWSER_PROJECT_NAME,
-} from '@src/lib/constants'
+import { ASK_TO_OPEN_QUERY_PARAM } from '@src/lib/constants'
 import { CoreDumpManager } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -62,9 +59,7 @@ const router = createRouter([
           const searchParams = new URLSearchParams(url.search)
 
           if (searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
-            return redirect(
-              PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-            )
+            return redirect(PATHS.FILE + '/%2F' + (url.search || ''))
           }
 
           return redirect(PATHS.HOME + (url.search || ''))

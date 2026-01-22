@@ -82,6 +82,7 @@ export const ModelingPageProvider = ({
     if (file?.path === undefined) return
 
     const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
+
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commandBarActor.send({

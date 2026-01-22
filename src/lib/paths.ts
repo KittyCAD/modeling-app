@@ -2,11 +2,6 @@ import fs from '@src/lib/fs-zds'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
-import {
-  BROWSER_FILE_NAME,
-  BROWSER_PROJECT_NAME,
-  FILE_EXT,
-} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -33,15 +28,11 @@ export const PATHS = {
   ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
-export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
     wasmInstance: ModuleType
   ) => Promise<DeepPartial<Configuration>>,
-  readLocalStorageAppSettingsFile: (
-    wasmInstance: ModuleType
-  ) => DeepPartial<Configuration> | Error,
   wasmInstance: ModuleType,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error

@@ -55,11 +55,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (
-      shouldInvokeCreateFile &&
-      authState.matches('loggedIn') &&
-      isDesktop()
-    ) {
+    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
         type: 'Find and select command',
@@ -151,9 +147,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
           )
         }
         return response.text()
-      })
-      .then((code) => {
-        kclManager.goIntoTemporaryWorkspaceModeWithCode(code)
       })
       .catch((error) => {
         console.error('Error loading KCL sample:', error)

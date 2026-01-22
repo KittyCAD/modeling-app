@@ -17,7 +17,7 @@ import type { NavigateFunction } from 'react-router-dom'
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
+  filePath: string | undefined,
   engineCommandManager: ConnectionManager,
   sceneInfra: SceneInfra
 ) {
@@ -68,12 +68,28 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
@@ -91,6 +107,10 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
+      if (!filePath) {
+        console.warn('filePath is undefined')
+        return
+      }
       void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
