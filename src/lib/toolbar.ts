@@ -398,7 +398,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'boolean-split',
+            id: 'split',
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -406,7 +406,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'split',
             status: 'available',
-            title: 'Split Surfaces',
+            title: 'Split',
             description: 'Split a solid into multiple surfaces.',
             links: [
               {
@@ -420,7 +420,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
             onClick: () => {},
             status: 'unavailable',
-            title: 'Join Surfaces',
+            title: 'Join',
             description: 'Join surfaces together',
             links: [],
           },

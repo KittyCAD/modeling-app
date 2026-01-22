@@ -247,13 +247,19 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
-  selectBoolean = async (
-    operation: 'union' | 'subtract' | 'intersect' | 'split'
-  ) => {
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
     await this.page
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectSurface = async (operation: 'flip-surface' | 'split') => {
+    await this.page
+      .getByRole('button', { name: 'caret down surface: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }

@@ -2593,10 +2593,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
     })
 
     await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
-      await page
-        .getByRole('button', { name: 'caret down surface: open menu' })
-        .click()
-      await page.getByTestId('dropdown-flip-surface').click()
+      await toolbar.selectSurface('flip-surface')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'surface',
