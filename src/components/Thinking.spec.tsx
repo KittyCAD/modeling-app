@@ -34,8 +34,10 @@ describe('FilesSnapshot', () => {
     createObjectURLMock = vi.fn((blob: Blob) => `blob:mock-url-${blob.type}`)
     revokeObjectURLMock = vi.fn()
 
-    global.URL.createObjectURL = createObjectURLMock as typeof URL.createObjectURL
-    global.URL.revokeObjectURL = revokeObjectURLMock as typeof URL.revokeObjectURL
+    global.URL.createObjectURL =
+      createObjectURLMock as typeof URL.createObjectURL
+    global.URL.revokeObjectURL =
+      revokeObjectURLMock as typeof URL.revokeObjectURL
   })
 
   afterEach(() => {
