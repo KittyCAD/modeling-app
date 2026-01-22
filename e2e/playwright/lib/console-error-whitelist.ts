@@ -283,13 +283,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: '', // many tests are impacted by this error
     },
-    {
-      name: 'Error',
-      message: 'Error creating WebGL context.',
-      stack: 'Error: Error creating WebGL context.',
-      project: 'Google Chrome',
-      foundInSpec: '', // many tests are impacted by this error
-    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
