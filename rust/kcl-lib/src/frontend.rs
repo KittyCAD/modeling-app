@@ -4094,6 +4094,128 @@ sketch2::distance([point1, point2]) == 2mm
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_horizontal_distance_two_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::HorizontalDistance(Distance {
+            points: vec![point0_id, point1_id],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+sketch2::horizontalDistance([point1, point2]) == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_vertical_distance_two_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::VerticalDistance(Distance {
+            points: vec![point0_id, point1_id],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+sketch2::verticalDistance([point1, point2]) == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_line_horizontal() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
