@@ -58,6 +58,8 @@ const ARC_PROPERTY_START: &str = "start";
 const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
 
+const CONSTRUCTION_PARAM: &str = "construction";
+
 #[derive(Debug, Clone, Copy)]
 enum EditDeleteKind {
     Edit,
@@ -446,6 +448,10 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
 
+        // Save the original state as a backup - we'll restore it if anything fails
+        let original_program = self.program.clone();
+        let original_scene_graph = self.scene_graph.clone();
+
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
@@ -461,8 +467,18 @@ impl SketchApi for FrontendState {
             }
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
         };
-        self.execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
-            .await
+
+        let result = self
+            .execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
+            .await;
+
+        // If execution failed, restore the original state to prevent corruption
+        if result.is_err() {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+        }
+
+        result
     }
 
     async fn chain_segment(
@@ -727,19 +743,31 @@ impl FrontendState {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
+        let mut arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_END_PARAM)),
+                arg: end_ast,
+            },
+        ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
         let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
             unlabeled: None,
-            arguments: vec![
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(LINE_START_PARAM)),
-                    arg: start_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(LINE_END_PARAM)),
-                    arg: end_ast,
-                },
-            ],
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -852,7 +880,7 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
-        let arguments = vec![
+        let mut arguments = vec![
             ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_START_PARAM)),
                 arg: start_ast,
@@ -866,6 +894,17 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
         let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
@@ -1119,6 +1158,7 @@ impl FrontendState {
             AstMutateCommand::EditLine {
                 start: new_start_ast,
                 end: new_end_ast,
+                construction: ctor.construction,
             },
         )?;
         Ok(())
@@ -1168,6 +1208,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                construction: ctor.construction,
             },
         )?;
         Ok(())
@@ -1892,14 +1933,12 @@ impl FrontendState {
                 ),
             })?;
 
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
         // Truncate after the sketch block for mock execution.
-        let mut truncated_program = new_program;
+        // Use a clone so we don't mutate new_program yet
+        let mut truncated_program = new_program.clone();
         self.only_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
 
-        // Execute.
+        // Execute - if this fails, we haven't modified self yet, so state is safe
         let outcome = ctx
             .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch_id))
             .await
@@ -1926,9 +1965,14 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        let src_delta = SourceDelta { text: new_source };
+        // Only now, after all operations succeeded, update self.program
+        // This ensures state is only modified if everything succeeds
+        self.program = new_program;
+
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
+
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2294,11 +2338,13 @@ enum AstMutateCommand {
     EditLine {
         start: ast::Expr,
         end: ast::Expr,
+        construction: Option<bool>,
     },
     EditArc {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        construction: Option<bool>,
     },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
@@ -2437,7 +2483,11 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditLine { start, end } => {
+        AstMutateCommand::EditLine {
+            start,
+            end,
+            construction,
+        } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != LINE_FN {
                     return TraversalReturn::new_continue(());
@@ -2451,10 +2501,51 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         labeled_arg.arg = end.clone();
                     }
                 }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        // Add or update construction=true
+                        if construction_exists {
+                            // Update existing construction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            // Add new construction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        // Remove construction kwarg if it exists
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
+                    }
+                }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditArc { start, end, center } => {
+        AstMutateCommand::EditArc {
+            start,
+            end,
+            center,
+            construction,
+        } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != ARC_FN {
                     return TraversalReturn::new_continue(());
@@ -2469,6 +2560,42 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        // Add or update construction=true
+                        if construction_exists {
+                            // Update existing construction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            // Add new construction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        // Remove construction kwarg if it exists
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
@@ -2876,6 +3003,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
@@ -2921,6 +3049,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
             id: line,
@@ -3012,6 +3141,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
         let (src_delta, scene_delta) = frontend
@@ -3070,6 +3200,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
             id: arc,
@@ -3135,6 +3266,7 @@ s = sketch(on = XY) {}
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
@@ -3213,6 +3345,7 @@ s = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
@@ -3883,6 +4016,161 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_invalid_coincident_arc_and_line_preserves_state() {
+        // Test that attempting an invalid coincident constraint (arc and line)
+        // doesn't corrupt the state, allowing subsequent operations to work.
+        // This test verifies the transactional fix in add_constraint that prevents
+        // state corruption when invalid constraints are attempted.
+        // Example: coincident constraint between an arc segment and a straight line segment
+        // is geometrically invalid and should fail, but state should remain intact.
+        // Use the programmatic approach (new_sketch + add_segment) like test_new_sketch_add_arc_edit_arc
+        let program = Program::empty();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let sketch_args = SketchCtor {
+            on: PlaneName::Xy.to_string(),
+        };
+        let (_src_delta, _scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        // Add an arc segment
+        let arc_ctor = ArcCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let (_src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Arc(arc_ctor), None)
+            .await
+            .unwrap();
+        // The arc is the last object in new_objects (after the 3 points: start, end, center)
+        let arc_id = *scene_delta.new_objects.last().unwrap();
+
+        // Add a line segment
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 20.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 30.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let (_src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Line(line_ctor), None)
+            .await
+            .unwrap();
+        // The line is the last object in new_objects (after the 2 points: start, end)
+        let line_id = *scene_delta.new_objects.last().unwrap();
+
+        // Attempt to add an invalid coincident constraint between arc and line
+        // This should fail during execution, but state should remain intact
+        let constraint = Constraint::Coincident(Coincident {
+            segments: vec![arc_id, line_id],
+        });
+        let result = frontend.add_constraint(&mock_ctx, version, sketch_id, constraint).await;
+
+        // The constraint addition should fail (invalid constraint)
+        assert!(result.is_err(), "Expected invalid coincident constraint to fail");
+
+        // Verify state is not corrupted by checking that we can still access the scene graph
+        // and that the original segments are still present with their source ranges
+        let sketch_object_after =
+            find_first_sketch_object(&frontend.scene_graph).expect("Sketch should still exist after failed constraint");
+        let sketch_after = expect_sketch(sketch_object_after);
+
+        // Verify both segments are still in the sketch
+        assert!(
+            sketch_after.segments.contains(&arc_id),
+            "Arc segment should still exist after failed constraint"
+        );
+        assert!(
+            sketch_after.segments.contains(&line_id),
+            "Line segment should still exist after failed constraint"
+        );
+
+        // Verify we can still access segment objects (this would fail if source ranges were corrupted)
+        let arc_obj = frontend
+            .scene_graph
+            .objects
+            .get(arc_id.0)
+            .expect("Arc object should still be accessible");
+        let line_obj = frontend
+            .scene_graph
+            .objects
+            .get(line_id.0)
+            .expect("Line object should still be accessible");
+
+        // Verify source ranges are still valid (not corrupted)
+        // Just verify that the objects are still accessible and have the expected types
+        match &arc_obj.kind {
+            ObjectKind::Segment {
+                segment: Segment::Arc(_),
+            } => {}
+            _ => panic!("Arc object should still be an arc segment"),
+        }
+        match &line_obj.kind {
+            ObjectKind::Segment {
+                segment: Segment::Line(_),
+            } => {}
+            _ => panic!("Line object should still be a line segment"),
+        }
 
         ctx.close().await;
         mock_ctx.close().await;

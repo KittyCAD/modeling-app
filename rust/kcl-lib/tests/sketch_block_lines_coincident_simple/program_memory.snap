@@ -80,7 +80,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "start_object_id": 2,
                     "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
@@ -162,7 +163,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "start_object_id": 7,
                     "end_object_id": 8,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
@@ -244,7 +246,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "start_object_id": 12,
                     "end_object_id": 13,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
@@ -326,7 +329,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "start_object_id": 15,
                     "end_object_id": 16,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed"
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
