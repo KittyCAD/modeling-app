@@ -498,7 +498,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
             &kittycad_modeling_cmds::ModelingCmd::DefaultCameraSetOrthographic(
-                kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build()
+                kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build(),
             ),
         )
         .await?;
