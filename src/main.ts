@@ -44,6 +44,12 @@ import {
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
+// Linux hacks for electron v40 and node 24
+if (os.platform() === 'linux') {
+  app.commandLine.appendSwitch('ignore-gpu-blocklist')
+  app.commandLine.appendSwitch('ozone-platform', 'x11')
+}
+
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
 
