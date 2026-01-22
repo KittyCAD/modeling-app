@@ -1,0 +1,150 @@
+Implementation Plan: MCP Proxy Integration
+------------------------------------------
+
+1. Goals and Constraints
+- Enable the desktop build to proxy Model Context Protocol (MCP) HTTP traffic
+  from a local agent through Electron into the renderer without changing
+  existing remote Zookeeper WebSocket behavior.
+- Scope is limited to desktop; guard every new entry point with window.electron
+  checks so the web target remains unchanged.
+- No new automated tests or manual QA hooks are required per the specification,
+  but plan for manual verification pathways where possible.
+
+2. Bootstrapping and Lifecycle
+- Introduce a useMcpProxyBootstrap helper in
+  src/components/ModelingMachineProvider.tsx that executes after the renderer
+  modeling context mounts and window.electron is available.
+- Have the helper invoke ipcRenderer.invoke("mcp.proxy.start") once per process
+  and capture the returned service metadata (port, session id).
+- Listen for asynchronous status updates on a new channel mcp.proxy.status and
+  push them into a React store so UI layers can react to transitions (starting,
+  ready, error).
+- On window unload or React unmount, call ipcRenderer.invoke("mcp.proxy.stop")
+  to allow the main process to dispose of Fastify and websocket state.
+
+3. Preload and IPC Contract
+- Augment src/main.ts with ipcMain handlers for mcp.proxy.start, mcp.proxy.stop,
+  and mcp.proxy.status-request; each handler will forward to a shared
+  McpProxyService singleton.
+- Extend src/preload.ts to expose startMcpProxy, stopMcpProxy, and
+  onMcpProxyStatus helpers on window.electron, wrapping the IPC calls and
+  managing listener teardown.
+- Update interface.d.ts so IElectronAPI describes the new methods and events,
+  ensuring TypeScript consumers gate against window.electron.
+
+4. Main-Process MCP Proxy Service
+- Create src/main/mcpProxy/service.ts exporting a McpProxyService class that
+  encapsulates Fastify construction, websocket setup, and lifecycle cleanup.
+- Bind Fastify to 127.0.0.1 on port 0, store the assigned port, and emit a ready
+  status to all renderer windows when listening succeeds.
+- Register a catch-all route that converts the incoming Node request into a
+  SerializedHttpRequest, stores a PendingRequest resolver keyed by request id,
+  and forwards the payload over the websocket connection to the renderer.
+- Stand up a ws.Server on the same HTTP server; accept exactly one renderer
+  client, negotiate a session token, and provide heartbeat pings to keep
+  Electron aware of connection health.
+- When renderer responses arrive, resolve the corresponding PendingRequest,
+  stream the SerializedHttpResponse back to Fastify, and clear bookkeeping
+  regardless of success, timeout, or socket error.
+
+5. Renderer MCP Proxy Client
+- Add src/mcp/McpProxyClient.ts with a class that consumes the port and session
+  token, opens ws://127.0.0.1:<port>/socket, and manages connection state
+  transitions for the React layer.
+- Implement exponential backoff reconnection while the main process reports
+  status "ready", surfacing failures through a McpProxyClientState observable
+  for the UI.
+- Deserialize SerializedHttpRequest messages and delegate handling to a
+  dedicated McpHttpRequestHandler instance, then send the serialized response
+  back through the websocket.
+
+6. HTTP Request Handling in the Renderer
+- Introduce src/mcp/McpHttpRequestHandler.ts that exposes handle(request) and
+  returns a SerializedHttpResponse promise.
+- Implement a small router: respond to GET /_health with 200, forward tool
+  traffic from POST /tools/call to the tool registry, and pipe any other
+  verb/path combination through window.fetch while preserving headers, query
+  strings, and binary bodies.
+- Encode response bodies as base64 strings to avoid websocket binary framing
+  issues, and include minimal headers (content-type, content-length) in the
+  serialized payload.
+- Return structured MCP error envelopes (HTTP 400/409/500) when request
+  validation, tool prerequisites, or downstream fetches fail.
+
+7. Tool Execution Pipeline
+- Create src/mcp/tools/index.ts exposing a McpToolRegistry that maps MCP tool
+  ids to executor functions and runs them through a single-flight queue to
+  prevent concurrent scene mutations.
+- Define a ToolInvocationContext containing modelingMachine actor ref,
+  engineCommandManager, CameraControls instance, sceneInfra helpers, and the
+  last camera pose snapshot used for deduplication.
+- Implement tool/camera/position to parse translate/rotate/zoom vectors, skip
+  execution when unchanged from the last call, invoke sceneSceneCommand with
+  default_camera_set_view, and call doZoom when the zoom argument changes.
+- Implement tool/camera/snapshot to await sendSceneCommand({ type:
+  "take_snapshot" }), capture the image payload, and return base64 data plus
+  metadata such as resolution and timestamp.
+- Implement tool/mouse/select to validate coordinates against the video stream
+  bounds, send highlight_set_entity via sendSceneCommand, and then chain
+  tool/camera/snapshot so the agent receives confirmation imagery.
+- Implement tool/sketch/start by dispatching the Start Sketch button action
+  through existing modelingMachine events, verifying the machine leaves the idle
+  state before resolving.
+- Implement tool/sketch/line to activate the line tool via the modeling state
+  machine, translate provided screen coordinates into client events, and
+  synthesize pointer down/up events through the scene canvas API to draw the
+  segment while keeping the Line tool active afterward.
+- Implement tool/sketch/arc similarly, invoking the Arc tool control, moving to
+  each supplied coordinate, and dispatching the requisite click sequence so the
+  modelingMachine remains in sketch mode.
+- Return MCP-formatted tool outputs, including success booleans, any generated
+  assets (like snapshot image ids), and human-readable summary strings for the
+  agent logs.
+
+8. Data Structures and Types
+- Define McpProxyConfig { port: number; host: string; sessionToken: string }
+  shared between main and renderer via IPC.
+- Define SerializedHttpRequest { id: string; method: string; url: string;
+  headers: Record<string, string>; body?: string; isBase64: boolean;
+  remoteAddress: string } in types/mcp.ts.
+- Define SerializedHttpResponse { id: string; statusCode: number; headers:
+  Record<string, string>; body?: string; isBase64: boolean; error?: string }
+  mirroring the request id for correlation.
+- Define PendingRequest { resolve: Fn; reject: Fn; startedAt: number; timeout:
+  NodeJS.Timeout } inside the main-process service.
+- Define McpProxyStatus { state: "starting" | "ready" | "error" | "stopped";
+  port?: number; errorMessage?: string } for UI consumption.
+- Define McpToolCallRequest { id: string; tool: string; arguments: unknown;
+  conversationId?: string } and McpToolCallResult { id: string; ok: boolean;
+  content: any; error?: string } in the renderer.
+- Define ToolInvocationContext { modelingActor: ActorRef<any>;
+  engineCommandManager: EngineCommandManager; camera: CameraControls; scene:
+  SceneInfra; lastCameraPose: Map<string, string> } consumed by each executor.
+
+9. UI Integration for Zookeeper Pane
+- Add a useMcpProxyState hook that returns the latest McpProxyStatus and consume
+  it inside MlEphantConversationPaneWrapper to disable the pane body until the
+  state becomes "ready".
+- Render a subtle loading overlay instead of toast notifications, and surface
+  detailed error text inside the pane when the status is "error" so users can
+  diagnose local proxy startup issues.
+- Ensure existing remote Zookeeper WebSocket reconnect logic continues to run;
+  only gate MCP-driven affordances so text prompts still work when the proxy is
+  unavailable.
+
+10. Observability and Failure Handling
+- Log lifecycle transitions, websocket disconnects, and HTTP timeouts via the
+  existing logger utils on both main and renderer sides to aid future debugging.
+- Add a configurable timeout (default 30s) for PendingRequest entries; on
+  expiry, respond with HTTP 504 and notify the renderer so the MCP agent can
+  retry gracefully.
+- Report fatal Fastify or websocket errors back through mcp.proxy.status with a
+  user-readable message and mark the service state as "error" to avoid silent
+  failures.
+
+11. Documentation and Follow-ups
+- Document the new desktop-only MCP proxy in feature-specs/mcp/README.md or
+  similar so future engineers understand the architecture and entry points.
+- Capture open questions for subsequent phases, such as exposing the local proxy
+  to remote Zookeeper tools or sharing credentials, in the plan tail for later
+  grooming.

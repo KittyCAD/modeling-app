@@ -15,11 +15,17 @@ Based on these constraints, create an implementation plan.
 
 Only implement tools I've specified.
 
+Tests are redundant for this implementation, because all tools are tested anyway
+through various unit and end-to-end tests.
+
+There does not need to be any manual QA or mechanisms to test after the implementation
+is completed. That responsibility is for someone else.
+
 ## User-interface requirements
 
 ### Zookeeper pane
 
-* Beside the model speed dropdown, show an agent selection dropdown.
+* Users do not need to be made known the local MCP Proxy Service has started. The Zookeeper UI should simply be disabled until it's available.
 
 ## Context
 
@@ -36,37 +42,29 @@ Only implement tools I've specified.
 * A context menu can be opened with right-click.
 * You can change the point of focus in the context menu by selecting "Center view on selection".
 * Zoo API documentation can be found at https://api.zoo.dev/ as OpenAPI schema.
-
+* Both the Zookeeper remote WebSocket and the Local Agent can be used at the same time.
+* The Local Agent can use Zookeeper if it wishes as another tool call we'll implement in the future.
+* Don't use isDesktop, but instead window.electron, for desktop target checks.
+* Use https://modelcontextprotocol.io/docs/ to learn how to shape MCP payloads.
+* Application bundle size increase in not a concern.
+* It is easier if events were simulated, as if clicking on the UI, for modeling related operations.
 
 ## Conditions
 
 Pre-conditions:
-  * Application has been built for the web target.
+  * Application has been built for the desktop target.
+  * The renderer side of the application has started / mounted.
 Commands:
-  * Only show Zookeeper as an agent selection option.
+  * Request via IPC to start the MCP Proxy Service.
 Post-conditions:
   * None
-
-Pre-conditions:
-  * Application has been built for the desktop target.
-Commands:
-  * Show Zookeeper and Local Agent as agent selection options.
-Post-conditions:
-  * None
-
-Pre-conditions:
-  * Application has been built for the desktop target.
-  * Local Agent is selected either by default or through the agent selection options.
-Commands:
-  * Request to start the MCP Proxy Service.
-Post-conditions:
-  * MCP Proxy Service is started.
 
 Pre-conditions:
   * Application has been built for the desktop target.
   * A request for the MCP Proxy Service to start via Electron IPC.
   * Code is running in the NodeJS environment of Electron.
   * All network connections are local.
+  * The port to use is not already occupied.
 Commands:
   * Start a Fastify web server.
   * Setup a catch-all HTTP request handler.
@@ -135,3 +133,79 @@ Commands:
 Post-conditions:
   * The selected feature is now highlighted yellow.
 
+Pre-conditions:
+  * There is an engine connection.
+  * The MCP Proxy Service has been started.
+  * The model has completed rendering, if any.
+  * A tools/call for tool/mouse/select has been requested.
+  * The mouse coordinates are within the video stream area.
+  * The mouse coordinates are relative to the video stream area.
+  * The coordinate will map to a feature, such as an edge or face.
+Commands:
+  * Read the screen coordinates argument, and call sendSceneCommand with type highlight_set_entity.
+  * tool/camera/snapshot is called to take a screenshot.
+Post-conditions:
+  * The selected feature is now highlighted yellow.
+
+Pre-conditions:
+  * There is an engine connection.
+  * The MCP Proxy Service has been started.
+  * The model has completed rendering, if any.
+  * A tools/call for tool/sketch/start has been requested.
+Commands:
+  * The Start Sketch button is invoked.
+Post-conditions:
+  * The Start Sketch button now reads Exit Sketch.
+  * The 3D scene is now top-down looking at a grid.
+  * The modelingMachine is no longer in `idle` state.
+
+Pre-conditions:
+  * A subsequent tool/sketch/* call has been called.
+Commands:
+  * The call is handled.
+Post-conditions:
+  * The previous tool is deactivated.
+  * The requested tool is active.
+
+Pre-conditions:
+  * There is an engine connection.
+  * The MCP Proxy Service has been started.
+  * The model has completed rendering, if any.
+  * The modelingMachine is not in `idle` state.
+  * A tools/call for tool/sketch/line has been requested.
+Commands:
+  * The line tool has been activated through the modelingMachine `change tool` event.
+  * Read screen coordinates as specified in the tool call argument.
+  * Simulate the mouse events to click the position specified.
+Post-conditions:
+  * The modelingMachine is still not in `idle` state.
+  * The Line tool is still active.
+
+Pre-conditions:
+  * There is an engine connection.
+  * The MCP Proxy Service has been started.
+  * The model has completed rendering, if any.
+  * The modelingMachine is not in `idle` state.
+  * A tools/call for tool/sketch/arc has been requested.
+Commands:
+  * The line tool has been activated through the modelingMachine `change tool` event.
+  * Read screen coordinates as specified in the tool call argument.
+  * Simulate the mouse events to click the position specified.
+Post-conditions:
+  * The modelingMachine is still not in `idle` state.
+  * The Arc tool is still active.
+
+
+Pre-conditions:
+  * There is an engine connection.
+  * The MCP Proxy Service has been started.
+  * The model has completed rendering, if any.
+  * The modelingMachine is not in `idle` state.
+  * A tools/call for tool/sketch/extrude has been requested.
+Commands:
+  * The line tool has been activated through the modelingMachine `change tool` event.
+  * Read screen coordinates as specified in the tool call argument.
+  * Simulate the mouse events to click the position specified.
+Post-conditions:
+  * The modelingMachine is still not in `idle` state.
+  * The Arc tool is still active.
