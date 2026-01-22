@@ -590,11 +590,9 @@ function handleDeleteProject(
 ) {
   return async function (project: Project) {
     systemIOActor.send({
-      type: SystemIOMachineEvents.renameProject,
+      type: SystemIOMachineEvents.deleteProject,
       data: {
         requestedProjectName: String(project.name),
-        projectName: project.name,
-        redirect: false, // only redirect when renaming from within the project
       },
     })
   }
