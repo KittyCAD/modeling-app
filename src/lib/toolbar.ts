@@ -1451,6 +1451,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => false,
       },
+      {
+        id: 'construction',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'construction',
+          }),
+        icon: 'construction',
+        status: 'available',
+        title: 'Construction',
+        description: 'Toggle construction geometry on selected segments',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }
