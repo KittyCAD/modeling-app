@@ -389,25 +389,68 @@ export const useToolbarConfig = () => {
                   },
                 ],
               },
+            ],
+          },
+          {
+            id: 'split',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Boolean Split', groupId: 'modeling' },
+              }),
+            icon: 'split',
+            status: 'available',
+            title: 'Split',
+            description: 'Split a solid or surface into multiple surfaces.',
+            links: [
               {
-                id: 'boolean-split',
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
+              },
+            ],
+          },
+          {
+            id: 'surface',
+            array: [
+              {
+                id: 'flip-surface',
                 onClick: () =>
                   commandBarActor.send({
                     type: 'Find and select command',
-                    data: { name: 'Boolean Split', groupId: 'modeling' },
+                    data: { name: 'Flip Surface', groupId: 'modeling' },
                   }),
-                icon: 'split',
+                icon: 'flipSurface',
                 status: 'available',
-                title: 'Split',
-                description: 'Split a solid into multiple solids.',
+                title: 'Flip Surface',
+                description:
+                  'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
                 links: [
                   {
-                    label: 'KCL docs',
+                    label: 'API docs',
                     url: withSiteBaseURL(
-                      '/docs/kcl-std/functions/std-solid-split'
+                      '/docs/kcl-std/functions/std-solid-flipSurface'
                     ),
                   },
                 ],
+              },
+              {
+                id: 'join',
+                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Join',
+                description: 'Join surfaces together',
+                links: [],
+              },
+              {
+                id: 'delete-face',
+                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Delete Face',
+                description:
+                  'Deletes a face from a body, leaving an open surface.',
+                links: [],
               },
             ],
           },
