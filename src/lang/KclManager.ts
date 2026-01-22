@@ -1792,8 +1792,9 @@ export class KclManager extends EventTarget {
           time: Date.now(),
         }
         this.timeoutWriter = setTimeout(() => {
-          if (!this._currentFilePath)
+          if (!path) {
             return reject(new Error('currentFilePath not set'))
+          }
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
