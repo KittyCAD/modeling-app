@@ -389,6 +389,9 @@ impl SketchApi for FrontendState {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
+
+        // segment_ids_edited still has to be the original segments (not final_edits), otherwise the owner segments
+        // are passed to `execute_after_edit` which changes the result of the solver, causing tests to fail.
         for segment in &segments {
             segment_ids_edited.insert(segment.id);
         }
