@@ -172,3 +172,36 @@ line2.start.at[1] == 1
         "Point freedoms should match expected values. Current behavior shows bug where line3.end is Free instead of Conflict."
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_freedom_analysis_with_zero_constraints() {
+    // This test verifies the fix for the bug where segments with no constraints
+    // incorrectly showed as Fixed (white) instead of Free (blue).
+    let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+  line2 = sketch2::line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])
+  line3 = sketch2::line(start = [var -6.66mm, var -3.03mm], end = [var 0.52mm, var -3.26mm])
+}
+"#;
+
+    let point_freedoms = run_with_freedom_analysis(kcl).await;
+
+    // With 0 constraints, ALL points should be Free (underconstrained)
+    // This test would have failed before the fix, where all points were incorrectly marked as Fixed
+    let expected = vec![
+        (ObjectId(2), Freedom::Free),
+        (ObjectId(3), Freedom::Free),
+        (ObjectId(5), Freedom::Free),
+        (ObjectId(6), Freedom::Free),
+        (ObjectId(8), Freedom::Free),
+        (ObjectId(9), Freedom::Free),
+    ];
+
+    assert_eq!(
+        point_freedoms, expected,
+        "With 0 constraints, all points should be Free (underconstrained), not Fixed"
+    );
+}
