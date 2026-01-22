@@ -58,6 +58,8 @@ const ARC_PROPERTY_START: &str = "start";
 const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
 
+const CONSTRUCTION_PARAM: &str = "construction";
+
 #[derive(Debug, Clone, Copy)]
 enum EditDeleteKind {
     Edit,
@@ -727,19 +729,31 @@ impl FrontendState {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
+        let mut arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_END_PARAM)),
+                arg: end_ast,
+            },
+        ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
         let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
             unlabeled: None,
-            arguments: vec![
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(LINE_START_PARAM)),
-                    arg: start_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(LINE_END_PARAM)),
-                    arg: end_ast,
-                },
-            ],
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -852,7 +866,7 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
-        let arguments = vec![
+        let mut arguments = vec![
             ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_START_PARAM)),
                 arg: start_ast,
@@ -866,6 +880,17 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        // Add construction kwarg if construction is Some(true)
+        if ctor.construction == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: "true".to_string(),
+                    digest: None,
+                }))),
+            });
+        }
         let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
@@ -1119,6 +1144,7 @@ impl FrontendState {
             AstMutateCommand::EditLine {
                 start: new_start_ast,
                 end: new_end_ast,
+                construction: ctor.construction,
             },
         )?;
         Ok(())
@@ -1168,6 +1194,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                construction: ctor.construction,
             },
         )?;
         Ok(())
@@ -2294,11 +2321,13 @@ enum AstMutateCommand {
     EditLine {
         start: ast::Expr,
         end: ast::Expr,
+        construction: Option<bool>,
     },
     EditArc {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        construction: Option<bool>,
     },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
@@ -2437,7 +2466,11 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditLine { start, end } => {
+        AstMutateCommand::EditLine {
+            start,
+            end,
+            construction,
+        } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != LINE_FN {
                     return TraversalReturn::new_continue(());
@@ -2451,10 +2484,51 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         labeled_arg.arg = end.clone();
                     }
                 }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        // Add or update construction=true
+                        if construction_exists {
+                            // Update existing construction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            // Add new construction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        // Remove construction kwarg if it exists
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
+                    }
+                }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditArc { start, end, center } => {
+        AstMutateCommand::EditArc {
+            start,
+            end,
+            center,
+            construction,
+        } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != ARC_FN {
                     return TraversalReturn::new_continue(());
@@ -2469,6 +2543,42 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle construction kwarg
+                if let Some(construction_value) = construction {
+                    let construction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
+                    if *construction_value {
+                        // Add or update construction=true
+                        if construction_exists {
+                            // Update existing construction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
+                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                        value: ast::LiteralValue::Bool(true),
+                                        raw: "true".to_string(),
+                                        digest: None,
+                                    })));
+                                }
+                            }
+                        } else {
+                            // Add new construction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
+                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                    value: ast::LiteralValue::Bool(true),
+                                    raw: "true".to_string(),
+                                    digest: None,
+                                }))),
+                            });
+                        }
+                    } else {
+                        // Remove construction kwarg if it exists
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
@@ -2876,6 +2986,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
@@ -2921,6 +3032,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
             id: line,
@@ -3012,6 +3124,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
         let (src_delta, scene_delta) = frontend
@@ -3070,6 +3183,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
             id: arc,
@@ -3135,6 +3249,7 @@ s = sketch(on = XY) {}
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
@@ -3213,6 +3328,7 @@ s = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            construction: None,
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta) = frontend
