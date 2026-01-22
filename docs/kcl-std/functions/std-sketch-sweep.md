@@ -1,11 +1,11 @@
 ---
 title: "sweep"
 subtitle: "Function in std::sketch"
-excerpt: "Extrude a sketch along a path."
+excerpt: "Create a 3D surface or solid by sweeping a sketch along a path."
 layout: manual
 ---
 
-Extrude a sketch along a path.
+Create a 3D surface or solid by sweeping a sketch along a path.
 
 ```kcl
 sweep(
@@ -16,11 +16,12 @@ sweep(
   relativeTo?: string,
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): [Solid; 1+]
 ```
 
-This, like extrude, is able to create a 3-dimensional solid from a
-2-dimensional sketch. However, unlike extrude, this creates a solid
+This, like extrude, is able to create a 3-dimensional surface or solid from a
+2-dimensional sketch. However, unlike extrude, this creates a body
 by using the extent of the sketch as its path. This is useful for
 creating more complex shapes that can't be created with a simple
 extrusion.
@@ -39,6 +40,7 @@ swept along the same path.
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 

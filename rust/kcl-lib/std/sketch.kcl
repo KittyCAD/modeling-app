@@ -1105,10 +1105,10 @@ export fn polygon(
   inscribed?: bool = true,
 ): Sketch {}
 
-/// Extrude a sketch along a path.
+/// Create a 3D surface or solid by sweeping a sketch along a path.
 ///
-/// This, like extrude, is able to create a 3-dimensional solid from a
-/// 2-dimensional sketch. However, unlike extrude, this creates a solid
+/// This, like extrude, is able to create a 3-dimensional surface or solid from a
+/// 2-dimensional sketch. However, unlike extrude, this creates a body
 /// by using the extent of the sketch as its path. This is useful for
 /// creating more complex shapes that can't be created with a simple
 /// extrusion.
@@ -1222,6 +1222,9 @@ export fn sweep(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.

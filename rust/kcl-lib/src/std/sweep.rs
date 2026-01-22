@@ -7,8 +7,8 @@ use serde::Serialize;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
-    errors::KclError,
-    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
+    errors::{KclError, KclErrorDetails},
+    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, ProfileClosed, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
@@ -23,7 +23,7 @@ pub enum SweepPath {
     Helix(Box<Helix>),
 }
 
-/// Extrude a sketch along a path.
+/// Create a 3D surface or solid by sweeping a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let path: SweepPath = args.get_kw_arg(
@@ -36,6 +36,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let value = inner_sweep(
         sketches,
@@ -45,6 +46,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         relative_to,
         tag_start,
         tag_end,
+        body_type,
         exec_state,
         args,
     )
@@ -61,9 +63,18 @@ async fn inner_sweep(
     relative_to: Option<String>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    body_type: Option<BodyType>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let body_type = body_type.unwrap_or_default();
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot solid sweep an open profile. Either close the profile, or use a surface sweep.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     let trajectory = match path {
         SweepPath::Sketch(sketch) => sketch.id.into(),
         SweepPath::Helix(helix) => helix.value.into(),
@@ -113,7 +124,7 @@ async fn inner_sweep(
                 &args,
                 None,
                 None,
-                BodyType::Solid, // TODO: Support surface sweep
+                body_type,
             )
             .await?,
         );
