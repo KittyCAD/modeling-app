@@ -24,12 +24,18 @@ use crate::{execution::Metadata, front::ObjectKind};
 /// is converted to a set to avoid quadratic runtime.
 pub(super) struct FreedomAnalysis {
     pub underconstrained: AHashSet<u32>,
+    /// Number of constraints that were analyzed. If 0, all variables should be considered Free.
+    pub num_constraints: usize,
 }
 
-impl From<kcl_ezpz::FreedomAnalysis> for FreedomAnalysis {
-    fn from(analysis: kcl_ezpz::FreedomAnalysis) -> Self {
+impl FreedomAnalysis {
+    pub(super) fn from_ezpz_analysis(analysis: kcl_ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
+        let underconstrained_vec: Vec<u32> = analysis.into_underconstrained();
+        let underconstrained = AHashSet::from_iter(underconstrained_vec.iter().copied());
+
         FreedomAnalysis {
-            underconstrained: AHashSet::from_iter(analysis.into_underconstrained()),
+            underconstrained,
+            num_constraints,
         }
     }
 }
@@ -294,7 +300,13 @@ fn substitute_sketch_var_in_unsolved_expr(
                 Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
-                if analysis.underconstrained.contains(&solver_var_id) {
+                // Special case: if there are 0 constraints, ALL variables are underconstrained (Free)
+                let is_underconstrained = if analysis.num_constraints == 0 {
+                    true
+                } else {
+                    analysis.underconstrained.contains(&solver_var_id)
+                };
+                if is_underconstrained {
                     Some(Freedom::Free)
                 } else {
                     Some(Freedom::Fixed)
@@ -486,6 +498,7 @@ pub(super) fn create_segment_scene_objects(
                 ctor,
                 freedom,
             } => {
+                let final_freedom = freedom.unwrap_or(Freedom::Free);
                 let point2d = TyF64::to_point2d(position).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", position),
@@ -502,7 +515,7 @@ pub(super) fn create_segment_scene_objects(
                                 position: ctor.position.clone(),
                             }),
                             owner: None,
-                            freedom: freedom.unwrap_or(Freedom::Free),
+                            freedom: final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -523,6 +536,8 @@ pub(super) fn create_segment_scene_objects(
                 end_freedom,
                 construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -537,7 +552,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: start_freedom.unwrap_or(Freedom::Free),
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -563,7 +578,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: end_freedom.unwrap_or(Freedom::Free),
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -607,6 +622,9 @@ pub(super) fn create_segment_scene_objects(
                 center_freedom,
                 construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
+                let center_final_freedom = center_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -621,7 +639,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: start_freedom.unwrap_or(Freedom::Free),
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -647,7 +665,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: end_freedom.unwrap_or(Freedom::Free),
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -673,7 +691,7 @@ pub(super) fn create_segment_scene_objects(
                             position: center_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: center_freedom.unwrap_or(Freedom::Free),
+                            freedom: center_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
