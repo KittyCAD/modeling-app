@@ -76,7 +76,7 @@ test.describe(
         await test.step(`Test ${operationName} operation`, async () => {
           // Click the boolean operation button in the toolbar
           if (operationName === 'split') {
-            await toolbar.selectSurface('split')
+            await toolbar.splitButton.click()
           } else {
             await toolbar.selectBoolean(operationName)
           }

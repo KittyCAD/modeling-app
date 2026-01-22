@@ -374,6 +374,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
+        id: 'split',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Boolean Split', groupId: 'modeling' },
+          }),
+        icon: 'split',
+        status: 'available',
+        title: 'Split',
+        description: 'Split a solid or surface into multiple surfaces.',
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
+          },
+        ],
+      },
+      {
         id: 'surface',
         array: [
           {
@@ -398,25 +416,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'split',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Boolean Split', groupId: 'modeling' },
-              }),
-            icon: 'split',
-            status: 'available',
-            title: 'Split',
-            description: 'Split a solid into multiple surfaces.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
-              },
-            ],
-          },
-          {
-            id: 'join-surfaces',
+            id: 'join',
             // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
             onClick: () => {},
             status: 'unavailable',
