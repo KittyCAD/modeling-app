@@ -352,9 +352,10 @@ impl ArtifactGraph {
             Artifact::CompositeSolid(composite_solid) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     composite_solid.sub_type,
-                    code_ref_display(&composite_solid.code_ref)
+                    code_ref_display(&composite_solid.code_ref),
+                    composite_solid.consumed
                 )?;
                 node_path_display(output, prefix, None, &composite_solid.code_ref)?;
             }
@@ -369,8 +370,9 @@ impl ArtifactGraph {
             Artifact::Path(path) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}\"]",
-                    code_ref_display(&path.code_ref)
+                    "{prefix}{id}[\"Path<br>{:?}<br>Consumed: {:?}\"]",
+                    code_ref_display(&path.code_ref),
+                    path.consumed
                 )?;
                 node_path_display(output, prefix, None, &path.code_ref)?;
             }
@@ -420,9 +422,10 @@ impl ArtifactGraph {
             Artifact::Sweep(sweep) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Sweep {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"Sweep {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     sweep.sub_type,
-                    code_ref_display(&sweep.code_ref)
+                    code_ref_display(&sweep.code_ref),
+                    sweep.consumed,
                 )?;
                 node_path_display(output, prefix, None, &sweep.code_ref)?;
             }
@@ -452,8 +455,9 @@ impl ArtifactGraph {
             Artifact::Helix(helix) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Helix<br>{:?}\"]",
-                    code_ref_display(&helix.code_ref)
+                    "{prefix}{id}[\"Helix<br>{:?}: Consumed: {:?}\"]",
+                    code_ref_display(&helix.code_ref),
+                    helix.consumed
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
