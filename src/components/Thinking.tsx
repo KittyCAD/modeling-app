@@ -393,7 +393,9 @@ const ImageFileItem = (props: {
     // Fallback to file icon if image fails to load
     return (
       <button
-        onClick={() => props.url && props.onDownload(props.url, props.file.name)}
+        onClick={() =>
+          props.url && props.onDownload(props.url, props.file.name)
+        }
         className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
         title={`Click to download ${props.file.name}`}
       >
@@ -496,7 +498,10 @@ export const FilesSnapshot = (props: {
               >
                 <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
                 <span className="text-sm truncate">{file.name}</span>
-                <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+                <CustomIcon
+                  name="download"
+                  className="w-4 h-4 ml-auto flex-shrink-0"
+                />
               </button>
             )
           })}
