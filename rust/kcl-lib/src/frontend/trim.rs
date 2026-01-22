@@ -2625,11 +2625,13 @@ pub fn trim_strategy(
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
                         start: new_point,
                         end: line_ctor.end.clone(),
+                        construction: line_ctor.construction,
                     })
                 } else {
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
                         start: line_ctor.start.clone(),
                         end: new_point,
+                        construction: line_ctor.construction,
                     })
                 }
             }
@@ -2651,12 +2653,14 @@ pub fn trim_strategy(
                         start: new_point,
                         end: arc_ctor.end.clone(),
                         center: arc_ctor.center.clone(),
+                        construction: arc_ctor.construction,
                     })
                 } else {
                     SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
                         start: arc_ctor.start.clone(),
                         end: new_point,
                         center: arc_ctor.center.clone(),
+                        construction: arc_ctor.construction,
                     })
                 }
             }
@@ -3782,14 +3786,16 @@ pub async fn execute_trim_operations_simple(
 
                 // Step 2: Create new segment (right side) first to get its IDs
                 let new_segment_ctor = match &original_ctor {
-                    SegmentCtor::Line(_) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
+                        construction: line_ctor.construction,
                     }),
                     SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
                         center: arc_ctor.center.clone(),
+                        construction: arc_ctor.construction,
                     }),
                     _ => {
                         return Err("Unsupported segment type for new segment".to_string());
@@ -3845,11 +3851,13 @@ pub async fn execute_trim_operations_simple(
                     SegmentCtor::Line(line_ctor) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
                         start: line_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
+                        construction: line_ctor.construction,
                     }),
                     SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
                         start: arc_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
                         center: arc_ctor.center.clone(),
+                        construction: arc_ctor.construction,
                     }),
                     _ => {
                         return Err("Unsupported segment type for split".to_string());
