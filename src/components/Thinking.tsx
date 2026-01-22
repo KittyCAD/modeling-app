@@ -1,6 +1,6 @@
 import ms from 'ms'
 
-import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { MlCopilotServerMessage, MlCopilotFile } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
@@ -363,6 +363,109 @@ export const ThoughtContainer = (props: {
   )
 }
 
+/**
+ * Convert a byte array to a data URL for displaying images/files
+ */
+const bytesToDataUrl = (data: number[], mimetype: string): string => {
+  const uint8Array = new Uint8Array(data)
+  const blob = new Blob([uint8Array], { type: mimetype })
+  return URL.createObjectURL(blob)
+}
+
+/**
+ * Check if a mimetype is an image type
+ */
+const isImageMimetype = (mimetype: string): boolean => {
+  return mimetype.startsWith('image/')
+}
+
+export const FilesSnapshot = (props: {
+  files: MlCopilotFile[]
+}) => {
+  const [objectUrls, setObjectUrls] = useState<string[]>([])
+
+  useEffect(() => {
+    // Create object URLs for all files
+    const urls = props.files.map((file) =>
+      bytesToDataUrl(file.data, file.mimetype)
+    )
+    setObjectUrls(urls)
+
+    // Cleanup object URLs when component unmounts
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [props.files])
+
+  const imageFiles = props.files.filter((file) =>
+    isImageMimetype(file.mimetype)
+  )
+  const otherFiles = props.files.filter(
+    (file) => !isImageMimetype(file.mimetype)
+  )
+
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
+          {props.files.length === 1
+            ? 'Snapshot'
+            : `Snapshots (${props.files.length})`}
+        </ThoughtHeader>
+      }
+    >
+      {/* Using a custom content wrapper without height restriction for images */}
+      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3">
+        <div className="flex flex-col gap-3">
+          {imageFiles.map((file, index) => {
+            const fileIndex = props.files.indexOf(file)
+            const url = objectUrls[fileIndex]
+            return (
+              <div key={index} className="flex flex-col gap-1">
+                <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40">
+                  {file.name}
+                </span>
+                {url && (
+                  <img
+                    src={url}
+                    alt={file.name}
+                    className="max-w-full h-auto rounded border border-chalkboard-30 dark:border-chalkboard-80"
+                  />
+                )}
+              </div>
+            )
+          })}
+          {otherFiles.map((file, index) => {
+            const fileIndex = props.files.indexOf(file)
+            const url = objectUrls[fileIndex]
+            return (
+              <div
+                key={`other-${index}`}
+                className="flex flex-row gap-2 items-center"
+              >
+                <CustomIcon name="file" className="w-4 h-4" />
+                <span className="text-xs">{file.name}</span>
+                <span className="text-xs text-chalkboard-60 dark:text-chalkboard-50">
+                  ({file.mimetype})
+                </span>
+                {url && (
+                  <a
+                    href={url}
+                    download={file.name}
+                    className="text-xs text-energy-10 hover:underline"
+                  >
+                    Download
+                  </a>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </ThoughtContainer>
+  )
+}
+
 interface Range {
   start: number
   end?: number
@@ -507,6 +610,10 @@ const fromDataToComponent = (
     }
   }
 
+  if ('files' in thought) {
+    return <FilesSnapshot key={options.key} files={thought.files.files} />
+  }
+
   return null
 }
 
@@ -526,7 +633,7 @@ export const Thinking = (props: {
 
   const reasoningThoughts =
     props.thoughts?.filter((x: MlCopilotServerMessage) => {
-      return 'reasoning' in x
+      return 'reasoning' in x || 'files' in x
     }) ?? []
 
   useEffect(() => {
@@ -568,13 +675,14 @@ export const Thinking = (props: {
   }
 
   const lastTextualThought = reasoningThoughts.findLast(
-    (thought) => thought.reasoning.type === 'text'
+    (thought) => 'reasoning' in thought && thought.reasoning.type === 'text'
   )
 
   const componentLastGenericThought = (
     <Generic
       content={
         lastTextualThought !== undefined &&
+        'reasoning' in lastTextualThought &&
         lastTextualThought.reasoning.type === 'text'
           ? lastTextualThought.reasoning.content
           : ''
