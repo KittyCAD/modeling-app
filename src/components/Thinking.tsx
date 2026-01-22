@@ -379,6 +379,52 @@ const isImageMimetype = (mimetype: string): boolean => {
   return mimetype.startsWith('image/')
 }
 
+/**
+ * Component for displaying an image file with error handling
+ */
+const ImageFileItem = (props: {
+  file: MlCopilotFile
+  url: string | undefined
+  onDownload: (url: string, filename: string) => void
+}) => {
+  const [imageError, setImageError] = useState(false)
+
+  if (!props.url || imageError) {
+    // Fallback to file icon if image fails to load
+    return (
+      <button
+        onClick={() => props.url && props.onDownload(props.url, props.file.name)}
+        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+        title={`Click to download ${props.file.name}`}
+      >
+        <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+        <span className="text-sm truncate">{props.file.name}</span>
+        <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40">
+        {props.file.name}
+      </span>
+      <button
+        onClick={() => props.onDownload(props.url!, props.file.name)}
+        className="cursor-pointer hover:opacity-80 transition-opacity text-left"
+        title={`Click to download ${props.file.name}`}
+      >
+        <img
+          src={props.url}
+          alt={props.file.name}
+          className="max-w-full h-auto rounded border border-chalkboard-30 dark:border-chalkboard-80"
+          onError={() => setImageError(true)}
+        />
+      </button>
+    </div>
+  )
+}
+
 export const FilesSnapshot = (props: {
   files: MlCopilotFile[]
 }) => {
@@ -397,6 +443,15 @@ export const FilesSnapshot = (props: {
     }
   }, [props.files])
 
+  const handleDownload = (url: string, filename: string) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const imageFiles = props.files.filter((file) =>
     isImageMimetype(file.mimetype)
   )
@@ -409,8 +464,8 @@ export const FilesSnapshot = (props: {
       heading={
         <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
           {props.files.length === 1
-            ? 'Snapshot'
-            : `Snapshots (${props.files.length})`}
+            ? 'Zookeeper File'
+            : `Zookeeper Files (${props.files.length})`}
         </ThoughtHeader>
       }
     >
@@ -421,43 +476,28 @@ export const FilesSnapshot = (props: {
             const fileIndex = props.files.indexOf(file)
             const url = objectUrls[fileIndex]
             return (
-              <div key={index} className="flex flex-col gap-1">
-                <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40">
-                  {file.name}
-                </span>
-                {url && (
-                  <img
-                    src={url}
-                    alt={file.name}
-                    className="max-w-full h-auto rounded border border-chalkboard-30 dark:border-chalkboard-80"
-                  />
-                )}
-              </div>
+              <ImageFileItem
+                key={index}
+                file={file}
+                url={url}
+                onDownload={handleDownload}
+              />
             )
           })}
           {otherFiles.map((file, index) => {
             const fileIndex = props.files.indexOf(file)
             const url = objectUrls[fileIndex]
             return (
-              <div
+              <button
                 key={`other-${index}`}
-                className="flex flex-row gap-2 items-center"
+                onClick={() => url && handleDownload(url, file.name)}
+                className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+                title={`Click to download ${file.name}`}
               >
-                <CustomIcon name="file" className="w-4 h-4" />
-                <span className="text-xs">{file.name}</span>
-                <span className="text-xs text-chalkboard-60 dark:text-chalkboard-50">
-                  ({file.mimetype})
-                </span>
-                {url && (
-                  <a
-                    href={url}
-                    download={file.name}
-                    className="text-xs text-energy-10 hover:underline"
-                  >
-                    Download
-                  </a>
-                )}
-              </div>
+                <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm truncate">{file.name}</span>
+                <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+              </button>
             )
           })}
         </div>
