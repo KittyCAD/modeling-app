@@ -1213,9 +1213,10 @@ impl Node<SketchBlock> {
             // Track that we're executing a sketch block.
             #[cfg(feature = "artifact-graph")]
             let initial_sketch_block_state = {
-                let mut state = SketchBlockState::default();
-                state.sketch_id = Some(sketch_id);
-                state
+                SketchBlockState {
+                    sketch_id: Some(sketch_id),
+                    ..Default::default()
+                }
             };
             #[cfg(not(feature = "artifact-graph"))]
             let initial_sketch_block_state = SketchBlockState::default();
@@ -2474,8 +2475,10 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::execution::{Artifact, CodeRef, SketchConstraintArtifact};
-                                use crate::front::Distance;
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchConstraintArtifact},
+                                    front::Distance,
+                                };
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
