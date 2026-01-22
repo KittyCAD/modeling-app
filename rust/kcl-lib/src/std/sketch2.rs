@@ -23,6 +23,11 @@ pub(crate) async fn create_segments_in_engine(
 ) -> Result<(), KclError> {
     let mut outer_sketch: Option<Sketch> = None;
     for segment in segments {
+        if segment.is_construction() {
+            // Don't send construction segments to the engine.
+            continue;
+        }
+
         // The start point.
         let start = match &segment.kind {
             SegmentKind::Point { .. } => {

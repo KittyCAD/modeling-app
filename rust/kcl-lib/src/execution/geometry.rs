@@ -1882,6 +1882,16 @@ pub struct Segment {
     pub meta: Vec<Metadata>,
 }
 
+impl Segment {
+    pub fn is_construction(&self) -> bool {
+        match &self.kind {
+            SegmentKind::Point { .. } => true,
+            SegmentKind::Line { construction, .. } => *construction,
+            SegmentKind::Arc { construction, .. } => *construction,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
