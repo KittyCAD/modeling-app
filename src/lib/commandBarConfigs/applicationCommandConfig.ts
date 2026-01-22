@@ -158,7 +158,7 @@ export function createApplicationCommands({
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
-          if (!kclSample || kclSample.files.length >= 1) {
+          if (!kclSample || kclSample.files.length === 0) {
             toast.error("Couldn't find KCL sample")
           } else {
             onSubmitKCLSampleCreation({
@@ -279,7 +279,7 @@ export function createApplicationCommands({
         },
       },
       newProjectName: {
-        inputType: 'text',
+        inputType: 'string',
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
@@ -352,7 +352,7 @@ export function createApplicationCommands({
     },
     args: {
       source: {
-        inputType: 'text',
+        inputType: 'string',
         required: true,
         skip: false,
         defaultValue: 'local',
