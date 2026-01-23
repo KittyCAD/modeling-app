@@ -162,6 +162,86 @@ impl ImportedGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
+pub enum HideableGeometry {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    SketchSet(Vec<Sketch>),
+    HelixSet(Vec<Helix>),
+}
+
+impl From<HideableGeometry> for crate::execution::KclValue {
+    fn from(value: HideableGeometry) -> Self {
+        match value {
+            HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::SketchSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::sketch(),
+                    }
+                }
+            }
+            HideableGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::sketch(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HideableGeometry {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            HideableGeometry::ImportedGeometry(s) => {
+                let id = s.id(ctx).await?;
+
+                Ok(vec![id])
+            }
+            HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
+        }
+    }
+}
+
+/// Data for a solid, sketch, or an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),

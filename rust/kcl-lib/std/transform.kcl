@@ -676,5 +676,5 @@ export fn scale(
 @(impl = std_rust, feature_tree = true)
 export fn hide(
   /// The solid, sketch, or set of solids or sketches to hide.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+]| ImportedGeometry,
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+]| ImportedGeometry {}

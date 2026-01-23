@@ -12,7 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
+        ExecState, HideableGeometry, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
@@ -466,6 +466,7 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -476,11 +477,11 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 async fn hidden_inner(
-    objects: SolidOrSketchOrImportedGeometry,
+    objects: HideableGeometry,
     hidden: bool,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+) -> Result<HideableGeometry, KclError> {
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
