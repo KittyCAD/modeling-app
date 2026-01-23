@@ -677,4 +677,4 @@ export fn scale(
 export fn hide(
   /// The solid, sketch, or set of solids or sketches to hide.
   @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
-): [Solid; 1+] | [Sketch; 1+] |  ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
