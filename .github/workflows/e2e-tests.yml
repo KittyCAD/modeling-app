@@ -20,10 +20,8 @@ permissions:
   actions: read
 
 jobs:
-  prepare-wasm:
-    # TODO: Most of these steps are identical to those in 'build-wasm.yml', so
-    # we should consider calling that reusable workflow instead.
-    runs-on: namespace-profile-ubuntu-8-cores
+  track-setup:
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
         with:
@@ -59,80 +57,11 @@ jobs:
           CI_SUITE: e2e:desktop
           CI_STEP: setup
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v3
-        continue-on-error: true # this step fails when invoked as 'workflow_call'
-        with:
-          filters: |
-            rust:
-              - 'rust/**'
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Download Wasm cache
-        id: download-wasm
-        if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v12
-        continue-on-error: true
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-and-store-wasm.yml
-          branch: main
-          path: rust/kcl-wasm-lib/pkg
-
-      - name: Build Wasm condition
-        id: wasm
-        run: |
-          set -euox pipefail
-          # Build Wasm if there are Rust changes or downloading from the cache failed
-          if [[ ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install Rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false # configured below
-          rustflags: '' # use .cargo/config.toml
-
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        with:
-          tool: wasm-pack
-
-      - name: Use Rust cache
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "./rust"
-
-      - name: Build Wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: npm run build:wasm
-
-      - uses: actions/upload-artifact@v6
-        with:
-          name: prepared-wasm
-          path: |
-            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+  prepare-wasm:
+    needs: [track-setup]
+    uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   snapshots:
     needs: [prepare-wasm]
