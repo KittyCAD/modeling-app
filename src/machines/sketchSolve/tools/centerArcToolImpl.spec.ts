@@ -125,6 +125,7 @@ function createArcApiObject({
           },
         },
         ctor_applicable: false,
+        construction: false,
       },
     },
     label: '',

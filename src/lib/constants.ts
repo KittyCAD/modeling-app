@@ -53,9 +53,11 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  SPLIT: 'split',
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
