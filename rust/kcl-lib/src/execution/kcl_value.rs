@@ -286,6 +286,21 @@ impl From<Vec<Solid>> for KclValue {
     }
 }
 
+impl From<Vec<Helix>> for KclValue {
+    fn from(mut eg: Vec<Helix>) -> Self {
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Helix { value: Box::new(s) }
+        } else {
+            KclValue::HomArray {
+                value: eg.into_iter().map(|s| KclValue::Helix { value: Box::new(s) }).collect(),
+                ty: RuntimeType::Primitive(PrimitiveType::Helix),
+            }
+        }
+    }
+}
+
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
@@ -795,6 +810,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_helix(&self) -> Option<&Helix> {
+        match self {
+            KclValue::Helix { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn as_sketch(&self) -> Option<&Sketch> {
         match self {
             KclValue::Sketch { value, .. } => Some(value),
@@ -929,6 +951,7 @@ impl From<Geometry> for KclValue {
         match value {
             Geometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
             Geometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            Geometry::Helix(x) => Self::Helix { value: Box::new(x) },
         }
     }
 }
@@ -938,6 +961,7 @@ impl From<GeometryWithImportedGeometry> for KclValue {
         match value {
             GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
             GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            GeometryWithImportedGeometry::Helix(x) => Self::Helix { value: Box::new(x) },
             GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }

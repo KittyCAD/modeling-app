@@ -44,6 +44,7 @@ pub struct GdtAnnotation {
 pub enum Geometry {
     Sketch(Sketch),
     Solid(Solid),
+    Helix(Helix),
 }
 
 impl Geometry {
@@ -51,6 +52,7 @@ impl Geometry {
         match self {
             Geometry::Sketch(s) => s.id,
             Geometry::Solid(e) => e.id,
+            Geometry::Helix(e) => e.artifact_id.into(),
         }
     }
 
@@ -61,6 +63,7 @@ impl Geometry {
         match self {
             Geometry::Sketch(s) => s.original_id,
             Geometry::Solid(e) => e.sketch.original_id,
+            Geometry::Helix(e) => e.artifact_id.into(),
         }
     }
 }
@@ -73,6 +76,7 @@ impl Geometry {
 pub enum GeometryWithImportedGeometry {
     Sketch(Sketch),
     Solid(Solid),
+    Helix(Helix),
     ImportedGeometry(Box<ImportedGeometry>),
 }
 
@@ -81,6 +85,7 @@ impl GeometryWithImportedGeometry {
         match self {
             GeometryWithImportedGeometry::Sketch(s) => Ok(s.id),
             GeometryWithImportedGeometry::Solid(e) => Ok(e.id),
+            GeometryWithImportedGeometry::Helix(e) => Ok(e.artifact_id.into()),
             GeometryWithImportedGeometry::ImportedGeometry(i) => {
                 let id = i.id(ctx).await?;
                 Ok(id)
@@ -97,6 +102,7 @@ impl GeometryWithImportedGeometry {
 pub enum Geometries {
     Sketches(Vec<Sketch>),
     Solids(Vec<Solid>),
+    Helices(Vec<Helix>),
 }
 
 impl From<Geometry> for Geometries {
@@ -104,6 +110,7 @@ impl From<Geometry> for Geometries {
         match value {
             Geometry::Sketch(x) => Self::Sketches(vec![x]),
             Geometry::Solid(x) => Self::Solids(vec![x]),
+            Geometry::Helix(x) => Self::Helices(vec![x]),
         }
     }
 }
@@ -162,17 +169,18 @@ impl ImportedGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
-pub enum SolidOrSketchOrImportedGeometry {
+pub enum TransformableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
+    HelixSet(Vec<Helix>),
 }
 
-impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
-    fn from(value: SolidOrSketchOrImportedGeometry) -> Self {
+impl From<TransformableGeometry> for crate::execution::KclValue {
+    fn from(value: TransformableGeometry) -> Self {
         match value {
-            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
-            SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
+            TransformableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            TransformableGeometry::SolidSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
                 {
@@ -187,7 +195,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
-            SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
+            TransformableGeometry::SketchSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
                 {
@@ -202,20 +210,36 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            TransformableGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helix(),
+                    }
+                }
+            }
         }
     }
 }
 
-impl SolidOrSketchOrImportedGeometry {
+impl TransformableGeometry {
     pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
         match self {
-            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => {
+            TransformableGeometry::ImportedGeometry(s) => {
                 let id = s.id(ctx).await?;
 
                 Ok(vec![id])
             }
-            SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
-            SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            TransformableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            TransformableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            TransformableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.artifact_id.into()).collect()),
         }
     }
 }

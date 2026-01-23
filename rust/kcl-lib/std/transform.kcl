@@ -259,7 +259,7 @@ export fn mirror2d(
 @(impl = std_rust, feature_tree = true)
 export fn translate(
   /// The solid, sketch, or set of solids or sketches to move.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The amount to move the solid or sketch along the x axis.
   @(includeInSnippet = true)
   x?: number(Length) = 0,
@@ -273,7 +273,7 @@ export fn translate(
   global?: bool = false,  
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
 /// Rotate a solid or a sketch.
 ///
@@ -499,7 +499,7 @@ export fn translate(
 @(impl = std_rust, feature_tree = true)
 export fn rotate(
   /// The solid, sketch, or set of solids or sketches to rotate.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The roll angle. Must be between -360deg and 360deg.
   @(includeInSnippet = true)
   roll?: number(Angle),
@@ -515,7 +515,7 @@ export fn rotate(
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,  
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
 /// Scale a solid or a sketch.
 ///
@@ -622,7 +622,7 @@ export fn rotate(
 @(impl = std_rust, feature_tree = true)
 export fn scale(
   /// The solid, sketch, or set of solids or sketches to scale.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The scale factor for the x axis.
   @(includeInSnippet = true)
   x?: number(Count) = 1,
@@ -638,7 +638,7 @@ export fn scale(
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
 /// Hide solids, sketches, or imported objects.
 ///

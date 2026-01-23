@@ -1016,6 +1016,15 @@ async fn pattern_circular(
             }
             Geometries::Solids(geometries)
         }
+        Geometry::Helix(helix) => {
+            let mut geometries = vec![helix.clone()];
+            for id in entity_ids.iter().copied() {
+                let mut new_helix = helix.clone();
+                new_helix.value = id;
+                geometries.push(new_helix);
+            }
+            Geometries::Helices(geometries)
+        }
     };
 
     Ok(geometries)

@@ -78,6 +78,12 @@ async fn inner_clone(
             new_solid.artifact_id = new_id.into();
             GeometryWithImportedGeometry::Solid(new_solid)
         }
+        GeometryWithImportedGeometry::Helix(helix) => {
+            let mut new_helix = helix.clone();
+            new_helix.value = new_id;
+            new_helix.artifact_id = new_id.into();
+            GeometryWithImportedGeometry::Helix(new_helix)
+        }
     };
 
     if args.ctx.no_engine_commands().await {
@@ -115,6 +121,7 @@ async fn fix_tags_and_references(
     // Fix the path references in the new geometry.
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
+        GeometryWithImportedGeometry::Helix(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
             sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;

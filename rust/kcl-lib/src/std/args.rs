@@ -911,25 +911,30 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry {
+impl<'a> FromKclValue<'a> for crate::execution::TransformableGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
             KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
                 let mut sketches = vec![];
+                let mut helices = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
                         KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
                         _ => return None,
                     }
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
-                } else {
+                } else if !sketches.is_empty() {
                     Some(Self::SketchSet(sketches))
+                } else {
+                    Some(Self::HelixSet(helices))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
@@ -1191,12 +1196,9 @@ impl<'a> FromKclValue<'a> for Sketch {
     }
 }
 
-impl<'a> FromKclValue<'a> for Helix {
+impl<'a> FromKclValue<'a> for crate::execution::Helix {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Helix { value } = arg else {
-            return None;
-        };
-        Some(value.as_ref().to_owned())
+        arg.as_helix().cloned()
     }
 }
 

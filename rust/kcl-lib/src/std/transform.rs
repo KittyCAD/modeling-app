@@ -12,7 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, TransformableGeometry,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
@@ -35,6 +35,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -76,17 +77,17 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }
 
 async fn inner_scale(
-    objects: SolidOrSketchOrImportedGeometry,
+    objects: TransformableGeometry,
     x: Option<f64>,
     y: Option<f64>,
     z: Option<f64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+) -> Result<TransformableGeometry, KclError> {
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+    if let TransformableGeometry::SolidSet(solids) = &objects {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
             .await?;
@@ -138,6 +139,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -164,7 +166,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_translate(
-    objects: SolidOrSketchOrImportedGeometry,
+    objects: TransformableGeometry,
     xyz: Option<[TyF64; 3]>,
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -172,7 +174,7 @@ async fn inner_translate(
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+) -> Result<TransformableGeometry, KclError> {
     let (x, y, z) = match (xyz, x, y, z) {
         (None, None, None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -195,7 +197,7 @@ async fn inner_translate(
     };
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+    if let TransformableGeometry::SolidSet(solids) = &objects {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
             .await?;
@@ -243,6 +245,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -364,7 +367,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(
-    objects: SolidOrSketchOrImportedGeometry,
+    objects: TransformableGeometry,
     roll: Option<f64>,
     pitch: Option<f64>,
     yaw: Option<f64>,
@@ -374,10 +377,10 @@ async fn inner_rotate(
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+) -> Result<TransformableGeometry, KclError> {
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+    if let TransformableGeometry::SolidSet(solids) = &objects {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
             .await?;
@@ -466,6 +469,7 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -476,11 +480,11 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 async fn hidden_inner(
-    objects: SolidOrSketchOrImportedGeometry,
+    objects: TransformableGeometry,
     hidden: bool,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+) -> Result<TransformableGeometry, KclError> {
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
