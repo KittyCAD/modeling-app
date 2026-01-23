@@ -4,6 +4,7 @@ use std::{
     ops::ControlFlow,
 };
 
+use indexmap::IndexMap;
 use kcl_error::SourceRange;
 
 use crate::{
@@ -388,15 +389,132 @@ impl SketchApi for FrontendState {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
         let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
-        for segment in segments {
+
+        // segment_ids_edited still has to be the original segments (not final_edits), otherwise the owner segments
+        // are passed to `execute_after_edit` which changes the result of the solver, causing tests to fail.
+        for segment in &segments {
             segment_ids_edited.insert(segment.id);
+        }
+
+        // Preprocess segments into a final_edits vector to handle if segments contains:
+        // - edit start point of line1 (as SegmentCtor::Point)
+        // - edit end point of line1 (as SegmentCtor::Point)
+        //
+        // This would result in only the end point to be updated because edit_point() clones line1's ctor from
+        // scene_graph, but this is still the old ctor because self.scene_graph is only updated after the loop finishes.
+        //
+        // To fix this, and other cases when the same point is edited from multiple elements in the segments Vec
+        // we apply all edits in order to final_edits in a way that owned point edits result in line edits,
+        // so the above example would result in a single line1 edit:
+        // - the first start point edit creates a new line edit entry in final_edits
+        // - the second end point edit finds this line edit and mutates the end position only.
+        //
+        // The result is that segments are flattened into a single IndexMap of edits by their owners, later edits overriding earlier ones.
+        let mut final_edits: IndexMap<ObjectId, SegmentCtor> = IndexMap::new();
+
+        for segment in segments {
+            let segment_id = segment.id;
             match segment.ctor {
-                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
-                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
-                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Point(ctor) => {
+                    // Find the owner, if any (point -> line / arc)
+                    if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
+                        && let ObjectKind::Segment { segment } = &segment_object.kind
+                        && let Segment::Point(point) = segment
+                        && let Some(owner_id) = point.owner
+                        && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
+                        && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
+                    {
+                        match owner_segment {
+                            Segment::Line(line) if line.start == segment_id || line.end == segment_id => {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Line(line_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected line ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
+                                    // Line owner is already in final_edits -> apply this point edit
+                                    if line.start == segment_id {
+                                        line_ctor.start = ctor.position;
+                                    } else {
+                                        line_ctor.end = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
+                                    // Line owner is not in final_edits yet -> create it
+                                    let mut line_ctor = line_ctor.clone();
+                                    if line.start == segment_id {
+                                        line_ctor.start = ctor.position;
+                                    } else {
+                                        line_ctor.end = ctor.position;
+                                    }
+                                    final_edits.insert(owner_id, SegmentCtor::Line(line_ctor));
+                                } else {
+                                    // This should never run..
+                                    return Err(Error {
+                                        msg: format!("Internal: Line does not have line ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
+                            Segment::Arc(arc)
+                                if arc.start == segment_id || arc.end == segment_id || arc.center == segment_id =>
+                            {
+                                if let Some(existing) = final_edits.get_mut(&owner_id) {
+                                    let SegmentCtor::Arc(arc_ctor) = existing else {
+                                        return Err(Error {
+                                            msg: format!("Internal: Expected arc ctor for owner: {owner_object:?}"),
+                                        });
+                                    };
+                                    if arc.start == segment_id {
+                                        arc_ctor.start = ctor.position;
+                                    } else if arc.end == segment_id {
+                                        arc_ctor.end = ctor.position;
+                                    } else {
+                                        arc_ctor.center = ctor.position;
+                                    }
+                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
+                                    let mut arc_ctor = arc_ctor.clone();
+                                    if arc.start == segment_id {
+                                        arc_ctor.start = ctor.position;
+                                    } else if arc.end == segment_id {
+                                        arc_ctor.end = ctor.position;
+                                    } else {
+                                        arc_ctor.center = ctor.position;
+                                    }
+                                    final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
+                                } else {
+                                    return Err(Error {
+                                        msg: format!("Internal: Arc does not have arc ctor: {owner_object:?}"),
+                                    });
+                                }
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    // No owner, it's an individual point
+                    final_edits.insert(segment_id, SegmentCtor::Point(ctor));
+                }
+                SegmentCtor::Line(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::Line(ctor));
+                }
+                SegmentCtor::Arc(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::Arc(ctor));
+                }
+                other_ctor => {
+                    final_edits.insert(segment_id, other_ctor);
+                }
+            }
+        }
+
+        for (segment_id, ctor) in final_edits {
+            match ctor {
+                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
+                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
+                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment_id, ctor)?,
                 _ => {
                     return Err(Error {
-                        msg: format!("segment ctor not implemented yet: {segment:?}"),
+                        msg: format!("segment ctor not implemented yet: {ctor:?}"),
                     });
                 }
             }
@@ -418,15 +536,36 @@ impl SketchApi for FrontendState {
         // Deduplicate IDs.
         let mut constraint_ids_set = constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
         let segment_ids_set = segment_ids.into_iter().collect::<AhashIndexSet<_>>();
+
+        // If a point is owned by a Line/Arc, we want to delete the owner, which will
+        // also delete the point, as well as other points that are owned by the owner.
+        let mut delete_ids = AhashIndexSet::default();
+
+        for segment_id in segment_ids_set.iter().copied() {
+            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
+                && let ObjectKind::Segment { segment } = &segment_object.kind
+                && let Segment::Point(point) = segment
+                && let Some(owner_id) = point.owner
+                && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
+                && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
+                && matches!(owner_segment, Segment::Line(_) | Segment::Arc(_))
+            {
+                // segment is owned -> delete the owner
+                delete_ids.insert(owner_id);
+            } else {
+                // segment is not owned by anything -> can be deleted
+                delete_ids.insert(segment_id);
+            }
+        }
         // Find constraints that reference the segments to be deleted, and add
         // those to the set to be deleted.
-        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+        self.add_dependent_constraints_to_delete(sketch, &delete_ids, &mut constraint_ids_set)?;
 
         let mut new_ast = self.program.ast.clone();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
-        for segment_id in segment_ids_set {
+        for segment_id in delete_ids {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
         self.execute_after_edit(
@@ -2009,12 +2148,14 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.segments.iter().any(|pt_id| {
-                    if segment_ids_set.contains(pt_id) {
+                Constraint::Coincident(c) => c.segments.iter().any(|seg_id| {
+                    // Check if the segment itself is being deleted
+                    if segment_ids_set.contains(seg_id) {
                         return true;
                     }
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
+                    // For points, also check if the owner line/arc is being deleted
+                    let seg_object = self.scene_graph.objects.get(seg_id.0);
+                    if let Some(obj) = seg_object
                         && let ObjectKind::Segment { segment } = &obj.kind
                         && let Segment::Point(pt) = segment
                         && let Some(owner_line_id) = pt.owner
@@ -3904,6 +4045,55 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_line_line_coincident_constraint() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  sketch2::coincident([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let coincident_id = *sketch.constraints.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line2 = sketch2::line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;
