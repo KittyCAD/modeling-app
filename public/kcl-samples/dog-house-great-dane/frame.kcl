@@ -1,33 +1,36 @@
 // Dog House (Great Dane) - Base Frame
 // Base plate layout for the dog house frame.
 
+// Define units
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
+// Import and define parameters
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
 
 // Base plates
+// The four 2x4s below create a rectangular base frame sitting at floorZ.
 leftBottomPlate = twoByFourY(
   minX = -frameWidth / 2,
   minY = 0,
   minZ = floorZ,
   lengthY = frameLength,
-)
+) // Left longitudinal plate (runs along +Y)
 rightBottomPlate = twoByFourY(
   minX = frameWidth / 2 - studDepth,
   minY = 0,
   minZ = floorZ,
   lengthY = frameLength,
-)
+) // Right longitudinal plate
 frontBottomPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = 0,
   minZ = floorZ,
-  lengthX = frameWidth - 2 * studDepth,
-)
+  lengthX = frameWidth - (2 * studDepth),
+) // Front cross plate tying the sides together
 backBottomPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = frameLength - studDepth,
   minZ = floorZ,
-  lengthX = frameWidth - 2 * studDepth,
-)
+  lengthX = frameWidth - (2 * studDepth),
+) // Rear cross plate

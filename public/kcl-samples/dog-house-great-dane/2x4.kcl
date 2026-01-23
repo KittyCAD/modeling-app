@@ -1,20 +1,22 @@
 // Dog House (Great Dane) - 2x4 Helpers
 // Utility helpers for extruding 2x4 lumber profiles.
 
+// Define units
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
+// Import and define parameters
 import * from "dimensions.kcl"
-
 woodColor = "#a0825c"
 woodRoughness = 80
 woodMetalness = 0
 
 fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
   return startSketchOn(XY)
-    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY])
-    |> extrude(length = sizeZ)
-    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
-    |> translate(z = minZ)
+    // Start a 2D sketch on the global XY plane
+    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY]) // Draw the 2x4 cross‑section at the given corner
+    |> extrude(length = sizeZ) // Create a 3D prism by extruding the rectangle along +Z
+    |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness) // Apply a wood‑like material
+    |> translate(z = minZ) // Position the prism so its bottom sits at minZ
 }
 
 // 2x4 along X (length in X), depth in Y, thickness in Z.
@@ -26,7 +28,7 @@ export fn twoByFourX(minX, minY, minZ, lengthX) {
     sizeX = lengthX,
     sizeY = studDepth,
     sizeZ = studThickness,
-  )
+  ) // Orients the 2x4 with its long axis in X
 }
 
 // 2x4 along X, thickness in Y, depth in Z (rotated).
@@ -50,7 +52,7 @@ export fn twoByFourY(minX, minY, minZ, lengthY) {
     sizeX = studDepth,
     sizeY = lengthY,
     sizeZ = studThickness,
-  )
+  ) // Long axis in Y
 }
 
 // 2x4 along Y, thickness in X, depth in Z (rotated).

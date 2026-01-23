@@ -1,20 +1,24 @@
 // Dog House (Great Dane) - Back Frame
 // Back frame plates and slats for the dog house.
 
+// Define units
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
+// Import parameters
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
 
 // Back plates
+// Top plate spanning the back wall at studTopZ
 topBackPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = frameLength - studDepth,
   minZ = studTopZ,
-  lengthX = frameWidth - 2 * studDepth,
+  lengthX = frameWidth - (2 * studDepth),
 )
 
 // Back slats (fixed)
+// Compute a vertical slat and pattern it across X to close the back wall
 backSlatWidth = studDepth
 backSlatGap = 2
 backSlatPitch = backSlatWidth + backSlatGap
@@ -27,13 +31,15 @@ backSlatDepth = studThickness
 backSlatY = frameLength - backSlatDepth
 
 backSlats = patternLinear3d(
-  [twoByFourZ(
-    minX = backSlatStartX,
-    minY = backSlatY,
-    minZ = studBaseZ,
-    lengthZ = studHeight,
-  )],
+  [
+    twoByFourZ(
+  minX = backSlatStartX,
+  minY = backSlatY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+  ],
   axis = [1, 0, 0],
   distance = backSlatActualPitch,
   instances = backSlatCount,
-)
+) // Distribute slats across the back opening along X
