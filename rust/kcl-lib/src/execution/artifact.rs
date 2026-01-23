@@ -675,11 +675,9 @@ fn module_id_for_import_path(module_infos: &ModuleInfoMap, import_path: &ImportP
             original_import_path: Some(original_import_path),
             ..
         } = &module_info.path
-        {
-            if original_import_path == import_path {
+            && original_import_path == import_path {
                 return Some(*module_id);
             }
-        }
         None
     })
 }
@@ -876,6 +874,7 @@ fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     *base = new;
 }
 
+#[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     artifact_command: &ArtifactCommand,
