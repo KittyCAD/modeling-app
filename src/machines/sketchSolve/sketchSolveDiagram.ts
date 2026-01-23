@@ -208,7 +208,7 @@ export const sketchSolveMachine = setup({
         }
       },
     },
-    Distance: {
+    Dimension: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const segmentsToConstrain = context.selectedIds

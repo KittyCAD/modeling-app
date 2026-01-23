@@ -2574,10 +2574,32 @@ impl Node<BinaryExpression> {
                             {
                                 use crate::execution::ArtifactId;
 
+                                // Find the arc segment object ID from the sketch block state
+                                let arc_object_id = sketch_block_state
+                                    .needed_by_engine
+                                    .iter()
+                                    .find(|seg| {
+                                        matches!(&seg.kind, UnsolvedSegmentKind::Arc {
+                                            center_object_id,
+                                            start_object_id,
+                                            ..
+                                        } if *center_object_id == p0.object_id && *start_object_id == p1.object_id)
+                                    })
+                                    .map(|seg| seg.object_id)
+                                    .ok_or_else(|| {
+                                        KclError::new_internal(KclErrorDetails::new(
+                                            format!(
+                                                "Could not find arc segment object ID for {} constraint",
+                                                if is_diameter { "diameter" } else { "radius" }
+                                            ),
+                                            vec![range],
+                                        ))
+                                    })?;
+
                                 let constraint = if is_diameter {
                                     use crate::frontend::sketch::Diameter;
                                     crate::front::Constraint::Diameter(Diameter {
-                                        points: vec![p0.object_id, p1.object_id],
+                                        arc: arc_object_id,
                                         diameter: n.try_into().map_err(|_| {
                                             KclError::new_internal(KclErrorDetails::new(
                                                 "Failed to convert diameter units numeric suffix:".to_owned(),
@@ -2588,7 +2610,7 @@ impl Node<BinaryExpression> {
                                 } else {
                                     use crate::frontend::sketch::Radius;
                                     crate::front::Constraint::Radius(Radius {
-                                        points: vec![p0.object_id, p1.object_id],
+                                        arc: arc_object_id,
                                         radius: n.try_into().map_err(|_| {
                                             KclError::new_internal(KclErrorDetails::new(
                                                 "Failed to convert radius units numeric suffix:".to_owned(),

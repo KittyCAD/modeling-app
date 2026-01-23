@@ -310,14 +310,14 @@ pub struct Distance {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Radius {
-    pub points: Vec<ObjectId>,
+    pub arc: ObjectId,
     pub radius: Number,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Diameter {
-    pub points: Vec<ObjectId>,
+    pub arc: ObjectId,
     pub diameter: Number,
 }
 

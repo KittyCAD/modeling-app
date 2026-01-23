@@ -1836,7 +1836,7 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
         let params = ArcSizeConstraintParams {
-            points: radius.points,
+            points: vec![radius.arc],
             function_name: RADIUS_FN,
             value: radius.radius.value,
             units: radius.radius.units,
@@ -1852,7 +1852,7 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
         let params = ArcSizeConstraintParams {
-            points: diameter.points,
+            points: vec![diameter.arc],
             function_name: DIAMETER_FN,
             value: diameter.diameter.value,
             units: diameter.diameter.units,
@@ -2324,34 +2324,8 @@ impl FrontendState {
                     }
                     false
                 }),
-                Constraint::Radius(r) => r.points.iter().any(|pt_id| {
-                    if segment_ids_set.contains(pt_id) {
-                        return true;
-                    }
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
-                Constraint::Diameter(d) => d.points.iter().any(|pt_id| {
-                    if segment_ids_set.contains(pt_id) {
-                        return true;
-                    }
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
-                        && let ObjectKind::Segment { segment } = &obj.kind
-                        && let Segment::Point(pt) = segment
-                        && let Some(owner_line_id) = pt.owner
-                    {
-                        return segment_ids_set.contains(&owner_line_id);
-                    }
-                    false
-                }),
+                Constraint::Radius(r) => segment_ids_set.contains(&r.arc),
+                Constraint::Diameter(d) => segment_ids_set.contains(&d.arc),
                 Constraint::Horizontal(h) => segment_ids_set.contains(&h.line),
                 Constraint::Vertical(v) => segment_ids_set.contains(&v.line),
                 Constraint::LinesEqualLength(lines_equal_length) => lines_equal_length
@@ -4762,7 +4736,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Radius(Radius {
-            points: vec![*arc_id],
+            arc: *arc_id,
             radius: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -4818,7 +4792,7 @@ sketch(on = XY) {
         let point_id = *sketch_point.segments.first().unwrap();
 
         let constraint_point = Constraint::Radius(Radius {
-            points: vec![point_id],
+            arc: point_id,
             radius: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -4846,7 +4820,7 @@ sketch(on = XY) {
         let line_id = *sketch_line.segments.first().unwrap();
 
         let constraint_line = Constraint::Radius(Radius {
-            points: vec![line_id],
+            arc: line_id,
             radius: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -4873,10 +4847,9 @@ sketch(on = XY) {
         let sketch_id_many = sketch_object_many.id;
         let sketch_many = expect_sketch(sketch_object_many);
         let arc0_id = *sketch_many.segments.first().unwrap();
-        let arc1_id = *sketch_many.segments.get(1).unwrap();
 
         let constraint_many = Constraint::Radius(Radius {
-            points: vec![arc0_id, arc1_id],
+            arc: arc0_id,
             radius: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -4929,7 +4902,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Diameter(Diameter {
-            points: vec![*arc_id],
+            arc: *arc_id,
             diameter: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -4985,7 +4958,7 @@ sketch(on = XY) {
         let point_id = *sketch_point.segments.first().unwrap();
 
         let constraint_point = Constraint::Diameter(Diameter {
-            points: vec![point_id],
+            arc: point_id,
             diameter: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -5013,7 +4986,7 @@ sketch(on = XY) {
         let line_id = *sketch_line.segments.first().unwrap();
 
         let constraint_line = Constraint::Diameter(Diameter {
-            points: vec![line_id],
+            arc: line_id,
             diameter: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -5040,10 +5013,9 @@ sketch(on = XY) {
         let sketch_id_many = sketch_object_many.id;
         let sketch_many = expect_sketch(sketch_object_many);
         let arc0_id = *sketch_many.segments.first().unwrap();
-        let arc1_id = *sketch_many.segments.get(1).unwrap();
 
         let constraint_many = Constraint::Diameter(Diameter {
-            points: vec![arc0_id, arc1_id],
+            arc: arc0_id,
             diameter: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,

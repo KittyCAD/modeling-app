@@ -1509,14 +1509,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: (state) => false,
       },
       {
-        id: 'Distance',
+        id: 'Dimension',
         onClick: ({ modelingSend, isActive }) =>
           modelingSend({
-            type: 'Distance',
+            type: 'Dimension',
           }),
         icon: 'dimension',
         status: 'available',
-        title: 'Distance',
+        title: 'Dimension',
         hotkey: 'D',
         description:
           'Constrain distance between points, length of lines, or radius of arcs',
