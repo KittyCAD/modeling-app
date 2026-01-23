@@ -21,8 +21,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::PlaneKind,
     execution::{
-        BasePath, ExecState, Face, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d,
-        Point3d, ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        BasePath, ExecState, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d,
+        Point3d, ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
