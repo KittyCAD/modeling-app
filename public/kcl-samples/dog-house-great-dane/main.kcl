@@ -1,6 +1,6 @@
 // A Dog House for a Great Dane
 // Parametric model of a dog house designed to accommodate a Great Dane.
-// Built using 2x4 lumber and plywood sheets. The hardware is from
+// Built using 2x4 lumber. The hardware is from
 // McMaster-Carr catalog.
 
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
