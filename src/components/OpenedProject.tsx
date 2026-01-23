@@ -72,7 +72,7 @@ if (window.electron) {
     .catch(reportRejection)
 }
 
-export function App() {
+export function OpenedProject() {
   const {
     billingActor,
     systemIOActor,

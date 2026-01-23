@@ -1416,6 +1416,53 @@ export const useToolbarConfig = () => {
               state.matches('sketchSolveMode') &&
               state.context.sketchSolveToolName === 'centerArcTool',
           },
+          {
+            id: 'rectangles',
+            array: [
+              {
+                id: 'corner-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'cornerRectTool' },
+                      }),
+                icon: 'rectangle',
+                status: 'available',
+                title: 'Corner Rectangle',
+                hotkey: 'Shift+R',
+                description: 'Start drawing a rectangle',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'cornerRectTool',
+              },
+              {
+                id: 'center-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'centerRectTool' },
+                      }),
+                icon: 'rectangleCenter',
+                status: 'available',
+                title: 'Center Rectangle',
+                hotkey: 'Alt+R',
+                description: 'Start drawing a rectangle from its center',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'centerRectTool',
+              },
+            ],
+          },
           'break',
           {
             id: 'coincident',
@@ -1545,13 +1592,23 @@ export function getSketchSolveToolIconMap(
 ): Record<string, CustomIconName> {
   const map: Record<string, CustomIconName> = {}
   const items = toolbarConfig.sketchSolve.items
+  collectItems(items, map)
+  return map
+}
 
+function collectItems(
+  items: ToolbarMode['items'],
+  map: Record<string, CustomIconName>
+) {
   for (const item of items) {
     // Skip 'break' strings
     if (typeof item === 'string') continue
 
-    // Skip dropdowns (which don't have direct icons)
-    if ('array' in item) continue
+    // dropdowns, eg. rectangles
+    if ('array' in item) {
+      collectItems(item.array, map)
+      continue
+    }
 
     // Now TypeScript knows item is ToolbarItem
     // Only process items that have an icon and an isActive function (which indicates it's a tool)
@@ -1567,6 +1624,4 @@ export function getSketchSolveToolIconMap(
       }
     }
   }
-
-  return map
 }

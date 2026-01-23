@@ -11,6 +11,7 @@ import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -34,12 +35,7 @@ export const machine = setup({
       sketchId: number
     },
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'add point listener': ({ self, context }) => {
