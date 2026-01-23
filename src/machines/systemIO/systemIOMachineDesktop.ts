@@ -771,6 +771,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           // really used in our archive/restore workflow. We should make
           // dedicated archive/restore code paths for that if we need cases
           // where we want to check with the user before going through with forcing.
+          await fsZds.mkdir(path.dirname(input.target), { recursive: true })
           await fsZds.rename(input.src, input.target)
         } catch (e: unknown) {
           console.log(e)

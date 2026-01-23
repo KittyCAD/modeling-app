@@ -123,6 +123,7 @@ export class HomePageFixture {
       this.page.getByText(projectTitle)
     )
     await projectCard.click()
+    // await closeOnboardingModalIfPresent(this.page)
   }
 
   /** Returns the project name in case caller has used the default and needs it */
