@@ -24,12 +24,18 @@ use crate::{execution::Metadata, front::ObjectKind};
 /// is converted to a set to avoid quadratic runtime.
 pub(super) struct FreedomAnalysis {
     pub underconstrained: AHashSet<u32>,
+    /// Number of constraints that were analyzed. If 0, all variables should be considered Free.
+    pub num_constraints: usize,
 }
 
-impl From<kcl_ezpz::FreedomAnalysis> for FreedomAnalysis {
-    fn from(analysis: kcl_ezpz::FreedomAnalysis) -> Self {
+impl FreedomAnalysis {
+    pub(super) fn from_ezpz_analysis(analysis: kcl_ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
+        let underconstrained_vec: Vec<u32> = analysis.into_underconstrained();
+        let underconstrained = AHashSet::from_iter(underconstrained_vec.iter().copied());
+
         FreedomAnalysis {
-            underconstrained: AHashSet::from_iter(analysis.into_underconstrained()),
+            underconstrained,
+            num_constraints,
         }
     }
 }
@@ -199,6 +205,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             ctor,
             start_object_id,
             end_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -220,6 +227,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     end_object_id: *end_object_id,
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -232,6 +240,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -261,6 +270,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -286,11 +296,17 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
+            let freedom = if solve_outcome.variables_in_conflicts.contains(&var_id.0) {
                 Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
-                if analysis.underconstrained.contains(&solver_var_id) {
+                // Special case: if there are 0 constraints, ALL variables are underconstrained (Free)
+                let is_underconstrained = if analysis.num_constraints == 0 {
+                    true
+                } else {
+                    analysis.underconstrained.contains(&solver_var_id)
+                };
+                if is_underconstrained {
                     Some(Freedom::Free)
                 } else {
                     Some(Freedom::Fixed)
@@ -305,8 +321,6 @@ fn substitute_sketch_var_in_unsolved_expr(
 }
 
 pub(crate) struct Solved {
-    /// Which constraints couldn't be satisfied
-    pub(crate) unsatisfied: Vec<usize>,
     /// Each variable's final value.
     pub(crate) final_values: Vec<f64>,
     /// How many iterations of Newton's method were required?
@@ -318,16 +332,127 @@ pub(crate) struct Solved {
     /// 0 is the highest priority. Larger numbers are lower priority.
     #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) priority_solved: u32,
+    /// Variables involved in unsatisfied constraints (for conflict detection)
+    pub(crate) variables_in_conflicts: AHashSet<usize>,
 }
 
-impl From<kcl_ezpz::SolveOutcome> for Solved {
-    fn from(value: kcl_ezpz::SolveOutcome) -> Self {
+impl Solved {
+    /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
+    /// involved in unsatisfied constraints by examining the original constraints.
+    /// Only marks variables from required constraints (not optional) as conflicted.
+    pub(crate) fn from_ezpz_outcome(
+        value: kcl_ezpz::SolveOutcome,
+        constraints: &[kcl_ezpz::Constraint],
+        num_required_constraints: usize,
+    ) -> Self {
+        // Build a set of variables involved in unsatisfied constraints
+        // Only include required constraints (not optional ones like from dragging)
+        let mut variables_in_conflicts = AHashSet::new();
+        for &constraint_idx in value.unsatisfied() {
+            // Only mark as conflicted if it's a required constraint, not an optional one
+            if constraint_idx < num_required_constraints
+                && let Some(constraint) = constraints.get(constraint_idx)
+            {
+                extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
+            }
+        }
+
         Self {
-            unsatisfied: value.unsatisfied().to_owned(),
             final_values: value.final_values().to_owned(),
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
+            variables_in_conflicts,
+        }
+    }
+}
+
+/// Extract variable IDs from a constraint and add them to the set.
+/// This is a helper function to find which variables are involved in a constraint.
+fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, variable_set: &mut AHashSet<usize>) {
+    match constraint {
+        kcl_ezpz::Constraint::Fixed(id, _) => {
+            variable_set.insert(*id as usize);
+        }
+        kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::Horizontal(line) | kcl_ezpz::Constraint::Vertical(line) => {
+            extract_ids_from_line(line, variable_set);
+        }
+        kcl_ezpz::Constraint::PointsCoincident(pt0, pt1) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::Arc(arc) => {
+            extract_ids_from_arc(arc, variable_set);
+        }
+        kcl_ezpz::Constraint::PointLineDistance(point, line, _) => {
+            extract_ids_from_point(point, variable_set);
+            extract_ids_from_line(line, variable_set);
+        }
+        kcl_ezpz::Constraint::PointArcCoincident(arc, point) => {
+            extract_ids_from_arc(arc, variable_set);
+            extract_ids_from_point(point, variable_set);
+        }
+        kcl_ezpz::Constraint::LinesEqualLength(line0, line1) => {
+            extract_ids_from_line(line0, variable_set);
+            extract_ids_from_line(line1, variable_set);
+        }
+        kcl_ezpz::Constraint::LinesAtAngle(line0, line1, _) => {
+            extract_ids_from_line(line0, variable_set);
+            extract_ids_from_line(line1, variable_set);
+        }
+        _ => {
+            // This catch-all exists to allow ezpz to add new constraint variants
+            // If we hit this in a debug build, we should add explicit handling for the new variant.
+            debug_assert!(
+                false,
+                "Unhandled constraint variant: {:?}. Please add explicit handling for this variant in extract_variable_ids_from_constraint.",
+                constraint
+            );
+            // Fallback: use Debug output to extract IDs heuristically
+            // This allows release builds to continue working even with new variants
+            let constraint_str = format!("{:?}", constraint);
+            extract_ids_from_debug_string(&constraint_str, variable_set);
+        }
+    }
+}
+
+/// Extract variable IDs from a DatumPoint.
+/// DatumPoint has public fields x_id and y_id that we can access directly.
+fn extract_ids_from_point(pt: &kcl_ezpz::datatypes::inputs::DatumPoint, variable_set: &mut AHashSet<usize>) {
+    variable_set.insert(pt.x_id as usize);
+    variable_set.insert(pt.y_id as usize);
+}
+
+/// Extract variable IDs from a DatumLineSegment.
+/// DatumLineSegment has public fields p0 and p1 (start and end points).
+fn extract_ids_from_line(line: &kcl_ezpz::datatypes::inputs::DatumLineSegment, variable_set: &mut AHashSet<usize>) {
+    extract_ids_from_point(&line.p0, variable_set);
+    extract_ids_from_point(&line.p1, variable_set);
+}
+
+/// Extract variable IDs from a DatumCircularArc.
+/// DatumCircularArc has public fields center, start, and end (all DatumPoint).
+fn extract_ids_from_arc(arc: &kcl_ezpz::datatypes::inputs::DatumCircularArc, variable_set: &mut AHashSet<usize>) {
+    extract_ids_from_point(&arc.center, variable_set);
+    extract_ids_from_point(&arc.start, variable_set);
+    extract_ids_from_point(&arc.end, variable_set);
+}
+
+/// Extract numeric IDs from a debug string.
+/// This parses the string looking for numeric values that could be variable IDs.
+fn extract_ids_from_debug_string(s: &str, variable_set: &mut AHashSet<usize>) {
+    // Use a simple regex-like approach to find numeric values
+    // This is a heuristic - it will extract all numbers, which might include
+    // non-ID values, but it's better than missing IDs
+    for word in s.split_whitespace() {
+        // Remove common punctuation
+        let cleaned = word.trim_matches(|c: char| !c.is_ascii_digit());
+        if let Ok(id) = cleaned.parse::<usize>() {
+            variable_set.insert(id);
         }
     }
 }
@@ -373,6 +498,7 @@ pub(super) fn create_segment_scene_objects(
                 ctor,
                 freedom,
             } => {
+                let final_freedom = freedom.unwrap_or(Freedom::Free);
                 let point2d = TyF64::to_point2d(position).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", position),
@@ -389,7 +515,7 @@ pub(super) fn create_segment_scene_objects(
                                 position: ctor.position.clone(),
                             }),
                             owner: None,
-                            freedom: *freedom,
+                            freedom: final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -408,7 +534,10 @@ pub(super) fn create_segment_scene_objects(
                 end_object_id,
                 start_freedom,
                 end_freedom,
+                construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -423,7 +552,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: *start_freedom,
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -449,7 +578,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: *end_freedom,
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -470,6 +599,7 @@ pub(super) fn create_segment_scene_objects(
                             end: end_point_object_id,
                             ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),
@@ -490,7 +620,11 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
+                let center_final_freedom = center_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -505,7 +639,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: *start_freedom,
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -531,7 +665,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: *end_freedom,
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -557,7 +691,7 @@ pub(super) fn create_segment_scene_objects(
                             position: center_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: *center_freedom,
+                            freedom: center_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -579,6 +713,7 @@ pub(super) fn create_segment_scene_objects(
                             center: center_point_object_id,
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),

@@ -53,6 +53,7 @@ import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -76,6 +77,7 @@ import {
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -366,6 +368,13 @@ export type ModelingCommandSchema = {
   }
   'Boolean Intersect': {
     solids: Selections
+  }
+  'Flip Surface': {
+    surface: Selections
+  }
+  'Boolean Split': {
+    targets: Selections
+    merge: boolean
   }
 }
 
@@ -752,13 +761,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-        description: `
-          Note: Only closed paths are allowed for now. Selection of open paths via segments for surface modeling is coming soon.
-        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
@@ -1190,6 +1196,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Split': {
+    description:
+      "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+    icon: 'split',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addSplit({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Split']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      targets: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      merge: {
+        inputType: 'boolean',
+        required: true,
+        defaultValue: true,
+        hidden: true, // TODO: revisit once KCL supports false
+        skip: true,
       },
     },
   },
@@ -2133,6 +2183,43 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
+      },
+    },
+  },
+  'Flip Surface': {
+    description:
+      'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
+    icon: 'flipSurface',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlipSurface({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Flip Surface']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      surface: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
       },
     },
   },

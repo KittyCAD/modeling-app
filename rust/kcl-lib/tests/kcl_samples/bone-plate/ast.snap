@@ -1912,25 +1912,6 @@ description: Result of parsing bone-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "19": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Define a function to create and extrude holes",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1943,8 +1924,6 @@ description: Result of parsing bone-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Revolve the profile of a compression plate designed to fit a bone"
         ],
         "start": 0,
@@ -2218,6 +2197,9 @@ description: Result of parsing bone-plate.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Define a function to create and extrude holes"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2550,8 +2532,6 @@ description: Result of parsing bone-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a hole sketch with the size and location of each bolt hole"
         ],
         "start": 0,
@@ -2653,8 +2633,6 @@ description: Result of parsing bone-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Use map to apply the hole creation function to the list of center coordinates"
         ],
         "start": 0,
@@ -2766,8 +2744,6 @@ description: Result of parsing bone-plate.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Cut each guiding clearance hole from the bone plate using a single subtract operation"
         ],
         "start": 0,
@@ -2839,7 +2815,68 @@ description: Result of parsing bone-plate.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

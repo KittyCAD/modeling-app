@@ -28,7 +28,7 @@ This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) wit
 ```
 # macOS/Linux
 npm run install:rust
-npm run install:wasm-pack:sh
+npm run install:wasm-pack:cargo 
 
 # Windows
 npm run install:rust:windows

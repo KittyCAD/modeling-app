@@ -207,8 +207,6 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// create a sketch for the body of the gingerbread man"
         ],
         "start": 0,
@@ -1507,8 +1505,6 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// create the body"
         ],
         "start": 0,
@@ -1572,7 +1568,32 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

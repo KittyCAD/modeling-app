@@ -67,7 +67,7 @@ tipBody = extrude(
        ],
      )
 
-  // Create the threaded end of the bolt
+// Create the threaded end of the bolt
 
 // Construct the triangular profile for thread cutting
 boltThreadSectionPlane = startSketchOn(XZ)

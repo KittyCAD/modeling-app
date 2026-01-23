@@ -135,12 +135,16 @@ export const fileLoader =
         }
 
         // Update both the state and the editor's code.
-        // We explicitly do not write to the file here since we are loading from
-        // the file system and not the editor.
         kclManager.updateCurrentFilePath(currentFilePath)
-        // We pass true on the end here to clear the code editor history.
-        // This way undo and redo are not super weird when opening new files.
-        kclManager.updateCodeStateEditor(code, true)
+        kclManager.updateCodeEditor(code, {
+          shouldExecute: true,
+          // This way undo and redo are not super weird when opening new files.
+          shouldClearHistory: true,
+          shouldResetCamera: true,
+          // We explicitly do not write to the file here since we are loading from
+          // the file system and not the editor.
+          shouldWriteToDisk: false,
+        })
       }
 
       // Set the file system manager to the project path

@@ -604,9 +604,9 @@ export fn ellipse(
 ///   |> line(end = [-1, -1], tag = $seg01)
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
-/// extrude001 = extrude(profile001, length = 5)
-///   |> appearance(color = "#ff0000")
+///   |> extrude(length = 5)
 /// extrude(seg01, length = 2, method = MERGE, hideSeams=false) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+///   |> appearance(color = "#ff0000")
 /// 
 /// // Extrude a face from an extruded object to create a new object
 /// sketch002 = startSketchOn(XY)
@@ -616,9 +616,9 @@ export fn ellipse(
 ///   |> yLine(length = 1.0)
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
-/// extrude002 = extrude(profile002, length = 5)
-///   |> appearance(color = "#00ff00")
+///   |> extrude(length = 5)
 /// extrude(seg02, length=2, method = NEW, hideSeams=false) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+///   |> appearance(color = "#00ff00")
 /// 
 /// // Extrude a face from an extruded object and merge the result
 /// sketch003 = startSketchOn(XY)
@@ -628,9 +628,9 @@ export fn ellipse(
 ///   |> yLine(length = 1.0)
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
-/// extrude003 = extrude(profile003, length = 5)
-///   |> appearance(color = "#0000ff")
+///   |> extrude(length = 5)
 /// extrude(seg03, length=2, method = MERGE, hideSeams=true) 
+///   |> appearance(color = "#0000ff")
 /// ```
 /// ```kcl
 /// // Surface extrude of a closed profile
@@ -2524,3 +2524,29 @@ export fn planeOf(
   /// Find the plane which this face lies on.
   face: TaggedFace,
 ): Plane {}
+
+/// Get the face of a solid.
+///```kcl
+/// @settings(experimentalFeatures = allow)
+/// 
+/// triangle = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [2, 0])
+///   |> line(end = [0, 2], tag = $side)
+///   |> line(end = [-2, -2])
+///   |> close()
+///   |> extrude(length = 2)
+/// 
+/// // Get the face of the triangle's side face.
+/// sideFace = faceOf(triangle, face = side)
+/// 
+/// // Create a new sketch, on the triangle's side face.
+/// //sketch(on = sideFace) {}
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn faceOf(
+  /// The solid that has the face.
+  @solid: Solid,
+  /// Which face of the solid.
+  face: TaggedFace,
+): Face {}

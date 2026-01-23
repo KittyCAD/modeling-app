@@ -4,6 +4,7 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
+  Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   segmentUtilsMap,
@@ -22,7 +23,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 
-import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
@@ -47,6 +48,7 @@ import {
   ARC_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -57,12 +59,7 @@ export type SpawnToolActor = <K extends EquipTool>(
   src: K,
   options?: {
     id?: string
-    input?: {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    }
+    input?: ToolInput
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
@@ -80,6 +77,7 @@ export type SketchSolveMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'construction'
     }
   | {
       type: 'update selected ids'
@@ -114,7 +112,7 @@ export type SketchSolveMachineEvent =
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof centerArcTool>
@@ -142,7 +140,9 @@ export type SketchSolveContext = {
   kclManager: KclManager
 }
 export const equipTools = Object.freeze({
-  centerRectTool,
+  // both use the same tool, opened with a different flag
+  centerRectTool: rectTool,
+  cornerRectTool: rectTool,
   dimensionTool,
   pointTool,
   lineTool,
@@ -251,6 +251,7 @@ export function updateSegmentGroup({
   scale,
   theme,
   draftEntityIds,
+  objects,
 }: {
   group: Group
   input: SegmentCtor
@@ -258,13 +259,38 @@ export function updateSegmentGroup({
   scale: number
   theme: Themes
   draftEntityIds?: Array<number>
+  objects?: Array<ApiObject>
 }): void {
   const idNum = Number(group.name)
   if (Number.isNaN(idNum)) {
     return
   }
 
+  // Determine isDraft and isConstruction separately
   const isDraft = draftEntityIds?.includes(idNum) ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
+
+  // Derive freedom from segment freedom
+  let freedomResult: Freedom | null = null
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (segmentObj) {
+      freedomResult = deriveSegmentFreedom(segmentObj, objects)
+    }
+  }
+
+  // Store freedom in userData for immediate use (not as a cache - Rust handles that)
+  group.userData.freedom = freedomResult
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
@@ -275,6 +301,8 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
@@ -285,6 +313,8 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
@@ -295,6 +325,8 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
+      freedom: freedomResult,
     })
   }
 }
@@ -309,13 +341,38 @@ function initSegmentGroup({
   scale,
   id,
   isDraft,
+  objects,
 }: {
   input: SegmentCtor
   theme: Themes
   scale: number
   id: number
   isDraft?: boolean
+  objects?: Array<ApiObject>
 }): Group | Error {
+  // Determine isDraft and isConstruction separately
+  const isDraftValue = isDraft ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[id]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
+
+  // Derive freedom from segment freedom
+  let freedomResult: Freedom | null = null
+  if (objects) {
+    const segmentObj = objects[id]
+    if (segmentObj) {
+      freedomResult = deriveSegmentFreedom(segmentObj, objects)
+    }
+  }
+
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
@@ -323,7 +380,9 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
@@ -331,7 +390,9 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
@@ -339,10 +400,16 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
+      freedom: freedomResult,
     })
   }
-  if (group instanceof Group) return group
+  if (group instanceof Group) {
+    // Store freedom in userData for immediate use (not as a cache - Rust handles that)
+    group.userData.freedom = freedomResult
+    return group
+  }
   return new Error(`Unknown input type: ${(input as any).type}`)
 }
 
@@ -432,6 +499,7 @@ export function updateSceneGraphFromDelta({
         scale: factor,
         id: obj.id,
         isDraft,
+        objects,
       })
       if (newGroup instanceof Error) {
         console.error('Failed to init segment group for object', obj.id)
@@ -469,6 +537,7 @@ export function updateSceneGraphFromDelta({
       scale: factor,
       theme: context.sceneInfra.theme,
       draftEntityIds,
+      objects,
     })
   })
 }
@@ -650,6 +719,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       scale: factor,
       theme: context.sceneInfra.theme,
       draftEntityIds,
+      objects,
     })
   })
 }
@@ -720,13 +790,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.kclSource.text)
-  }
-
-  // Persist changes to disk unless explicitly disabled
-  if (event.data.writeToDisk !== false) {
-    void context.kclManager.writeToFile().catch((err) => {
-      console.error('Failed to write file', err)
+    context.kclManager.updateCodeEditor(event.data.kclSource.text, {
+      shouldExecute: false,
+      // Persist changes to disk unless explicitly disabled
+      shouldWriteToDisk: event.data.writeToDisk || false,
     })
   }
 
@@ -823,7 +890,6 @@ export async function deleteDraftEntitiesPromise({
       segmentIds,
       await jsAppSettings(context.rustContext.settingsActor)
     )
-    console.log('result', result)
 
     //
     return result || null
@@ -866,6 +932,7 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
 
@@ -874,4 +941,17 @@ export function spawnTool(
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
+}
+
+export type ToolInput = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  toolVariant?: string // eg. 'corner' | 'center' for rectTool
+}
+
+const toolVariants: Record<string, string> = {
+  centerRectTool: 'center',
+  cornerRectTool: 'corner',
 }

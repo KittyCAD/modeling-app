@@ -124,9 +124,6 @@ function codeRangeToIds(
     otherSelections: [],
   }
 
-  const editorView = kclManager.getEditorView()
-  if (!editorView) return []
-
   // We have to mock as if the user was selecting these instead of reading from the
   // actual code mirror instance
   const asIfItWasSelected = EditorSelection.create([

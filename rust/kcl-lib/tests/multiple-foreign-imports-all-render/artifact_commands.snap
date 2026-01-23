@@ -15880,11 +15880,11 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
           "type": "step",
           "coords": {
             "forward": {
-              "axis": "y",
-              "direction": "negative"
+              "axis": "z",
+              "direction": "positive"
             },
             "up": {
-              "axis": "z",
+              "axis": "y",
               "direction": "positive"
             }
           },

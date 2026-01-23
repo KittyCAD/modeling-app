@@ -74,6 +74,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -144,7 +145,6 @@ import {
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
@@ -154,6 +154,8 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { EditorView } from 'codemirror'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 export type ModelingMachineEvent =
   | {
@@ -223,6 +225,10 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Boolean Intersect']
     }
   | {
+      type: 'Boolean Split'
+      data: ModelingCommandSchema['Boolean Split']
+    }
+  | {
       type: 'Pattern Circular 3D'
       data: ModelingCommandSchema['Pattern Circular 3D']
     }
@@ -258,6 +264,7 @@ export type ModelingMachineEvent =
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | {
       type:
         | 'Add circle origin'
@@ -356,6 +363,7 @@ export type ModelingMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'construction'
     }
   | { type: 'unequip tool' }
   | {
@@ -762,7 +770,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined
+              { shouldAddToHistory: false }
             )
           })
         return {
@@ -796,7 +804,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined
+              { shouldAddToHistory: false }
             )
           })
         return {
@@ -1187,7 +1195,9 @@ export const modelingMachine = setup({
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, undefined)
+      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+        shouldAddToHistory: false,
+      })
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
@@ -1342,7 +1352,6 @@ export const modelingMachine = setup({
           engineCommandManager,
           sceneEntitiesManager,
           kclManager,
-          kclEditorMachine: providedKclEditorMachine,
           wasmInstance,
         },
         event,
@@ -1359,10 +1368,6 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-        const theKclEditorMachine = providedKclEditorMachine
-          ? providedKclEditorMachine
-          : kclEditorActor
-
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
@@ -1472,12 +1477,15 @@ export const modelingMachine = setup({
               },
             })
           if (codeMirrorSelection) {
-            theKclEditorMachine.send({
-              type: 'setLastSelectionEvent',
-              data: {
-                codeMirrorSelection,
-                scrollIntoView: setSelections.scrollIntoView ?? false,
-              },
+            kclManager.editorView.dispatch({
+              selection: codeMirrorSelection,
+              effects: setSelections.scrollIntoView
+                ? [
+                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
+                      y: 'center',
+                    }),
+                  ]
+                : [],
             })
           }
 
@@ -1528,6 +1536,10 @@ export const modelingMachine = setup({
             setSelections.selection
           )
 
+          kclManager.editorView.dispatch({
+            selection: codeMirrorSelection,
+          })
+
           // This turns the selection into blue, needed when selecting with ctrl+A
           const { updateSceneObjectColors } = handleSelectionBatch({
             selections: setSelections.selection,
@@ -1542,13 +1554,6 @@ export const modelingMachine = setup({
           })
           updateSceneObjectColors()
 
-          theKclEditorMachine.send({
-            type: 'setLastSelectionEvent',
-            data: {
-              codeMirrorSelection,
-              scrollIntoView: false,
-            },
-          })
           if (!sketchDetails)
             return {
               selectionRanges: setSelections.selection,
@@ -3513,6 +3518,45 @@ export const modelingMachine = setup({
         )
       }
     ),
+    flipSurfaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Flip Surface'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const result = addFlipSurface({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -3633,7 +3677,48 @@ export const modelingMachine = setup({
           wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    boolSplitAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Split'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addSplit({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
         await updateModelingState(
           result.modifiedAst,
@@ -3945,12 +4030,20 @@ export const modelingMachine = setup({
           target: 'Boolean intersecting',
         },
 
+        'Boolean Split': {
+          target: 'Boolean splitting',
+        },
+
         'Pattern Circular 3D': {
           target: 'Pattern Circular 3D',
         },
 
         'Pattern Linear 3D': {
           target: 'Pattern Linear 3D',
+        },
+
+        'Flip Surface': {
+          target: 'Applying Flip Surface',
         },
 
         // Modeling actions
@@ -5489,6 +5582,9 @@ export const modelingMachine = setup({
         Distance: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
+        construction: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
         'delete selected': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
@@ -5893,6 +5989,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying Flip Surface': {
+      invoke: {
+        src: 'flipSurfaceAstMod',
+        id: 'flipSurfaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Flip Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     Exporting: {
       invoke: {
         src: 'exportFromEngine',
@@ -5970,6 +6087,27 @@ export const modelingMachine = setup({
         id: 'boolIntersectAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Boolean Intersect') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Boolean splitting': {
+      invoke: {
+        src: 'boolSplitAstMod',
+        id: 'boolSplitAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Split') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

@@ -1198,8 +1198,6 @@ description: Result of parsing hex-nut.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function for the hex nut"
         ],
         "start": 0,
@@ -1344,8 +1342,6 @@ description: Result of parsing hex-nut.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a hex nut"
         ],
         "start": 0,
@@ -1445,7 +1441,32 @@ description: Result of parsing hex-nut.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[63, 90, 1]"]
+    2["Path<br>[63, 90, 1]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[98, 116, 1]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -14,7 +14,7 @@ flowchart LR
     7[Solid2d]
   end
   subgraph path27 [Path]
-    27["Path<br>[63, 90, 1]"]
+    27["Path<br>[63, 90, 1]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     28["Segment<br>[98, 116, 1]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -28,7 +28,7 @@ flowchart LR
   end
   1["Plane<br>[38, 55, 1]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  8["Sweep Extrusion<br>[342, 376, 1]"]
+  8["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
   9[Wall]
     %% face_code_ref=Missing NodePath
@@ -50,15 +50,15 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["Sweep Extrusion<br>[342, 376, 1]"]
+  23["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
-  24["Sweep Extrusion<br>[342, 376, 1]"]
+  24["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
-  25["Sweep Extrusion<br>[342, 376, 1]"]
+  25["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
   26["Plane<br>[38, 55, 1]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  33["Sweep Extrusion<br>[342, 376, 1]"]
+  33["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
   34[Wall]
     %% face_code_ref=Missing NodePath
@@ -80,11 +80,11 @@ flowchart LR
   45["SweepEdge Adjacent"]
   46["SweepEdge Opposite"]
   47["SweepEdge Adjacent"]
-  48["Sweep Extrusion<br>[342, 376, 1]"]
+  48["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
-  49["Sweep Extrusion<br>[342, 376, 1]"]
+  49["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
-  50["Sweep Extrusion<br>[342, 376, 1]"]
+  50["Sweep Extrusion<br>[342, 376, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, ReturnStatementArg]
   1 --- 2
   2 --- 3

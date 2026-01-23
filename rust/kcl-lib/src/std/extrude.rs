@@ -171,7 +171,6 @@ async fn inner_extrude(
     for extrudable in &extrudables {
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
-        println!("ADAM: Extruding {sketch_or_face_id}");
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -239,7 +238,7 @@ async fn inner_extrude(
                         .build(),
                 ),
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
-                    let plane_id = if plane.value == crate::exec::PlaneType::Uninit {
+                    let plane_id = if plane.is_uninitialized() {
                         if plane.info.origin.units.is_none() {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
                                 "Origin of plane has unknown units".to_string(),

@@ -645,6 +645,8 @@ impl FnData {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "split" {
+            return "split([${0:extrude001}, ${1:extrude002}], merge = ${2:true})".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
         } else if self.name == "subtract2d" {
