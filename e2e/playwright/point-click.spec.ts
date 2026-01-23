@@ -2310,6 +2310,97 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
+  test(`Delete Face point-and-click`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    // Any idea here how to select a cap without clicking in the scene?
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const deleteFaceDeclaration =
+      'surface001 = deleteFace(extrude001, faces = END)'
+
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.selectSurface('delete-face')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'solid',
+        currentArgValue: '',
+        headerArguments: {
+          Solid: '',
+          Faces: '',
+        },
+        highlightedHeaderArg: 'solid',
+        commandName: 'Delete Face',
+      })
+
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'extrude001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'faces',
+        currentArgValue: '',
+        headerArguments: {
+          Solid: '1 sweep',
+          Faces: '',
+        },
+        highlightedHeaderArg: 'faces',
+        commandName: 'Delete Face',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Solid: '1 sweep',
+          Faces: '1 cap',
+        },
+        commandName: 'Delete Face',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(deleteFaceDeclaration)
+    })
+
+    await test.step('Delete delete face via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Delete Face',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(deleteFaceDeclaration)
+    })
+  })
+
   test('Revolve point-and-click', async ({
     context,
     page,

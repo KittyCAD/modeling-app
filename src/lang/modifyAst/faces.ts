@@ -122,6 +122,93 @@ export function addShell({
   }
 }
 
+export function addDeleteFace({
+  ast,
+  artifactGraph,
+  solid,
+  faces,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  solid: Selections
+  faces: Selections
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  if (solid.graphSelections.length === 0) {
+    return new Error('Delete Face requires a solid selection.')
+  }
+
+  if (faces.graphSelections.length === 0) {
+    return new Error('Delete Face requires at least one face selection.')
+  }
+
+  // 2. Prepare unlabeled and labeled arguments
+  const lastChildLookup = false
+  const solidVars = getVariableExprsFromSelection(
+    solid,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    lastChildLookup,
+    artifactGraph,
+    ['compositeSolid', 'sweep']
+  )
+  if (err(solidVars)) {
+    return solidVars
+  }
+
+  if (solidVars.exprs.length > 1) {
+    return new Error('Delete Face only supports one solid at a time.')
+  }
+
+  const solidExpr = createVariableExpressionsArray(solidVars.exprs)
+  const facesExprs = getFacesExprsFromSelection(
+    modifiedAst,
+    faces,
+    artifactGraph,
+    wasmInstance
+  )
+  const facesExpr = createVariableExpressionsArray(facesExprs)
+  if (!facesExpr) {
+    return new Error('No faces found in the selection')
+  }
+
+  const call = createCallExpressionStdLibKw('deleteFace', solidExpr, [
+    createLabeledArg('faces', facesExpr),
+  ])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    pathIfNewPipe: solidVars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 // TODO: figure out if KCL-defined modules like hole could let us derive types
 export type HoleBody = 'blind'
 export type HoleType = 'simple' | 'counterbore' | 'countersink'

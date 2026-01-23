@@ -1905,6 +1905,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  deleteFace: {
+    label: 'Delete Face',
+    icon: 'trash',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   'sketch2::coincident': {
     label: 'Coincident Constraint',
     icon: 'coincident',

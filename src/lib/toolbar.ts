@@ -426,12 +426,23 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
           {
             id: 'delete-face',
-            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
-            onClick: () => {},
-            status: 'unavailable',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Delete Face', groupId: 'modeling' },
+              }),
+            icon: 'trash',
+            status: 'available',
             title: 'Delete Face',
             description: 'Deletes a face from a body, leaving an open surface.',
-            links: [],
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-deleteFace'
+                ),
+              },
+            ],
           },
         ],
       },

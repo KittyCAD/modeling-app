@@ -50,7 +50,12 @@ import {
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addHole,
+  addOffsetPlane,
+  addShell,
+} from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSplit,
@@ -371,6 +376,10 @@ export type ModelingCommandSchema = {
   }
   'Flip Surface': {
     surface: Selections
+  }
+  'Delete Face': {
+    solid: Selections
+    faces: Selections
   }
   'Boolean Split': {
     targets: Selections
@@ -2223,6 +2232,51 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
+      },
+    },
+  },
+  'Delete Face': {
+    description: 'Delete a face from a body, leaving an open surface.',
+    icon: 'trash',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDeleteFace({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete Face']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      solid: {
+        displayName: 'Solid',
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+      },
+      faces: {
+        displayName: 'Faces',
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: true,
+        required: true,
+        clearSelectionFirst: true,
       },
     },
   },

@@ -15,6 +15,7 @@ import {
   addHole,
   addOffsetPlane,
   addShell,
+  addDeleteFace,
   retrieveFaceSelectionsFromOpArgs,
   retrieveHoleBodyArgs,
   retrieveHoleBottomArgs,
@@ -397,6 +398,39 @@ extrude002 = extrude(profile002, length = 200)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
 shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addDeleteFace', () => {
+    it('should add a deleteFace call on cylinder end cap', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+      const sweepArtifact = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      const solid = createSelectionFromArtifacts(
+        [sweepArtifact!],
+        artifactGraph
+      )
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        solid,
+        faces,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${cylinder}
+surface001 = deleteFace(extrude001, faces = END)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
