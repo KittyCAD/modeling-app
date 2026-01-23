@@ -86,7 +86,7 @@
     "install:rust:windows": "powershell -Command \"if (-not (Test-Path $env:USERPROFILE\\.cargo\\bin\\cargo.exe)) { winget install Rustlang.Rustup }\"",
     "install:rust:cargo-binstall": "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash",
     "install:wasm-pack:cargo": "cargo install wasm-pack",
-    "install:wasm-pack:cargo-binstall": "cargo binstall wasm-pack",
+    "install:wasm-pack:cargo-binstall": "cargo binstall wasm-pack --disable-telemetry",
     "install:tools:windows": "winget install jqlang.jq MikeFarah.yq GitHub.cli",
     "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
