@@ -11,7 +11,7 @@ topBackPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = frameLength - studDepth,
   minZ = studTopZ,
-  lengthX = frameWidth - 2 * studDepth,
+  lengthX = frameWidth - (2 * studDepth),
 )
 
 // Back slats (fixed)
@@ -27,12 +27,14 @@ backSlatDepth = studThickness
 backSlatY = frameLength - backSlatDepth
 
 backSlats = patternLinear3d(
-  [twoByFourZ(
-    minX = backSlatStartX,
-    minY = backSlatY,
-    minZ = studBaseZ,
-    lengthZ = studHeight,
-  )],
+  [
+    twoByFourZ(
+  minX = backSlatStartX,
+  minY = backSlatY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+  ],
   axis = [1, 0, 0],
   distance = backSlatActualPitch,
   instances = backSlatCount,

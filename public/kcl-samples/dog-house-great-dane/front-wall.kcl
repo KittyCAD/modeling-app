@@ -11,7 +11,7 @@ topFrontPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = 0,
   minZ = studTopZ,
-  lengthX = frameWidth - 2 * studDepth,
+  lengthX = frameWidth - (2 * studDepth),
 )
 
 // Front wall studs around the opening (studs oriented with depth along Y)

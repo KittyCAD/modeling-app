@@ -42,12 +42,14 @@ sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
 
 fn sideSlats(minX) {
   return patternLinear3d(
-    [twoByFourZRotated(
-      minX = minX,
-      minY = sideSlatStartY,
-      minZ = studBaseZ,
-      lengthZ = studHeight,
-    )],
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = sideSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
     axis = [0, 1, 0],
     distance = sideSlatActualPitch,
     instances = sideSlatCount,

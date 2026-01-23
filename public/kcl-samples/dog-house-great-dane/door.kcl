@@ -70,11 +70,11 @@ fn hingeTemplate() {
 
 fn latchTemplate() {
   return appearance(
-    latchRaw,
-    color = "#2b2b2b",
-    metalness = 0.6,
-    roughness = 0.45,
-  )
+         latchRaw,
+         color = "#2b2b2b",
+         metalness = 0.6,
+         roughness = 0.45,
+       )
     |> rotate(axis = [1, 0, 0], angle = latchRotateAngleX)
     |> rotate(axis = Z, angle = latchRotateAngleZ)
     |> rotate(axis = Y, angle = latchRotateAngleY)
@@ -127,22 +127,22 @@ crateDoorBottomHinge = clone(crateDoorTopHinge)
   |> translate(z = hingeBottomZ - hingeTopZ)
 
 crateDoorLatch = latchTemplate()
-  |> translate(
-    x = doorPanelWidth / 2 - latchEdgeInset - latchMaxX + latchOffsetX,
-    y = doorOutsideY - latchFaceOffset - latchMaxY + latchOffsetY,
-    z = doorMidZ - latchCenterZ + latchOffsetZ,
-  )
+  |> translate(x = doorPanelWidth / 2 - latchEdgeInset - latchMaxX + latchOffsetX, y = doorOutsideY - latchFaceOffset - latchMaxY + latchOffsetY, z = doorMidZ - latchCenterZ + latchOffsetZ)
 
 crateDoorFrameParts = [
   crateDoorLeftStile,
   crateDoorRightStile,
   crateDoorBottomRail,
-  crateDoorTopRail,
+  crateDoorTopRail
 ]
 crateDoorWithSlats = concat(crateDoorFrameParts, items = crateDoorSlats)
 crateDoorParts = concat(
   crateDoorWithSlats,
-  items = [crateDoorTopHinge, crateDoorBottomHinge, crateDoorLatch],
+  items = [
+    crateDoorTopHinge,
+    crateDoorBottomHinge,
+    crateDoorLatch
+  ],
 )
 
 crateDoorParts

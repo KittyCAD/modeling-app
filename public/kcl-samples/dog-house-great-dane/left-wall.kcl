@@ -14,12 +14,12 @@ sideSlatPitch = sideSlatWidth + sideSlatGap
 
 // Side door placement (left wall)
 sideDoorClearance = 0.5
-sideDoorPanelWidth = openingWidth - 2 * sideDoorClearance
+sideDoorPanelWidth = openingWidth - (2 * sideDoorClearance)
 sideDoorCenterY = frameLength / 2
-sideDoorStartY = sideDoorCenterY - sideDoorPanelWidth / 2
+sideDoorStartY = sideDoorCenterY - (sideDoorPanelWidth / 2)
 sideDoorEndY = sideDoorCenterY + sideDoorPanelWidth / 2
 sideDoorX = -frameWidth / 2 - 9
-sideDoorY = sideDoorCenterY - frameWidth - studThickness *4 - 1
+sideDoorY = sideDoorCenterY - frameWidth - (studThickness * 4) - 1
 
 // Left wall plates
 topLeftPlate = twoByFourY(
@@ -53,12 +53,14 @@ fn sideSlatsWithDoor(minX) {
   frontSlatCount = floor(frontSlatSpanY / sideSlatPitch) + 1
 
   frontSlats = patternLinear3d(
-    [twoByFourZRotated(
-      minX = minX,
-      minY = sideSlatStartY,
-      minZ = studBaseZ,
-      lengthZ = studHeight,
-    )],
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = sideSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
     axis = [0, 1, 0],
     distance = sideSlatPitch,
     instances = frontSlatCount,
@@ -69,12 +71,14 @@ fn sideSlatsWithDoor(minX) {
   backSlatCount = floor(backSlatSpanY / sideSlatPitch) + 2
 
   backSlats = patternLinear3d(
-    [twoByFourZRotated(
-      minX = minX,
-      minY = backSlatStartY,
-      minZ = studBaseZ,
-      lengthZ = studHeight,
-    )],
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = backSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
     axis = [0, 1, 0],
     distance = sideSlatPitch,
     instances = backSlatCount,
@@ -91,10 +95,6 @@ sideDoorLeft = map(
   f = fn(@part) {
     return clone(part)
       |> rotate(axis = Z, angle = -90deg)
-      |> translate(
-        x = sideDoorX,
-        y = sideDoorY,
-        z = 0,
-      )
+      |> translate(x = sideDoorX, y = sideDoorY, z = 0)
   },
 )

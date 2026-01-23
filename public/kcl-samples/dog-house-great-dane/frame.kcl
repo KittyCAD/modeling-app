@@ -23,11 +23,11 @@ frontBottomPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = 0,
   minZ = floorZ,
-  lengthX = frameWidth - 2 * studDepth,
+  lengthX = frameWidth - (2 * studDepth),
 )
 backBottomPlate = twoByFourX(
   minX = -frameWidth / 2 + studDepth,
   minY = frameLength - studDepth,
   minZ = floorZ,
-  lengthX = frameWidth - 2 * studDepth,
+  lengthX = frameWidth - (2 * studDepth),
 )

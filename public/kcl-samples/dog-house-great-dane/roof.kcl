@@ -41,9 +41,9 @@ ridgeBoard = twoByFourYRotated(
 // Collar ties (brace rafters together to reduce ridge load)
 collarTieHeightFactor = 0.5
 collarTieCenterZ = eaveZ + roofRise * collarTieHeightFactor
-collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ) - studThickness / 2
+collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ) - (studThickness / 2)
 collarTieLength = 2 * collarTieHalfWidth
-collarTieMinZ = collarTieCenterZ - studThickness / 2
+collarTieMinZ = collarTieCenterZ - (studThickness / 2)
 
 collarTie = twoByFourX(
   minX = -collarTieHalfWidth,
@@ -53,20 +53,20 @@ collarTie = twoByFourX(
 )
 
 rightRafter = twoByFourX(
-  minX = -rafterLength / 2,
-  minY = rafterStartY,
-  minZ = -rafterThickness / 2,
-  lengthX = rafterLength,
-)
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength,
+     )
   |> rotate(axis = [0, 1, 0], angle = -roofAngle)
   |> translate(x = roofHalfWidth / 2, y = 0, z = rafterMidZ)
 
 leftRafter = twoByFourX(
-  minX = -rafterLength / 2,
-  minY = rafterStartY,
-  minZ = -rafterThickness / 2,
-  lengthX = rafterLength,
-)
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength,
+     )
   |> rotate(axis = [0, 1, 0], angle = roofAngle)
   |> translate(x = -roofHalfWidth / 2, y = 0, z = rafterMidZ)
 

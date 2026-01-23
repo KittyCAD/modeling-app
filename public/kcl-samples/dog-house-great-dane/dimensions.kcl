@@ -28,7 +28,7 @@ export frameWidth = interiorWidth + 2 * studDepth
 
 // Front opening sizing (2x4 frame only)
 export openingSideClearance = 0.5
-export openingWidth = interiorWidth - 2 * openingSideClearance
+export openingWidth = interiorWidth - (2 * openingSideClearance)
 
 // Derived stud heights
 export studBaseZ = plateHeight
