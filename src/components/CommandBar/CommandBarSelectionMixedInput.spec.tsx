@@ -55,8 +55,10 @@ describe('CommandBarSelectionMixedInput', () => {
       const boot = await import(`@src/lib/boot`)
       const mockWasmInstance =
         await boot.app.singletons.rustContext.wasmInstancePromise
-      const mockModelingSend =
-        boot.app.singletons.engineCommandManager.modelingSend
+      const mockModelingSend = vi.spyOn(
+        boot.app.singletons.engineCommandManager,
+        'modelingSend'
+      )
       const arg = createArg(true)
 
       render(
