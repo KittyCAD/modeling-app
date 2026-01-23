@@ -20,7 +20,6 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
@@ -949,13 +948,11 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
             })
-            const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
@@ -1083,13 +1080,11 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
             })
-            const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
@@ -1227,13 +1222,11 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
             })
-            const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
@@ -1358,13 +1351,11 @@ p3 = [342.51, 216.38],
               sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
             })
-            const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
-            contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
