@@ -1518,7 +1518,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Distance',
         hotkey: 'D',
-        description: 'Constrain distance between points or lines',
+        description:
+          'Constrain distance between points, length of lines, or radius of arcs',
         links: [],
         isActive: (state) => false,
       },

@@ -285,10 +285,12 @@ pub struct CircleCtor {
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
+    Diameter(Diameter),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
+    Radius(Radius),
     Vertical(Vertical),
 }
 
@@ -303,6 +305,20 @@ pub struct Coincident {
 pub struct Distance {
     pub points: Vec<ObjectId>,
     pub distance: Number,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Radius {
+    pub points: Vec<ObjectId>,
+    pub radius: Number,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Diameter {
+    pub points: Vec<ObjectId>,
+    pub diameter: Number,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

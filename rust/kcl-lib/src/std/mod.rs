@@ -504,6 +504,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
+        ("sketch2", "radius") => (
+            |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::radius"),
+        ),
+        ("sketch2", "diameter") => (
+            |e, a| Box::pin(crate::std::constraints::diameter(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::diameter"),
+        ),
         ("sketch2", "equalLength") => (
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),

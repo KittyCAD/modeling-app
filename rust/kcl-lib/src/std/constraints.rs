@@ -980,84 +980,297 @@ fn coincident_constraints_fixed(
     Ok((constraint_x, constraint_y))
 }
 
-pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
-        "points",
-        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
-        exec_state,
-    )?;
-    let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            "must have two input points".to_owned(),
-            vec![args.source_range],
-        ))
-    })?;
-
-    match (&point0, &point1) {
+/// Helper function to create a distance constraint from two points.
+/// Used by both distance() and radius() functions.
+fn create_distance_constraint_from_points(
+    point0: &KclValue,
+    point1: &KclValue,
+    source_range: crate::SourceRange,
+) -> Result<SketchConstraint, KclError> {
+    match (point0, point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
             let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "first point must be an unsolved segment".to_owned(),
-                    vec![args.source_range],
+                    vec![source_range],
                 )));
             };
             let SegmentRepr::Unsolved { segment: unsolved1 } = &seg1.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "second point must be an unsolved segment".to_owned(),
-                    vec![args.source_range],
+                    vec![source_range],
                 )));
             };
             match (&unsolved0.kind, &unsolved1.kind) {
                 (
                     UnsolvedSegmentKind::Point { position: pos0, .. },
                     UnsolvedSegmentKind::Point { position: pos1, .. },
-                ) => {
-                    // Both segments are points. Create a distance constraint
-                    // between them.
-                    match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
-                        (
-                            UnsolvedExpr::Unknown(p0_x),
-                            UnsolvedExpr::Unknown(p0_y),
-                            UnsolvedExpr::Unknown(p1_x),
-                            UnsolvedExpr::Unknown(p1_y),
-                        ) => {
-                            // All coordinates are sketch vars. Proceed.
-                            let sketch_constraint = SketchConstraint {
-                                kind: SketchConstraintKind::Distance {
-                                    points: [
-                                        ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
-                                            object_id: unsolved0.object_id,
-                                        },
-                                        ConstrainablePoint2d {
-                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
-                                            object_id: unsolved1.object_id,
-                                        },
-                                    ],
+                ) => match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
+                    (
+                        UnsolvedExpr::Unknown(p0_x),
+                        UnsolvedExpr::Unknown(p0_y),
+                        UnsolvedExpr::Unknown(p1_x),
+                        UnsolvedExpr::Unknown(p1_y),
+                    ) => Ok(SketchConstraint {
+                        kind: SketchConstraintKind::Distance {
+                            points: [
+                                ConstrainablePoint2d {
+                                    vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                    object_id: unsolved0.object_id,
                                 },
-                                meta: vec![args.source_range.into()],
-                            };
-                            Ok(KclValue::SketchConstraint {
-                                value: Box::new(sketch_constraint),
-                            })
-                        }
-                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                            "unimplemented: distance() arguments must be all sketch vars in all coordinates".to_owned(),
-                            vec![args.source_range],
-                        ))),
-                    }
-                }
+                                ConstrainablePoint2d {
+                                    vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                    object_id: unsolved1.object_id,
+                                },
+                            ],
+                        },
+                        meta: vec![source_range.into()],
+                    }),
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        "unimplemented: arguments must be all sketch vars in all coordinates".to_owned(),
+                        vec![source_range],
+                    ))),
+                },
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    "distance() arguments must be unsolved points".to_owned(),
-                    vec![args.source_range],
+                    "arguments must be unsolved points".to_owned(),
+                    vec![source_range],
                 ))),
             }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "distance() arguments must be point segments".to_owned(),
-            vec![args.source_range],
+            "arguments must be point segments".to_owned(),
+            vec![source_range],
         ))),
     }
+}
+
+pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segments: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
+
+    // Validate length: must be 1 or 2
+    if segments.len() > 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("distance() must have 1 or 2 arguments, got {}", segments.len()),
+            vec![args.source_range],
+        )));
+    }
+
+    // Handle single line segment case
+    if segments.len() == 1 {
+        let KclValue::Segment { value: seg } = &segments[0] else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "single argument to distance() must be a segment".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let SegmentRepr::Unsolved { segment: unsolved } = &seg.repr else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "segment must be unsolved".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        match &unsolved.kind {
+            UnsolvedSegmentKind::Line {
+                start,
+                end,
+                start_object_id,
+                end_object_id,
+                ..
+            } => {
+                // Extract start and end point coordinates
+                match (&start[0], &start[1], &end[0], &end[1]) {
+                    (
+                        UnsolvedExpr::Unknown(start_x),
+                        UnsolvedExpr::Unknown(start_y),
+                        UnsolvedExpr::Unknown(end_x),
+                        UnsolvedExpr::Unknown(end_y),
+                    ) => {
+                        // All coordinates are sketch vars. Create distance constraint between endpoints.
+                        let sketch_constraint = SketchConstraint {
+                            kind: SketchConstraintKind::Distance {
+                                points: [
+                                    ConstrainablePoint2d {
+                                        vars: crate::front::Point2d {
+                                            x: *start_x,
+                                            y: *start_y,
+                                        },
+                                        object_id: *start_object_id,
+                                    },
+                                    ConstrainablePoint2d {
+                                        vars: crate::front::Point2d { x: *end_x, y: *end_y },
+                                        object_id: *end_object_id,
+                                    },
+                                ],
+                            },
+                            meta: vec![args.source_range.into()],
+                        };
+                        Ok(KclValue::SketchConstraint {
+                            value: Box::new(sketch_constraint),
+                        })
+                    }
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        "unimplemented: distance() line segment must have all sketch vars in all coordinates"
+                            .to_owned(),
+                        vec![args.source_range],
+                    ))),
+                }
+            }
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                "single argument to distance() must be a line segment".to_owned(),
+                vec![args.source_range],
+            ))),
+        }
+    } else {
+        // Handle two points case (original behavior)
+        let [point0, point1]: [KclValue; 2] = segments.try_into().map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                "must have one or two arguments".to_owned(),
+                vec![args.source_range],
+            ))
+        })?;
+
+        // Use helper function for two points case
+        create_distance_constraint_from_points(&point0, &point1, args.source_range).map(|constraint| {
+            KclValue::SketchConstraint {
+                value: Box::new(constraint),
+            }
+        })
+    }
+}
+
+/// Helper function to create a radius or diameter constraint from an arc segment.
+/// Used by both radius() and diameter() functions.
+fn create_arc_radius_constraint(
+    segments: Vec<KclValue>,
+    constraint_kind: fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
+    function_name: &str,
+    source_range: crate::SourceRange,
+) -> Result<SketchConstraint, KclError> {
+    // Validate length: must be exactly 1 (arc segment)
+    if segments.len() != 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{}() must have exactly 1 argument (an arc segment), got {}",
+                function_name,
+                segments.len()
+            ),
+            vec![source_range],
+        )));
+    }
+
+    let KclValue::Segment { value: seg } = &segments[0] else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() argument must be a segment", function_name),
+            vec![source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &seg.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "segment must be unsolved".to_owned(),
+            vec![source_range],
+        )));
+    };
+    match &unsolved.kind {
+        UnsolvedSegmentKind::Arc {
+            center,
+            start,
+            center_object_id,
+            start_object_id,
+            ..
+        } => {
+            // Extract center and start point coordinates
+            match (&center[0], &center[1], &start[0], &start[1]) {
+                (
+                    UnsolvedExpr::Unknown(center_x),
+                    UnsolvedExpr::Unknown(center_y),
+                    UnsolvedExpr::Unknown(start_x),
+                    UnsolvedExpr::Unknown(start_y),
+                ) => {
+                    // All coordinates are sketch vars. Create constraint.
+                    let sketch_constraint = SketchConstraint {
+                        kind: constraint_kind([
+                            ConstrainablePoint2d {
+                                vars: crate::front::Point2d {
+                                    x: *center_x,
+                                    y: *center_y,
+                                },
+                                object_id: *center_object_id,
+                            },
+                            ConstrainablePoint2d {
+                                vars: crate::front::Point2d {
+                                    x: *start_x,
+                                    y: *start_y,
+                                },
+                                object_id: *start_object_id,
+                            },
+                        ]),
+                        meta: vec![source_range.into()],
+                    };
+                    Ok(sketch_constraint)
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "unimplemented: {}() arc segment must have all sketch vars in all coordinates",
+                        function_name
+                    ),
+                    vec![source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() argument must be an arc segment", function_name),
+            vec![source_range],
+        ))),
+    }
+}
+
+pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segments: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
+
+    create_arc_radius_constraint(
+        segments,
+        |points| SketchConstraintKind::Radius { points },
+        "radius",
+        args.source_range,
+    )
+    .map(|constraint| KclValue::SketchConstraint {
+        value: Box::new(constraint),
+    })
+}
+
+pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segments: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
+
+    create_arc_radius_constraint(
+        segments,
+        |points| SketchConstraintKind::Diameter { points },
+        "diameter",
+        args.source_range,
+    )
+    .map(|constraint| KclValue::SketchConstraint {
+        value: Box::new(constraint),
+    })
 }
 
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

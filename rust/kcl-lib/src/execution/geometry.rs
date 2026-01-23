@@ -1925,4 +1925,6 @@ pub struct SketchConstraint {
 #[serde(rename_all = "camelCase")]
 pub enum SketchConstraintKind {
     Distance { points: [ConstrainablePoint2d; 2] },
+    Radius { points: [ConstrainablePoint2d; 2] },
+    Diameter { points: [ConstrainablePoint2d; 2] },
 }

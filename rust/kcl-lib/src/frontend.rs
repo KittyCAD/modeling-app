@@ -21,8 +21,8 @@ use crate::{
         },
         modify::{find_defined_names, next_free_name},
         sketch::{
-            Coincident, Constraint, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Segment, SegmentCtor,
-            SketchApi, SketchCtor, Vertical,
+            Coincident, Constraint, Diameter, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Radius, Segment,
+            SegmentCtor, SketchApi, SketchCtor, Vertical,
         },
         traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
     },
@@ -47,9 +47,11 @@ const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
 
 const COINCIDENT_FN: &str = "coincident";
+const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
+const RADIUS_FN: &str = "radius";
 const VERTICAL_FN: &str = "vertical";
 
 const LINE_PROPERTY_START: &str = "start";
@@ -604,6 +606,8 @@ impl SketchApi for FrontendState {
             Constraint::Perpendicular(perpendicular) => {
                 self.add_perpendicular(sketch, perpendicular, &mut new_ast).await?
             }
+            Constraint::Radius(radius) => self.add_radius(sketch, radius, &mut new_ast).await?,
+            Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, &mut new_ast).await?,
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
         };
 
@@ -1732,26 +1736,57 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
+        let sketch_id = sketch;
+
+        // Handle single line segment or two points
+        let elements = if distance.points.len() == 1 {
+            // Single line segment case
+            let line_id = distance.points[0];
+            let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
+                msg: format!("Line segment not found: {line_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {line_object:?}"),
+                });
+            };
+            let Segment::Line(_) = line_segment else {
+                return Err(Error {
+                    msg: format!("Single argument to distance() must be a line segment, got: {line_segment:?}"),
+                });
+            };
+            // Reference the line segment directly
+            let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source, "line", None)?;
+            vec![line_ast]
+        } else if distance.points.len() == 2 {
+            // Two points case (original behavior)
+            let [pt0_id, pt1_id] = distance.points.as_slice() else {
+                return Err(Error {
+                    msg: format!(
+                        "Distance constraint must have 1 or 2 arguments, got {}",
+                        distance.points.len()
+                    ),
+                });
+            };
+            // Map the runtime objects back to variable names.
+            let pt0_ast = self.point_id_to_ast_reference(*pt0_id, new_ast)?;
+            let pt1_ast = self.point_id_to_ast_reference(*pt1_id, new_ast)?;
+            vec![pt0_ast, pt1_ast]
+        } else {
             return Err(Error {
                 msg: format!(
-                    "Distance constraint must have exactly 2 points, got {}",
+                    "Distance constraint must have 1 or 2 arguments, got {}",
                     distance.points.len()
                 ),
             });
         };
-        let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
-        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
 
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
+                    elements,
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -1781,6 +1816,154 @@ impl FrontendState {
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
+    async fn add_radius(
+        &mut self,
+        sketch: ObjectId,
+        radius: Radius,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let sketch_id = sketch;
+
+        // Radius constraint must have exactly 1 argument (arc segment)
+        if radius.points.len() != 1 {
+            return Err(Error {
+                msg: format!(
+                    "Radius constraint must have exactly 1 argument (an arc segment), got {}",
+                    radius.points.len()
+                ),
+            });
+        }
+
+        let arc_id = radius.points[0];
+        let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
+            msg: format!("Arc segment not found: {arc_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: arc_segment } = &arc_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {arc_object:?}"),
+            });
+        };
+        let Segment::Arc(_) = arc_segment else {
+            return Err(Error {
+                msg: format!("Radius constraint argument must be an arc segment, got: {arc_segment:?}"),
+            });
+        };
+        // Reference the arc segment directly
+        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
+
+        // Create the radius() call.
+        let radius_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(RADIUS_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![arc_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let radius_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: radius_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: radius.radius.value,
+                    suffix: radius.radius.units,
+                },
+                raw: format_number_literal(radius.radius.value, radius.radius.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", radius.radius.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: radius_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
+    async fn add_diameter(
+        &mut self,
+        sketch: ObjectId,
+        diameter: Diameter,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let sketch_id = sketch;
+
+        // Diameter constraint must have exactly 1 argument (arc/circle segment)
+        if diameter.points.len() != 1 {
+            return Err(Error {
+                msg: format!(
+                    "Diameter constraint must have exactly 1 argument (an arc or circle segment), got {}",
+                    diameter.points.len()
+                ),
+            });
+        }
+
+        let arc_id = diameter.points[0];
+        let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
+            msg: format!("Arc or circle segment not found: {arc_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: arc_segment } = &arc_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {arc_object:?}"),
+            });
+        };
+        let Segment::Arc(_) = arc_segment else {
+            return Err(Error {
+                msg: format!("Diameter constraint argument must be an arc or circle segment, got: {arc_segment:?}"),
+            });
+        };
+        // Reference the arc segment directly
+        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
+
+        // Create the diameter() call.
+        let diameter_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(DIAMETER_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![arc_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let diameter_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: diameter_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: diameter.diameter.value,
+                    suffix: diameter.diameter.units,
+                },
+                raw: format_number_literal(diameter.diameter.value, diameter.diameter.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", diameter.diameter.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: diameter_ast },
         )?;
         Ok(sketch_block_range)
     }
@@ -2163,6 +2346,37 @@ impl FrontendState {
                     false
                 }),
                 Constraint::Distance(d) => d.points.iter().any(|pt_id| {
+                    if segment_ids_set.contains(pt_id) {
+                        return true;
+                    }
+                    let pt_object = self.scene_graph.objects.get(pt_id.0);
+                    if let Some(obj) = pt_object
+                        && let ObjectKind::Segment { segment } = &obj.kind
+                        && let Segment::Point(pt) = segment
+                        && let Some(owner_line_id) = pt.owner
+                    {
+                        return segment_ids_set.contains(&owner_line_id);
+                    }
+                    false
+                }),
+                Constraint::Radius(r) => r.points.iter().any(|pt_id| {
+                    if segment_ids_set.contains(pt_id) {
+                        return true;
+                    }
+                    let pt_object = self.scene_graph.objects.get(pt_id.0);
+                    if let Some(obj) = pt_object
+                        && let ObjectKind::Segment { segment } = &obj.kind
+                        && let Segment::Point(pt) = segment
+                        && let Some(owner_line_id) = pt.owner
+                    {
+                        return segment_ids_set.contains(&owner_line_id);
+                    }
+                    false
+                }),
+                Constraint::Diameter(d) => d.points.iter().any(|pt_id| {
+                    if segment_ids_set.contains(pt_id) {
+                        return true;
+                    }
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
                     if let Some(obj) = pt_object
                         && let ObjectKind::Segment { segment } = &obj.kind
@@ -4377,6 +4591,509 @@ sketch2::distance([point1, point2]) == 2mm
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_single_line_segment() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        // Find the line segment (not the points)
+        let line_id = sketch
+            .segments
+            .iter()
+            .find(|&seg_id| {
+                let obj = frontend.scene_graph.objects.get(seg_id.0);
+                matches!(
+                    obj.map(|o| &o.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![*line_id],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+sketch2::distance([line1]) == 5mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Line (4) + Constraint (5)
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_error_cases() {
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        // Test: Single point should error
+        let initial_source_point = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+}
+";
+        let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
+        let mut frontend_point = FrontendState::new();
+        frontend_point.hack_set_program(&ctx, program_point).await.unwrap();
+        let sketch_object_point = find_first_sketch_object(&frontend_point.scene_graph).unwrap();
+        let sketch_id_point = sketch_object_point.id;
+        let sketch_point = expect_sketch(sketch_object_point);
+        let point_id = *sketch_point.segments.first().unwrap();
+
+        let constraint_point = Constraint::Distance(Distance {
+            points: vec![point_id],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_point = frontend_point
+            .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
+            .await;
+        assert!(result_point.is_err(), "Single point should error");
+
+        // Test: Single arc segment should error (only line segments supported)
+        let initial_source_arc = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 2, var 3])
+}
+";
+        let program_arc = Program::parse(initial_source_arc).unwrap().0.unwrap();
+        let mut frontend_arc = FrontendState::new();
+        frontend_arc.hack_set_program(&ctx, program_arc).await.unwrap();
+        let sketch_object_arc = find_first_sketch_object(&frontend_arc.scene_graph).unwrap();
+        let sketch_id_arc = sketch_object_arc.id;
+        let sketch_arc = expect_sketch(sketch_object_arc);
+        let arc_id = *sketch_arc.segments.first().unwrap();
+
+        let constraint_arc = Constraint::Distance(Distance {
+            points: vec![arc_id],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_arc = frontend_arc
+            .add_constraint(&mock_ctx, version, sketch_id_arc, constraint_arc)
+            .await;
+        assert!(result_arc.is_err(), "Single arc segment should error");
+
+        // Test: More than 2 arguments should error
+        let initial_source_many = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+  sketch2::point(at = [var 5, var 6])
+}
+";
+        let program_many = Program::parse(initial_source_many).unwrap().0.unwrap();
+        let mut frontend_many = FrontendState::new();
+        frontend_many.hack_set_program(&ctx, program_many).await.unwrap();
+        let sketch_object_many = find_first_sketch_object(&frontend_many.scene_graph).unwrap();
+        let sketch_id_many = sketch_object_many.id;
+        let sketch_many = expect_sketch(sketch_object_many);
+        let point0_id = *sketch_many.segments.first().unwrap();
+        let point1_id = *sketch_many.segments.get(1).unwrap();
+        let point2_id = *sketch_many.segments.get(2).unwrap();
+
+        let constraint_many = Constraint::Distance(Distance {
+            points: vec![point0_id, point1_id, point2_id],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_many = frontend_many
+            .add_constraint(&mock_ctx, version, sketch_id_many, constraint_many)
+            .await;
+        assert!(result_many.is_err(), "More than 2 arguments should error");
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_radius_single_arc_segment() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        // Find the arc segment (not the points)
+        let arc_id = sketch
+            .segments
+            .iter()
+            .find(|&seg_id| {
+                let obj = frontend.scene_graph.objects.get(seg_id.0);
+                matches!(
+                    obj.map(|o| &o.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Radius(Radius {
+            points: vec![*arc_id],
+            radius: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+sketch2::radius([arc1]) == 5mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_radius_error_cases() {
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        // Test: Single point should error
+        let initial_source_point = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+}
+";
+        let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
+        let mut frontend_point = FrontendState::new();
+        frontend_point.hack_set_program(&ctx, program_point).await.unwrap();
+        let sketch_object_point = find_first_sketch_object(&frontend_point.scene_graph).unwrap();
+        let sketch_id_point = sketch_object_point.id;
+        let sketch_point = expect_sketch(sketch_object_point);
+        let point_id = *sketch_point.segments.first().unwrap();
+
+        let constraint_point = Constraint::Radius(Radius {
+            points: vec![point_id],
+            radius: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_point = frontend_point
+            .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
+            .await;
+        assert!(result_point.is_err(), "Single point should error for radius");
+
+        // Test: Single line segment should error (only arc segments supported)
+        let initial_source_line = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+        let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
+        let mut frontend_line = FrontendState::new();
+        frontend_line.hack_set_program(&ctx, program_line).await.unwrap();
+        let sketch_object_line = find_first_sketch_object(&frontend_line.scene_graph).unwrap();
+        let sketch_id_line = sketch_object_line.id;
+        let sketch_line = expect_sketch(sketch_object_line);
+        let line_id = *sketch_line.segments.first().unwrap();
+
+        let constraint_line = Constraint::Radius(Radius {
+            points: vec![line_id],
+            radius: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_line = frontend_line
+            .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
+            .await;
+        assert!(result_line.is_err(), "Single line segment should error for radius");
+
+        // Test: More than 1 argument should error
+        let initial_source_many = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  sketch2::arc(start = [var 5, var 6], end = [var 7, var 8], center = [var 0, var 0])
+}
+";
+        let program_many = Program::parse(initial_source_many).unwrap().0.unwrap();
+        let mut frontend_many = FrontendState::new();
+        frontend_many.hack_set_program(&ctx, program_many).await.unwrap();
+        let sketch_object_many = find_first_sketch_object(&frontend_many.scene_graph).unwrap();
+        let sketch_id_many = sketch_object_many.id;
+        let sketch_many = expect_sketch(sketch_object_many);
+        let arc0_id = *sketch_many.segments.first().unwrap();
+        let arc1_id = *sketch_many.segments.get(1).unwrap();
+
+        let constraint_many = Constraint::Radius(Radius {
+            points: vec![arc0_id, arc1_id],
+            radius: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_many = frontend_many
+            .add_constraint(&mock_ctx, version, sketch_id_many, constraint_many)
+            .await;
+        assert!(result_many.is_err(), "More than 1 argument should error for radius");
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_diameter_single_arc_segment() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        // Find the arc segment (not the points)
+        let arc_id = sketch
+            .segments
+            .iter()
+            .find(|&seg_id| {
+                let obj = frontend.scene_graph.objects.get(seg_id.0);
+                matches!(
+                    obj.map(|o| &o.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Diameter(Diameter {
+            points: vec![*arc_id],
+            diameter: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+sketch2::diameter([arc1]) == 10mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_diameter_error_cases() {
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        // Test: Single point should error
+        let initial_source_point = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+}
+";
+        let program_point = Program::parse(initial_source_point).unwrap().0.unwrap();
+        let mut frontend_point = FrontendState::new();
+        frontend_point.hack_set_program(&ctx, program_point).await.unwrap();
+        let sketch_object_point = find_first_sketch_object(&frontend_point.scene_graph).unwrap();
+        let sketch_id_point = sketch_object_point.id;
+        let sketch_point = expect_sketch(sketch_object_point);
+        let point_id = *sketch_point.segments.first().unwrap();
+
+        let constraint_point = Constraint::Diameter(Diameter {
+            points: vec![point_id],
+            diameter: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_point = frontend_point
+            .add_constraint(&mock_ctx, version, sketch_id_point, constraint_point)
+            .await;
+        assert!(result_point.is_err(), "Single point should error for diameter");
+
+        // Test: Single line segment should error (only arc segments supported)
+        let initial_source_line = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+        let program_line = Program::parse(initial_source_line).unwrap().0.unwrap();
+        let mut frontend_line = FrontendState::new();
+        frontend_line.hack_set_program(&ctx, program_line).await.unwrap();
+        let sketch_object_line = find_first_sketch_object(&frontend_line.scene_graph).unwrap();
+        let sketch_id_line = sketch_object_line.id;
+        let sketch_line = expect_sketch(sketch_object_line);
+        let line_id = *sketch_line.segments.first().unwrap();
+
+        let constraint_line = Constraint::Diameter(Diameter {
+            points: vec![line_id],
+            diameter: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_line = frontend_line
+            .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
+            .await;
+        assert!(result_line.is_err(), "Single line segment should error for diameter");
+
+        // Test: More than 1 argument should error
+        let initial_source_many = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  sketch2::arc(start = [var 5, var 6], end = [var 7, var 8], center = [var 0, var 0])
+}
+";
+        let program_many = Program::parse(initial_source_many).unwrap().0.unwrap();
+        let mut frontend_many = FrontendState::new();
+        frontend_many.hack_set_program(&ctx, program_many).await.unwrap();
+        let sketch_object_many = find_first_sketch_object(&frontend_many.scene_graph).unwrap();
+        let sketch_id_many = sketch_object_many.id;
+        let sketch_many = expect_sketch(sketch_object_many);
+        let arc0_id = *sketch_many.segments.first().unwrap();
+        let arc1_id = *sketch_many.segments.get(1).unwrap();
+
+        let constraint_many = Constraint::Diameter(Diameter {
+            points: vec![arc0_id, arc1_id],
+            diameter: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let result_many = frontend_many
+            .add_constraint(&mock_ctx, version, sketch_id_many, constraint_many)
+            .await;
+        assert!(result_many.is_err(), "More than 1 argument should error for diameter");
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_line_horizontal() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
@@ -4814,7 +5531,7 @@ sketch(on = XY) {
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
   sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2*x
+sketch2::distance([line1]) == 2*x
 }
 
 // Line segment with length x.
@@ -4918,7 +5635,7 @@ sketch(on = XY) {
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
   sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+sketch2::distance([line1]) == 2 * x
 }
 
 // Line segment with length x.
@@ -4961,7 +5678,7 @@ sketch(on = XY) {
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
   sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+sketch2::distance([line1]) == 2 * x
 }
 
 // Line segment with length x.
@@ -5050,7 +5767,7 @@ sketch(on = XY) {
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
   sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+sketch2::distance([line1]) == 2 * x
 }
 
 // Line segment with length x.
@@ -5093,7 +5810,7 @@ sketch(on = XY) {
   sketch2::coincident([line3.end, line1.start])
   sketch2::equalLength([line3, line1])
   sketch2::equalLength([line1, line2])
-sketch2::distance([line1.start, line1.end]) == 2 * x
+sketch2::distance([line1]) == 2 * x
 }
 
 // Line segment with length x.
