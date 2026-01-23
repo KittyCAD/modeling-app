@@ -1,3 +1,6 @@
+// Dog House (Great Dane) - Left Wall
+// Left wall studs, slats, and door opening placement.
+
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 import * from "dimensions.kcl"

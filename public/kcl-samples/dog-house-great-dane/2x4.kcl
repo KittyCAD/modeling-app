@@ -1,3 +1,6 @@
+// Dog House (Great Dane) - 2x4 Helpers
+// Utility helpers for extruding 2x4 lumber profiles.
+
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 import * from "dimensions.kcl"

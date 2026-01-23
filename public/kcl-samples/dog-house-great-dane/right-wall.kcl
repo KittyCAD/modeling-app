@@ -1,3 +1,6 @@
+// Dog House (Great Dane) - Right Wall
+// Right wall studs, plates, and slats.
+
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 import * from "dimensions.kcl"

@@ -1,3 +1,6 @@
+// Dog House (Great Dane) - Dimensions
+// Shared dimension constants for the Great Dane dog house.
+
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 // Core dimensions (inches)

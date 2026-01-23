@@ -1,3 +1,6 @@
+// Dog House (Great Dane) - Door
+// Door panel and hardware placement for the dog house.
+
 @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 
 import * from "dimensions.kcl"
