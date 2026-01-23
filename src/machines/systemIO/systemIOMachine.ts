@@ -330,7 +330,6 @@ export const systemIOMachine = setup({
       )
     },
     [SystemIOMachineActions.toastError]: ({ event }) => {
-      debugger
       toast.error(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&

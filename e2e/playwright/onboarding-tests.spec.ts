@@ -29,10 +29,6 @@ test.describe('Onboarding tests', { tag: ['@web', '@desktop'] }, () => {
     const helpMenuRestartOnboardingButton = page.getByRole('button', {
       name: 'Replay onboarding tutorial',
     })
-    const postDismissToast = page.getByText(
-      'Click the question mark in the lower-right corner if you ever want to redo the tutorial!'
-    )
-
     await test.step('Test initial home page view, showing a tutorial button', async () => {
       await expect(homePage.tutorialBtn).toBeVisible()
       await homePage.expectState({
@@ -90,9 +86,6 @@ test.describe('Onboarding tests', { tag: ['@web', '@desktop'] }, () => {
       await test.step('Dismiss the onboarding', async () => {
         await prevButton.hover()
         await prevButton.click()
-        // await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-        // await expect(postDismissToast).toBeVisible()
-        // await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
     })
 
