@@ -473,7 +473,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: '',
+        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -510,7 +510,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: '',
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -1059,7 +1059,7 @@ sketch002 = startSketchOn(plane001)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -2564,6 +2564,91 @@ box = extrude(profile, length = 30)`
         activeLines: [expectedTranslateCode],
         highlightedCode: '',
       })
+    })
+  })
+
+  test('Flip Surface point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-6.79, 0])
+  |> line(end = [11.46, 10.74])
+  |> line(endAbsolute = [7.24, 0])
+extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
+    const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
+      await toolbar.selectSurface('flip-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'surface',
+        currentArgValue: '',
+        headerArguments: {
+          Surface: '',
+        },
+        highlightedHeaderArg: 'surface',
+        commandName: 'Flip Surface',
+      })
+
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'extrude001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'surface',
+        currentArgValue: '',
+        headerArguments: {
+          Surface: '',
+        },
+        highlightedHeaderArg: 'surface',
+        commandName: 'Flip Surface',
+      })
+    })
+
+    await test.step('Review and submit', async () => {
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Surface: '1 sweep',
+        },
+        commandName: 'Flip Surface',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Verify code was added', async () => {
+      await editor.expectEditor.toContain(flipSurfaceDeclaration)
+    })
+
+    await test.step('Delete flip surface via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'surface001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(flipSurfaceDeclaration)
     })
   })
 

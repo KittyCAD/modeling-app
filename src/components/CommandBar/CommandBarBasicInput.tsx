@@ -8,8 +8,8 @@ import {
   kclManager,
   useCommandBarState,
 } from '@src/lib/singletons'
-import { Marked } from '@ts-stack/markdown'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -109,14 +109,9 @@ function CommandBarBasicInput({
         />
       </label>
       {arg.description && (
-        <div
+        <MarkdownText
+          text={arg.description}
           className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(arg.description, {
-              gfm: true,
-              breaks: true,
-            }),
-          }}
         />
       )}
     </form>

@@ -155,19 +155,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
-    ],
-    "pathFromProjectDirectoryToFirstFile": "brake-rotor/main.kcl",
-    "multipleFiles": false,
-    "title": "Brake Rotor",
-    "description": "A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
-    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
@@ -189,7 +176,7 @@
     "description": "A car wheel assembly with a rotor, tire, and lug nuts.",
     "files": [
       "brake-caliper.kcl",
-      "car-rotor.kcl",
+      "brake-rotor.kcl",
       "car-tire.kcl",
       "car-wheel.kcl",
       "lug-nut.kcl",
@@ -1815,6 +1802,19 @@
     "multipleFiles": false,
     "title": "Wedge",
     "description": "A wedge is a triangular prism defined by it's length, width, and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wheel-hub/main.kcl",
+    "multipleFiles": false,
+    "title": "Hub",
+    "description": "A wheel hub is the part that connects the wheel to the suspension",
     "files": [
       "main.kcl"
     ]

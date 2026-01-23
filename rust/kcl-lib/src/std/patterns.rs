@@ -154,11 +154,13 @@ async fn send_pattern_transform<T: GeometryTrait>(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: if use_original { solid.original_id() } else { solid.id() },
-                transform: Default::default(),
-                transforms,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityLinearPatternTransform::builder()
+                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .transform(Default::default())
+                    .transforms(transforms)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -953,22 +955,24 @@ async fn pattern_circular(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::EntityCircularPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: if data.use_original() {
-                    geometry.original_id()
-                } else {
-                    geometry.id()
-                },
-                center: kcmc::shared::Point3d {
-                    x: LengthUnit(center[0]),
-                    y: LengthUnit(center[1]),
-                    z: LengthUnit(center[2]),
-                },
-                num_repetitions,
-                arc_degrees: data.arc_degrees().unwrap_or(360.0),
-                rotate_duplicates: data.rotate_duplicates().unwrap_or(true),
-            }),
+            ModelingCmd::from(
+                mcmd::EntityCircularPattern::builder()
+                    .axis(kcmc::shared::Point3d::from(data.axis()))
+                    .entity_id(if data.use_original() {
+                        geometry.original_id()
+                    } else {
+                        geometry.id()
+                    })
+                    .center(kcmc::shared::Point3d {
+                        x: LengthUnit(center[0]),
+                        y: LengthUnit(center[1]),
+                        z: LengthUnit(center[2]),
+                    })
+                    .num_repetitions(num_repetitions)
+                    .arc_degrees(data.arc_degrees().unwrap_or(360.0))
+                    .rotate_duplicates(data.rotate_duplicates().unwrap_or(true))
+                    .build(),
+            ),
         )
         .await?;
 

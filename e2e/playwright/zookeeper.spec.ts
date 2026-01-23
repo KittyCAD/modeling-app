@@ -33,24 +33,31 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     await test.step(`Submit basic prompt`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.TTC)
+      await copilot.setMode('fast')
       await copilot.conversationInput.fill(
-        'make a 10x10x10cm cube centered on the origin'
+        'make a 10x10x10cm cube centered on the origin, name the last variable "cube"'
       )
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 60_000,
+        timeout: 120_000,
       })
       await expect(copilot.thinkingView).toBeVisible()
       await expect(copilot.thinkingView).not.toBeVisible({
-        timeout: 60_000,
+        timeout: 120_000,
       })
+
+      await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)
-      // TODO: maybe check for a sweep artifact in the debug pane?
+
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
+      await expect(extrude).toBeVisible()
     })
   }
 

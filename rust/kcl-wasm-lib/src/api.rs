@@ -150,11 +150,11 @@ impl Context {
             serde_json::from_str(file_json).map_err(|e| format!("Could not deserialize FileId: {e}"))?;
         let version: kcl_lib::front::Version =
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let args: kcl_lib::front::SketchArgs =
-            serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchArgs: {e}"))?;
+        let args: kcl_lib::front::SketchCtor =
+            serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchCtor: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_executor_ctx(settings, None, false)
             .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -245,7 +245,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_executor_ctx(settings, None, false)
             .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);

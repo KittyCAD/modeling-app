@@ -55,19 +55,21 @@ async fn inner_mirror_2d(
             let resp = exec_state
                 .send_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::EntityMirror {
-                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                        axis: Point3d {
-                            x: direction[0].to_mm(),
-                            y: direction[1].to_mm(),
-                            z: 0.0,
-                        },
-                        point: Point3d {
-                            x: LengthUnit(origin[0].to_mm()),
-                            y: LengthUnit(origin[1].to_mm()),
-                            z: LengthUnit(0.0),
-                        },
-                    }),
+                    ModelingCmd::from(
+                        mcmd::EntityMirror::builder()
+                            .ids(starting_sketches.iter().map(|sketch| sketch.id).collect())
+                            .axis(Point3d {
+                                x: direction[0].to_mm(),
+                                y: direction[1].to_mm(),
+                                z: 0.0,
+                            })
+                            .point(Point3d {
+                                x: LengthUnit(origin[0].to_mm()),
+                                y: LengthUnit(origin[1].to_mm()),
+                                z: LengthUnit(0.0),
+                            })
+                            .build(),
+                    ),
                 )
                 .await?;
 
@@ -110,10 +112,12 @@ async fn inner_mirror_2d(
             let resp = exec_state
                 .send_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
-                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                        edge_id,
-                    }),
+                    ModelingCmd::from(
+                        mcmd::EntityMirrorAcrossEdge::builder()
+                            .ids(starting_sketches.iter().map(|sketch| sketch.id).collect())
+                            .edge_id(edge_id)
+                            .build(),
+                    ),
                 )
                 .await?;
 

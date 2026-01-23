@@ -668,8 +668,6 @@ description: Result of parsing v-block.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a sketch for the vBlock profile on the YZ plane"
         ],
         "start": 0,
@@ -2389,6 +2387,16 @@ description: Result of parsing v-block.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "plateu",
                       "style": "line"
@@ -2396,6 +2404,16 @@ description: Result of parsing v-block.kcl
                   }
                 ],
                 "9": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -2417,13 +2435,9 @@ description: Result of parsing v-block.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "blockComment",
-                      "value": "bottom",
-                      "style": "line"
+                      "type": "newLine"
                     }
-                  }
-                ],
-                "16": [
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -2431,8 +2445,8 @@ description: Result of parsing v-block.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Extrude the profile to create the v-block",
+                      "type": "blockComment",
+                      "value": "bottom",
                       "style": "line"
                     }
                   }
@@ -2452,8 +2466,6 @@ description: Result of parsing v-block.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define the profile of the vBlock"
         ],
         "start": 0,
@@ -2554,6 +2566,9 @@ description: Result of parsing v-block.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Extrude the profile to create the v-block"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2619,8 +2634,6 @@ description: Result of parsing v-block.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Side holes"
         ],
         "start": 0,
@@ -3353,6 +3366,54 @@ description: Result of parsing v-block.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
           {
             "commentStart": 0,
             "end": 0,

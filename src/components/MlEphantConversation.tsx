@@ -14,6 +14,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { kclManager } from '@src/lib/singletons'
+import Tooltip from '@src/components/Tooltip'
 
 const noop = () => {}
 
@@ -22,7 +23,7 @@ export interface MlEphantConversationProps {
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   onProcess: (request: string, mode: MlCopilotMode) => void
-  onInterrupt: () => void
+  onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
@@ -160,7 +161,7 @@ interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
-  onInterrupt: MlEphantConversationProps['onInterrupt']
+  onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
@@ -244,14 +245,20 @@ export const MlEphantConversationInput = (
                 className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
               >
                 <CustomIcon name="arrowShortUp" className="w-5 h-5" />
+                <Tooltip position="top" hoverOnly={true}>
+                  <span>Send</span>
+                </Tooltip>
               </button>
             ) : (
               <button
                 data-testid="ml-ephant-conversation-input-button"
-                onClick={props.onInterrupt}
+                onClick={props.onCancel}
                 className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
+                <Tooltip position="top" hoverOnly={true}>
+                  <span>Cancel</span>
+                </Tooltip>
               </button>
             )}
           </div>
@@ -288,22 +295,11 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
-  const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, mode: MlCopilotMode) => {
-    setAutoScroll(true)
-    props.onProcess(request, mode)
-  }
-
-  // Scroll to bottom when:
-  // 1. A new message is added (exchanges length changes)
-  // 2. A prompt completes (hasPromptCompleted becomes true)
+  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
   useEffect(() => {
     const exchangesLength = props.conversation?.exchanges.length ?? 0
-
-    if (autoScroll === false) return
-    if (refScroll.current === null) return
-    if (exchangesLength === 0 && !props.hasPromptCompleted) return
+    if (exchangesLength === 0) return
 
     requestAnimationFrame(() => {
       if (refScroll.current) {
@@ -313,11 +309,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         })
       }
     })
-  }, [
-    props.conversation?.exchanges.length,
-    props.hasPromptCompleted,
-    autoScroll,
-  ])
+  }, [props.conversation?.exchanges.length])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -333,16 +325,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       )
     }
   )
-
-  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
-
-  useEffect(() => {
-    if (refScroll.current === null) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [hasCards])
 
   return (
     <div className="relative">
@@ -375,9 +357,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
-              onProcess={onProcess}
+              onProcess={props.onProcess}
               onReconnect={props.onReconnect}
-              onInterrupt={props.onInterrupt}
+              onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0

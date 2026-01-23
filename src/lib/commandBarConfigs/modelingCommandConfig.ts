@@ -53,6 +53,7 @@ import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -76,6 +77,7 @@ import {
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -111,6 +113,12 @@ const objectsTypesAndFilters: {
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
 }
+
+// For all surface modeling commands
+const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
+  name: capitaliseFC(value.toLowerCase()),
+  value,
+}))
 
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
@@ -172,6 +180,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Revolve: {
     // Enables editing workflow
@@ -188,6 +197,7 @@ export type ModelingCommandSchema = {
     tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
+    bodyType?: KclPreludeBodyType
   }
   Shell: {
     // Enables editing workflow
@@ -358,6 +368,13 @@ export type ModelingCommandSchema = {
   }
   'Boolean Intersect': {
     solids: Selections
+  }
+  'Flip Surface': {
+    surface: Selections
+  }
+  'Boolean Split': {
+    targets: Selections
+    merge: boolean
   }
 }
 
@@ -595,6 +612,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: false,
         multiple: false,
+        description: 'Note: Only parallel faces are supported for now.',
       },
       symmetric: {
         inputType: 'boolean',
@@ -637,10 +655,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
-        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -746,7 +761,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -770,6 +785,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -806,7 +826,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -864,6 +884,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -1171,6 +1196,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Split': {
+    description:
+      "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+    icon: 'split',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addSplit({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Split']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      targets: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      merge: {
+        inputType: 'boolean',
+        required: true,
+        defaultValue: true,
+        hidden: true, // TODO: revisit once KCL supports false
+        skip: true,
       },
     },
   },
@@ -2114,6 +2183,43 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
+      },
+    },
+  },
+  'Flip Surface': {
+    description:
+      'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
+    icon: 'flipSurface',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlipSurface({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Flip Surface']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      surface: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
       },
     },
   },

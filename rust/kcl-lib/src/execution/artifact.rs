@@ -85,6 +85,8 @@ impl CodeRef {
 #[serde(rename_all = "camelCase")]
 pub struct CompositeSolid {
     pub id: ArtifactId,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
     pub sub_type: CompositeSolidSubType,
     /// Constituent solids of the composite solid.
     pub solid_ids: Vec<ArtifactId>,
@@ -122,8 +124,14 @@ pub struct Path {
     pub id: ArtifactId,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The sweep, if any, that this Path serves as the base path for.
+    /// corresponds to `path_id` on the Sweep.
     pub sweep_id: Option<ArtifactId>,
+    /// The sweep, if any, that this Path serves as the trajectory for.
+    pub trajectory_sweep_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -166,7 +174,12 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// ID of trajectory path for sweep, if any
+    /// Only applicable to SweepSubType::Sweep, which can use a trajectory path
+    pub trajectory_id: Option<ArtifactId>,
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -351,6 +364,10 @@ pub struct Helix {
     /// add axes to the graph.
     pub axis_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The sweep, if any, that this Helix serves as the trajectory for.
+    pub trajectory_sweep_id: Option<ArtifactId>,
+    /// Whether this artifact has been used in a subsequent operation
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -459,7 +476,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
-            Artifact::Helix(_) => Some(new),
+            Artifact::Helix(a) => a.merge(new),
         }
     }
 }
@@ -472,6 +489,7 @@ impl CompositeSolid {
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -494,11 +512,13 @@ impl Path {
             return Some(new);
         };
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
+        merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -525,6 +545,8 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+        merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -561,6 +583,19 @@ impl EdgeCut {
         };
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+
+        None
+    }
+}
+
+impl Helix {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Helix(new) = new else {
+            return Some(new);
+        };
+        merge_opt_id(&mut self.axis_id, new.axis_id);
+        merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
+        self.consumed = new.consumed;
 
         None
     }
@@ -768,6 +803,7 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
     }
 }
 
+/// Merge optional Artifact ID
 fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     // Always use the new one, even if it clears it.
     *base = new;
@@ -851,6 +887,7 @@ fn artifacts_to_update(
                         Some(Artifact::Plane(Plane { path_ids, .. })) => path_ids.clone(),
                         _ => Vec::new(),
                     };
+                    // Create an entirely new plane
                     return Ok(vec![Artifact::Plane(Plane {
                         id: entity_id.into(),
                         path_ids,
@@ -872,11 +909,13 @@ fn artifacts_to_update(
                 plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
+                trajectory_sweep_id: None,
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
+                consumed: false,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -993,11 +1032,13 @@ fn artifacts_to_update(
                         plane_id: original_path.plane_id,
                         seg_ids: Vec::new(),
                         sweep_id: None,
+                        trajectory_sweep_id: None,
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
                         inner_path_id: None,
                         outer_path_id: None,
+                        consumed: false,
                     }
                 };
 
@@ -1024,8 +1065,7 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
-        | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
@@ -1046,7 +1086,6 @@ fn artifacts_to_update(
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
-                ModelingCmd::Sweep(_) => SweepSubType::Sweep,
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
@@ -1058,21 +1097,77 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                trajectory_id: None,
                 method,
+                consumed: false,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
                 new_path.sweep_id = Some(id);
+                new_path.consumed = true;
                 return_arr.push(Artifact::Path(new_path));
                 if let Some(inner_path_id) = path.inner_path_id
                     && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
                     && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
                 {
                     inner_path_artifact.sweep_id = Some(id);
+                    inner_path_artifact.consumed = true;
                     return_arr.push(Artifact::Path(inner_path_artifact))
                 }
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::Sweep(kcmc::Sweep { target, trajectory, .. }) => {
+            // Determine the resulting method from the specific command, if provided
+            let method = kittycad_modeling_cmds::shared::ExtrudeMethod::Merge;
+            let sub_type = SweepSubType::Sweep;
+            let mut return_arr = Vec::new();
+            let target = ArtifactId::from(target);
+            let trajectory = ArtifactId::from(trajectory);
+            return_arr.push(Artifact::Sweep(Sweep {
+                id,
+                sub_type,
+                path_id: target,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                trajectory_id: Some(trajectory),
+                method,
+                consumed: false,
+            }));
+            let path = artifacts.get(&target);
+            if let Some(Artifact::Path(path)) = path {
+                let mut new_path = path.clone();
+                new_path.sweep_id = Some(id);
+                new_path.consumed = true;
+                return_arr.push(Artifact::Path(new_path));
+                if let Some(inner_path_id) = path.inner_path_id
+                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                {
+                    inner_path_artifact.sweep_id = Some(id);
+                    inner_path_artifact.consumed = true;
+                    return_arr.push(Artifact::Path(inner_path_artifact))
+                }
+            }
+            if let Some(trajectory_artifact) = artifacts.get(&trajectory) {
+                match trajectory_artifact {
+                    Artifact::Path(path) => {
+                        let mut new_path = path.clone();
+                        new_path.trajectory_sweep_id = Some(id);
+                        new_path.consumed = true;
+                        return_arr.push(Artifact::Path(new_path));
+                    }
+                    Artifact::Helix(helix) => {
+                        let mut new_helix = helix.clone();
+                        new_helix.trajectory_sweep_id = Some(id);
+                        new_helix.consumed = true;
+                        return_arr.push(Artifact::Helix(new_helix));
+                    }
+                    _ => {}
+                }
+            };
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
@@ -1094,12 +1189,15 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+                consumed: false,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
+                    new_path.consumed = true;
                     new_path.sweep_id = Some(id);
                     return_arr.push(Artifact::Path(new_path));
                 }
@@ -1382,11 +1480,24 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::EntityMakeHelix(cmd) => {
+            let cylinder_id = ArtifactId::new(cmd.cylinder_id);
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: Some(cylinder_id),
+                code_ref,
+                trajectory_sweep_id: None,
+                consumed: false,
+            })];
+            return Ok(return_arr);
+        }
         ModelingCmd::EntityMakeHelixFromParams(_) => {
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: None,
                 code_ref,
+                trajectory_sweep_id: None,
+                consumed: false,
             })];
             return Ok(return_arr);
         }
@@ -1396,6 +1507,8 @@ fn artifacts_to_update(
                 id,
                 axis_id: Some(edge_id),
                 code_ref,
+                trajectory_sweep_id: None,
+                consumed: false,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
@@ -1414,6 +1527,7 @@ fn artifacts_to_update(
             let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
             if let Some(Artifact::Path(path)) = inner_solid2d {
                 let mut new_path = path.clone();
+                new_path.consumed = true;
                 new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
                 return_arr.push(Artifact::Path(new_path));
             }
@@ -1493,6 +1607,7 @@ fn artifacts_to_update(
                 // Create the composite solid
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
+                    consumed: false,
                     sub_type,
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
@@ -1507,11 +1622,23 @@ fn artifacts_to_update(
                             Artifact::CompositeSolid(comp) => {
                                 let mut new_comp = comp.clone();
                                 new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
+
+                                // We want to mark any sweeps of the path used in this operation
+                                // as consumed. The path itself is already consumed by sweeping
+                                if let Some(sweep_id) = new_path.sweep_id
+                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                                {
+                                    let mut new_sweep = sweep.clone();
+                                    new_sweep.consumed = true;
+                                    return_arr.push(Artifact::Sweep(new_sweep));
+                                }
+
                                 return_arr.push(Artifact::Path(new_path));
                             }
                             _ => {}
@@ -1526,11 +1653,23 @@ fn artifacts_to_update(
                             Artifact::CompositeSolid(comp) => {
                                 let mut new_comp = comp.clone();
                                 new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
+
+                                // We want to mark any sweeps of the path used in this operation
+                                // as consumed. The path itself is already consumed by sweeping
+                                if let Some(sweep_id) = new_path.sweep_id
+                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                                {
+                                    let mut new_sweep = sweep.clone();
+                                    new_sweep.consumed = true;
+                                    return_arr.push(Artifact::Sweep(new_sweep));
+                                }
+
                                 return_arr.push(Artifact::Path(new_path));
                             }
                             _ => {}

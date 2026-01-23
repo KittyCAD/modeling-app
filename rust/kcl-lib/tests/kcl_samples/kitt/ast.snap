@@ -843,8 +843,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 1. Kitty Body"
         ],
         "start": 0,
@@ -1631,25 +1629,6 @@ description: Result of parsing kitt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "7": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "2. Kitty Head (Frame of display)",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1698,6 +1677,9 @@ description: Result of parsing kitt.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// 2. Kitty Head (Frame of display)"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2401,8 +2383,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 3. Kitty Face"
         ],
         "start": 0,
@@ -4023,44 +4003,6 @@ description: Result of parsing kitt.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "15": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Kitty Face Features:",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "3.1 Kitty Eyes",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "3.1.1 Kitty Left Eye",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -4113,6 +4055,13 @@ description: Result of parsing kitt.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Kitty Face Features:",
+          "// 3.1 Kitty Eyes",
+          "",
+          "",
+          "// 3.1.1 Kitty Left Eye"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4469,8 +4418,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 3.1.2 Kitty Right Eye"
         ],
         "start": 0,
@@ -4772,8 +4719,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 3.2 Kitty Nose"
         ],
         "start": 0,
@@ -6831,20 +6776,6 @@ description: Result of parsing kitt.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "15": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "3.3 Kitty Mouth",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -6897,6 +6828,9 @@ description: Result of parsing kitt.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// 3.3 Kitty Mouth"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -7514,8 +7448,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 4. Kitty Belly"
         ],
         "start": 0,
@@ -8250,8 +8182,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 4.1 Kitty VHS"
         ],
         "start": 0,
@@ -8721,8 +8651,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 4.2 Kitty Floppy"
         ],
         "start": 0,
@@ -9583,8 +9511,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 4.3 Kitty Belly Button"
         ],
         "start": 0,
@@ -10380,8 +10306,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 4.4 Kitty Buttons"
         ],
         "start": 0,
@@ -11532,8 +11456,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 5. Kitty Legs"
         ],
         "start": 0,
@@ -13880,8 +13802,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 6. Kitty Ears"
         ],
         "start": 0,
@@ -16272,8 +16192,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 7. Kitty Side",
           "// 7.1 Grill"
         ],
@@ -18759,8 +18677,6 @@ description: Result of parsing kitt.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// 7.2 Kitty Vent"
         ],
         "start": 0,
@@ -19735,7 +19651,31 @@ description: Result of parsing kitt.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
           {
             "commentStart": 0,
             "end": 0,
@@ -19771,7 +19711,79 @@ description: Result of parsing kitt.kcl
             }
           }
         ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "28": [
           {
             "commentStart": 0,
             "end": 0,
@@ -19795,7 +19807,31 @@ description: Result of parsing kitt.kcl
             }
           }
         ],
+        "33": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "37": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "38": [
           {
             "commentStart": 0,
             "end": 0,
@@ -19819,7 +19855,31 @@ description: Result of parsing kitt.kcl
             }
           }
         ],
+        "46": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "51": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "52": [
           {
             "commentStart": 0,
             "end": 0,
@@ -19844,6 +19904,18 @@ description: Result of parsing kitt.kcl
           }
         ],
         "59": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "60": [
           {
             "commentStart": 0,
             "end": 0,
@@ -19891,6 +19963,18 @@ description: Result of parsing kitt.kcl
             }
           }
         ],
+        "69": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "72": [
           {
             "commentStart": 0,
@@ -19904,6 +19988,18 @@ description: Result of parsing kitt.kcl
           }
         ],
         "75": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "77": [
           {
             "commentStart": 0,
             "end": 0,
@@ -20024,6 +20120,18 @@ description: Result of parsing kitt.kcl
           }
         ],
         "94": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "95": [
           {
             "commentStart": 0,
             "end": 0,

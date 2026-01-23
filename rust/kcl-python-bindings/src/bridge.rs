@@ -43,12 +43,11 @@ impl CameraLookAt {
 
 impl From<CameraLookAt> for kcmc::DefaultCameraLookAt {
     fn from(CameraLookAt { vantage, center, up }: CameraLookAt) -> Self {
-        Self {
-            vantage: vantage.into(),
-            center: center.into(),
-            up: up.into(),
-            sequence: None,
-        }
+        Self::builder()
+            .vantage(vantage.into())
+            .center(center.into())
+            .up(up.into())
+            .build()
     }
 }
 

@@ -4,6 +4,7 @@ import { DebugArtifactGraph } from '@src/components/DebugArtifactGraph'
 import { EngineCommands } from '@src/components/EngineCommands'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { DebugSelections } from '@src/components/DebugSelections'
 
 export function DebugPane(props: AreaTypeComponentProps) {
   return (
@@ -36,6 +37,7 @@ export const DebugPaneContent = () => {
           <CamDebugSettings />
           <AstExplorer />
           <DebugArtifactGraph />
+          <DebugSelections />
         </div>
       </section>
     </div>

@@ -326,8 +326,6 @@ description: Result of parsing gallows-bracket.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Drawings recommend 450mm spacing"
         ],
         "start": 0,
@@ -1164,6 +1162,18 @@ description: Result of parsing gallows-bracket.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
           {
             "commentStart": 0,
             "end": 0,

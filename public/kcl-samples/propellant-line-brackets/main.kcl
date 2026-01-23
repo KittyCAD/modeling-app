@@ -62,8 +62,8 @@ profile006 = circle(sketch003, center = [-bracketLength + .5, 1], radius = holeD
 extrude001 = extrude([profile006, profile005], length = -.25)
   |> appearance(%, color = "#a18e30")
 
-  // P-Clamp
-  // is a metal bracket shaped like the letter “P” that is used to secure pipes, tubing, hoses, or cables to a structure. It’s widely used in aerospace, automotive, and industrial applications to keep lines in place and isolate them from vibration and abrasion.
+// P-Clamp
+// is a metal bracket shaped like the letter “P” that is used to secure pipes, tubing, hoses, or cables to a structure. It’s widely used in aerospace, automotive, and industrial applications to keep lines in place and isolate them from vibration and abrasion.
 
 // Define parameters
 tubeDiameter = 1.5

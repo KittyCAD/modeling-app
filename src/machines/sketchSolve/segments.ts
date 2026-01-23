@@ -7,30 +7,137 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type Themes } from '@src/lib/theme'
 import { hasNumericValue } from '@src/lib/kclHelpers'
+import type { Mesh } from 'three'
 import {
   BufferGeometry,
-  ExtrudeGeometry,
+  EllipseCurve,
   Group,
   Line,
   LineBasicMaterial,
-  LineCurve3,
-  Mesh,
-  MeshBasicMaterial,
+  Vector2,
   Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import {
-  createLineShape,
-  createArcGeometry,
-} from '@src/clientSideScene/segments'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
+  SEGMENT_WIDTH_PX,
+  STRAIGHT_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
+import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
+import { hasProperty, isArray } from '@src/lib/utils'
+// Import and re-export pure utility functions
+import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import {
-  KCL_DEFAULT_COLOR,
-  packRgbToColor,
-  SKETCH_SELECTION_COLOR,
-  SKETCH_SELECTION_RGB,
-  SKETCH_SELECTION_RGB_STR,
-} from '@src/lib/constants'
+  setupConstructionLineDashShader,
+  setupConstructionArcDashShader,
+} from '@src/machines/sketchSolve/constructionDashShader'
+import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+
+/**
+ * Type guard to check if a value is a uniform value object with a 'value' property.
+ */
+function isUniformValue(value: unknown): value is { value: unknown } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'value' in value &&
+    Object.keys(value).length >= 1
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid Freedom.
+ */
+function isFreedom(value: unknown): value is Freedom {
+  return (
+    typeof value === 'string' &&
+    (value === 'Free' || value === 'Fixed' || value === 'Conflict')
+  )
+}
+
+/**
+ * Type guard to check if a value is a Three.js Line object.
+ */
+function isLine(value: unknown): value is Line {
+  return value instanceof Line
+}
+
+/**
+ * Safely removes custom shader properties from a material.
+ * Uses runtime property checks without type assertions.
+ */
+function removeCustomShaderProperties(material: LineMaterial): void {
+  // Check if properties exist at runtime before attempting to delete
+  if (hasProperty(material, 'onBeforeCompile')) {
+    Reflect.deleteProperty(material, 'onBeforeCompile')
+  }
+  if (hasProperty(material, 'customProgramCacheKey')) {
+    Reflect.deleteProperty(material, 'customProgramCacheKey')
+  }
+}
+
+/**
+ * Safely accesses the program property if it exists.
+ * Uses runtime type checking without assertions.
+ * Returns the program object if it exists (can be a class instance like WebGLProgram),
+ * or null/undefined if it doesn't exist.
+ */
+function getMaterialProgram(material: LineMaterial): unknown {
+  if (!hasProperty(material, 'program')) {
+    return undefined
+  }
+  const program = material.program
+  // Runtime type check to ensure it's an object-like value (not null/undefined)
+  // Accepts both plain objects and class instances (like WebGLProgram)
+  if (program === null || program === undefined) {
+    return program
+  }
+  // Check if it's an object-like value (including class instances)
+  if (typeof program === 'object') {
+    return program
+  }
+  return undefined
+}
+
+/**
+ * Safely accesses uniforms if they exist.
+ * Uses runtime type checking without assertions.
+ */
+function getMaterialUniforms(
+  material: LineMaterial
+): Record<string, { value: unknown }> | undefined {
+  if (!hasProperty(material, 'uniforms')) {
+    return undefined
+  }
+  const uniforms = material.uniforms
+  // Runtime type check to ensure it's the expected type
+  if (
+    uniforms !== null &&
+    uniforms !== undefined &&
+    typeof uniforms === 'object' &&
+    !isArray(uniforms)
+  ) {
+    // Verify structure matches expected format
+    const entries = Object.entries(uniforms)
+    const isValidUniforms = entries.every(
+      ([, value]) =>
+        typeof value === 'object' && value !== null && 'value' in value
+    )
+    if (isValidUniforms) {
+      // Construct the return type from verified entries
+      const result: Record<string, { value: unknown }> = {}
+      for (const [key, value] of entries) {
+        if (isUniformValue(value)) {
+          result[key] = value
+        }
+      }
+      return result
+    }
+  }
+  return undefined
+}
 
 export const SEGMENT_TYPE_POINT = 'POINT'
 export const SEGMENT_TYPE_LINE = 'LINE'
@@ -43,7 +150,9 @@ interface CreateSegmentArgs {
   theme: Themes
   id: number
   scale: number
-  isDraft?: boolean
+  isDraft: boolean
+  isConstruction: boolean
+  freedom?: Freedom | null
 }
 
 interface UpdateSegmentArgs {
@@ -53,7 +162,9 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
-  isDraft?: boolean
+  isDraft: boolean
+  isConstruction: boolean
+  freedom?: Freedom | null
 }
 
 /**
@@ -110,9 +221,24 @@ class PointSegment implements SketchEntityUtils {
     status: {
       isSelected: boolean
       isHovered: boolean
-      isDraft?: boolean
+      isDraft: boolean
+      freedom?: Freedom | null
     }
   ): void {
+    // Use color precedence system
+    const color = getSegmentColor({
+      isDraft: status.isDraft,
+      isHovered: status.isHovered,
+      isSelected: status.isSelected,
+      freedom: status.freedom,
+    })
+
+    // Convert hex color to RGB string for CSS
+    const r = (color >> 16) & 0xff
+    const g = (color >> 8) & 0xff
+    const b = color & 0xff
+    const rgbStr = `${r}, ${g}, ${b}`
+
     // Draft segments are grey
     if (status.isDraft) {
       innerCircle.style.backgroundColor = '#888888'
@@ -120,20 +246,14 @@ class PointSegment implements SketchEntityUtils {
       return // draft styles take precedence
     }
     if (status.isHovered) {
-      // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
-      const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
-        Math.round(val * 0.7)
-      )
-      const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
-      innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
-      innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
-      return // Hover styles take precedence over isSelection status
+      // getSegmentColor already returns the hover color at 70% brightness
+      innerCircle.style.backgroundColor = `rgb(${rgbStr})`
+      innerCircle.style.border = `1px solid rgba(${rgbStr}, 0.5)`
+      return // Hover styles take precedence
     }
-    innerCircle.style.backgroundColor = status.isSelected
-      ? `rgb(${SKETCH_SELECTION_RGB_STR})`
-      : KCL_DEFAULT_COLOR
+    innerCircle.style.backgroundColor = `rgb(${rgbStr})`
     innerCircle.style.border = status.isSelected
-      ? `2px solid rgba(${SKETCH_SELECTION_RGB_STR}, 0.5)`
+      ? `2px solid rgba(${rgbStr}, 0.5)`
       : '0px solid #CCCCCC'
   }
 
@@ -189,10 +309,13 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
+      const freedomValue = handleDiv.dataset.freedom
+      const freedom = isFreedom(freedomValue) ? freedomValue : null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
         isDraft,
+        freedom,
       })
     })
 
@@ -202,7 +325,14 @@ class PointSegment implements SketchEntityUtils {
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
-      this.updatePointColors(innerCircle, { isSelected, isHovered, isDraft })
+      const freedomValue = handleDiv.dataset.freedom
+      const freedom = isFreedom(freedomValue) ? freedomValue : null
+      this.updatePointColors(innerCircle, {
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom,
+      })
     })
 
     const cssObject = new CSS2DObject(handleDiv)
@@ -215,6 +345,9 @@ class PointSegment implements SketchEntityUtils {
     }
     segmentGroup.add(cssObject)
 
+    // Store freedom in userData for later access
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: args.input,
       theme: args.theme,
@@ -223,6 +356,8 @@ class PointSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
     })
     return segmentGroup
   }
@@ -231,7 +366,8 @@ class PointSegment implements SketchEntityUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, scale, selectedIds, id, isDraft } = args
+    const { input, group, scale, selectedIds, id, isDraft, isConstruction } =
+      args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -247,10 +383,19 @@ class PointSegment implements SketchEntityUtils {
       if (!innerCircle) return
 
       const isSelected = selectedIds.includes(id)
+      // Get freedom from args or group userData
+      const freedom = args.freedom ?? group.userData.freedom ?? null
+      // Update userData for consistency
+      group.userData.freedom = freedom
+      group.userData.isDraft = isDraft
+      group.userData.isConstruction = isConstruction
+
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
-      // Store draft state in data attribute for hover handlers
-      el.dataset.isDraft = String(isDraft ?? false)
+      // Store isDraft in data attribute for hover handlers
+      el.dataset.isDraft = String(isDraft)
+      // Store freedom state in data attribute for hover handlers
+      el.dataset.freedom = freedom ?? ''
 
       // Only update colors if not hovering (hover styles take precedence)
       if (!el.matches(':hover')) {
@@ -258,6 +403,7 @@ class PointSegment implements SketchEntityUtils {
           isSelected,
           isHovered: false,
           isDraft,
+          freedom,
         })
       }
     }
@@ -269,35 +415,25 @@ class LineSegment implements SketchEntityUtils {
    * Updates the line segment mesh color based on selection and hover state
    */
   updateLineColors(
-    mesh: Mesh,
+    mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft: boolean,
+    freedom?: Freedom | null
   ): void {
-    const material = mesh.material
-    if (!(material instanceof MeshBasicMaterial)) {
-      return
-    }
-
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    updateLineMaterial(mesh.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
   }
 
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, theme, id, scale } = args
+    const { input, id } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -313,35 +449,54 @@ class LineSegment implements SketchEntityUtils {
     const endX = input.end.x.value
     const endY = input.end.y.value
     const segmentGroup = new Group()
-    const line = new LineCurve3(
-      new Vector3(startX / scale, startY / scale, 0),
-      new Vector3(endX / scale, endY / scale, 0)
-    )
-    const geometry = new ExtrudeGeometry(createLineShape(scale), {
-      steps: 2,
-      bevelEnabled: false,
-      extrudePath: line,
+    const geometry = new LineGeometry()
+    geometry.setPositions([startX, startY, 0, endX, endY, 0])
+    // Construction geometry uses dashed pattern
+    // LineMaterial uses screen-space units (pixels) when worldUnits is false
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
+      gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
+      worldUnits: false, // Use screen-space units for consistent dash size
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
     })
-    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
-    const mesh = new Mesh(geometry, body)
+
+    // For construction geometry, inject custom screen-space dash shader
+    // This ensures dashes stay constant pixel size regardless of zoom
+    if (args.isConstruction) {
+      const lineStart = new Vector3(startX, startY, 0)
+      const lineEnd = new Vector3(endX, endY, 0)
+      setupConstructionLineDashShader(material, lineStart, lineEnd)
+    }
+
+    const mesh = new Line2(geometry, material)
 
     mesh.userData.type = STRAIGHT_SEGMENT_BODY
     mesh.name = STRAIGHT_SEGMENT_BODY
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
-      theme: theme,
+      theme: args.theme,
       id: id,
-      scale: scale,
+      scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
     })
 
     return segmentGroup
@@ -350,7 +505,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, scale, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, isDraft, isConstruction } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -361,32 +516,111 @@ class LineSegment implements SketchEntityUtils {
     ) {
       return new Error('Invalid position values for LineSegment')
     }
-    const shape = createLineShape(scale)
-
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
     )
-    if (!(straightSegmentBody && straightSegmentBody instanceof Mesh)) {
+    if (!(straightSegmentBody instanceof Line2)) {
       console.error('No straight segment body found in group')
       return
     }
 
-    const line = new LineCurve3(
-      new Vector3(input.start.x.value, input.start.y.value, 0),
-      new Vector3(input.end.x.value, input.end.y.value, 0)
-    )
-    straightSegmentBody.geometry.dispose()
-    straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
-      steps: 2,
-      bevelEnabled: false,
-      extrudePath: line,
-    })
+    const geometry = straightSegmentBody.geometry
+    geometry.setPositions([
+      input.start.x.value,
+      input.start.y.value,
+      0,
+      input.end.x.value,
+      input.end.y.value,
+      0,
+    ])
+    geometry.computeBoundingSphere()
 
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = straightSegmentBody.userData.isHovered === true
-    this.updateLineColors(straightSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Check previous draft and construction state BEFORE updating it
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
+    // Update userData for consistency
+    group.userData.freedom = freedom
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
+
+    if (straightSegmentBody.material instanceof LineMaterial) {
+      straightSegmentBody.material.dashed = isConstruction
+
+      // If construction state changed, we need to set up or remove the custom shader
+      if (constructionChanged) {
+        if (isConstruction) {
+          // Switching to construction: set up the custom shader
+          const lineStart = new Vector3(
+            input.start.x.value,
+            input.start.y.value,
+            0
+          )
+          const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
+          setupConstructionLineDashShader(
+            straightSegmentBody.material,
+            lineStart,
+            lineEnd
+          )
+        } else {
+          // Switching away from construction: remove the custom shader
+          removeCustomShaderProperties(straightSegmentBody.material)
+        }
+        // Force shader recompilation when construction state changes
+        straightSegmentBody.material.needsUpdate = true
+        const program = getMaterialProgram(straightSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          // Use hasProperty to safely set the program property
+          if (hasProperty(straightSegmentBody.material, 'program')) {
+            straightSegmentBody.material.program = null
+          }
+        }
+      } else if (isConstruction) {
+        // Construction state didn't change but we're in construction mode: just update uniforms
+        const lineStart = new Vector3(
+          input.start.x.value,
+          input.start.y.value,
+          0
+        )
+        const lineEnd = new Vector3(input.end.x.value, input.end.y.value, 0)
+        const uniforms = getMaterialUniforms(straightSegmentBody.material)
+        if (uniforms) {
+          if (uniforms.uSegmentStart) {
+            uniforms.uSegmentStart.value = lineStart
+          }
+          if (uniforms.uSegmentEnd) {
+            uniforms.uSegmentEnd.value = lineEnd
+          }
+        }
+      }
+
+      straightSegmentBody.material.worldUnits = false
+      // LineMaterial requires resolution to be set for proper rendering
+      if (!straightSegmentBody.material.resolution) {
+        straightSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        straightSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+    }
+
+    this.updateLineColors(
+      straightSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -466,28 +700,18 @@ class ArcSegment implements SketchEntityUtils {
    * Updates the arc segment mesh color based on selection and hover state
    */
   updateArcColors(
-    mesh: Mesh,
+    mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft: boolean,
+    freedom?: Freedom | null
   ): void {
-    const material = mesh.material
-    if (!(material instanceof MeshBasicMaterial)) {
-      return
-    }
-
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    updateLineMaterial(mesh.material, {
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom,
+    })
   }
 
   /**
@@ -508,7 +732,11 @@ class ArcSegment implements SketchEntityUtils {
     const sketchGroup =
       sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ?? sceneInfra.scene
 
-    let preview = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE) as Line | null
+    const previewObject = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE)
+    let preview: Line | null = null
+    if (previewObject && isLine(previewObject)) {
+      preview = previewObject
+    }
 
     const segments = 64
     const points = []
@@ -549,59 +777,79 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   init = (args: CreateSegmentArgs) => {
-    const { input, theme, id, scale } = args
+    const { input, id } = args
+    // arcData is not actually used anymore in init because geometry is only constructed in update,
+    // but we still check if it's an Error.
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
     }
 
-    const { centerX, centerY, radius, startAngle, endAngle } = arcData
-
-    // Always draw arcs CCW from start to end.
-    // The solver also uses a CCW convention from start to end, so we keep
-    // the angles as-is and force ccw = true to match that behaviour.
-    const ccw = true
-
     const segmentGroup = new Group()
-    // Coordinates need to be divided by scale to match LineSegment pattern
-    // The geometry is created in local space, then scaled by the group
-    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
-    const geometry = createArcGeometry({
-      center: [centerX, centerY],
-      radius,
-      startAngle,
-      endAngle,
-      ccw,
-      isDashed: false,
-      scale,
+    const geometry = new LineGeometry()
+    // Construction geometry uses dashed pattern
+    // LineMaterial uses screen-space units (pixels) when worldUnits is false
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: args.isConstruction, // Enables USE_DASH macro - we'll inject screen-space calculations
+      dashSize: 8, // Dash size in pixels (used by shader, but we'll convert to screen-space)
+      gapSize: 6, // Gap size in pixels (used by shader, but we'll convert to screen-space)
+      worldUnits: false, // Use screen-space units for consistent dash size
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
     })
-    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
-    const mesh = new Mesh(geometry, body)
+
+    // For construction geometry, inject custom screen-space dash shader
+    // This ensures dashes stay constant pixel size regardless of zoom
+    // For arcs, we use the center and start point to calculate constant radius
+    if (args.isConstruction) {
+      const arcData = this.extractArcData(input)
+      if (!(arcData instanceof Error)) {
+        const arcCenter = new Vector3(arcData.centerX, arcData.centerY, 0)
+        const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+        setupConstructionArcDashShader(
+          material,
+          arcCenter,
+          arcStart,
+          arcData.startAngle,
+          arcData.endAngle
+        )
+      }
+    }
+
+    const mesh = new Line2(geometry, material)
 
     mesh.userData.type = ARC_SEGMENT_BODY
     mesh.name = ARC_SEGMENT_BODY
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
+      isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
-      theme: theme,
+      theme: args.theme,
       id: id,
-      scale: scale,
+      scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      isConstruction: args.isConstruction,
+      freedom: args.freedom,
     })
 
     return segmentGroup
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, scale, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, isDraft, isConstruction } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -609,40 +857,143 @@ class ArcSegment implements SketchEntityUtils {
 
     const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
-    // Always draw arcs CCW from start to end to match the solver.
-    const ccw = true
-
     const arcSegmentBody = group.children.find(
       (child) => child.userData.type === ARC_SEGMENT_BODY
     )
-    if (!(arcSegmentBody && arcSegmentBody instanceof Mesh)) {
+    if (!(arcSegmentBody instanceof Line2)) {
       console.error('No arc segment body found in group')
       return
     }
 
-    // Match LineSegment.update pattern: use coordinates directly (not divided by scale)
-    // LineSegment.update uses input.start.x.value directly without dividing by scale
-    // The client-side scene also passes coordinates directly to createArcGeometry (not divided by scale)
-    // So we should use coordinates directly here too (not divided by scale)
-    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
-    const newGeometry = createArcGeometry({
-      center: [centerX, centerY],
-      radius: radius,
-      startAngle,
-      endAngle,
-      ccw,
-      isDashed: false,
-      scale,
-    })
-    arcSegmentBody.geometry.dispose()
-    arcSegmentBody.geometry = newGeometry
+    // Always draw arcs CCW from start to end.
+    // The solver also uses a CCW convention from start to end, so we keep
+    // the angles as-is and force ccw = true to match that behaviour.
+    const ccw = true
+    arcSegmentBody.geometry.setPositions(
+      createArcPositions({
+        center: [centerX, centerY],
+        radius,
+        startAngle,
+        endAngle,
+        ccw,
+      })
+    )
+    arcSegmentBody.geometry.computeBoundingSphere()
+    arcSegmentBody.material.linewidth =
+      SEGMENT_WIDTH_PX * window.devicePixelRatio
 
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = arcSegmentBody.userData.isHovered === true
-    this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Check previous draft and construction state BEFORE updating it
+    const previousIsConstruction = group.userData.isConstruction === true
+    const constructionChanged = previousIsConstruction !== isConstruction
+    // Update userData for consistency
+    group.userData.freedom = freedom
+    group.userData.isDraft = isDraft
+    group.userData.isConstruction = isConstruction
+
+    if (arcSegmentBody.material instanceof LineMaterial) {
+      arcSegmentBody.material.dashed = isConstruction
+
+      // If construction state changed, we need to set up or remove the custom shader
+      if (constructionChanged) {
+        if (isConstruction) {
+          // Switching to construction: set up the custom shader
+          const arcCenter = new Vector3(centerX, centerY, 0)
+          const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+          setupConstructionArcDashShader(
+            arcSegmentBody.material,
+            arcCenter,
+            arcStart,
+            startAngle,
+            endAngle
+          )
+        } else {
+          // Switching away from construction: remove the custom shader
+          removeCustomShaderProperties(arcSegmentBody.material)
+        }
+        // Force shader recompilation when construction state changes
+        arcSegmentBody.material.needsUpdate = true
+        const program = getMaterialProgram(arcSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          // Use hasProperty to safely set the program property
+          if (hasProperty(arcSegmentBody.material, 'program')) {
+            arcSegmentBody.material.program = null
+          }
+        }
+      } else if (isConstruction) {
+        // Construction state didn't change but we're in construction mode: just update uniforms
+        const arcCenter = new Vector3(centerX, centerY, 0)
+        const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
+        const uniforms = getMaterialUniforms(arcSegmentBody.material)
+        if (uniforms) {
+          if (uniforms.uArcCenter) {
+            uniforms.uArcCenter.value = arcCenter
+          }
+          if (uniforms.uArcStart) {
+            uniforms.uArcStart.value = arcStart
+          }
+          if (uniforms.uArcStartAngle) {
+            uniforms.uArcStartAngle.value = startAngle
+          }
+          if (uniforms.uArcEndAngle) {
+            uniforms.uArcEndAngle.value = endAngle
+          }
+        }
+      }
+
+      arcSegmentBody.material.worldUnits = false
+      // LineMaterial requires resolution to be set for proper rendering
+      if (!arcSegmentBody.material.resolution) {
+        arcSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        arcSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+    }
+
+    this.updateArcColors(
+      arcSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
+}
+
+function updateLineMaterial(
+  material: LineMaterial,
+  {
+    isSelected,
+    isHovered,
+    isDraft,
+    freedom,
+  }: {
+    isSelected: boolean
+    isHovered: boolean
+    isDraft: boolean
+    freedom?: Freedom | null
+  }
+) {
+  if (!material) return
+
+  const color = getSegmentColor({
+    isDraft,
+    isHovered,
+    isSelected,
+    freedom,
+  })
+  material.color.set(color)
 }
 
 /**
@@ -673,23 +1024,37 @@ export function updateSegmentHover(
   }
 
   const isSelected = selectedIds.includes(segmentId)
-  const isDraft = draftEntityIds?.includes(segmentId) ?? false
+  // Get isDraft from group userData, or determine from draftEntityIds as fallback
+  const isDraft =
+    group.userData.isDraft === true ||
+    draftEntityIds?.includes(segmentId) === true
+  const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
   if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
-    segmentUtilsMap.LineSegment.updateLineColors(
-      mesh,
-      isSelected,
-      isHovered,
-      isDraft
-    )
+    if (mesh instanceof Line2) {
+      segmentUtilsMap.LineSegment.updateLineColors(
+        mesh,
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom
+      )
+    } else {
+      console.error('Straight segment body is not a Line2 anymore', mesh)
+    }
   } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
-    segmentUtilsMap.ArcSegment.updateArcColors(
-      mesh,
-      isSelected,
-      isHovered,
-      isDraft
-    )
+    if (mesh instanceof Line2) {
+      segmentUtilsMap.ArcSegment.updateArcColors(
+        mesh,
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom
+      )
+    } else {
+      console.error('Straight segment body is not a Line2 anymore', mesh)
+    }
   }
 }
 
@@ -772,4 +1137,51 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+}
+
+/**
+ * Similar to src/clientSideScene/segments.ts / createArcGeometry, but:
+ * - uses LineGeometry which supports screen space line thickness
+ * - isDashed parameter not supported (yet)
+ */
+function createArcPositions({
+  center,
+  radius,
+  startAngle,
+  endAngle,
+  ccw,
+}: {
+  center: [number, number]
+  radius: number
+  startAngle: number
+  endAngle: number
+  ccw: boolean
+}): number[] {
+  const arcStart = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    startAngle,
+    endAngle,
+    !ccw,
+    0
+  )
+
+  // Adaptive segmentation: use 100 for a full circle and proportionally less based on the arc length
+  // This doesn't work unfortunately without recreating the geometry and at that point it's not worth it:
+  // https://discourse.threejs.org/t/adding-points-drawcount-for-line2-dynamically/48980/4
+  //
+  // const angleDiff = getAngleDiff(startAngle, endAngle, ccw)
+  // const numberOfPoints = Math.ceil(100 * (angleDiff / (Math.PI * 2)))
+
+  const numberOfPoints = 100
+
+  const points = arcStart.getPoints(numberOfPoints)
+  const positions: number[] = []
+  points.forEach((p) => {
+    positions.push(p.x, p.y, 0)
+  })
+
+  return positions
 }
