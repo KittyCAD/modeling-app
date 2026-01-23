@@ -1487,12 +1487,24 @@ export fn isSurface(
   @val: Solid,
 ): bool {}
 
-/// Delete a face, by its index (number).
-/// For pure KCL users, these IDs are difficult to guess.
+/// Delete a face from a body (a solid, or a polysurface).
+/// ```
+/// // Make an extruded triangle.
+/// startSketchOn(XY)
+/// |> startProfile(at = [0, 15])
+/// |> xLine(length = 10, tag = $a)
+/// |> yLine(length = 8)
+/// |> close()
+/// |> extrude(length = 2)
+/// // Delete some faces.
+/// |> deleteFace(faces = [a, END])
+/// ```
 /// ```kcl
+/// // Make an extruded square.
 /// startSketchOn(XY)
 /// |> polygon(radius = 10, numSides = 4, center = [0, 0])
 /// |> extrude(length = 2)
+/// // Delete some faces. Because there's no tags, we can delete by face _index_.
 /// |> deleteFace(faceIndices = [0, 5])
 /// ```
 @(impl = std_rust, feature_tree = true)
