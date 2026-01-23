@@ -13,6 +13,9 @@ description: Result of parsing dog-house-great-dane.kcl
           "type": "Kcl",
           "filename": "frame.kcl"
         },
+        "preComments": [
+          "// Import submodules; each defines geometry at top level. Importing assembles the scene."
+        ],
         "selector": {
           "type": "None",
           "alias": {
@@ -182,6 +185,13 @@ description: Result of parsing dog-house-great-dane.kcl
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// A Dog House for a Great Dane",
+          "// Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
+          "",
+          "",
+          "// Define units"
+        ],
         "properties": [
           {
             "commentStart": 0,
@@ -258,64 +268,6 @@ description: Result of parsing dog-house-great-dane.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A Dog House for a Great Dane",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Parametric model of a dog house designed to accommodate a Great Dane.",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Built using 2x4 lumber. The hardware is from",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "McMaster-Carr catalog.",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
         {
           "commentStart": 0,
           "end": 0,

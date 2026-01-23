@@ -8,7 +8,7 @@ import {
   redirect,
 } from 'react-router-dom'
 
-import { App } from '@src/App'
+import { OpenedProject } from '@src/components/OpenedProject'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
@@ -95,7 +95,7 @@ const router = createRouter([
               <ModelingMachineProvider>
                 <CoreDump />
                 <Outlet />
-                <App />
+                <OpenedProject />
                 <CommandBar />
               </ModelingMachineProvider>
             </Suspense>
