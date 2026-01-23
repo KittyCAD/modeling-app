@@ -15,7 +15,7 @@ use crate::{
         ExecState, KclValue, ModelingCmdMeta, Solid,
         types::{ArrayLen, RuntimeType},
     },
-    std::{Args, args::TyF64},
+    std::{Args, args::TyF64, sketch::FaceTag},
 };
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
@@ -92,23 +92,33 @@ async fn inner_is_equal_body_type(
 
 pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
-    let face_indices: Vec<TyF64> = args.get_kw_arg(
+    let faces: Option<Vec<FaceTag>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let face_indices: Option<Vec<TyF64>> = args.get_kw_arg_opt(
         "faceIndices",
         &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let face_indices = face_indices
-        .into_iter()
-        .map(|num| {
-            crate::try_f64_to_u32(num.n).ok_or_else(|| {
-                KclError::new_semantic(KclErrorDetails::new(
-                    format!("Face indices must be whole numbers, got {}", num.n),
-                    vec![args.source_range],
-                ))
+    let face_indices = if let Some(face_indices) = face_indices {
+        let faces = face_indices
+            .into_iter()
+            .map(|num| {
+                crate::try_f64_to_u32(num.n).ok_or_else(|| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!("Face indices must be whole numbers, got {}", num.n),
+                        vec![args.source_range],
+                    ))
+                })
             })
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    inner_delete_face(body, face_indices, exec_state, args)
+            .collect::<Result<Vec<_>, _>>()?;
+        Some(faces)
+    } else {
+        None
+    };
+    inner_delete_face(body, faces, face_indices, exec_state, args)
         .await
         .map(Box::new)
         .map(|value| KclValue::Solid { value })
@@ -116,12 +126,27 @@ pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 
 async fn inner_delete_face(
     body: Solid,
-    face_indices: Vec<u32>,
+    tagged_faces: Option<Vec<FaceTag>>,
+    face_indices: Option<Vec<u32>>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Solid, KclError> {
+    // User has to give us SOMETHING to delete.
+    if tagged_faces.is_none() && face_indices.is_none() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("You must use either the `faces` or the `face_indices` parameter"),
+            vec![args.source_range],
+        )));
+    }
+    let tagged_faces = tagged_faces.unwrap_or_default();
+    let face_indices = face_indices.unwrap_or_default();
     // Get the face's ID
-    let mut face_ids = HashSet::with_capacity(face_indices.len());
+    let mut face_ids = HashSet::with_capacity(face_indices.len() + tagged_faces.len());
+
+    for tagged_face in tagged_faces {
+        let face_id = tagged_face.get_face_id(&body, exec_state, &args, false).await?;
+        face_ids.insert(face_id);
+    }
 
     for face_index in face_indices {
         let face_uuid_response = exec_state
