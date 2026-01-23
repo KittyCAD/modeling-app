@@ -1,9 +1,6 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
 import {
   type ToolEvents,
   type ToolContext,
@@ -19,6 +16,7 @@ import {
   finalizeArcActor,
   storeCreatedArcResult,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
+import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -32,12 +30,7 @@ export const machine = setup({
   types: {
     context: {} as ToolContext,
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'show radius preview listener': showRadiusPreviewListener,
