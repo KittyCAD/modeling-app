@@ -73,7 +73,7 @@ test.describe('Onboarding tests', { tag: ['@web', '@desktop'] }, () => {
           await nextButton.hover()
           await nextButton.click()
           // Clicking too fast fucks everything.
-          await new Promise(r => setTimeout(r, 1000))
+          await new Promise((r) => setTimeout(r, 1000))
         }
       })
 
@@ -82,7 +82,7 @@ test.describe('Onboarding tests', { tag: ['@web', '@desktop'] }, () => {
           await prevButton.hover()
           await prevButton.click()
           // Clicking too fast fucks everything.
-          await new Promise(r => setTimeout(r, 1000))
+          await new Promise((r) => setTimeout(r, 1000))
         }
       })
 
