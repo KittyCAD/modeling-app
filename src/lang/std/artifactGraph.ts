@@ -848,7 +848,7 @@ export function coerceSelectionsToBody(
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
   const artifacts = filterArtifacts(
     {
-      types: ['compositeSolid', 'sweep', 'helix'],
+      types: ['compositeSolid', 'sweep'],
       predicate: (a) => !a.consumed,
     },
     artifactGraph
