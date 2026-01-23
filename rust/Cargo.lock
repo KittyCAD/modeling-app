@@ -1904,6 +1904,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "icu_provider_macros"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ec89e9337638ecdc08744df490b221a7399bf8d164eb52a665454e60e075ad6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.113",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2124,7 +2135,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "anyhow",
  "clap",
@@ -2135,7 +2146,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2144,7 +2155,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2154,7 +2165,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "miette",
  "serde",
@@ -2178,7 +2189,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.119"
+version = "0.2.121"
 dependencies = [
  "anyhow",
  "clap",
@@ -2199,7 +2210,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "anyhow",
  "clap",
@@ -2219,7 +2230,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.119"
+version = "0.2.121"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2301,7 +2312,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.119"
+version = "0.3.122"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2317,7 +2328,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2330,7 +2341,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2344,7 +2355,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.119"
+version = "0.1.121"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2411,9 +2422,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.159"
+version = "0.2.162"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95a8b8c1ea38802697e407bd9128e1671efc3425242b1466aa967457e9aeb1f0"
+checksum = "d5675d45eaf9e6e2d63ad0dc588822c49cfc8126f26f27c0c62775daeb62a5fc"
 dependencies = [
  "anyhow",
  "bon",
@@ -3444,9 +3455,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.104"
+version = "1.0.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9695f8df41bb4f3d222c95a67532365f569318332d03d5f3f67f37b20e6ebdf0"
+checksum = "535d180e0ecab6268a3e718bb9fd44db66bbbc256257165fc699dadf70d16fe7"
 dependencies = [
  "unicode-ident",
 ]
@@ -3649,9 +3660,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.42"
+version = "1.0.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a338cc41d27e6cc6dce6cefc13a0729dfbb81c262b1f519331575dd80ef3067f"
+checksum = "dc74d9a594b72ae6656596548f56f667211f8a97b3d4c3d467150794690dc40a"
 dependencies = [
  "proc-macro2",
 ]
@@ -4171,9 +4182,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.148"
+version = "1.0.149"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3084b546a1dd6289475996f182a22aba973866ea8e8b02c51d9f46b1336a22da"
+checksum = "83fc039473c5595ace860d8c4fafa220ff474b3fc6bfdb4293327f1a37e94d86"
 dependencies = [
  "itoa",
  "memchr",
@@ -5249,14 +5260,15 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "url"
-version = "2.5.7"
+version = "2.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08bc136a29a3d1758e07a9cca267be308aeebf5cfd5a10f3f67ab2097683ef5b"
+checksum = "ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed"
 dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
  "serde",
+ "serde_derive",
 ]
 
 [[package]]
@@ -5912,17 +5924,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.113",
-]
-
-[[package]]
-name = "zerotrie"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a59c17a5562d507e4b54960e8569ebee33bee890c70aa3fe7b97e85a9fd7851"
-dependencies = [
- "displaydoc",
- "yoke",
- "zerofrom",
 ]
 
 [[package]]

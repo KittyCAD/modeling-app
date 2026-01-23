@@ -76,7 +76,11 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.renameProject
-          data: { requestedProjectName: string; projectName: string }
+          data: {
+            requestedProjectName: string
+            projectName: string
+            redirect: boolean
+          }
         }
       | {
           type: SystemIOMachineEvents.deleteProject
@@ -223,6 +227,23 @@ export const systemIOMachine = setup({
           data: {
             src: string
             target: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.moveRecursive
+          data: {
+            src: string
+            target: string
+            successMessage?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate
+          data: {
+            src: string
+            target: string
+            requestedProjectName: string
+            successMessage?: string
           }
         }
       | {
@@ -386,9 +407,15 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          redirect: boolean
         }
-      }): Promise<{ message: string; newName: string; oldName: string }> => {
-        return { message: '', newName: '', oldName: '' }
+      }): Promise<{
+        message: string
+        newName: string
+        oldName: string
+        redirect: boolean
+      }> => {
+        return { message: '', newName: '', oldName: '', redirect: true }
       }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
@@ -635,6 +662,26 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.moveRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+          successMessage?: string
+          requestedProjectName?: string | undefined
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+          requestedProjectName: '',
+        }
+      }
+    ),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       return new Map()
     }),
@@ -680,6 +727,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    pendingRenamedProjectName: undefined,
     mlEphantConversations: undefined,
   }),
   states: {
@@ -776,6 +824,12 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.copyRecursive]: {
           target: SystemIOMachineStates.copyingRecursive,
         },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
+          target: SystemIOMachineStates.movingRecursiveAndNavigate,
+        },
         [SystemIOMachineEvents.getMlEphantConversations]: {
           target: SystemIOMachineStates.gettingMlEphantConversations,
         },
@@ -795,7 +849,18 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.idle,
           actions: [
             SystemIOMachineActions.setFolders,
-            assign({ hasListedProjects: true }),
+            assign({
+              hasListedProjects: true,
+              requestedProjectName: ({ context }) => {
+                // If we just finished renaming, navigate to the renamed project
+                if (context.pendingRenamedProjectName) {
+                  const newName = context.pendingRenamedProjectName
+                  return { name: newName }
+                }
+                return context.requestedProjectName
+              },
+              pendingRenamedProjectName: () => undefined, // clear after redirect
+            }),
           ],
         },
         onError: {
@@ -841,11 +906,22 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             projectName: event.data.projectName,
+            redirect: event.data.redirect,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              pendingRenamedProjectName: ({ event }) => {
+                // Redirect back to the project if renamed from the current project
+                const redirect = (event.output as { redirect: boolean })
+                  .redirect
+                return redirect ? event.output.newName : undefined
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -1422,6 +1498,68 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.movingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.moveRecursive,
+        src: SystemIOMachineActors.moveRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.moveRecursive)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            successMessage: event.data.successMessage,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.movingRecursiveAndNavigate]: {
+      invoke: {
+        id: SystemIOMachineActors.moveRecursiveAndNavigate,
+        src: SystemIOMachineActors.moveRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.moveRecursiveAndNavigate)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            requestedProjectName: event.data.requestedProjectName,
+            successMessage: event.data.successMessage,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_moveRecursiveAndNavigate
+                )
+                return {
+                  name: event.output.requestedProjectName,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

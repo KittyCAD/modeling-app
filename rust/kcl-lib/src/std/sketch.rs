@@ -19,9 +19,10 @@ use super::{
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::PlaneKind,
     execution::{
         BasePath, ExecState, Face, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d,
-        Point3d, ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
+        Point3d, ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -29,6 +30,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
+        faces::make_face,
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -915,7 +917,7 @@ async fn inner_start_sketch_on(
             Ok(SketchSurface::Plane(plane))
         }
         SketchData::Plane(plane) => {
-            if plane.value == crate::exec::PlaneType::Uninit {
+            if plane.is_uninitialized() {
                 let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -1013,7 +1015,7 @@ async fn inner_start_sketch_on(
 
                 Ok(SketchSurface::Plane(plane))
             } else {
-                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+                let face = make_face(solid, tag, exec_state, args).await?;
 
                 #[cfg(feature = "artifact-graph")]
                 {
@@ -1032,35 +1034,38 @@ async fn inner_start_sketch_on(
     }
 }
 
-async fn start_sketch_on_face(
-    solid: Box<Solid>,
-    tag: FaceTag,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
-
-    Ok(Box::new(Face {
-        id: extrude_plane_id,
-        artifact_id: extrude_plane_id.into(),
-        value: tag.to_string(),
-        // TODO: get this from the extrude plane data.
-        x_axis: solid.sketch.on.x_axis(),
-        y_axis: solid.sketch.on.y_axis(),
-        units: solid.units,
-        solid,
-        meta: vec![args.source_range.into()],
-    }))
-}
-
 pub async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state)?;
+    let id = exec_state.next_uuid();
+    let kind = PlaneKind::from(&data);
+    let mut plane = Plane {
+        id,
+        artifact_id: id.into(),
+        object_id: None,
+        kind,
+        info: PlaneInfo::try_from(data)?,
+        meta: vec![args.source_range.into()],
+    };
 
     // Create the plane on the fly.
+    ensure_sketch_plane_in_engine(&mut plane, exec_state, args).await?;
+
+    Ok(Box::new(plane))
+}
+
+/// Ensure that the plane exists in the engine.
+pub async fn ensure_sketch_plane_in_engine(
+    plane: &mut Plane,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(), KclError> {
+    if plane.is_initialized() {
+        return Ok(());
+    }
+
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
@@ -1088,9 +1093,9 @@ pub async fn make_sketch_plane_from_orientation(
             ModelingCmd::from(cmd),
         )
         .await?;
+    let plane_object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
-        let plane_object_id = exec_state.next_object_id();
         let plane_object = crate::front::Object {
             id: plane_object_id,
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
@@ -1101,8 +1106,9 @@ pub async fn make_sketch_plane_from_orientation(
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }
+    plane.object_id = Some(plane_object_id);
 
-    Ok(Box::new(plane))
+    Ok(())
 }
 
 /// Start a new profile at a given point.

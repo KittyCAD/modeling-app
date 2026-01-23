@@ -166,7 +166,7 @@ hole_4 = startSketchOn(extrude001, face = START)
        tag = $seg08,
      )
 
-  /* hole = startSketchOn(extrude001, face = END)
+/* hole = startSketchOn(extrude001, face = END)
   |> circle(
        center = [
          1,1
@@ -175,7 +175,7 @@ hole_4 = startSketchOn(extrude001, face = START)
        tag = $seg09,
      ) */
 
-  // mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)
+// mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)
 
 /* mounting_hole = extrude(hole, length = -0.2) |>  chamfer(
        length = 0.1,

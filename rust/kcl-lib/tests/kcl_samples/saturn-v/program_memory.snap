@@ -79,6 +79,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -86,7 +88,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -188,6 +189,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -195,7 +198,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -241,13 +243,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -273,13 +276,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -305,13 +309,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -337,13 +342,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -476,6 +482,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -483,7 +491,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -641,6 +648,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -648,7 +657,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -806,6 +814,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -813,7 +823,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -971,6 +980,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -978,7 +989,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1102,6 +1112,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1109,7 +1121,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1155,13 +1166,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -1270,6 +1282,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1277,7 +1291,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1411,6 +1424,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1418,7 +1433,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1552,6 +1566,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1559,7 +1575,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1693,6 +1708,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1700,7 +1717,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1807,6 +1823,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1814,7 +1832,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1860,13 +1877,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2064,6 +2082,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 12,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2071,7 +2091,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2246,6 +2265,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 12,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2253,7 +2274,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2299,13 +2319,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 12,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2402,6 +2423,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2409,7 +2432,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2460,13 +2482,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 5,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2543,6 +2566,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2550,7 +2575,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2647,6 +2671,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2654,7 +2680,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2700,13 +2725,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 5,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2803,6 +2829,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2810,7 +2838,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2944,6 +2971,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2951,7 +2980,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3085,6 +3113,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3092,7 +3122,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3226,6 +3255,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3233,7 +3264,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3367,6 +3397,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3374,7 +3406,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3481,6 +3512,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3488,7 +3521,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3534,13 +3566,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3625,6 +3658,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3632,7 +3667,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3683,13 +3717,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3743,6 +3778,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3750,7 +3787,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3796,13 +3832,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3869,6 +3906,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3876,7 +3915,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3955,6 +3993,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3962,7 +4002,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4049,6 +4088,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 11,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4056,7 +4097,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4107,13 +4147,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4167,6 +4208,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 10,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4174,7 +4217,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4220,13 +4262,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4252,13 +4295,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4312,6 +4356,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 11,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4319,7 +4365,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4365,13 +4410,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4438,6 +4484,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4445,7 +4493,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4596,6 +4643,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4603,7 +4652,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4727,6 +4775,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4734,7 +4784,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -4780,13 +4829,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 8,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -4912,6 +4962,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4919,7 +4971,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5043,6 +5094,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5050,7 +5103,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5196,6 +5248,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5203,7 +5257,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5327,6 +5380,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 9,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5334,7 +5389,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5380,13 +5434,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 9,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -5512,6 +5567,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5519,7 +5576,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5643,6 +5699,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 9,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5650,7 +5708,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5696,13 +5753,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 7,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5756,6 +5814,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 7,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5763,7 +5823,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5809,13 +5868,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 7,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5882,6 +5942,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5889,7 +5951,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6011,6 +6072,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6018,7 +6081,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6120,6 +6182,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6127,7 +6191,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

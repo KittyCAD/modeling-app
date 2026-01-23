@@ -229,6 +229,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -236,7 +238,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -302,6 +303,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "seg01",
       "xAxis": {
         "x": 1.0,
@@ -535,6 +537,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -542,7 +546,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -758,6 +761,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -765,7 +770,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -931,6 +935,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -1164,6 +1169,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1171,7 +1178,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -1334,6 +1340,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -1567,6 +1574,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1574,7 +1583,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -1737,6 +1745,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -1970,6 +1979,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1977,7 +1988,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -2140,6 +2150,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -2373,6 +2384,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -2380,7 +2393,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -2543,6 +2555,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -2776,6 +2789,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -2783,7 +2798,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -2946,6 +2960,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 1.0,
@@ -3179,6 +3194,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -3186,7 +3203,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -3406,6 +3422,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3639,6 +3656,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3646,7 +3665,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3848,6 +3866,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4081,6 +4100,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4088,7 +4109,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4290,6 +4310,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4523,6 +4544,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4530,7 +4553,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4732,6 +4754,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4965,6 +4988,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4972,7 +4997,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5174,6 +5198,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5407,6 +5432,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5414,7 +5441,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5616,6 +5642,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5849,6 +5876,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5856,7 +5885,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6076,6 +6104,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6083,7 +6113,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6262,6 +6291,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -6495,6 +6525,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6502,7 +6534,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6689,6 +6720,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -6922,6 +6954,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -6929,7 +6963,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7073,6 +7106,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 8,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -7196,6 +7230,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 7,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -7203,7 +7239,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7326,6 +7361,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -7384,6 +7420,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -7507,6 +7544,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -7514,7 +7553,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -7661,6 +7699,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -7719,6 +7758,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -7842,6 +7882,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -7849,7 +7891,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -7996,6 +8037,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -8054,6 +8096,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -8177,6 +8220,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -8184,7 +8229,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -8331,6 +8375,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -8389,6 +8434,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -8512,6 +8558,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -8519,7 +8567,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -8666,6 +8713,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -8724,6 +8772,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -8847,6 +8896,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -8854,7 +8905,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -9001,6 +9051,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -9059,6 +9110,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -9182,6 +9234,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -9189,7 +9243,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -9336,6 +9389,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -9394,6 +9448,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -9517,6 +9572,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -9524,7 +9581,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -9671,6 +9727,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -9729,6 +9786,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -9852,6 +9910,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -9859,7 +9919,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -10006,6 +10065,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -10064,6 +10124,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -10187,6 +10248,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -10194,7 +10257,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -10341,6 +10403,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -10399,6 +10462,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -10522,6 +10586,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -10529,7 +10595,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -10676,6 +10741,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -10734,6 +10800,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -10857,6 +10924,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -10864,7 +10933,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -11011,6 +11079,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -11069,6 +11138,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -11192,6 +11262,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -11199,7 +11271,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -11346,6 +11417,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -11404,6 +11476,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -11527,6 +11600,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -11534,7 +11609,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -11681,6 +11755,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -11739,6 +11814,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -11862,6 +11938,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -11869,7 +11947,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -12016,6 +12093,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -12074,6 +12152,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -12197,6 +12276,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -12204,7 +12285,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -12351,6 +12431,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 9,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -12409,6 +12490,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 8,
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -12532,6 +12614,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 7,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -12539,7 +12623,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -12687,6 +12770,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 9,
             "value": "start",
             "xAxis": {
               "x": 1.0,
@@ -12745,6 +12829,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "objectId": 8,
                   "value": "end",
                   "xAxis": {
                     "x": 1.0,
@@ -12868,6 +12953,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "on": {
                         "artifactId": "[uuid]",
                         "id": "[uuid]",
+                        "kind": "XZ",
+                        "objectId": 7,
                         "origin": {
                           "x": 0.0,
                           "y": 0.0,
@@ -12875,7 +12962,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                           "units": "mm"
                         },
                         "type": "plane",
-                        "value": "XZ",
                         "xAxis": {
                           "x": 1.0,
                           "y": 0.0,
@@ -13004,6 +13090,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 9,
             "value": "start",
             "xAxis": {
               "x": 1.0,
@@ -13062,6 +13149,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "type": "face",
                   "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "objectId": 8,
                   "value": "end",
                   "xAxis": {
                     "x": 1.0,
@@ -13185,6 +13273,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "on": {
                         "artifactId": "[uuid]",
                         "id": "[uuid]",
+                        "kind": "XZ",
+                        "objectId": 7,
                         "origin": {
                           "x": 0.0,
                           "y": 0.0,
@@ -13192,7 +13282,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                           "units": "mm"
                         },
                         "type": "plane",
-                        "value": "XZ",
                         "xAxis": {
                           "x": 1.0,
                           "y": 0.0,
@@ -13323,6 +13412,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 8,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -13446,6 +13536,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -13453,7 +13545,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13633,6 +13724,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -13640,7 +13733,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13825,6 +13917,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -13832,7 +13926,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14008,6 +14101,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -14015,7 +14110,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14214,6 +14308,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -14221,7 +14317,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14391,6 +14486,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 7.5,
             "y": 0.0,
@@ -14398,7 +14495,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -14543,6 +14639,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 7.5,
           "y": 0.0,
@@ -14550,7 +14648,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -14713,6 +14810,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -14836,6 +14934,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 3,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -14843,7 +14943,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -15004,6 +15103,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 4,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -15127,6 +15227,8 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -15134,7 +15236,6 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

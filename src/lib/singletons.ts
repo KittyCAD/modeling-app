@@ -49,6 +49,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
+import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -191,6 +192,18 @@ const appMachineActors = {
         engineCommandManager
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
+      },
+      setEditorLineWrapping: ({ context }) => {
+        kclManager.setEditorLineWrapping(
+          context.textEditor.textWrapping.current
+        )
+      },
+      setCursorBlinking: ({ context }) => {
+        document.documentElement.style.setProperty(
+          `--cursor-color`,
+          context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+        )
+        kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
       },
       setEngineHighlightEdges: ({ context }) => {
         engineCommandManager
@@ -375,6 +388,8 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
+// This extension makes it possible to mark FS operations as un/redoable
+buildFSHistoryExtension(systemIOActor, kclManager)
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
