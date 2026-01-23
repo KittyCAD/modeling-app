@@ -27,6 +27,7 @@ use crate::{
         traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
     },
     parsing::ast::types as ast,
+    pretty::NumericSuffix,
     std::constraints::LinesAtAngleKind,
     walk::{NodeMut, Visitable},
 };
@@ -35,6 +36,14 @@ pub(crate) mod api;
 pub(crate) mod modify;
 pub(crate) mod sketch;
 mod traverse;
+
+struct ArcSizeConstraintParams {
+    points: Vec<ObjectId>,
+    function_name: &'static str,
+    value: f64,
+    units: NumericSuffix,
+    constraint_type_name: &'static str,
+}
 
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
@@ -1826,19 +1835,52 @@ impl FrontendState {
         radius: Radius,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
+        let params = ArcSizeConstraintParams {
+            points: radius.points,
+            function_name: RADIUS_FN,
+            value: radius.radius.value,
+            units: radius.radius.units,
+            constraint_type_name: "Radius",
+        };
+        self.add_arc_size_constraint(sketch, params, new_ast).await
+    }
+
+    async fn add_diameter(
+        &mut self,
+        sketch: ObjectId,
+        diameter: Diameter,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let params = ArcSizeConstraintParams {
+            points: diameter.points,
+            function_name: DIAMETER_FN,
+            value: diameter.diameter.value,
+            units: diameter.diameter.units,
+            constraint_type_name: "Diameter",
+        };
+        self.add_arc_size_constraint(sketch, params, new_ast).await
+    }
+
+    async fn add_arc_size_constraint(
+        &mut self,
+        sketch: ObjectId,
+        params: ArcSizeConstraintParams,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
         let sketch_id = sketch;
 
-        // Radius constraint must have exactly 1 argument (arc segment)
-        if radius.points.len() != 1 {
+        // Constraint must have exactly 1 argument (arc segment)
+        if params.points.len() != 1 {
             return Err(Error {
                 msg: format!(
-                    "Radius constraint must have exactly 1 argument (an arc segment), got {}",
-                    radius.points.len()
+                    "{} constraint must have exactly 1 argument (an arc segment), got {}",
+                    params.constraint_type_name,
+                    params.points.len()
                 ),
             });
         }
 
-        let arc_id = radius.points[0];
+        let arc_id = params.points[0];
         let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
             msg: format!("Arc segment not found: {arc_id:?}"),
         })?;
@@ -1849,110 +1891,33 @@ impl FrontendState {
         };
         let Segment::Arc(_) = arc_segment else {
             return Err(Error {
-                msg: format!("Radius constraint argument must be an arc segment, got: {arc_segment:?}"),
-            });
-        };
-        // Reference the arc segment directly
-        let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
-
-        // Create the radius() call.
-        let radius_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(RADIUS_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![arc_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let radius_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: radius_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: radius.radius.value,
-                    suffix: radius.radius.units,
-                },
-                raw: format_number_literal(radius.radius.value, radius.radius.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", radius.radius.units),
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: radius_ast },
-        )?;
-        Ok(sketch_block_range)
-    }
-
-    async fn add_diameter(
-        &mut self,
-        sketch: ObjectId,
-        diameter: Diameter,
-        new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<SourceRange> {
-        let sketch_id = sketch;
-
-        // Diameter constraint must have exactly 1 argument (arc/circle segment)
-        if diameter.points.len() != 1 {
-            return Err(Error {
                 msg: format!(
-                    "Diameter constraint must have exactly 1 argument (an arc or circle segment), got {}",
-                    diameter.points.len()
+                    "{} constraint argument must be an arc segment, got: {arc_segment:?}",
+                    params.constraint_type_name
                 ),
             });
-        }
-
-        let arc_id = diameter.points[0];
-        let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
-            msg: format!("Arc or circle segment not found: {arc_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: arc_segment } = &arc_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {arc_object:?}"),
-            });
-        };
-        let Segment::Arc(_) = arc_segment else {
-            return Err(Error {
-                msg: format!("Diameter constraint argument must be an arc or circle segment, got: {arc_segment:?}"),
-            });
         };
         // Reference the arc segment directly
         let arc_ast = get_or_insert_ast_reference(new_ast, &arc_object.source, "arc", None)?;
 
-        // Create the diameter() call.
-        let diameter_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(DIAMETER_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![arc_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
+        // Create the function call.
+        let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(params.function_name)),
+            unlabeled: Some(arc_ast),
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let diameter_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: diameter_call_ast,
+        let constraint_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: call_ast,
             operator: ast::BinaryOperator::Eq,
             right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
-                    value: diameter.diameter.value,
-                    suffix: diameter.diameter.units,
+                    value: params.value,
+                    suffix: params.units,
                 },
-                raw: format_number_literal(diameter.diameter.value, diameter.diameter.units).map_err(|_| Error {
-                    msg: format!("Could not format numeric suffix: {:?}", diameter.diameter.units),
+                raw: format_number_literal(params.value, params.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", params.units),
                 })?,
                 digest: None,
             }))),
@@ -1963,7 +1928,7 @@ impl FrontendState {
         let (sketch_block_range, _) = self.mutate_ast(
             new_ast,
             sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: diameter_ast },
+            AstMutateCommand::AddSketchBlockExprStmt { expr: constraint_ast },
         )?;
         Ok(sketch_block_range)
     }
@@ -4815,7 +4780,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-sketch2::radius([arc1]) == 5mm
+sketch2::radius(arc1) == 5mm
 }
 "
         );
@@ -4982,7 +4947,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   arc1 = sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-sketch2::diameter([arc1]) == 10mm
+sketch2::diameter(arc1) == 10mm
 }
 "
         );

@@ -2490,7 +2490,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Radius { points } => {
+                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
                             let range = self.as_source_range();
                             let p0 = &points[0]; // center
                             let p1 = &points[1]; // start
@@ -2502,6 +2502,11 @@ impl Node<BinaryExpression> {
                                 )));
                             };
                             // Find the arc segment with matching center and start
+                            let (constraint_name, is_diameter) = match &constraint.kind {
+                                SketchConstraintKind::Radius { .. } => ("radius", false),
+                                SketchConstraintKind::Diameter { .. } => ("diameter", true),
+                                _ => unreachable!(),
+                            };
                             let arc_segment = sketch_block_state
                                 .needed_by_engine
                                 .iter()
@@ -2514,107 +2519,7 @@ impl Node<BinaryExpression> {
                                 })
                                 .ok_or_else(|| {
                                     KclError::new_internal(KclErrorDetails::new(
-                                        "Could not find arc segment for radius constraint".to_owned(),
-                                        vec![range],
-                                    ))
-                                })?;
-                            let UnsolvedSegmentKind::Arc { end, .. } = &arc_segment.kind else {
-                                return Err(KclError::new_internal(KclErrorDetails::new(
-                                    "Expected arc segment".to_owned(),
-                                    vec![range],
-                                )));
-                            };
-                            // Extract end point coordinates
-                            let (end_x_var, end_y_var) = match (&end[0], &end[1]) {
-                                (UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)) => (*end_x, *end_y),
-                                _ => {
-                                    return Err(KclError::new_internal(KclErrorDetails::new(
-                                        "Arc end point must have sketch vars in all coordinates".to_owned(),
-                                        vec![range],
-                                    )));
-                                }
-                            };
-                            let solver_arc = kcl_ezpz::datatypes::inputs::DatumCircularArc {
-                                center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    p0.vars.x.to_constraint_id(range)?,
-                                    p0.vars.y.to_constraint_id(range)?,
-                                ),
-                                start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    p1.vars.x.to_constraint_id(range)?,
-                                    p1.vars.y.to_constraint_id(range)?,
-                                ),
-                                end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    end_x_var.to_constraint_id(range)?,
-                                    end_y_var.to_constraint_id(range)?,
-                                ),
-                            };
-                            // Use ArcRadius constraint from ezpz solver
-                            let solver_constraint = Constraint::ArcRadius(solver_arc, n.n);
-
-                            #[cfg(feature = "artifact-graph")]
-                            let constraint_id = exec_state.next_object_id();
-                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
-                                let message =
-                                    "Being inside a sketch block should have already been checked above".to_owned();
-                                debug_assert!(false, "{}", &message);
-                                return Err(KclError::new_internal(KclErrorDetails::new(
-                                    message,
-                                    vec![SourceRange::from(self)],
-                                )));
-                            };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
-                            #[cfg(feature = "artifact-graph")]
-                            {
-                                use crate::{execution::ArtifactId, frontend::sketch::Radius};
-
-                                let constraint = crate::front::Constraint::Radius(Radius {
-                                    points: vec![p0.object_id, p1.object_id],
-                                    radius: n.try_into().map_err(|_| {
-                                        KclError::new_internal(KclErrorDetails::new(
-                                            "Failed to convert radius units numeric suffix:".to_owned(),
-                                            vec![range],
-                                        ))
-                                    })?,
-                                });
-                                sketch_block_state.sketch_constraints.push(constraint_id);
-                                exec_state.add_scene_object(
-                                    Object {
-                                        id: constraint_id,
-                                        kind: ObjectKind::Constraint { constraint },
-                                        label: Default::default(),
-                                        comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
-                                        source: range.into(),
-                                    },
-                                    range,
-                                );
-                            }
-                        }
-                        SketchConstraintKind::Diameter { points } => {
-                            let range = self.as_source_range();
-                            let p0 = &points[0]; // center
-                            let p1 = &points[1]; // start
-                            // Find the arc segment that has center p0 and start p1 to get its end point
-                            let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
-                                return Err(KclError::new_internal(KclErrorDetails::new(
-                                    "Being inside a sketch block should have already been checked above".to_owned(),
-                                    vec![SourceRange::from(self)],
-                                )));
-                            };
-                            // Find the arc segment with matching center and start
-                            let arc_segment = sketch_block_state
-                                .needed_by_engine
-                                .iter()
-                                .find(|seg| {
-                                    matches!(&seg.kind, UnsolvedSegmentKind::Arc {
-                                        center_object_id,
-                                        start_object_id,
-                                        ..
-                                    } if *center_object_id == p0.object_id && *start_object_id == p1.object_id)
-                                })
-                                .ok_or_else(|| {
-                                    KclError::new_internal(KclErrorDetails::new(
-                                        "Could not find arc segment for diameter constraint".to_owned(),
+                                        format!("Could not find arc segment for {} constraint", constraint_name),
                                         vec![range],
                                     ))
                                 })?;
@@ -2650,7 +2555,8 @@ impl Node<BinaryExpression> {
                             };
                             // Use ArcRadius constraint from ezpz solver
                             // Diameter is twice the radius, so we divide by 2 before passing to the solver
-                            let solver_constraint = Constraint::ArcRadius(solver_arc, n.n / 2.0);
+                            let radius_value = if is_diameter { n.n / 2.0 } else { n.n };
+                            let solver_constraint = Constraint::ArcRadius(solver_arc, radius_value);
 
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
@@ -2666,17 +2572,31 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, frontend::sketch::Diameter};
+                                use crate::execution::ArtifactId;
 
-                                let constraint = crate::front::Constraint::Diameter(Diameter {
-                                    points: vec![p0.object_id, p1.object_id],
-                                    diameter: n.try_into().map_err(|_| {
-                                        KclError::new_internal(KclErrorDetails::new(
-                                            "Failed to convert diameter units numeric suffix:".to_owned(),
-                                            vec![range],
-                                        ))
-                                    })?,
-                                });
+                                let constraint = if is_diameter {
+                                    use crate::frontend::sketch::Diameter;
+                                    crate::front::Constraint::Diameter(Diameter {
+                                        points: vec![p0.object_id, p1.object_id],
+                                        diameter: n.try_into().map_err(|_| {
+                                            KclError::new_internal(KclErrorDetails::new(
+                                                "Failed to convert diameter units numeric suffix:".to_owned(),
+                                                vec![range],
+                                            ))
+                                        })?,
+                                    })
+                                } else {
+                                    use crate::frontend::sketch::Radius;
+                                    crate::front::Constraint::Radius(Radius {
+                                        points: vec![p0.object_id, p1.object_id],
+                                        radius: n.try_into().map_err(|_| {
+                                            KclError::new_internal(KclErrorDetails::new(
+                                                "Failed to convert radius units numeric suffix:".to_owned(),
+                                                vec![range],
+                                            ))
+                                        })?,
+                                    })
+                                };
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 exec_state.add_scene_object(
                                     Object {
