@@ -1,6 +1,5 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
@@ -23,6 +22,7 @@ import {
   storePendingSketchOutcome,
   sendStoredResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
+import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -35,12 +35,7 @@ export const machine = setup({
   types: {
     context: {} as ToolContext,
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'animate draft segment listener': animateDraftSegmentListener,

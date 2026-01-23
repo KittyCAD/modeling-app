@@ -1,5 +1,4 @@
 import { Menu } from '@headlessui/react'
-import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -13,7 +12,6 @@ import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -47,11 +45,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 export const KclEditorPaneContents = () => {
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     editorParent.current?.appendChild(kclManager.editorView.dom)
-
-    return () =>
-      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
   }, [])
 
   return (
@@ -84,7 +78,7 @@ function copyKclCodeToClipboard() {
     )
 }
 
-export const KclEditorMenu = ({ children }: PropsWithChildren) => {
+export const KclEditorMenu = () => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
