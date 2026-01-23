@@ -410,6 +410,26 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
+    "multipleFiles": true,
+    "title": "A Dog House for a Great Dane",
+    "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
+    "files": [
+      "2x4.kcl",
+      "back-frame.kcl",
+      "dimensions.kcl",
+      "door.kcl",
+      "floor.kcl",
+      "frame.kcl",
+      "front-wall.kcl",
+      "left-wall.kcl",
+      "main.kcl",
+      "right-wall.kcl",
+      "roof.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Computer Hardware",
       "Maker"
