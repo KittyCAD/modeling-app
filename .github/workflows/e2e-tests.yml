@@ -57,14 +57,14 @@ jobs:
           CI_SUITE: e2e:desktop
           CI_STEP: setup
 
-  prepare-wasm:
+  build-wasm:
     needs: [track-setup]
     uses: ./.github/workflows/build-wasm.yml
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   snapshots:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
@@ -188,7 +188,7 @@ jobs:
           CI_STEP: teardown
 
   web:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
@@ -290,7 +290,7 @@ jobs:
           CI_STEP: teardown
 
   desktop:
-    needs: [prepare-wasm]
+    needs: [build-wasm]
 
     strategy:
       fail-fast: false
