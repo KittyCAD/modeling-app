@@ -639,3 +639,42 @@ export fn scale(
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+
+/// Hide solids, sketches, or imported objects.
+///
+/// Hidden objects remain in the model and can still be referenced by later operations.
+/// Hiding can be useful to see hard-to-reach vantages, or clarify overlapping geometry
+/// while you work.
+///
+/// ```kcl
+/// // Hide a body, leaving a sketch on face intact
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 2)
+///   |> extrude(length = 2mm)
+/// dot = startSketchOn(cylinder, face = END)
+///   |> circle(center = [0, 0], radius = 1)
+/// hide(cylinder)
+/// ```
+/// ```kcl
+/// // Hide an imported model, leaving a local sketch.
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// dot = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 1)
+/// cube
+///     |> hide()
+/// ```
+/// ```kcl
+/// // Hide a sketch on face
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 2)
+///   |> extrude(length = 2mm)
+/// dot = startSketchOn(cylinder, face = END)
+///   |> circle(center = [0, 0], radius = 1)
+/// hide(dot)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn hide(
+  /// The solid, sketch, or set of solids or sketches to hide.
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}

@@ -459,6 +459,46 @@ async fn inner_rotate(
     Ok(objects)
 }
 
+/// Hide solids, sketches, or imported objects.
+pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let objects = args.get_unlabeled_kw_arg(
+        "objects",
+        &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
+        ]),
+        exec_state,
+    )?;
+
+    let objects = hidden_inner(objects, true, exec_state, args).await?;
+    Ok(objects.into())
+}
+
+async fn hidden_inner(
+    objects: SolidOrSketchOrImportedGeometry,
+    hidden: bool,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    let mut objects = objects.clone();
+    for object_id in objects.ids(&args.ctx).await? {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(object_id)
+                        .hidden(hidden)
+                        .build(),
+                ),
+            )
+            .await?;
+    }
+
+    Ok(objects)
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
@@ -705,6 +745,38 @@ sweepSketch = startSketchOn(XY)
         assert_eq!(
             result.unwrap_err().message(),
             r#"Expected `x`, `y`, `z` or `factor` to be provided."#.to_string()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_pipe_solid_ok() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> hide()
+"#;
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_pipe_sketch_ok() {
+        let ast = r#"sketch = startSketchOn(XY)
+    |> circle(
+        center = [0, 0],
+        radius = 1,
+    )
+    |> hide()
+"#;
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_no_objects() {
+        let ast = r#"hidden = hide()"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().message(),
+            r#"This function expects an unlabeled first parameter, but you haven't passed it one."#.to_string()
         );
     }
 }
