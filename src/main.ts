@@ -43,6 +43,7 @@ import {
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
@@ -50,6 +51,7 @@ if (os.platform() === 'linux') {
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('ozone-platform', 'x11')
 }
+configureWindowsSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
 /** All Electron windows will share this WASM module */
