@@ -93,7 +93,38 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
-    updateEnvironment(selectedEnvironment)
+    const baseDomain =
+      window.electron?.process?.env?.VITE_ZOO_BASE_DOMAIN ||
+      env().VITE_ZOO_BASE_DOMAIN ||
+      ''
+    const requestedEnvironment = selectedEnvironment.trim()
+    const shouldClearEnvironmentOverride =
+      requestedEnvironment === '' ||
+      (baseDomain !== '' && requestedEnvironment === baseDomain)
+    const effectiveRequestedEnvironment = shouldClearEnvironmentOverride
+      ? baseDomain
+      : requestedEnvironment
+    updateEnvironment(
+      shouldClearEnvironmentOverride ? null : requestedEnvironment
+    )
+
+    const persistedEnvironment = await readEnvironmentFile(electron).catch(
+      () => ''
+    )
+    const effectivePersistedEnvironment =
+      persistedEnvironment === '' ? baseDomain : persistedEnvironment
+    const shouldReloadForCsp =
+      effectiveRequestedEnvironment !== effectivePersistedEnvironment
+    const environmentToPersist = shouldClearEnvironmentOverride
+      ? ''
+      : requestedEnvironment
+    if (shouldReloadForCsp) {
+      await writeEnvironmentFile(electron, environmentToPersist).catch(
+        reportRejection
+      )
+      window.location.reload()
+      return
+    }
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -115,7 +146,7 @@ const SignIn = () => {
       return
     }
 
-    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
+    writeEnvironmentFile(electron, environmentToPersist).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
