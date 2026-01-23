@@ -35,10 +35,11 @@ frontStudRight = twoByFourZRotated(
   lengthZ = studHeight,
 ) // Right jamb stud for the door opening
 
+
 // Dog bone sign centered on the front gable
 signTopClearance = 1
 signFrontOffset = 0.1
 signBottomZ = peakZ - signTopClearance - signHeight
 signY = -signThickness - signFrontOffset
 frontDogBoneSign = dogBoneSign
-      |> translate(x = 0, y = signY, z = signBottomZ)
+  |> translate(x = 0, y = signY, z = signBottomZ)
