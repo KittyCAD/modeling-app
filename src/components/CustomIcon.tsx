@@ -796,6 +796,30 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  flipSurface: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="flip surface"
+    >
+      <rect x="7" y="3" width="1" height="5.5" fill="currentColor" />
+      <rect
+        width="5"
+        height="5"
+        transform="matrix(0.866025 0.5 -0.866025 0.5 13.3922 9.5)"
+        fill="currentColor"
+      />
+      <path
+        d="M6 7.76758L4.73242 8.5L7.33008 10L9.92773 8.5L9 7.96387V6.96387L11.6602 8.5L7.33008 11L3 8.5L6 6.76855V7.76758Z"
+        fill="currentColor"
+      />
+      <path
+        d="M14 17.6963H13V15.124L13.3926 15.3506L13.8926 15.0625L14 15V17.6963Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   floppyDiskArrow: (
     <svg
       viewBox="0 0 20 20"
@@ -1625,6 +1649,22 @@ const CustomIconMap = Object.freeze({
         d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
         fill="currentColor"
       />
+    </svg>
+  ),
+  rectangleCenter: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle center"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
+        fill="currentColor"
+      />
+      <circle cx="10" cy="10" r="1.5" fill="currentColor" />
     </svg>
   ),
   refresh: (
