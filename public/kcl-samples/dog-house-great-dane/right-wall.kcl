@@ -1,0 +1,64 @@
+// Dog House (Great Dane) - Right Wall
+// Right wall studs, plates, and slats.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Import and define parameters
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Side slat spacing
+sideSlatWidth = studDepth
+sideSlatGap = 2
+sideSlatPitch = sideSlatWidth + sideSlatGap
+
+// Right wall plates
+// Continuous top plate along Y at studTopZ
+topRightPlate = twoByFourY(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+// Right wall corner studs
+frontRightStud = twoByFourZ(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+) // Front corner
+backRightStud = twoByFourZ(
+  minX = frameWidth / 2 - studDepth,
+  minY = frameLength - studThickness,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+) // Rear corner
+
+
+// Side slats (vertical)
+// Single slat geometry then patterned along Y to fill the wall bay
+sideSlatStartY = studDepth
+sideSlatEndY = frameLength - studDepth - sideSlatWidth
+sideSlatSpanY = sideSlatEndY - sideSlatStartY
+sideSlatCount = floor(sideSlatSpanY / sideSlatPitch) + 1
+sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
+
+fn sideSlats(minX) {
+  return patternLinear3d(
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = sideSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
+    axis = [0, 1, 0],
+    distance = sideSlatActualPitch,
+    instances = sideSlatCount,
+  ) // Replicate the vertical slat along Y with computed pitch
+}
+
+rightSlats = sideSlats(minX = frameWidth / 2 - studThickness)

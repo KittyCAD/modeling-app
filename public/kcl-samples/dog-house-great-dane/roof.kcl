@@ -1,0 +1,92 @@
+// Dog House (Great Dane) - Roof
+// Roof rafters and slats for the dog house.
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Side slat spacing (match wall cadence for rafters)
+sideSlatWidth = studDepth
+sideSlatGap = 2
+sideSlatPitch = sideSlatWidth + sideSlatGap
+sideSlatStartY = studDepth
+sideSlatEndY = frameLength - studDepth - sideSlatWidth
+sideSlatSpanY = sideSlatEndY - sideSlatStartY
+sideSlatCount = floor(sideSlatSpanY / sideSlatPitch) + 1
+sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
+
+// Roof framing
+roofHalfWidth = frameWidth / 2
+roofAngle = atan(roofRise / roofHalfWidth)
+rafterLength = sqrt(roofHalfWidth * roofHalfWidth + roofRise * roofRise)
+rafterThickness = studThickness
+rafterWidth = studDepth
+rafterMidZ = (peakZ + eaveZ) / 2
+ridgeBoardZ = peakZ - studDepth
+
+rafterStartY = sideSlatStartY + (sideSlatWidth - rafterWidth) / 2
+rafterEndY = frameLength - studDepth - rafterWidth
+rafterSpanY = rafterEndY - rafterStartY
+rafterCount = sideSlatCount
+rafterSpacing = sideSlatActualPitch
+
+ridgeBoard = twoByFourYRotated(
+  minX = -studThickness / 2,
+  minY = 0,
+  minZ = ridgeBoardZ,
+  lengthY = frameLength,
+)
+
+// Collar ties (brace rafters together to reduce ridge load)
+collarTieHeightFactor = 0.5
+collarTieCenterZ = eaveZ + roofRise * collarTieHeightFactor
+collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ) - (studThickness / 2)
+collarTieLength = 2 * collarTieHalfWidth
+collarTieMinZ = collarTieCenterZ - (studThickness / 2)
+
+collarTie = twoByFourX(
+  minX = -collarTieHalfWidth,
+  minY = rafterStartY,
+  minZ = collarTieMinZ,
+  lengthX = collarTieLength,
+)
+
+rightRafter = twoByFourX(
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength,
+     )
+  |> rotate(axis = [0, 1, 0], angle = -roofAngle)
+  |> translate(x = roofHalfWidth / 2, y = 0, z = rafterMidZ)
+
+leftRafter = twoByFourX(
+       minX = -rafterLength / 2,
+       minY = rafterStartY,
+       minZ = -rafterThickness / 2,
+       lengthX = rafterLength,
+     )
+  |> rotate(axis = [0, 1, 0], angle = roofAngle)
+  |> translate(x = -roofHalfWidth / 2, y = 0, z = rafterMidZ)
+
+rightRafters = patternLinear3d(
+  [rightRafter],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)
+
+leftRafters = patternLinear3d(
+  [leftRafter],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)
+
+collarTies = patternLinear3d(
+  [collarTie],
+  axis = [0, 1, 0],
+  distance = rafterSpacing,
+  instances = rafterCount,
+)

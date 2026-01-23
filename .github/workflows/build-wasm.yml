@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  npm-build-wasm:
+  build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
