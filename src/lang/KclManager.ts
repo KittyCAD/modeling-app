@@ -42,8 +42,6 @@ import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
-
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -251,6 +249,7 @@ export class KclManager extends EventTarget {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
+  livePathsToWatch = signal<string[]>([])
 
   private _execState: ExecState = emptyExecState()
   private _variables = signal<VariableMap>({})
@@ -878,7 +877,7 @@ export class KclManager extends EventTarget {
       .map((file) => {
         return file.value
       })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+    this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
