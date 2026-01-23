@@ -296,7 +296,7 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Radius',
                 radius: { value: distance, units },
-                points: segmentsToConstrain,
+                arc: segmentsToConstrain[0],
               },
               await jsAppSettings(context.rustContext.settingsActor)
             )
