@@ -1499,6 +1499,10 @@ export fn isSurface(
 export fn deleteFace(
   /// Target to delete a surface from.
   @val: body,
+  /// Face to delete. This is the usual face representation, e.g. a tagged face.
+  faces?: [TaggedFace; 1+],
   /// Face to delete.
-  faceIndices: [number(Count); 1+],
+  /// The index is a stable ordering of faces, used when you can't get the
+  /// usual ID (UUID) of a face.
+  faceIndices?: [number(Count); 1+],
 ): Solid {}
