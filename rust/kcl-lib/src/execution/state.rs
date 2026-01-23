@@ -602,6 +602,7 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
             &programs,
+            &self.global.module_infos,
         );
 
         let artifact_graph = graph_result?;

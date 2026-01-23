@@ -10,11 +10,12 @@ use serde::{Serialize, ser::SerializeSeq};
 use uuid::Uuid;
 
 use crate::{
-    KclError, NodePath, SourceRange,
+    KclError, ModuleId, NodePath, SourceRange,
     errors::KclErrorDetails,
-    execution::ArtifactId,
+    execution::{ArtifactId, state::ModuleInfoMap},
     front::ObjectId,
-    parsing::ast::types::{Node, Program},
+    modules::ModulePath,
+    parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
 };
 
 #[cfg(test)]
@@ -638,6 +639,64 @@ impl ArtifactGraph {
     }
 }
 
+fn import_statement_node_paths(
+    ast: &Node<Program>,
+    module_infos: &ModuleInfoMap,
+    programs: &crate::execution::ProgramLookup,
+    cached_body_items: usize,
+) -> FnvHashMap<ModuleId, NodePath> {
+    let mut node_paths = FnvHashMap::default();
+    for body_item in &ast.body {
+        let BodyItem::ImportStatement(import_stmt) = body_item else {
+            continue;
+        };
+        if !matches!(import_stmt.selector, ImportSelector::None { .. }) {
+            continue;
+        }
+        let Some(module_id) = module_id_for_import_path(module_infos, &import_stmt.path) else {
+            continue;
+        };
+        let range = SourceRange::from(import_stmt);
+        let node_path = NodePath::from_range(programs, cached_body_items, range).unwrap_or_default();
+        node_paths.entry(module_id).or_insert(node_path);
+    }
+    node_paths
+}
+
+fn module_id_for_import_path(module_infos: &ModuleInfoMap, import_path: &ImportPath) -> Option<ModuleId> {
+    let import_path = match import_path {
+        ImportPath::Kcl { filename } => filename,
+        ImportPath::Foreign { path } => path,
+        ImportPath::Std { .. } => return None,
+    };
+
+    module_infos.iter().find_map(|(module_id, module_info)| {
+        if let ModulePath::Local {
+            original_import_path: Some(original_import_path),
+            ..
+        } = &module_info.path
+        {
+            if original_import_path == import_path {
+                return Some(*module_id);
+            }
+        }
+        None
+    })
+}
+
+fn node_path_for_range(
+    programs: &crate::execution::ProgramLookup,
+    cached_body_items: usize,
+    range: SourceRange,
+    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
+) -> NodePath {
+    if let Some(node_path) = import_node_paths.get(&range.module_id()) {
+        return node_path.clone();
+    }
+
+    NodePath::from_range(programs, cached_body_items, range).unwrap_or_default()
+}
+
 /// Build the artifact graph from the artifact commands and the responses.  The
 /// initial graph is the graph cached from a previous execution.  NodePaths of
 /// `exec_artifacts` are filled in from the AST.
@@ -648,19 +707,21 @@ pub(super) fn build_artifact_graph(
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
     programs: &crate::execution::ProgramLookup,
+    module_infos: &ModuleInfoMap,
 ) -> Result<ArtifactGraph, KclError> {
     let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
+    let import_node_paths = import_statement_node_paths(ast, module_infos, programs, item_count);
 
     // Fill in NodePaths for artifacts that were added directly to the map
     // during execution.
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, programs, item_count);
+        fill_in_node_paths(exec_artifact, programs, item_count, &import_node_paths);
     }
 
     for artifact_command in artifact_commands {
@@ -689,6 +750,7 @@ pub(super) fn build_artifact_graph(
             programs,
             item_count,
             exec_artifacts,
+            &import_node_paths,
         )?;
         for artifact in artifact_updates {
             // Merge with existing artifacts.
@@ -708,24 +770,29 @@ pub(super) fn build_artifact_graph(
 
 /// These may have been created with placeholder `CodeRef`s because we didn't
 /// have the entire AST available. Now we fill them in.
-fn fill_in_node_paths(artifact: &mut Artifact, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
+fn fill_in_node_paths(
+    artifact: &mut Artifact,
+    programs: &crate::execution::ProgramLookup,
+    cached_body_items: usize,
+    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
+) {
     match artifact {
         Artifact::StartSketchOnFace(face) => {
             if face.code_ref.node_path.is_empty() {
                 face.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, face.code_ref.range).unwrap_or_default();
+                    node_path_for_range(programs, cached_body_items, face.code_ref.range, import_node_paths);
             }
         }
         Artifact::StartSketchOnPlane(plane) => {
             if plane.code_ref.node_path.is_empty() {
                 plane.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, plane.code_ref.range).unwrap_or_default();
+                    node_path_for_range(programs, cached_body_items, plane.code_ref.range, import_node_paths);
             }
         }
         Artifact::SketchBlock(block) => {
             if block.code_ref.node_path.is_empty() {
                 block.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, block.code_ref.range).unwrap_or_default();
+                    node_path_for_range(programs, cached_body_items, block.code_ref.range, import_node_paths);
             }
         }
         _ => {}
@@ -817,6 +884,7 @@ fn artifacts_to_update(
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
     let response = responses.get(&uuid);
@@ -826,7 +894,7 @@ fn artifacts_to_update(
     // correct value based on NodePath.
     let path_to_node = Vec::new();
     let range = artifact_command.range;
-    let node_path = NodePath::from_range(programs, cached_body_items, range).unwrap_or_default();
+    let node_path = node_path_for_range(programs, cached_body_items, range, import_node_paths);
     let code_ref = CodeRef {
         range,
         node_path,
