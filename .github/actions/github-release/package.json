@@ -4,7 +4,7 @@
   "main": "main.js",
   "dependencies": {
     "@actions/core": "^2.0",
-    "@actions/github": "^6.0",
+    "@actions/github": "^7.0",
     "glob": "^13.0.0"
   }
 }

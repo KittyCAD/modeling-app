@@ -42,8 +42,6 @@ import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
-
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -249,6 +247,7 @@ export class KclManager extends EventTarget {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
+  livePathsToWatch = signal<string[]>([])
 
   private _execState: ExecState = emptyExecState()
   private _variables = signal<VariableMap>({})
@@ -876,7 +875,7 @@ export class KclManager extends EventTarget {
       .map((file) => {
         return file.value
       })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+    this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -1786,8 +1785,8 @@ export class KclManager extends EventTarget {
     newCode = this.codeSignal.value,
     path = this._currentFilePath
   ) {
-    if (this.isBufferMode || path === null) return
-    if (window.electron) {
+    if (this.isBufferMode) return
+    if (window.electron && path !== null) {
       const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during

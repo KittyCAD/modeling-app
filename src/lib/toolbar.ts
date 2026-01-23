@@ -373,6 +373,68 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'split',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Boolean Split', groupId: 'modeling' },
+          }),
+        icon: 'split',
+        status: 'available',
+        title: 'Split',
+        description: 'Split a solid or surface into multiple surfaces.',
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
+          },
+        ],
+      },
+      {
+        id: 'surface',
+        array: [
+          {
+            id: 'flip-surface',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Flip Surface', groupId: 'modeling' },
+              }),
+            icon: 'flipSurface',
+            status: 'available',
+            title: 'Flip Surface',
+            description:
+              'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-flipSurface'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'join',
+            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Join',
+            description: 'Join surfaces together',
+            links: [],
+          },
+          {
+            id: 'delete-face',
+            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Delete Face',
+            description: 'Deletes a face from a body, leaving an open surface.',
+            links: [],
+          },
+        ],
+      },
       'break',
       {
         id: 'planes',
@@ -1314,6 +1376,53 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'centerArcTool',
       },
+      {
+        id: 'rectangles',
+        array: [
+          {
+            id: 'corner-rectangle',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'cornerRectTool' },
+                  }),
+            icon: 'rectangle',
+            status: 'available',
+            title: 'Corner Rectangle',
+            hotkey: 'Shift+R',
+            description: 'Start drawing a rectangle',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'cornerRectTool',
+          },
+          {
+            id: 'center-rectangle',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'centerRectTool' },
+                  }),
+            icon: 'rectangleCenter',
+            status: 'available',
+            title: 'Center Rectangle',
+            hotkey: 'Alt+R',
+            description: 'Start drawing a rectangle from its center',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'centerRectTool',
+          },
+        ],
+      },
       'break',
       {
         id: 'coincident',
@@ -1413,6 +1522,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => false,
       },
+      {
+        id: 'construction',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'construction',
+          }),
+        icon: 'construction',
+        status: 'available',
+        title: 'Construction',
+        description: 'Toggle construction geometry on selected segments',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }
@@ -1425,13 +1547,23 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
 export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
   const map: Record<string, CustomIconName> = {}
   const items = toolbarConfig.sketchSolve.items
+  collectItems(items, map)
+  return map
+}
 
+function collectItems(
+  items: ToolbarMode['items'],
+  map: Record<string, CustomIconName>
+) {
   for (const item of items) {
     // Skip 'break' strings
     if (typeof item === 'string') continue
 
-    // Skip dropdowns (which don't have direct icons)
-    if ('array' in item) continue
+    // dropdowns, eg. rectangles
+    if ('array' in item) {
+      collectItems(item.array, map)
+      continue
+    }
 
     // Now TypeScript knows item is ToolbarItem
     // Only process items that have an icon and an isActive function (which indicates it's a tool)
@@ -1447,6 +1579,4 @@ export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
       }
     }
   }
-
-  return map
 }

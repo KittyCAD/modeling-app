@@ -21,6 +21,8 @@ permissions:
 
 jobs:
   prepare-wasm:
+    # TODO: Most of these steps are identical to those in 'build-wasm.yml', so
+    # we should consider calling that reusable workflow instead.
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
@@ -68,15 +70,15 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
 
       - name: Download Wasm cache
         id: download-wasm
-        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
+        if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
         uses: dawidd6/action-download-artifact@v12
         continue-on-error: true
         with:
@@ -90,9 +92,8 @@ jobs:
         id: wasm
         run: |
           set -euox pipefail
-          # Build wasm if this is a scheduled run, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build Wasm if there are Rust changes or downloading from the cache failed
+          if [[ ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -108,8 +109,8 @@ jobs:
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          cache: false # Configured below.
-          rustflags: '' # Use .cargo/config.toml
+          cache: false # configured below
+          rustflags: '' # use .cargo/config.toml
 
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
@@ -127,8 +128,7 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - name: Upload compiled wasm artifacts
-        uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v6
         with:
           name: prepared-wasm
           path: |
@@ -167,8 +167,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -300,8 +300,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -427,8 +427,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         id: deps-install

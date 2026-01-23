@@ -52,6 +52,8 @@ function createPointSegmentGroup({
     theme,
     scale,
     id: segmentId,
+    isDraft: false,
+    isConstruction: false,
   })
   if (result instanceof Group) {
     return result
@@ -88,6 +90,8 @@ export function createLineSegmentMesh({
     theme,
     scale,
     id: segmentId,
+    isDraft: false,
+    isConstruction: false,
   })
   if (result instanceof Group) {
     // Find the STRAIGHT_SEGMENT_BODY mesh within the group
