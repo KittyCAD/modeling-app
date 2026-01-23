@@ -1,0 +1,34 @@
+// Dog House (Great Dane) - Front Wall
+// Front wall studs and plates around the door opening.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Import and define parameters
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Top front plate
+// Spans the front wall at studTopZ (underside of top plate elevation)
+topFrontPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthX = frameWidth - (2 * studDepth),
+)
+
+// Front wall studs around the opening (studs oriented with depth along Y)
+frontStudLeftX = -openingWidth / 2 - studThickness
+frontStudRightX = openingWidth / 2
+frontStudLeft = twoByFourZRotated(
+  minX = frontStudLeftX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+) // Left jamb stud for the door opening
+frontStudRight = twoByFourZRotated(
+  minX = frontStudRightX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+) // Right jamb stud for the door opening

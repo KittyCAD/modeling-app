@@ -131,6 +131,7 @@ async fn inner_delete_face(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Solid, KclError> {
+    // Validate args:
     // User has to give us SOMETHING to delete.
     if tagged_faces.is_none() && face_indices.is_none() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -138,6 +139,15 @@ async fn inner_delete_face(
             vec![args.source_range],
         )));
     }
+
+    // Early return for mock response, just return the same solid.
+    // If we tracked faces, we would remove some faces... but we don't really.
+    let no_engine_commands = args.ctx.no_engine_commands().await;
+    if no_engine_commands {
+        return Ok(body);
+    }
+
+    // Combine the list of faces, both tagged and indexed.
     let tagged_faces = tagged_faces.unwrap_or_default();
     let face_indices = face_indices.unwrap_or_default();
     // Get the face's ID
@@ -175,7 +185,7 @@ async fn inner_delete_face(
         face_ids.insert(face_id);
     }
 
-    // Delete the face
+    // Now that we've got all the faces, delete them all.
     let delete_face_response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
@@ -200,5 +210,6 @@ async fn inner_delete_face(
         )));
     };
 
+    // Return the same body, it just has fewer faces.
     Ok(body)
 }

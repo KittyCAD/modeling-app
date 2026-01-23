@@ -83,4 +83,64 @@ startSketchOn(XY)
 >
 </model-viewer>
 
+```kcl
+sideLen = 4
+
+// Helper function to make a square surface body.
+fn square(@plane, offset, y) {
+  at = if y {
+    [-offset, 0]
+  } else {
+    [0, offset]
+  }
+  return startSketchOn(plane)
+    |> startProfile(at)
+    |> if y {
+      yLine(length = sideLen)
+    } else {
+      xLine(length = sideLen)
+    }
+    |> extrude(
+         length = if y {
+        -sideLen
+      } else {
+        sideLen
+      },
+         bodyType = SURFACE,
+       )
+}
+
+// Make a cube polysurface from 6 squares.
+cube = [
+  square(XY, offset = 0, y = false),
+  square(XZ, offset = 0, y = true)
+  |> flipSurface(),
+  square(YZ, offset = 0, y = false),
+  square(XY, offset = sideLen, y = false),
+  square(XZ, offset = -sideLen, y = true),
+  square(YZ, offset = sideLen, y = false)
+]
+
+// Via split + merge, create a solid cube from the 6 square surfaces (faces of the cube).
+cubeSolid = split(cube, merge = true)
+
+// We can delete faces using their face index, because there's no tags on this cube.
+deleteFace(cubeSolid, faceIndices = [0, 1])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the deleteFace function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-deleteFace2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
