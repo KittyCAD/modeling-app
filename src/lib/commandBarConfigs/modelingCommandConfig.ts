@@ -2264,14 +2264,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       solid: {
-        displayName: 'Solid',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: false,
         required: true,
       },
       faces: {
-        displayName: 'Faces',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
