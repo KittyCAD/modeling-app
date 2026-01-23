@@ -117,6 +117,8 @@ import {
   type TransactionSpecNoChanges,
 } from '@src/editor/HistoryView'
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -952,6 +954,13 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+
+    // Update project thumbnail after successful execution
+    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      createThumbnailPNGOnDesktop({
+        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+      })
+    }
   }
 
   /**
