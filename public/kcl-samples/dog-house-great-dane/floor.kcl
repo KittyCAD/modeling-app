@@ -1,0 +1,29 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Floor slat spacing
+floorSlatSpacing = 6
+floorSlatWidth = studDepth
+
+// Floor slats
+floorSlatStartY = studDepth
+floorSlatEndY = frameLength - studDepth - floorSlatWidth
+floorSlatSpan = floorSlatEndY - floorSlatStartY
+floorSlatCount = floor(floorSlatSpan / floorSlatSpacing) + 1
+floorSlatActualPitch = floorSlatSpan / (floorSlatCount - 1)
+
+floorSlat = twoByFourX(
+  minX = -interiorWidth / 2,
+  minY = floorSlatStartY,
+  minZ = floorZ,
+  lengthX = interiorWidth,
+)
+
+floorSlats = patternLinear3d(
+  [floorSlat],
+  axis = [0, 1, 0],
+  distance = floorSlatActualPitch,
+  instances = floorSlatCount,
+)

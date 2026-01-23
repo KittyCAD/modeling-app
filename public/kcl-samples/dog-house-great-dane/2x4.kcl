@@ -1,0 +1,82 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+
+fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
+  return startSketchOn(XY)
+    |> rectangle(width = sizeX, height = sizeY, corner = [minX, minY])
+    |> extrude(length = sizeZ)
+    |> translate(z = minZ)
+}
+
+// 2x4 along X (length in X), depth in Y, thickness in Z.
+export fn twoByFourX(minX, minY, minZ, lengthX) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = lengthX,
+    sizeY = studDepth,
+    sizeZ = studThickness,
+  )
+}
+
+// 2x4 along X, thickness in Y, depth in Z (rotated).
+export fn twoByFourXRotated(minX, minY, minZ, lengthX) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = lengthX,
+    sizeY = studThickness,
+    sizeZ = studDepth,
+  )
+}
+
+// 2x4 along Y (length in Y), depth in X, thickness in Z.
+export fn twoByFourY(minX, minY, minZ, lengthY) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studDepth,
+    sizeY = lengthY,
+    sizeZ = studThickness,
+  )
+}
+
+// 2x4 along Y, thickness in X, depth in Z (rotated).
+export fn twoByFourYRotated(minX, minY, minZ, lengthY) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studThickness,
+    sizeY = lengthY,
+    sizeZ = studDepth,
+  )
+}
+
+// 2x4 along Z (length in Z), depth in X, thickness in Y.
+export fn twoByFourZ(minX, minY, minZ, lengthZ) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studDepth,
+    sizeY = studThickness,
+    sizeZ = lengthZ,
+  )
+}
+
+// 2x4 along Z, thickness in X, depth in Y (rotated).
+export fn twoByFourZRotated(minX, minY, minZ, lengthZ) {
+  return prism(
+    minX = minX,
+    minY = minY,
+    minZ = minZ,
+    sizeX = studThickness,
+    sizeY = studDepth,
+    sizeZ = lengthZ,
+  )
+}

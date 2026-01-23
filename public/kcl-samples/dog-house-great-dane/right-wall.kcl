@@ -1,0 +1,54 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Side slat spacing
+sideSlatWidth = studDepth
+sideSlatGap = 2
+sideSlatPitch = sideSlatWidth + sideSlatGap
+
+// Right wall plates
+topRightPlate = twoByFourY(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+// Right wall corner studs
+frontRightStud = twoByFourZ(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+backRightStud = twoByFourZ(
+  minX = frameWidth / 2 - studDepth,
+  minY = frameLength - studThickness,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+
+// Side slats (vertical)
+sideSlatStartY = studDepth
+sideSlatEndY = frameLength - studDepth - sideSlatWidth
+sideSlatSpanY = sideSlatEndY - sideSlatStartY
+sideSlatCount = floor(sideSlatSpanY / sideSlatPitch) + 1
+sideSlatActualPitch = sideSlatSpanY / (sideSlatCount - 1)
+
+fn sideSlats(minX) {
+  return patternLinear3d(
+    [twoByFourZRotated(
+      minX = minX,
+      minY = sideSlatStartY,
+      minZ = studBaseZ,
+      lengthZ = studHeight,
+    )],
+    axis = [0, 1, 0],
+    distance = sideSlatActualPitch,
+    instances = sideSlatCount,
+  )
+}
+
+rightSlats = sideSlats(minX = frameWidth / 2 - studThickness)

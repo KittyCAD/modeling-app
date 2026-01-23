@@ -1,0 +1,28 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Top front plate
+topFrontPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthX = frameWidth - 2 * studDepth,
+)
+
+// Front wall studs around the opening (studs oriented with depth along Y)
+frontStudLeftX = -openingWidth / 2 - studThickness
+frontStudRightX = openingWidth / 2
+frontStudLeft = twoByFourZRotated(
+  minX = frontStudLeftX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+frontStudRight = twoByFourZRotated(
+  minX = frontStudRightX,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)

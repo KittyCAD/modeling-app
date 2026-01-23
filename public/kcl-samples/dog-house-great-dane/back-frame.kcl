@@ -1,0 +1,36 @@
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Back plates
+topBackPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = frameLength - studDepth,
+  minZ = studTopZ,
+  lengthX = frameWidth - 2 * studDepth,
+)
+
+// Back slats (fixed)
+backSlatWidth = studDepth
+backSlatGap = 2
+backSlatPitch = backSlatWidth + backSlatGap
+backSlatStartX = -interiorWidth / 2
+backSlatEndX = interiorWidth / 2 - backSlatWidth
+backSlatSpanX = backSlatEndX - backSlatStartX
+backSlatCount = floor(backSlatSpanX / backSlatPitch) + 1
+backSlatActualPitch = backSlatSpanX / (backSlatCount - 1)
+backSlatDepth = studThickness
+backSlatY = frameLength - backSlatDepth
+
+backSlats = patternLinear3d(
+  [twoByFourZ(
+    minX = backSlatStartX,
+    minY = backSlatY,
+    minZ = studBaseZ,
+    lengthZ = studHeight,
+  )],
+  axis = [1, 0, 0],
+  distance = backSlatActualPitch,
+  instances = backSlatCount,
+)
