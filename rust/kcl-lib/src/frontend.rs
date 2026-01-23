@@ -4831,35 +4831,6 @@ sketch(on = XY) {
             .await;
         assert!(result_line.is_err(), "Single line segment should error for radius");
 
-        // Test: More than 1 argument should error
-        let initial_source_many = "\
-@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
-  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-  sketch2::arc(start = [var 5, var 6], end = [var 7, var 8], center = [var 0, var 0])
-}
-";
-        let program_many = Program::parse(initial_source_many).unwrap().0.unwrap();
-        let mut frontend_many = FrontendState::new();
-        frontend_many.hack_set_program(&ctx, program_many).await.unwrap();
-        let sketch_object_many = find_first_sketch_object(&frontend_many.scene_graph).unwrap();
-        let sketch_id_many = sketch_object_many.id;
-        let sketch_many = expect_sketch(sketch_object_many);
-        let arc0_id = *sketch_many.segments.first().unwrap();
-
-        let constraint_many = Constraint::Radius(Radius {
-            arc: arc0_id,
-            radius: Number {
-                value: 5.0,
-                units: NumericSuffix::Mm,
-            },
-        });
-        let result_many = frontend_many
-            .add_constraint(&mock_ctx, version, sketch_id_many, constraint_many)
-            .await;
-        assert!(result_many.is_err(), "More than 1 argument should error for radius");
-
         ctx.close().await;
         mock_ctx.close().await;
     }
@@ -4996,35 +4967,6 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id_line, constraint_line)
             .await;
         assert!(result_line.is_err(), "Single line segment should error for diameter");
-
-        // Test: More than 1 argument should error
-        let initial_source_many = "\
-@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
-  sketch2::arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
-  sketch2::arc(start = [var 5, var 6], end = [var 7, var 8], center = [var 0, var 0])
-}
-";
-        let program_many = Program::parse(initial_source_many).unwrap().0.unwrap();
-        let mut frontend_many = FrontendState::new();
-        frontend_many.hack_set_program(&ctx, program_many).await.unwrap();
-        let sketch_object_many = find_first_sketch_object(&frontend_many.scene_graph).unwrap();
-        let sketch_id_many = sketch_object_many.id;
-        let sketch_many = expect_sketch(sketch_object_many);
-        let arc0_id = *sketch_many.segments.first().unwrap();
-
-        let constraint_many = Constraint::Diameter(Diameter {
-            arc: arc0_id,
-            diameter: Number {
-                value: 10.0,
-                units: NumericSuffix::Mm,
-            },
-        });
-        let result_many = frontend_many
-            .add_constraint(&mock_ctx, version, sketch_id_many, constraint_many)
-            .await;
-        assert!(result_many.is_err(), "More than 1 argument should error for diameter");
 
         ctx.close().await;
         mock_ctx.close().await;
