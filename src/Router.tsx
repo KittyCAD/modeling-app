@@ -8,7 +8,7 @@ import {
   redirect,
 } from 'react-router-dom'
 
-import { OpenedProject } from '@src/OpenedProject'
+import { OpenedProject } from '@src/components/OpenedProject'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
