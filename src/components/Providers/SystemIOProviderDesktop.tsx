@@ -129,6 +129,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         pathname === PATHS.HOME &&
         [
           SystemIOMachineStates.creatingProject,
+          SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
           SystemIOMachineStates.importFileFromURL,
         ].includes(lastOperation) === false
       )

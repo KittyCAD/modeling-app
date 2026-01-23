@@ -221,6 +221,32 @@ type ReadFileReturn<T> = T extends 'utf8' | { encoding: 'utf-8' }
   ? string
   : Uint8Array
 
+const readFileTry = async <T extends ReadFileOptions>(
+  attemptN: number,
+  handle: FileSystemFileHandle,
+  options?: T
+): Promise<ReadFileReturn<T>> => {
+  try {
+    const file = await handle.getFile()
+
+    if (options === 'utf8' || options?.encoding === 'utf-8') {
+      return (await file.text()) as ReadFileReturn<T>
+    }
+
+    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
+  } catch (e: unknown) {
+    console.error(e)
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (attemptN === 3) {
+          return reject(e)
+        }
+        void readFileTry<T>(attemptN + 1, handle, options).then(resolve)
+      }, attemptN * 1000)
+    })
+  }
+}
+
 const readFile = async <T extends ReadFileOptions>(
   targetPath: string,
   options?: T
@@ -229,12 +255,7 @@ const readFile = async <T extends ReadFileOptions>(
   if (handle === undefined) return Promise.reject('ENOENT')
 
   if (handle instanceof FileSystemFileHandle) {
-    const file = await handle.getFile()
-    if (options === 'utf8' || options?.encoding === 'utf-8') {
-      return (await file.text()) as ReadFileReturn<T>
-    }
-
-    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
+    return readFileTry(0, handle, options)
   }
 
   return Promise.reject()

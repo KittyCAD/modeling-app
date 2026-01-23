@@ -1002,7 +1002,10 @@ export const writeProjectThumbnailFile = async (
   try {
     await fsZds.stat(gitignorePath)
   } catch {
-    await fsZds.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
+    await fsZds.writeFile(
+      gitignorePath,
+      new TextEncoder().encode(`${PROJECT_IMAGE_NAME}\n`)
+    )
   }
 
   return fsZds.writeFile(filePath, asArray)

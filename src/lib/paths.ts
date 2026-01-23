@@ -205,13 +205,12 @@ export function parentPathRelativeToApplicationDirectory(
  * e.g. document.location.pathname
  */
 export function webSafePathSplit(targetPath: string): string[] {
-  const webSafeSep = '/'
+  const webSafeSep = path.sep
   return targetPath.split(webSafeSep)
 }
 
 export function webSafeJoin(paths: string[]): string {
-  const webSafeSep = '/'
-  return paths.join(webSafeSep)
+  return path.join(...paths)
 }
 
 /**
