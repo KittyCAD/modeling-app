@@ -81,7 +81,7 @@ if (window.electron) {
     .catch(reportRejection)
 }
 
-export function App() {
+export function OpenedProject() {
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
   const loaderData = useLoaderData<IndexLoaderData>()
