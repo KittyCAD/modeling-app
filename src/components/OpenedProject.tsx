@@ -117,6 +117,7 @@ export function OpenedProject() {
       [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.renamingProject,
+        SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation) === false
     ) {
       void navigate(PATHS.HOME)

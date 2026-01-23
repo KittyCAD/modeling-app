@@ -295,6 +295,7 @@ const writeFile = async (
     create: true,
   })
   const writer = await (await handleFile).createWritable()
+
   await writer.write(new Blob([data], { type: 'application/octet-stream' }))
   await writer.close()
 

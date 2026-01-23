@@ -127,7 +127,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       // Don't navigate if we are on the projects listing, unless we are creating.
       if (
         pathname === PATHS.HOME &&
-        lastOperation !== SystemIOMachineStates.creatingProject
+        [
+          SystemIOMachineStates.creatingProject,
+          SystemIOMachineStates.importFileFromURL,
+        ].includes(lastOperation) === false
       )
         return
 

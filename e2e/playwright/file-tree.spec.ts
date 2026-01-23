@@ -1,7 +1,7 @@
-import * as fs from 'fs'
+import { type IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import path from 'path'
 import { FILE_EXT } from '@src/lib/constants'
-import * as fsp from 'fs/promises'
+import * as nodeFsP from 'fs/promises'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 import {
@@ -10,6 +10,18 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+const exists = async (
+  fs: IZooDesignStudioFS,
+  filePath: string
+): Promise<boolean> => {
+  try {
+    await fs.stat(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
 
 test.describe('integrations tests', { tag: '@desktop' }, () => {
   test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({
@@ -22,8 +34,8 @@ test.describe('integrations tests', { tag: '@desktop' }, () => {
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'test-sample')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
+      await nodeFsP.mkdir(bracketDir, { recursive: true })
+      await nodeFsP.copyFile(
         executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
@@ -101,7 +113,10 @@ test.describe(
       await homePage.createAndGoToProject(projectName)
 
       // File the main.kcl with contents
-      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCube = await nodeFsP.readFile(
+        executorInputPath('cube.kcl'),
+        'utf-8'
+      )
       await pasteCodeInEditor(kclCube)
       await scene.settled(cmdBar)
       await renameFile(fromFile, toFile)
@@ -135,8 +150,11 @@ test.describe(
       const projectName = 'cube'
       const mainFile = 'main.kcl'
       const secondFile = 'cylinder.kcl'
-      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
-      const kclCylinder = await fsp.readFile(
+      const kclCube = await nodeFsP.readFile(
+        executorInputPath('cube.kcl'),
+        'utf-8'
+      )
+      const kclCylinder = await nodeFsP.readFile(
         executorInputPath('cylinder.kcl'),
         'utf-8'
       )
@@ -144,13 +162,15 @@ test.describe(
       await folderSetupFn(async (dir) => {
         const cubeDir = path.join(dir, projectName)
         await fs.mkdir(cubeDir, { recursive: true })
-        const testData = await fsp.readFile(executorInputPath('cube.kcl'))
+        const testData = await nodeFsP.readFile(executorInputPath('cube.kcl'))
         await fs.writeFile(
           path.join(cubeDir, mainFile),
           new Uint8Array(testData)
         )
 
-        const testData2 = await fsp.readFile(executorInputPath('cylinder.kcl'))
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
         await fs.writeFile(
           path.join(cubeDir, secondFile),
           new Uint8Array(testData2)
@@ -225,7 +245,7 @@ test.describe(
 
       await createProject({ name: 'project-000', page })
       // File the main.kcl with contents
-      const kclCube = await fsp.readFile(
+      const kclCube = await nodeFsP.readFile(
         'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
@@ -264,13 +284,19 @@ test.describe(
       await scene.settled(cmdBar)
 
       // Create a small file
-      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCube = await nodeFsP.readFile(
+        executorInputPath('cube.kcl'),
+        'utf-8'
+      )
       // pasted into main.kcl
       await pasteCodeInEditor(kclCube)
 
       // Create a large lego file
       await createNewFile('lego')
-      const kclLego = await fsp.readFile(executorInputPath('lego.kcl'), 'utf-8')
+      const kclLego = await nodeFsP.readFile(
+        executorInputPath('lego.kcl'),
+        'utf-8'
+      )
       await pasteCodeInEditor(kclLego)
 
       await test.step('swap between small and large files', async () => {
@@ -289,338 +315,382 @@ test.describe(
   }
 )
 
-test.describe('Renaming in the file tree', { tag: '@desktop' }, () => {
-  test('A file you have open', async ({ folderSetupFn, page }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        path.join(dir, 'Test Project', 'main.kcl')
-      )
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        path.join(dir, 'Test Project', 'fileToRename.kcl')
-      )
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+test.describe(
+  'Renaming in the file tree',
+  { tag: ['@web', '@desktop'] },
+  () => {
+    test('A file you have open', async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        await fs.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(
+          path.join(dir, 'Test Project', 'main.kcl'),
+          new Uint8Array(testData)
+        )
 
-    // Constants and locators
-    const projectLink = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const checkUnRenamedFS = () => {
-      const filePath = path.join(dir, 'Test Project', 'fileToRename.kcl')
-      return fs.existsSync(filePath)
-    }
-    const newFileName = 'newFileName'
-    const checkRenamedFS = () => {
-      const filePath = path.join(dir, 'Test Project', `${newFileName}.kcl`)
-      return fs.existsSync(filePath)
-    }
-    const fileToRename = u.locatorFile('fileToRename.kcl')
-    const renamedFile = u.locatorFile('newFileName.kcl')
-    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-    const renameInput = page.getByPlaceholder('fileToRename.kcl')
-    const codeLocator = page.locator('.cm-content')
-
-    await test.step('Open project and file pane', async () => {
-      await expect(projectLink).toBeVisible()
-      await projectLink.click()
-      await expect(projectMenuButton).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
-
-      await u.openFilePanel()
-      await expect(fileToRename).toBeVisible()
-      expect(checkUnRenamedFS()).toBeTruthy()
-      expect(checkRenamedFS()).toBeFalsy()
-      await fileToRename.click()
-      await expect(projectMenuButton).toContainText('fileToRename.kcl')
-      await u.openKclCodePanel()
-      await expect(codeLocator).toContainText('circle(')
-      await u.closeKclCodePanel()
-    })
-
-    await test.step('Rename the file', async () => {
-      await fileToRename.click({ button: 'right' })
-      await renameMenuItem.click()
-      await expect(renameInput).toBeVisible()
-      await renameInput.fill(newFileName)
-      await page.keyboard.press('Enter')
-    })
-
-    await test.step('Verify the file is renamed', async () => {
-      await expect(fileToRename).not.toBeAttached()
-      await expect(renamedFile).toBeVisible()
-      expect(checkUnRenamedFS()).toBeFalsy()
-      expect(checkRenamedFS()).toBeTruthy()
-    })
-
-    await test.step('Verify we navigated', async () => {
-      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
-      const url = page.url()
-      expect(url).toContain(newFileName)
-      await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
-      await expect(projectMenuButton).not.toContainText('main.kcl')
-      expect(url).not.toContain('fileToRename.kcl')
-      expect(url).not.toContain('main.kcl')
-
-      await u.openKclCodePanel()
-      await expect(codeLocator).toContainText('circle(')
-    })
-  })
-
-  test('A file you do not have open', async ({
-    folderSetupFn,
-    page,
-  }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        path.join(dir, 'Test Project', 'main.kcl')
-      )
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        path.join(dir, 'Test Project', 'fileToRename.kcl')
-      )
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
-
-    // Constants and locators
-    const newFileName = 'newFileName'
-    const checkUnRenamedFS = () => {
-      const filePath = path.join(dir, 'Test Project', 'fileToRename.kcl')
-      return fs.existsSync(filePath)
-    }
-    const checkRenamedFS = () => {
-      const filePath = path.join(dir, 'Test Project', `${newFileName}.kcl`)
-      return fs.existsSync(filePath)
-    }
-    const projectLink = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const fileToRename = u.locatorFile('fileToRename.kcl')
-    const renamedFile = u.locatorFile(newFileName + FILE_EXT)
-    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-    const renameInput = page.getByPlaceholder('fileToRename.kcl')
-    const codeLocator = page.locator('.cm-content')
-
-    await test.step('Open project and file pane', async () => {
-      await expect(projectLink).toBeVisible()
-      await projectLink.click()
-      await expect(projectMenuButton).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
-
-      await u.openFilePanel()
-      await expect(fileToRename).toBeVisible()
-      expect(checkUnRenamedFS()).toBeTruthy()
-      expect(checkRenamedFS()).toBeFalsy()
-    })
-
-    await test.step('Rename the file', async () => {
-      await fileToRename.click({ button: 'right' })
-      await renameMenuItem.click()
-      await expect(renameInput).toBeVisible()
-      await renameInput.fill(newFileName)
-      await page.keyboard.press('Enter')
-    })
-
-    await test.step('Verify the file is renamed', async () => {
-      await expect(fileToRename).not.toBeAttached()
-      await expect(renamedFile).toBeVisible()
-      expect(checkUnRenamedFS()).toBeFalsy()
-      expect(checkRenamedFS()).toBeTruthy()
-    })
-
-    await test.step('Verify we have not navigated', async () => {
-      await expect(projectMenuButton).toContainText('main.kcl')
-      await expect(projectMenuButton).not.toContainText(newFileName + FILE_EXT)
-      await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
-
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain(newFileName)
-      expect(url).not.toContain('fileToRename.kcl')
-
-      await u.openKclCodePanel()
-      await expect(codeLocator).toContainText('fillet(')
-    })
-  })
-
-  test(`A folder you're not inside`, async ({
-    folderSetupFn,
-    page,
-  }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.mkdir(path.join(dir, 'Test Project', 'folderToRename'), {
-        recursive: true,
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          path.join(dir, 'Test Project', 'fileToRename.kcl'),
+          new Uint8Array(testData2)
+        )
       })
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        path.join(dir, 'Test Project', 'main.kcl')
-      )
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        path.join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
-      )
-    })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+      // Constants and locators
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const checkUnRenamedFS = async () => {
+        const filePath = path.join(dir, 'Test Project', 'fileToRename.kcl')
+        return await exists(fs, filePath)
+      }
+      const newFileName = 'newFileName'
+      const checkRenamedFS = async () => {
+        const filePath = path.join(dir, 'Test Project', `${newFileName}.kcl`)
+        return await exists(fs, filePath)
+      }
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile('newFileName.kcl')
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const renameInput = page.getByPlaceholder('fileToRename.kcl')
+      const codeLocator = page.locator('.cm-content')
 
-    // Constants and locators
-    const projectLink = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const folderToRename = u.locatorFolder('folderToRename')
-    const renamedFolder = u.locatorFolder('newFolderName')
-    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-    const originalFolderName = 'folderToRename'
-    const renameInput = page.getByPlaceholder(originalFolderName)
-    const newFolderName = 'newFolderName'
-    const checkUnRenamedFolderFS = () => {
-      const folderPath = path.join(dir, 'Test Project', originalFolderName)
-      return fs.existsSync(folderPath)
-    }
-    const checkRenamedFolderFS = () => {
-      const folderPath = path.join(dir, 'Test Project', newFolderName)
-      return fs.existsSync(folderPath)
-    }
+      await test.step('Open project and file pane', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await scene.settled(cmdBar)
 
-    await test.step('Open project and file pane', async () => {
-      await expect(projectLink).toBeVisible()
-      await projectLink.click()
-      await expect(projectMenuButton).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
 
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
-
-      await u.openFilePanel()
-      await expect(folderToRename).toBeVisible()
-      expect(checkUnRenamedFolderFS()).toBeTruthy()
-      expect(checkRenamedFolderFS()).toBeFalsy()
-    })
-
-    await test.step('Rename the folder', async () => {
-      await folderToRename.click({ button: 'right' })
-      await expect(renameMenuItem).toBeVisible()
-      await renameMenuItem.click()
-      await expect(renameInput).toBeVisible()
-      await renameInput.fill(newFolderName)
-      await page.keyboard.press('Enter')
-    })
-
-    await test.step('Verify the folder is renamed, and no navigation occurred', async () => {
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
-
-      await expect(projectMenuButton).toContainText('main.kcl')
-      await expect(renamedFolder).toBeVisible()
-      await expect(folderToRename).not.toBeAttached()
-      expect(checkUnRenamedFolderFS()).toBeFalsy()
-      expect(checkRenamedFolderFS()).toBeTruthy()
-    })
-  })
-
-  test(`A folder you are inside`, async ({ page, folderSetupFn }, testInfo) => {
-    const { dir } = await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.mkdir(path.join(dir, 'Test Project', 'folderToRename'), {
-        recursive: true,
+        await u.openFilePanel()
+        await expect(fileToRename).toBeVisible()
+        expect(await checkUnRenamedFS()).toBeTruthy()
+        expect(await checkRenamedFS()).toBeFalsy()
+        await fileToRename.click()
+        await expect(projectMenuButton).toContainText('fileToRename.kcl')
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('circle(')
+        await u.closeKclCodePanel()
       })
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        path.join(dir, 'Test Project', 'main.kcl')
-      )
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        path.join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
-      )
+
+      await test.step('Rename the file', async () => {
+        await fileToRename.click({ button: 'right' })
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFileName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the file is renamed', async () => {
+        await expect(fileToRename).not.toBeAttached()
+        await expect(renamedFile).toBeVisible()
+        expect(await checkUnRenamedFS()).toBeFalsy()
+        expect(await checkRenamedFS()).toBeTruthy()
+      })
+
+      await test.step('Verify we navigated', async () => {
+        await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
+        const url = page.url()
+        expect(url).toContain(newFileName)
+        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+        await expect(projectMenuButton).not.toContainText('main.kcl')
+        expect(url).not.toContain('fileToRename.kcl')
+        expect(url).not.toContain('main.kcl')
+
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('circle(')
+      })
     })
 
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+    test('A file you do not have open', async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        await fs.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(path.join(dir, 'Test Project', 'main.kcl'), testData)
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          path.join(dir, 'Test Project', 'fileToRename.kcl'),
+          testData2
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-    // Constants and locators
-    const projectLink = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const folderToRename = u.locatorFolder('folderToRename')
-    const renamedFolder = u.locatorFolder('newFolderName')
-    const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
-    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-    const originalFolderName = 'folderToRename'
-    const renameInput = page.getByPlaceholder(originalFolderName)
-    const newFolderName = 'newFolderName'
-    const checkUnRenamedFolderFS = () => {
-      const folderPath = path.join(dir, 'Test Project', originalFolderName)
-      return fs.existsSync(folderPath)
-    }
-    const checkRenamedFolderFS = () => {
-      const folderPath = path.join(dir, 'Test Project', newFolderName)
-      return fs.existsSync(folderPath)
-    }
+      // Constants and locators
+      const newFileName = 'newFileName'
+      const checkUnRenamedFS = async () => {
+        const filePath = path.join(dir, 'Test Project', 'fileToRename.kcl')
+        return await exists(fs, filePath)
+      }
+      const checkRenamedFS = async () => {
+        const filePath = path.join(dir, 'Test Project', `${newFileName}.kcl`)
+        return await exists(fs, filePath)
+      }
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile(newFileName + FILE_EXT)
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const renameInput = page.getByPlaceholder('fileToRename.kcl')
+      const codeLocator = page.locator('.cm-content')
 
-    await test.step('Open project and navigate into folder', async () => {
-      await expect(projectLink).toBeVisible()
-      await projectLink.click()
-      await expect(projectMenuButton).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
+      await test.step('Open project and file pane', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await scene.settled(cmdBar)
 
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
 
-      await u.openFilePanel()
-      await expect(folderToRename).toBeVisible()
-      await folderToRename.click()
-      await expect(fileWithinFolder).toBeVisible()
-      await fileWithinFolder.click()
+        await u.openFilePanel()
+        await expect(fileToRename).toBeVisible()
+        expect(await checkUnRenamedFS()).toBeTruthy()
+        expect(await checkRenamedFS()).toBeFalsy()
+      })
 
-      await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      const newUrl = page.url()
-      expect(newUrl).toContain('folderToRename')
-      expect(newUrl).toContain('someFileWithin.kcl')
-      expect(newUrl).not.toContain('main.kcl')
-      expect(checkUnRenamedFolderFS()).toBeTruthy()
-      expect(checkRenamedFolderFS()).toBeFalsy()
+      await test.step('Rename the file', async () => {
+        await fileToRename.click({ button: 'right' })
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFileName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the file is renamed', async () => {
+        await expect(fileToRename).not.toBeAttached()
+        await expect(renamedFile).toBeVisible()
+        expect(await checkUnRenamedFS()).toBeFalsy()
+        expect(await checkRenamedFS()).toBeTruthy()
+      })
+
+      await test.step('Verify we have not navigated', async () => {
+        await expect(projectMenuButton).toContainText('main.kcl')
+        await expect(projectMenuButton).not.toContainText(
+          newFileName + FILE_EXT
+        )
+        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('fillet(')
+      })
     })
 
-    await test.step('Rename the folder', async () => {
-      await page.waitForTimeout(1000)
-      await folderToRename.click({ button: 'right' })
-      await expect(renameMenuItem).toBeVisible()
-      await renameMenuItem.click()
-      await expect(renameInput).toBeVisible()
-      await renameInput.fill(newFolderName)
-      await page.keyboard.press('Enter')
+    test(`A folder you're not inside`, async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        await fs.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+        await fs.mkdir(path.join(dir, 'Test Project', 'folderToRename'), {
+          recursive: true,
+        })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(path.join(dir, 'Test Project', 'main.kcl'), testData)
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          path.join(
+            dir,
+            'Test Project',
+            'folderToRename',
+            'someFileWithin.kcl'
+          ),
+          testData2
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      // Constants and locators
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
+      const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = async () => {
+        const folderPath = path.join(dir, 'Test Project', originalFolderName)
+        return await exists(fs, folderPath)
+      }
+      const checkRenamedFolderFS = async () => {
+        const folderPath = path.join(dir, 'Test Project', newFolderName)
+        return await exists(fs, folderPath)
+      }
+
+      await test.step('Open project and file pane', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await scene.settled(cmdBar)
+
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
+
+        const url = page.url()
+        expect(url).toContain('main.kcl')
+        expect(url).not.toContain('folderToRename')
+
+        await u.openFilePanel()
+        await expect(folderToRename).toBeVisible()
+        expect(await checkUnRenamedFolderFS()).toBeTruthy()
+        expect(await checkRenamedFolderFS()).toBeFalsy()
+      })
+
+      await test.step('Rename the folder', async () => {
+        await folderToRename.click({ button: 'right' })
+        await expect(renameMenuItem).toBeVisible()
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFolderName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the folder is renamed, and no navigation occurred', async () => {
+        const url = page.url()
+        expect(url).toContain('main.kcl')
+        expect(url).not.toContain('folderToRename')
+
+        await expect(projectMenuButton).toContainText('main.kcl')
+        await expect(renamedFolder).toBeVisible()
+        await expect(folderToRename).not.toBeAttached()
+        expect(await checkUnRenamedFolderFS()).toBeFalsy()
+        expect(await checkRenamedFolderFS()).toBeTruthy()
+      })
     })
 
-    await test.step('Verify the folder is renamed, and navigated to new path', async () => {
-      const urlSnippet = encodeURIComponent(
-        path.join(newFolderName, 'someFileWithin.kcl')
-      )
-      await page.waitForURL(new RegExp(urlSnippet))
-      await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      await expect(renamedFolder).toBeVisible()
-      await expect(folderToRename).not.toBeAttached()
+    test(`A folder you are inside`, async ({
+      page,
+      folderSetupFn,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        await fs.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+        await fs.mkdir(path.join(dir, 'Test Project', 'folderToRename'), {
+          recursive: true,
+        })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(path.join(dir, 'Test Project', 'main.kcl'), testData)
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          path.join(
+            dir,
+            'Test Project',
+            'folderToRename',
+            'someFileWithin.kcl'
+          ),
+          testData2
+        )
+      })
 
-      // URL is synchronous, so we check the other stuff first
-      const url = page.url()
-      expect(url).not.toContain('main.kcl')
-      expect(url).toContain(newFolderName)
-      expect(url).toContain('someFileWithin.kcl')
-      expect(checkUnRenamedFolderFS()).toBeFalsy()
-      expect(checkRenamedFolderFS()).toBeTruthy()
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      // Constants and locators
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
+      const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = async () => {
+        const folderPath = path.join(dir, 'Test Project', originalFolderName)
+        return await exists(fs, folderPath)
+      }
+      const checkRenamedFolderFS = async () => {
+        const folderPath = path.join(dir, 'Test Project', newFolderName)
+        return await exists(fs, folderPath)
+      }
+
+      await test.step('Open project and navigate into folder', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await scene.settled(cmdBar)
+
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
+
+        const url = page.url()
+        expect(url).toContain('main.kcl')
+        expect(url).not.toContain('folderToRename')
+
+        await u.openFilePanel()
+        await expect(folderToRename).toBeVisible()
+        await folderToRename.click()
+        await expect(fileWithinFolder).toBeVisible()
+        await fileWithinFolder.click()
+
+        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        const newUrl = page.url()
+        expect(newUrl).toContain('folderToRename')
+        expect(newUrl).toContain('someFileWithin.kcl')
+        expect(newUrl).not.toContain('main.kcl')
+        expect(await checkUnRenamedFolderFS()).toBeTruthy()
+        expect(await checkRenamedFolderFS()).toBeFalsy()
+      })
+
+      await test.step('Rename the folder', async () => {
+        await page.waitForTimeout(1000)
+        await folderToRename.click({ button: 'right' })
+        await expect(renameMenuItem).toBeVisible()
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFolderName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the folder is renamed, and navigated to new path', async () => {
+        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        await expect(renamedFolder).toBeVisible()
+        await expect(folderToRename).not.toBeAttached()
+
+        expect(await checkUnRenamedFolderFS()).toBeFalsy()
+        expect(await checkRenamedFolderFS()).toBeTruthy()
+      })
     })
-  })
-})
+  }
+)
 
 test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   test(
@@ -629,12 +699,12 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
     async ({ page, folderSetupFn }, testInfo) => {
       await folderSetupFn(async (dir) => {
         const testDir = path.join(dir, 'testProject')
-        await fsp.mkdir(testDir, { recursive: true })
-        await fsp.copyFile(
+        await nodeFsP.mkdir(testDir, { recursive: true })
+        await nodeFsP.copyFile(
           executorInputPath('cylinder.kcl'),
           path.join(testDir, 'main.kcl')
         )
-        await fsp.copyFile(
+        await nodeFsP.copyFile(
           executorInputPath('basic_fillet_cube_end.kcl'),
           path.join(testDir, 'fileToDelete.kcl')
         )
@@ -686,15 +756,15 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
     page,
   }, testInfo) => {
     await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.mkdir(path.join(dir, 'Test Project', 'folderToDelete'), {
+      await nodeFsP.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+      await nodeFsP.mkdir(path.join(dir, 'Test Project', 'folderToDelete'), {
         recursive: true,
       })
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
         path.join(dir, 'Test Project', 'main.kcl')
       )
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('cylinder.kcl'),
         path.join(dir, 'Test Project', 'folderToDelete', 'someFileWithin.kcl')
       )
@@ -737,15 +807,15 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
     page,
   }, testInfo) => {
     await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'Test Project'), { recursive: true })
-      await fsp.mkdir(path.join(dir, 'Test Project', 'folderToDelete'), {
+      await nodeFsP.mkdir(path.join(dir, 'Test Project'), { recursive: true })
+      await nodeFsP.mkdir(path.join(dir, 'Test Project', 'folderToDelete'), {
         recursive: true,
       })
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
         path.join(dir, 'Test Project', 'main.kcl')
       )
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('cylinder.kcl'),
         path.join(dir, 'Test Project', 'folderToDelete', 'someFileWithin.kcl')
       )
@@ -797,15 +867,17 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
   }, testInfo) => {
     const TEST_PROJECT_NAME = 'Test Project'
     const { dir: projectsDirName } = await folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, TEST_PROJECT_NAME), { recursive: true })
-      await fsp.mkdir(path.join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+      await nodeFsP.mkdir(path.join(dir, TEST_PROJECT_NAME), {
         recursive: true,
       })
-      await fsp.copyFile(
+      await nodeFsP.mkdir(path.join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+        recursive: true,
+      })
+      await nodeFsP.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
         path.join(dir, TEST_PROJECT_NAME, 'main.kcl')
       )
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('cylinder.kcl'),
         path.join(
           dir,
@@ -840,7 +912,7 @@ test.describe('Deleting items from the file pane', { tag: '@desktop' }, () => {
     // Point of divergence. Delete the project folder and see if it goes back
     // to the home view.
     await test.step('Delete projectsDirName/<project-name> externally', async () => {
-      await fsp.rm(path.join(projectsDirName, TEST_PROJECT_NAME), {
+      await nodeFsP.rm(path.join(projectsDirName, TEST_PROJECT_NAME), {
         recursive: true,
         force: true,
       })
@@ -863,12 +935,12 @@ test.describe('Drag and drop moves are undoable', { tag: '@desktop' }, () => {
   }) => {
     await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'Drag File Project')
-      await fsp.mkdir(path.join(projectDir, 'target'), { recursive: true })
-      await fsp.copyFile(
+      await nodeFsP.mkdir(path.join(projectDir, 'target'), { recursive: true })
+      await nodeFsP.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
         path.join(projectDir, 'main.kcl')
       )
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('cylinder.kcl'),
         path.join(projectDir, 'fileToMove.kcl')
       )
@@ -914,17 +986,17 @@ test.describe('Drag and drop moves are undoable', { tag: '@desktop' }, () => {
   }) => {
     await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'Drag Folder Project')
-      await fsp.mkdir(path.join(projectDir, 'folderToMove'), {
+      await nodeFsP.mkdir(path.join(projectDir, 'folderToMove'), {
         recursive: true,
       })
-      await fsp.mkdir(path.join(projectDir, 'targetFolder'), {
+      await nodeFsP.mkdir(path.join(projectDir, 'targetFolder'), {
         recursive: true,
       })
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('basic_fillet_cube_end.kcl'),
         path.join(projectDir, 'main.kcl')
       )
-      await fsp.copyFile(
+      await nodeFsP.copyFile(
         executorInputPath('cylinder.kcl'),
         path.join(projectDir, 'folderToMove', 'inside.kcl')
       )
@@ -977,12 +1049,12 @@ test.describe(
     }, testInfo) => {
       await folderSetupFn(async (dir) => {
         const testDir = path.join(dir, 'testProject')
-        await fsp.mkdir(testDir, { recursive: true })
-        await fsp.copyFile(
+        await nodeFsP.mkdir(testDir, { recursive: true })
+        await nodeFsP.copyFile(
           executorInputPath('cylinder.kcl'),
           path.join(testDir, 'main.kcl')
         )
-        await fsp.copyFile(
+        await nodeFsP.copyFile(
           executorInputPath('basic_fillet_cube_end.kcl'),
           path.join(testDir, 'other.kcl')
         )
@@ -1041,12 +1113,12 @@ test.describe(
     }, testInfo) => {
       await folderSetupFn(async (dir) => {
         const testDir = path.join(dir, 'testProject')
-        await fsp.mkdir(testDir, { recursive: true })
-        await fsp.copyFile(
+        await nodeFsP.mkdir(testDir, { recursive: true })
+        await nodeFsP.copyFile(
           executorInputPath('cylinder.kcl'),
           path.join(testDir, 'main.kcl')
         )
-        await fsp.copyFile(
+        await nodeFsP.copyFile(
           executorInputPath('basic_fillet_cube_end.kcl'),
           path.join(testDir, 'other.kcl')
         )

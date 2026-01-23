@@ -15,9 +15,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { findKclSample } from '@src/lib/kclSamples'
 import type { FileLinkParams } from '@src/lib/links'
-import { webSafePathSplit } from '@src/lib/paths'
 import { commandBarActor, useAuthState } from '@src/lib/singletons'
 import type { KclManager } from '@src/lang/KclManager'
 
