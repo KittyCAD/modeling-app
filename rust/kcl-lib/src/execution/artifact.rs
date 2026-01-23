@@ -675,9 +675,10 @@ fn module_id_for_import_path(module_infos: &ModuleInfoMap, import_path: &ImportP
             original_import_path: Some(original_import_path),
             ..
         } = &module_info.path
-            && original_import_path == import_path {
-                return Some(*module_id);
-            }
+            && original_import_path == import_path
+        {
+            return Some(*module_id);
+        }
         None
     })
 }
