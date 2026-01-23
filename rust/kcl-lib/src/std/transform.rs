@@ -766,7 +766,7 @@ sweepSketch = startSketchOn(XY)
     )
     |> hide()
 "#;
-        parse_execute(&ast).await.unwrap();
+        parse_execute(ast).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
