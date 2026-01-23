@@ -34,6 +34,8 @@ import {
   type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
+  PathToNode,
+  CodeRef,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -56,6 +58,8 @@ import {
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { Transaction } from 'electron'
+import { TransactionSpec } from '@codemirror/state'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2205,9 +2209,6 @@ export function getOperationVariableName(
 
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
-  if (pathToNode.length === 0) {
-    return undefined
-  }
 
   // If this is a module instance, the variable name is the import alias.
   if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
@@ -2230,6 +2231,18 @@ export function getOperationVariableName(
   }
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
+  return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
+}
+
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
+  wasmInstance: ModuleType
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
@@ -2293,6 +2306,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
+  isNotHideOperation,
 ]
 
 /**
@@ -2358,6 +2372,20 @@ function isNotUserFunctionWithNoOperations(
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
+}
+
+/**
+ * A filter to exclude `hide()` operations from a list of operations.
+ */
+function isNotHideOperation(ops: Operation[]): Operation[] {
+  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+}
+
+/**
+ * Filter Operations list to just hide() calls
+ */
+export function getHideOperations(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type === 'StdLibCall' && op.name === 'hide')
 }
 
 export interface EnterEditFlowProps {
@@ -2797,4 +2825,77 @@ async function prepareToEditAppearance({
     ...baseCommand,
     argDefaultValues,
   }
+}
+
+export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+export function getHideOpByArtifactId(
+  ops: Operation[],
+  searchId: string
+): HideOperation | undefined {
+  const found = ops.find((op) => {
+    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+      return undefined
+    }
+    if (op.unlabeledArg?.value.type === 'Array') {
+      const found = op.unlabeledArg.value.value.find(
+        (a) =>
+          'value' in a &&
+          typeof a.value === 'object' &&
+          'artifactId' in a.value &&
+          typeof a.value?.artifactId === 'string' &&
+          a.value.artifactId === searchId
+      )
+
+      return found ? op : undefined
+    } else if (
+      op.unlabeledArg?.value &&
+      'value' in op.unlabeledArg.value &&
+      op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value === 'object' &&
+      'artifactId' in op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
+      op.unlabeledArg.value.value.artifactId
+    ) {
+      return op.unlabeledArg.value.value.artifactId === searchId
+        ? op
+        : undefined
+    }
+    return undefined
+  })
+
+  return found as HideOperation | undefined
+}
+
+export function getToggleHiddenTransaction({
+  targetPathsToNode,
+  hideOperation,
+  program,
+  code,
+  wasmInstance,
+}: {
+  targetPathsToNode: PathToNode[]
+  hideOperation?: HideOperation
+  program: Program
+  code: string
+  wasmInstance: ModuleType
+}): TransactionSpec {
+  const variableNames =
+    !hideOperation &&
+    targetPathsToNode.map((p) =>
+      getVariableNameFromNodePath(p, program, wasmInstance)
+    )
+  const changes: TransactionSpec['changes'] = hideOperation
+    ? {
+        from: hideOperation.sourceRange[0],
+        to: hideOperation.sourceRange[1],
+        insert: '',
+      }
+    : variableNames
+      ? {
+          from: code.length,
+          insert: `\nhide(${variableNames.join(', ')})`,
+        }
+      : undefined
+
+  return { changes }
 }
