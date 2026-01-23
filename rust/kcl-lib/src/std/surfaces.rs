@@ -134,7 +134,7 @@ async fn inner_delete_face(
     // User has to give us SOMETHING to delete.
     if tagged_faces.is_none() && face_indices.is_none() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("You must use either the `faces` or the `face_indices` parameter"),
+            "You must use either the `faces` or the `face_indices` parameter".to_string(),
             vec![args.source_range],
         )));
     }
