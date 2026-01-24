@@ -56,7 +56,6 @@ jobs:
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
           fi
-          echo "should-build-wasm=true" >> $GITHUB_OUTPUT
 
       - name: Use correct Rust toolchain
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
