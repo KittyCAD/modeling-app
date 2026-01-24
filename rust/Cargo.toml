@@ -22,8 +22,8 @@ clap = { version = "4.5.54", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
-indexmap = "2.13.0"
-kcl-ezpz = "0.2.15"
+indexmap = "2.12.1"
+kcl-ezpz = { git = "https://github.com/KittyCAD/ezpz", branch = "kurt-point-on-arc" }
 kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",

@@ -2185,8 +2185,7 @@ dependencies = [
 [[package]]
 name = "kcl-ezpz"
 version = "0.2.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e0178d7ae21f7941388b9e3b0ef6dd928f1151e3fd527a578ba8130ef277421"
+source = "git+https://github.com/KittyCAD/ezpz?branch=kurt-point-on-arc#11e26e2b8e2a18eac0ba033377581e99b542699f"
 dependencies = [
  "faer",
  "indexmap 2.13.0",

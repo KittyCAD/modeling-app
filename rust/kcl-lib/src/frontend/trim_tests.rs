@@ -2297,4 +2297,57 @@ sketch(on = YZ) {
             }
         }
     }
+
+    #[tokio::test]
+    async fn point_on_arc_coincident_should_not_effect_initial_guesses() {
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line3 = sketch2::line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
+  line4 = sketch2::line(start = [var 1.06mm, var -3.26mm], end = [var -6.71mm, var -2.8mm])
+  sketch2::coincident([line3.end, line4.start])
+  arc1 = sketch2::arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
+  sketch2::coincident([arc1.center, line3.end])
+  sketch2::coincident([arc1.end, line3])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -0.29, y: -1.91 }, Coords2d { x: -0.34, y: -4.42 }];
+
+        let sketch_id = ObjectId(1);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(result) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line3 = sketch2::line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
+  line4 = sketch2::line(start = [var -2.31mm, var -3.06mm], end = [var -6.71mm, var -2.8mm])
+  arc1 = sketch2::arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
+  sketch2::coincident([arc1.center, line3.end])
+  sketch2::coincident([arc1.end, line3])
+  sketch2::coincident([line4.start, arc1])
+}
+"#;
+
+                let result_normalized = result.kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
 }
