@@ -4267,6 +4267,8 @@ pub async fn execute_trim_operations_simple(
 
         match operation_result {
             Ok((source_delta, scene_graph_delta)) => {
+                // Track invalidates_ids from each operation result
+                invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                 last_result = Some((source_delta, scene_graph_delta.clone()));
             }
             Err(e) => {

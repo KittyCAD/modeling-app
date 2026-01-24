@@ -461,7 +461,7 @@ impl Context {
 
         // Execute the trim loop using the shared function from kcl-lib
         // This replaces ~140 lines of duplicated loop logic
-        let (source_delta, mut scene_graph_delta) = match execute_trim_loop_with_context(
+        let (source_delta, scene_graph_delta) = match execute_trim_loop_with_context(
             &points_core,
             initial_scene_graph_delta,
             &mut *guard,
