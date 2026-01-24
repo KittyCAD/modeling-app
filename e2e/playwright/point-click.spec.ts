@@ -2343,28 +2343,9 @@ extrude001 = extrude(sketch001, length = 30)
       await toolbar.selectSurface('delete-face')
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'solid',
-        currentArgValue: '',
-        headerArguments: {
-          Solid: '',
-          Faces: '',
-        },
-        highlightedHeaderArg: 'solid',
-        commandName: 'Delete Face',
-      })
-
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'extrude001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
         currentArgKey: 'faces',
         currentArgValue: '',
         headerArguments: {
-          Solid: '1 sweep',
           Faces: '',
         },
         highlightedHeaderArg: 'faces',
@@ -2375,7 +2356,6 @@ extrude001 = extrude(sketch001, length = 30)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Solid: '1 sweep',
           Faces: '1 cap',
         },
         commandName: 'Delete Face',
@@ -2391,7 +2371,7 @@ extrude001 = extrude(sketch001, length = 30)
     await test.step('Delete delete face via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Delete Face',
+        'surface001',
         0
       )
       await operationButton.click({ button: 'left' })

@@ -378,7 +378,6 @@ export type ModelingCommandSchema = {
     surface: Selections
   }
   'Delete Face': {
-    solid: Selections
     faces: Selections
   }
   'Boolean Split': {
@@ -2260,18 +2259,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      solid: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-      },
       faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
         required: true,
-        clearSelectionFirst: true,
       },
     },
   },

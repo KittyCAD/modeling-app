@@ -1907,7 +1907,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   deleteFace: {
     label: 'Delete Face',
-    icon: 'trash',
+    icon: 'trash', // TODO: update
     supportsAppearance: true,
     supportsTransform: true,
   },

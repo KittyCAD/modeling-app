@@ -410,17 +410,9 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
         kclManagerInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
-      const sweepArtifact = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweep'
-      )
-      const solid = createSelectionFromArtifacts(
-        [sweepArtifact!],
-        artifactGraph
-      )
       const result = addDeleteFace({
         ast,
         artifactGraph,
-        solid,
         faces,
         wasmInstance: instanceInThisFile,
       })

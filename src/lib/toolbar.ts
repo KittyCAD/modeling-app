@@ -431,10 +431,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Delete Face', groupId: 'modeling' },
               }),
-            icon: 'trash',
+            icon: 'trash', // TODO: update
             status: 'available',
             title: 'Delete Face',
-            description: 'Deletes a face from a body, leaving an open surface.',
+            description:
+              'Delete a face from a body (a solid, or a polysurface).',
             links: [
               {
                 label: 'API docs',

@@ -125,14 +125,12 @@ export function addShell({
 export function addDeleteFace({
   ast,
   artifactGraph,
-  solid,
   faces,
   nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  solid: Selections
   faces: Selections
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
@@ -146,46 +144,29 @@ export function addDeleteFace({
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  if (solid.graphSelections.length === 0) {
-    return new Error('Delete Face requires a solid selection.')
-  }
-
   if (faces.graphSelections.length === 0) {
     return new Error('Delete Face requires at least one face selection.')
   }
 
   // 2. Prepare unlabeled and labeled arguments
+  // Because of START and END untagged caps, we can't rely on last child here
+  // Haven't found a case where it would be needed anyway
   const lastChildLookup = false
-  const solidVars = getVariableExprsFromSelection(
-    solid,
+  const result = buildSolidsAndFacesExprs(
+    faces,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit,
-    lastChildLookup,
-    artifactGraph,
-    ['compositeSolid', 'sweep']
+    lastChildLookup
   )
-  if (err(solidVars)) {
-    return solidVars
+  if (err(result)) {
+    return result
   }
 
-  if (solidVars.exprs.length > 1) {
-    return new Error('Delete Face only supports one solid at a time.')
-  }
+  const { solidsExpr, facesExpr, pathIfPipe } = result
 
-  const solidExpr = createVariableExpressionsArray(solidVars.exprs)
-  const facesExprs = getFacesExprsFromSelection(
-    modifiedAst,
-    faces,
-    artifactGraph,
-    wasmInstance
-  )
-  const facesExpr = createVariableExpressionsArray(facesExprs)
-  if (!facesExpr) {
-    return new Error('No faces found in the selection')
-  }
-
-  const call = createCallExpressionStdLibKw('deleteFace', solidExpr, [
+  const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
     createLabeledArg('faces', facesExpr),
   ])
 
@@ -195,7 +176,7 @@ export function addDeleteFace({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: solidVars.pathIfPipe,
+    pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
     wasmInstance,
   })
