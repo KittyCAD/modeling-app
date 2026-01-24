@@ -49,7 +49,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Artifact, CodeRef, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -1260,6 +1260,20 @@ export function retrieveSelectionsFromOpArg(
   }
 
   return { graphSelections, otherSelections: [] } as Selections
+}
+
+export function findOperationArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(operation.nodePath)
+  const artifact = [...artifactGraph.values()].find(
+    (a) =>
+      JSON.stringify(
+        (a as Artifact & { codeRef: CodeRef }).codeRef?.nodePath
+      ) === nodePath
+  )
+  return artifact
 }
 
 export function findOperationPlaneArtifact(

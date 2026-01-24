@@ -1,7 +1,9 @@
-import { ChangeSpec } from '@codemirror/state'
-import { PropsOf } from '@headlessui/react/dist/types'
+import type { ChangeSpec } from '@codemirror/state'
+import type { PropsOf } from '@headlessui/react/dist/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Program } from '@src/lang/wasm'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useSignals } from '@preact/signals-react/runtime'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
@@ -9,48 +11,40 @@ import {
   type Artifact,
   getBodiesFromArtifactGraph,
 } from '@src/lang/std/artifactGraph'
-import { Program } from '@src/lang/wasm'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   getHideOpByArtifactId,
-  getHideOperations,
-  getOperationVariableName,
+  getToggleHiddenTransaction,
   getVariableNameFromNodePath,
-  HideOperation,
+  type HideOperation,
 } from '@src/lib/operations'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
-import { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { use, useEffect, useMemo, useState } from 'react'
+import { use } from 'react'
 
 type SolidArtifact = Artifact & { type: 'compositeSold' | 'sweep' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
-  const { artifactGraph, operations } = kclManager.execStateSignal.value
+  const execState = kclManager.execStateSignal.value
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
 
-  const bodies = artifactGraph
-    ? getBodiesFromArtifactGraph(artifactGraph)
+  const bodies = execState?.artifactGraph
+    ? getBodiesFromArtifactGraph(execState.artifactGraph)
     : undefined
   const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
 
-  let i = 0
-  for (let [id, artifact] of bodies || new Map()) {
-    bodiesWithProps.set(id, {
-      artifact,
-      label: `Body ${i + 1}`,
-      hideOperation: getHideOpByArtifactId(operations, id),
-    })
-    i++
+  if (execState?.operations) {
+    let i = 0
+    for (let [id, artifact] of bodies || new Map()) {
+      bodiesWithProps.set(id, {
+        artifact,
+        label: `Body ${i + 1}`,
+        hideOperation: getHideOpByArtifactId(execState.operations, id),
+      })
+      i++
+    }
   }
-
-  useEffect(
-    () => console.log('FRANK bodiesWithProps', bodiesWithProps),
-    [bodiesWithProps]
-  )
 
   return (
     <LayoutPanel
@@ -66,44 +60,6 @@ export function BodiesPane(props: AreaTypeComponentProps) {
       {bodies && <BodiesList bodies={bodiesWithProps} />}
     </LayoutPanel>
   )
-}
-
-/**
- * Temporary function to toggle visibility directly through engine.
- * Visibility ultimately should be written to KCL via a codemod API.
- */
-async function toggleVisibility({
-  artifact,
-  hideOperation,
-  program,
-  wasmInstance,
-}: {
-  artifact: SolidArtifact
-  hideOperation?: HideOperation
-  program: Program
-  wasmInstance: ModuleType
-}) {
-  const variableName =
-    !hideOperation &&
-    getVariableNameFromNodePath(
-      artifact.codeRef.pathToNode,
-      program,
-      wasmInstance
-    )
-  const changes: ChangeSpec | undefined = hideOperation
-    ? {
-        from: hideOperation.sourceRange[0],
-        to: hideOperation.sourceRange[1],
-        insert: '',
-      }
-    : variableName
-      ? {
-          from: kclManager.code.length,
-          insert: `hide(${variableName})`,
-        }
-      : undefined
-
-  kclManager.dispatch({ changes })
 }
 
 function BodiesList({
@@ -135,12 +91,15 @@ function BodyItem({
       <VisibilityToggle
         visible={hideOperation === undefined}
         onVisibilityChange={() => {
-          toggleVisibility({
-            artifact,
-            hideOperation,
-            program: kclManager.astSignal.value,
-            wasmInstance,
-          })
+          kclManager.dispatch(
+            getToggleHiddenTransaction({
+              targetPathsToNode: [artifact.codeRef.pathToNode],
+              hideOperation,
+              program: kclManager.astSignal.value,
+              code: kclManager.codeSignal.value,
+              wasmInstance,
+            })
+          )
         }}
       />
     </li>

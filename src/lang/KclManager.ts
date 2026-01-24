@@ -1005,7 +1005,7 @@ export class KclManager extends EventTarget {
     })
 
     this.logs = logs
-    this._execState = execState
+    this._execState.value = execState
     this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables

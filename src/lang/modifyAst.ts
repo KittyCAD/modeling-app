@@ -64,6 +64,7 @@ import {
   type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 
 export function startSketchOnDefault(
   node: Node<Program>,

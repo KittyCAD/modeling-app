@@ -35,6 +35,7 @@ import {
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
   PathToNode,
+  CodeRef,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -57,6 +58,8 @@ import {
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { Transaction } from 'electron'
+import { TransactionSpec } from '@codemirror/state'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2861,4 +2864,38 @@ export function getHideOpByArtifactId(
   })
 
   return found as HideOperation | undefined
+}
+
+export function getToggleHiddenTransaction({
+  targetPathsToNode,
+  hideOperation,
+  program,
+  code,
+  wasmInstance,
+}: {
+  targetPathsToNode: PathToNode[]
+  hideOperation?: HideOperation
+  program: Program
+  code: string
+  wasmInstance: ModuleType
+}): TransactionSpec {
+  const variableNames =
+    !hideOperation &&
+    targetPathsToNode.map((p) =>
+      getVariableNameFromNodePath(p, program, wasmInstance)
+    )
+  const changes: TransactionSpec['changes'] = hideOperation
+    ? {
+        from: hideOperation.sourceRange[0],
+        to: hideOperation.sourceRange[1],
+        insert: '',
+      }
+    : variableNames
+      ? {
+          from: code.length,
+          insert: `\nhide(${variableNames.join(', ')})`,
+        }
+      : undefined
+
+  return { changes }
 }
