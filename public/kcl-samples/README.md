@@ -81,6 +81,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![dining-table](screenshots/dining-table.png)](dining-table/main.kcl)
 #### [dodecahedron](dodecahedron/main.kcl) ([screenshot](screenshots/dodecahedron.png))
 [![dodecahedron](screenshots/dodecahedron.png)](dodecahedron/main.kcl)
+#### [dog-house-great-dane](dog-house-great-dane/main.kcl) ([screenshot](screenshots/dog-house-great-dane.png))
+[![dog-house-great-dane](screenshots/dog-house-great-dane.png)](dog-house-great-dane/main.kcl)
 #### [enclosure](enclosure/main.kcl) ([screenshot](screenshots/enclosure.png))
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
 #### [end-effector-gripper-fingers](end-effector-gripper-fingers/main.kcl) ([screenshot](screenshots/end-effector-gripper-fingers.png))

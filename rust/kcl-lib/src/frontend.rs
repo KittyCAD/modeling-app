@@ -2310,12 +2310,14 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.segments.iter().any(|pt_id| {
-                    if segment_ids_set.contains(pt_id) {
+                Constraint::Coincident(c) => c.segments.iter().any(|seg_id| {
+                    // Check if the segment itself is being deleted
+                    if segment_ids_set.contains(seg_id) {
                         return true;
                     }
-                    let pt_object = self.scene_graph.objects.get(pt_id.0);
-                    if let Some(obj) = pt_object
+                    // For points, also check if the owner line/arc is being deleted
+                    let seg_object = self.scene_graph.objects.get(seg_id.0);
+                    if let Some(obj) = seg_object
                         && let ObjectKind::Segment { segment } = &obj.kind
                         && let Segment::Point(pt) = segment
                         && let Some(owner_line_id) = pt.owner
@@ -4205,6 +4207,55 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_line_line_coincident_constraint() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  sketch2::coincident([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let coincident_id = *sketch.constraints.first().unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line2 = sketch2::line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
         ctx.close().await;
         mock_ctx.close().await;

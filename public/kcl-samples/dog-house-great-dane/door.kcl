@@ -1,0 +1,148 @@
+// Dog House (Great Dane) - Door
+// Door panel and hardware placement for the dog house.
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+import "1528A31_strap-hinge.stp" as strapHingeRaw
+import "1614A11_swinging-bar-latch.stp" as latchRaw
+
+// Door (single wide door)
+doorClearance = 0.5
+doorPanelWidth = openingWidth - (2 * doorClearance)
+doorPanelHeight = studHeight - (2 * doorClearance)
+doorBottomZ = studBaseZ + doorClearance
+doorTopZ = doorBottomZ + doorPanelHeight
+doorStileWidth = studDepth
+doorRailHeight = studDepth
+
+doorInnerWidth = doorPanelWidth - (2 * doorStileWidth)
+doorInnerHeight = doorPanelHeight - (2 * doorRailHeight)
+
+doorSlatWidth = studDepth
+doorSlatGap = 2
+doorSlatPitch = doorSlatWidth + doorSlatGap
+doorSlatStartX = -doorInnerWidth / 2
+doorSlatEndX = doorInnerWidth / 2 - doorSlatWidth
+doorSlatSpanX = doorSlatEndX - doorSlatStartX
+doorSlatCount = floor(doorSlatSpanX / doorSlatPitch) + 1
+doorSlatActualPitch = doorSlatSpanX / (doorSlatCount - 1)
+doorRailMinX = -doorPanelWidth / 2 + doorStileWidth
+doorSlatMinZ = doorBottomZ + doorRailHeight
+
+hingeLength = 6
+hingeInset = 4
+hingeFaceOffset = 0.02
+hingeThickness = 0.245
+hingeRotateAngle = 90deg
+
+latchFaceOffset = 0.02
+latchEdgeInset = 0.5
+latchMaxX = 3.152
+latchMaxY = 1.22
+latchCenterZ = 1.451
+latchRotateAngleX = -90deg
+latchRotateAngleY = 180deg
+latchRotateAngleZ = 180deg
+
+latchOffsetX = doorStileWidth + studThickness
+latchOffsetY = 6 * studDepth
+latchOffsetZ = -4 * studDepth
+
+crateDoorY = -studThickness
+crateDoorHingeY = crateDoorY - hingeFaceOffset - hingeThickness
+doorOutsideY = crateDoorY
+
+hingeLeftX = -doorPanelWidth / 2
+hingeBottomZ = doorBottomZ + hingeInset + hingeLength / 2
+hingeTopZ = doorTopZ - hingeInset - (hingeLength / 2)
+doorMidZ = doorBottomZ + doorPanelHeight / 2
+
+fn hingeTemplate() {
+  return appearance(
+    strapHingeRaw,
+    color = "#b0b0b0",
+    metalness = 1,
+    roughness = 0.35,
+  )
+}
+
+fn latchTemplate() {
+  return appearance(
+         latchRaw,
+         color = "#2b2b2b",
+         metalness = 0.6,
+         roughness = 0.45,
+       )
+    |> rotate(axis = [1, 0, 0], angle = latchRotateAngleX)
+    |> rotate(axis = Z, angle = latchRotateAngleZ)
+    |> rotate(axis = Y, angle = latchRotateAngleY)
+}
+
+fn doorStile(minX, doorY) {
+  return twoByFourZ(
+    minX = minX,
+    minY = doorY,
+    minZ = doorBottomZ,
+    lengthZ = doorPanelHeight,
+  )
+}
+
+fn doorRail(minZ, doorY) {
+  return twoByFourXRotated(
+    minX = doorRailMinX,
+    minY = doorY,
+    minZ = minZ,
+    lengthX = doorInnerWidth,
+  )
+}
+
+fn doorSlats(doorY) {
+  return patternLinear3d(
+    [
+      twoByFourZ(
+  minX = doorSlatStartX,
+  minY = doorY,
+  minZ = doorSlatMinZ,
+  lengthZ = doorInnerHeight,
+)
+    ],
+    axis = [1, 0, 0],
+    distance = doorSlatActualPitch,
+    instances = doorSlatCount,
+  )
+}
+
+crateDoorLeftStile = doorStile(minX = -doorPanelWidth / 2, doorY = crateDoorY)
+crateDoorRightStile = doorStile(minX = doorPanelWidth / 2 - doorStileWidth, doorY = crateDoorY)
+crateDoorBottomRail = doorRail(minZ = doorBottomZ, doorY = crateDoorY)
+crateDoorTopRail = doorRail(minZ = doorTopZ - doorRailHeight, doorY = crateDoorY)
+crateDoorSlats = doorSlats(doorY = crateDoorY)
+
+crateDoorTopHinge = hingeTemplate()
+  |> translate(x = hingeLeftX, y = crateDoorHingeY, z = hingeTopZ)
+  |> rotate(axis = [0, 1, 0], angle = hingeRotateAngle)
+crateDoorBottomHinge = clone(crateDoorTopHinge)
+  |> translate(z = hingeBottomZ - hingeTopZ)
+
+crateDoorLatch = latchTemplate()
+  |> translate(x = doorPanelWidth / 2 - latchEdgeInset - latchMaxX + latchOffsetX, y = doorOutsideY - latchFaceOffset - latchMaxY + latchOffsetY, z = doorMidZ - latchCenterZ + latchOffsetZ)
+
+crateDoorFrameParts = [
+  crateDoorLeftStile,
+  crateDoorRightStile,
+  crateDoorBottomRail,
+  crateDoorTopRail
+]
+crateDoorWithSlats = concat(crateDoorFrameParts, items = crateDoorSlats)
+crateDoorParts = concat(
+  crateDoorWithSlats,
+  items = [
+    crateDoorTopHinge,
+    crateDoorBottomHinge,
+    crateDoorLatch
+  ],
+)
+
+crateDoorParts
