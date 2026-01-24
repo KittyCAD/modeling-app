@@ -68,7 +68,7 @@
     "react-resizable-panels": "^3.0.6",
     "react-router-dom": "^7.11.0",
     "sketch-helpers": "^0.0.4",
-    "three": "^0.181.2",
+    "three": "^0.182.0",
     "ua-parser-js": "^1.0.37",
     "uuid": "^11.1.0",
     "vscode-jsonrpc": "^8.2.1",
