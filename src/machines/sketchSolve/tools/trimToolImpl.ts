@@ -27,7 +27,7 @@ export function createOnAreaSelectEndCallback({
     rustContext: RustContext
   }
   onNewSketchOutcome: (outcome: {
-    kclSource: { text: string }
+    sourceDelta: { text: string }
     sceneGraphDelta: {
       new_graph: { objects: ApiObject[] }
       new_objects: number[]
@@ -64,7 +64,7 @@ export function createOnAreaSelectEndCallback({
 
       // Send the result
       onNewSketchOutcome({
-        kclSource: result.kclSource,
+        sourceDelta: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
       })
     } catch (error) {

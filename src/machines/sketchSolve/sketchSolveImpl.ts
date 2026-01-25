@@ -88,7 +88,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update sketch outcome'
       data: {
-        kclSource: SourceDelta
+        sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         /**
          * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
@@ -137,7 +137,7 @@ export type SketchSolveContext = {
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
   sketchExecOutcome?: {
-    kclSource: SourceDelta
+    sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
   draftEntities?: {
@@ -750,7 +750,7 @@ export function initializeInitialSceneGraph({
 
     return {
       sketchExecOutcome: {
-        kclSource,
+        sourceDelta: kclSource,
         sceneGraphDelta,
       },
     }
@@ -789,12 +789,12 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // by calling the debounced function again with new text before the delay expires
     // If a new update comes in within 200ms, the previous one is cancelled
     debouncedEditorUpdate({
-      text: event.data.kclSource.text,
+      text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.kclSource.text, {
+    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
       shouldExecute: false,
       // Persist changes to disk unless explicitly disabled
       shouldWriteToDisk: event.data.writeToDisk || false,
@@ -803,7 +803,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
 
   return {
     sketchExecOutcome: {
-      kclSource: event.data.kclSource,
+      sourceDelta: event.data.sourceDelta,
       sceneGraphDelta: event.data.sceneGraphDelta,
     },
   }
@@ -850,7 +850,7 @@ export async function deleteDraftEntities({
       self.send({
         type: 'update sketch outcome',
         data: {
-          kclSource: result.kclSource,
+          sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
         },
       })

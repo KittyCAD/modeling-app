@@ -70,7 +70,7 @@ sketch(on = YZ) {
 }
 `
 
-    expect(result.kclSource.text).toBe(expectedCode)
+    expect(result.sourceDelta.text).toBe(expectedCode)
   })
 })
 
@@ -103,7 +103,7 @@ sketch(on = YZ) {
     }
 
     // Should be unchanged (no-op)
-    expect(result.kclSource.text).toBe(baseKclCode)
+    expect(result.sourceDelta.text).toBe(baseKclCode)
   })
 })
 
@@ -125,7 +125,7 @@ async function executeTrimFlow({
   kclCode: string
   trimPoints: Coords2d[]
   sketchId: number
-}): Promise<{ kclSource: { text: string } } | Error> {
+}): Promise<{ sourceDelta: { text: string } } | Error> {
   // Parse and execute initial KCL code
   const ast = assertParse(kclCode, instanceInThisFile)
   const { sceneGraph, execOutcome } =
@@ -142,7 +142,7 @@ async function executeTrimFlow({
   }
 
   // Track the last result to return it
-  let lastResult: { kclSource: { text: string } } | null = null
+  let lastResult: { sourceDelta: { text: string } } | null = null
   let hadError: Error | null = null
 
   // Use the new createOnAreaSelectEndCallback function
@@ -171,7 +171,7 @@ async function executeTrimFlow({
 
   // If no operations were executed (no-op case), return the original KCL code
   if (!lastResult) {
-    return { kclSource: { text: kclCode } }
+    return { sourceDelta: { text: kclCode } }
   }
 
   return lastResult
@@ -321,7 +321,7 @@ sketch(on = YZ) {
       }
 
       // Just assert that it doesn't error - the output code can be whatever the solver produces
-      expect(result.kclSource.text).toBeTruthy()
+      expect(result.sourceDelta.text).toBeTruthy()
 
       const endTime = performance.now()
       const durationMs = endTime - startTime
