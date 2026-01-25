@@ -631,6 +631,10 @@ export default class RustContext {
     const instance = await this._checkContextInstance()
 
     try {
+      // Flatten array of [x, y] tuples into a Float64Array [x1, y1, x2, y2, ...]
+      // wasm-bindgen expects a typed array for Vec<f64>
+      const flattenedPoints = new Float64Array(points.flat())
+      
       const result: {
         source_delta: SourceDelta
         scene_graph_delta: SceneGraphDelta
@@ -638,7 +642,7 @@ export default class RustContext {
       } = await instance.execute_trim(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(points),
+        flattenedPoints,
         JSON.stringify(settings)
       )
       return {

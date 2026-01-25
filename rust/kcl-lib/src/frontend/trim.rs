@@ -1847,6 +1847,7 @@ where
 }
 
 /// Result of executing trim flow
+// #[allow(dead_code)] // Only used in non-WASM builds
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,

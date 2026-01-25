@@ -411,7 +411,7 @@ impl Context {
         &self,
         version_json: &str,
         sketch_json: &str,
-        points_json: &str,
+        points: Vec<f64>,
         settings: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
@@ -419,8 +419,14 @@ impl Context {
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
         let sketch: kcl_lib::front::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let points: Vec<crate::trim::Coords2d> =
-            serde_json::from_str(points_json).map_err(|e| format!("Could not deserialize points: {e}"))?;
+
+        // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
+        if points.len() % 2 != 0 {
+            return Err(JsValue::from_str(
+                "Points array must have even length (pairs of x, y coordinates)",
+            ));
+        }
+        let points: Vec<[f64; 2]> = points.chunks_exact(2).map(|chunk| [chunk[0], chunk[1]]).collect();
 
         let ctx = self
             .create_executor_ctx(settings, None, true)
@@ -453,10 +459,10 @@ impl Context {
             .await
             .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
 
-        // Convert WASM Coords2d to core Coords2d for kcl-lib functions
+        // Convert [f64; 2] arrays to core Coords2d struct for kcl-lib functions
         let points_core: Vec<Coords2dCore> = points
             .iter()
-            .map(|c| kcl_lib::front::Coords2d { x: c.x, y: c.y })
+            .map(|[x, y]| kcl_lib::front::Coords2d { x: *x, y: *y })
             .collect();
 
         // Execute the trim loop using the shared function from kcl-lib
