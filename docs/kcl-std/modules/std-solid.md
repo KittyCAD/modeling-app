@@ -14,6 +14,7 @@ This module contains functions for modifying solids, e.g., by adding a fillet or
 
 * [`appearance`](/docs/kcl-std/functions/std-solid-appearance)
 * [`chamfer`](/docs/kcl-std/functions/std-solid-chamfer)
+* [`deleteFace`](/docs/kcl-std/functions/std-solid-deleteFace)
 * [`fillet`](/docs/kcl-std/functions/std-solid-fillet)
 * [`flipSurface`](/docs/kcl-std/functions/std-solid-flipSurface)
 * [`hollow`](/docs/kcl-std/functions/std-solid-hollow)

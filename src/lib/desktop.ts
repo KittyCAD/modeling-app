@@ -1001,6 +1001,13 @@ export const writeProjectThumbnailFile = async (
   for (let i = 0, len = data.length; i < len; ++i) {
     asArray[i] = data.charCodeAt(i)
   }
+
+  // Configure Git to ignore the generated thumbnail
+  const gitignorePath = electron.path.join(projectDirectoryPath, '.gitignore')
+  if (!electron.exists(gitignorePath)) {
+    await electron.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
+  }
+
   return electron.writeFile(filePath, asArray)
 }
 
