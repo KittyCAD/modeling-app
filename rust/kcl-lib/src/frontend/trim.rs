@@ -4920,7 +4920,8 @@ mod tests {
                         "start": { "x": { "type": "Number", "value": 0.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } },
                         "end": { "x": { "type": "Number", "value": 10.0, "units": "None" }, "y": { "type": "Number", "value": 0.0, "units": "None" } }
                     },
-                    "ctor_applicable": false
+                    "ctor_applicable": false,
+                    "construction": false
                 }
             },
             "label": "",
