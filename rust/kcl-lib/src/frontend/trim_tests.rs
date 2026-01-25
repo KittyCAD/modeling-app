@@ -38,11 +38,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -94,11 +89,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -140,11 +130,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -188,11 +173,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -234,11 +214,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -282,11 +257,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -328,11 +298,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -376,11 +341,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -423,11 +383,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -466,11 +421,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -520,11 +470,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -579,11 +524,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -626,11 +566,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -677,11 +612,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -733,11 +663,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -793,12 +718,6 @@ sketch(on = YZ) {
                     let result_normalized = result.kcl_code.trim();
                     let expected_normalized = expected_code.trim();
 
-                    if result_normalized != expected_normalized {
-                        eprintln!("Trim line {} ({:?}) produced different result", i + 1, trim_points);
-                        eprintln!("Actual result:\n{}", result_normalized);
-                        eprintln!("Expected result:\n{}", expected_normalized);
-                    }
-
                     assert_eq!(
                         result_normalized,
                         expected_normalized,
@@ -850,11 +769,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -947,11 +861,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -1095,11 +1004,6 @@ sketch2::distance([
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -1159,11 +1063,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -1213,11 +1112,6 @@ sketch(on = YZ) {
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -1266,11 +1160,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -1322,11 +1211,6 @@ sketch(on = YZ) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -1404,11 +1288,6 @@ sketch2::distance([arc1.center, line4.end]) == 20mm
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
 
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
-
                 assert_eq!(
                     result_normalized, expected_normalized,
                     "Trim result should match expected KCL code"
@@ -1468,11 +1347,6 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
@@ -2334,11 +2208,6 @@ sketch(on = XY) {
 
                 let result_normalized = result.kcl_code.trim();
                 let expected_normalized = expected_code.trim();
-
-                if result_normalized != expected_normalized {
-                    eprintln!("Actual result:\n{}", result_normalized);
-                    eprintln!("Expected result:\n{}", expected_normalized);
-                }
 
                 assert_eq!(
                     result_normalized, expected_normalized,
