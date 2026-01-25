@@ -632,7 +632,7 @@ export default class RustContext {
 
     try {
       const result: {
-        kcl_source: SourceDelta
+        source_delta: SourceDelta
         scene_graph_delta: SceneGraphDelta
         operations_performed: boolean
       } = await instance.execute_trim(
@@ -642,7 +642,7 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       return {
-        kclSource: result.kcl_source,
+        kclSource: result.source_delta,
         sceneGraphDelta: result.scene_graph_delta,
         operationsPerformed: result.operations_performed,
       }

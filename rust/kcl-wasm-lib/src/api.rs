@@ -11,7 +11,7 @@ use crate::{Context, TRUE_BUG};
 
 #[derive(serde::Serialize)]
 struct TrimResult {
-    kcl_source: kcl_lib::front::SourceDelta,
+    source_delta: kcl_lib::front::SourceDelta,
     scene_graph_delta: kcl_lib::front::SceneGraphDelta,
     operations_performed: bool,
 }
@@ -499,9 +499,9 @@ impl Context {
             (source_delta, scene_graph_delta)
         };
 
-        // Return both kclSource and sceneGraphDelta
+        // Return both source_delta and sceneGraphDelta
         let result = TrimResult {
-            kcl_source: source_delta,
+            source_delta,
             scene_graph_delta,
             operations_performed,
         };
