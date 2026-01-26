@@ -7,6 +7,8 @@
 // Import and define parameters
 import * from "dimensions.kcl"
 import * from "2x4.kcl"
+import * from "dog-bone-sign.kcl"
+import "dog-bone-sign.kcl" as dogBoneSign
 
 // Top front plate
 // Spans the front wall at studTopZ (underside of top plate elevation)
@@ -32,3 +34,12 @@ frontStudRight = twoByFourZRotated(
   minZ = studBaseZ,
   lengthZ = studHeight,
 ) // Right jamb stud for the door opening
+
+
+// Dog bone sign centered on the front gable
+signTopClearance = 1
+signFrontOffset = 0.1
+signBottomZ = peakZ - signTopClearance - signHeight
+signY = -signThickness - signFrontOffset
+frontDogBoneSign = dogBoneSign
+  |> translate(x = 0, y = signY, z = signBottomZ)
