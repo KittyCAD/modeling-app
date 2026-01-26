@@ -1,6 +1,6 @@
 ![Zoo Design Studio](/public/zma-logomark-outlined.png)
 
-# Zoo Design Studio
+# Zoo Design Studio 2
 
 [zoo.dev/design-studio](https://zoo.dev/design-studio)
 
