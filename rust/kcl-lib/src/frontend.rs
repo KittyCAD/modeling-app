@@ -776,6 +776,12 @@ impl SketchApi for FrontendState {
                 Constraint::Distance(distance) => {
                     self.add_distance(sketch, distance, &mut new_ast).await?;
                 }
+                Constraint::HorizontalDistance(distance) => {
+                    self.add_horizontal_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::VerticalDistance(distance) => {
+                    self.add_vertical_distance(sketch, distance, &mut new_ast).await?;
+                }
                 Constraint::Horizontal(horizontal) => {
                     self.add_horizontal(sketch, horizontal, &mut new_ast).await?;
                 }
