@@ -490,24 +490,33 @@ const OperationItem = ({
 
   const enterEditFlow = useCallback(() => {
     if (
-      item.type === 'StdLibCall' ||
-      item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      item.type !== 'StdLibCall' &&
+      item.type !== 'VariableDeclaration' &&
+      item.type !== 'SketchSolve'
     ) {
-      const artifact =
-        getArtifactFromRange(
-          item.sourceRange,
-          systemDeps.kclManager.artifactGraph
-        ) ?? undefined
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
-        operation: item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(e))
+      return
     }
+
+    if (
+      item.type === 'StdLibCall' &&
+      stdLibMap[item.name]?.prepareToEdit === undefined
+    ) {
+      return
+    }
+
+    const artifact =
+      getArtifactFromRange(
+        item.sourceRange,
+        systemDeps.kclManager.artifactGraph
+      ) ?? undefined
+    prepareEditCommand({
+      artifactGraph: systemDeps.kclManager.artifactGraph,
+      code: systemDeps.kclManager.code,
+      commandBarActor,
+      operation: item,
+      rustContext: systemDeps.rustContext,
+      artifact,
+    }).catch((e) => toast.error(e))
   }, [item])
 
   function enterAppearanceFlow() {
