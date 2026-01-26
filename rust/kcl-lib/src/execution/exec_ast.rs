@@ -2492,9 +2492,9 @@ impl Node<BinaryExpression> {
                         }
                         SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
                             let range = self.as_source_range();
-                            let p0 = &points[0]; // center
-                            let p1 = &points[1]; // start
-                            // Find the arc segment that has center p0 and start p1 to get its end point
+                            let center = &points[0];
+                            let start = &points[1];
+                            // Find the arc segment that has matching center and start to get its end point
                             let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
                                 return Err(KclError::new_internal(KclErrorDetails::new(
                                     "Being inside a sketch block should have already been checked above".to_owned(),
@@ -2515,7 +2515,7 @@ impl Node<BinaryExpression> {
                                         center_object_id,
                                         start_object_id,
                                         ..
-                                    } if *center_object_id == p0.object_id && *start_object_id == p1.object_id)
+                                    } if *center_object_id == center.object_id && *start_object_id == start.object_id)
                                 })
                                 .ok_or_else(|| {
                                     KclError::new_internal(KclErrorDetails::new(
@@ -2541,12 +2541,12 @@ impl Node<BinaryExpression> {
                             };
                             let solver_arc = kcl_ezpz::datatypes::inputs::DatumCircularArc {
                                 center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    p0.vars.x.to_constraint_id(range)?,
-                                    p0.vars.y.to_constraint_id(range)?,
+                                    center.vars.x.to_constraint_id(range)?,
+                                    center.vars.y.to_constraint_id(range)?,
                                 ),
                                 start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                    p1.vars.x.to_constraint_id(range)?,
-                                    p1.vars.y.to_constraint_id(range)?,
+                                    start.vars.x.to_constraint_id(range)?,
+                                    start.vars.y.to_constraint_id(range)?,
                                 ),
                                 end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                     end_x_var.to_constraint_id(range)?,
@@ -2583,14 +2583,14 @@ impl Node<BinaryExpression> {
                                             center_object_id,
                                             start_object_id,
                                             ..
-                                        } if *center_object_id == p0.object_id && *start_object_id == p1.object_id)
+                                        } if *center_object_id == center.object_id && *start_object_id == start.object_id)
                                     })
                                     .map(|seg| seg.object_id)
                                     .ok_or_else(|| {
                                         KclError::new_internal(KclErrorDetails::new(
                                             format!(
                                                 "Could not find arc segment object ID for {} constraint",
-                                                if is_diameter { "diameter" } else { "radius" }
+                                                constraint_name
                                             ),
                                             vec![range],
                                         ))

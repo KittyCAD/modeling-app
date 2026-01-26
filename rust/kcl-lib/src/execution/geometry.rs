@@ -1930,3 +1930,15 @@ pub enum SketchConstraintKind {
     HorizontalDistance { points: [ConstrainablePoint2d; 2] },
     VerticalDistance { points: [ConstrainablePoint2d; 2] },
 }
+
+impl SketchConstraintKind {
+    pub fn name(&self) -> &'static str {
+        match self {
+            SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::Radius { .. } => "radius",
+            SketchConstraintKind::Diameter { .. } => "diameter",
+            SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
+            SketchConstraintKind::VerticalDistance { .. } => "verticalDistance",
+        }
+    }
+}

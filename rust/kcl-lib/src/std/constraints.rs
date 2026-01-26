@@ -15,15 +15,14 @@ use crate::{
         normalize_to_solver_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
-    front::{ArcCtor, LineCtor, Point2d, PointCtor},
+    front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
     std::Args,
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::ArtifactId,
     front::{
-        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Perpendicular,
-        Vertical,
+        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Vertical,
     },
 };
 
@@ -1229,9 +1228,27 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 fn create_arc_radius_constraint(
     segment: KclValue,
     constraint_kind: fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
-    function_name: &str,
     source_range: crate::SourceRange,
 ) -> Result<SketchConstraint, KclError> {
+    // Create a dummy constraint to get its name for error messages
+    let dummy_constraint = constraint_kind([
+        ConstrainablePoint2d {
+            vars: crate::front::Point2d {
+                x: SketchVarId(0),
+                y: SketchVarId(0),
+            },
+            object_id: ObjectId(0),
+        },
+        ConstrainablePoint2d {
+            vars: crate::front::Point2d {
+                x: SketchVarId(0),
+                y: SketchVarId(0),
+            },
+            object_id: ObjectId(0),
+        },
+    ]);
+    let function_name = dummy_constraint.name();
+
     let KclValue::Segment { value: seg } = segment else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("{}() argument must be a segment", function_name),
@@ -1305,7 +1322,6 @@ pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     create_arc_radius_constraint(
         segment,
         |points| SketchConstraintKind::Radius { points },
-        "radius",
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
@@ -1320,7 +1336,6 @@ pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     create_arc_radius_constraint(
         segment,
         |points| SketchConstraintKind::Diameter { points },
-        "diameter",
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
