@@ -62,9 +62,9 @@ export function createOnAreaSelectEndCallback({
         return
       }
 
-      // Send the result
+      // Send the result - rustContext returns kclSource, but events use sourceDelta
       onNewSketchOutcome({
-        sourceDelta: result.sourceDelta,
+        sourceDelta: result.kclSource,
         sceneGraphDelta: result.sceneGraphDelta,
       })
     } catch (error) {

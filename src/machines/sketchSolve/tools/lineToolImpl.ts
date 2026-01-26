@@ -109,7 +109,11 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           )
           self._parent?.send({
             type: 'update sketch outcome',
-            data: { ...result, writeToDisk: false },
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
@@ -198,7 +202,7 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
         self._parent?.send({
           type: 'update sketch outcome',
           data: {
-            kclSource: output.kclSource,
+            sourceDelta: output.kclSource, // Convert kclSource to sourceDelta for event
             sceneGraphDelta: output.sceneGraphDelta,
           },
         })
@@ -382,7 +386,8 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
     self._parent?.send({
       type: 'update sketch outcome',
       data: {
-        ...context.pendingSketchOutcome,
+        sourceDelta: context.pendingSketchOutcome.kclSource, // Convert kclSource to sourceDelta for event
+        sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
         debounceEditorUpdate: true, // Debounce to allow cancellation if double-click is detected
       },
     })
@@ -409,7 +414,7 @@ export function sendDeleteResultToParentWithDebounce({
       self._parent?.send({
         type: 'update sketch outcome',
         data: {
-          kclSource: output.kclSource,
+          sourceDelta: output.kclSource, // Convert kclSource to sourceDelta for event
           sceneGraphDelta: output.sceneGraphDelta,
           debounceEditorUpdate: true, // Debounce to allow cancellation if needed
         },
@@ -436,7 +441,7 @@ export function sendDeleteResultToParent({
       self._parent?.send({
         type: 'update sketch outcome',
         data: {
-          kclSource: output.kclSource,
+          sourceDelta: output.kclSource, // Convert kclSource to sourceDelta for event
           sceneGraphDelta: output.sceneGraphDelta,
         },
       })

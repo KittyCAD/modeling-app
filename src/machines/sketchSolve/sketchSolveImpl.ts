@@ -771,6 +771,15 @@ const debouncedEditorUpdate = deferredCallback(
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
 
+  if (!event.data.sourceDelta) {
+    console.error(
+      'updateSketchOutcome: ERROR - No sourceDelta provided',
+      event.data
+    )
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
+  }
+
   // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({
     sceneGraphDelta: event.data.sceneGraphDelta,
