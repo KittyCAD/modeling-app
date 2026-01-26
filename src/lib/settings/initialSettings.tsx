@@ -32,11 +32,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
-import {
-  hexToRgb,
-  isValidRgbaColor,
-  rgbaToHex,
-} from '@src/lib/settings/settingsUtils'
+import { hexToRgb, isValidRgbaColor, rgbaToHex } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level

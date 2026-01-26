@@ -30,7 +30,6 @@ import {
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import type {
-  RgbaColor,
   SaveSettingsPayload,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -806,61 +805,4 @@ export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
     hideOnPlatform === 'both' ||
     hideOnPlatform === (desktop ? 'desktop' : 'web')
   )
-}
-
-function clampUnitValue(value: number) {
-  if (!Number.isFinite(value)) return 0
-  return Math.min(1, Math.max(0, value))
-}
-
-function channelToHex(value: number) {
-  return Math.round(clampUnitValue(value) * 255)
-    .toString(16)
-    .padStart(2, '0')
-}
-
-export function rgbaToHex(color: RgbaColor) {
-  return `#${channelToHex(color.r)}${channelToHex(color.g)}${channelToHex(
-    color.b
-  )}`
-}
-
-export function hexToRgb(hex: string) {
-  const normalized = hex.replace('#', '').trim()
-  const expanded =
-    normalized.length === 3
-      ? normalized
-          .split('')
-          .map((char) => char + char)
-          .join('')
-      : normalized
-
-  if (!/^[0-9a-fA-F]{6}$/.test(expanded)) {
-    return null
-  }
-
-  const raw = parseInt(expanded, 16)
-  const r = (raw >> 16) & 0xff
-  const g = (raw >> 8) & 0xff
-  const b = raw & 0xff
-
-  return {
-    r: r / 255,
-    g: g / 255,
-    b: b / 255,
-  }
-}
-
-export function isValidRgbaColor(value: RgbaColor) {
-  if (!value || typeof value !== 'object') return false
-  const rgbaChannels = ['r', 'g', 'b', 'a'] as const
-  return rgbaChannels.every((channel) => {
-    const channelValue = value[channel]
-    return (
-      typeof channelValue === 'number' &&
-      Number.isFinite(channelValue) &&
-      channelValue >= 0 &&
-      channelValue <= 1
-    )
-  })
 }
