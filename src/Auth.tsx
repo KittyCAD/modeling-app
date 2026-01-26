@@ -8,6 +8,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
 
   return isLoggingIn ? (
     <Loading className="h-screen w-screen">
+      { JSON.stringify(authState) }
       <span data-testid="initial-load">Loading Design Studio...</span>
     </Loading>
   ) : (

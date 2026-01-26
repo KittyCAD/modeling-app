@@ -9,7 +9,6 @@ import path from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import type { IElectronAPI } from '@root/interface'
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
@@ -815,7 +814,6 @@ export const writeEnvironmentConfigurationToken = async (
 }
 
 export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string,
   kittycadWebSocketUrl: string
 ) => {
@@ -858,7 +856,6 @@ export const readEnvironmentConfigurationToken = async (
 }
 
 export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
   const environmentConfiguration =
@@ -868,7 +865,6 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
 }
 
 export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string,
   mlephantWebSocketUrl: string
 ) => {
@@ -878,13 +874,15 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
     await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await electron.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
-  electron: IElectronAPI,
   environmentName: string
 ) => {
   const environmentConfiguration =
@@ -893,7 +891,7 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
   return environmentConfiguration.mlephantWebSocketUrl.trim()
 }
 
-export const readEnvironmentFile = async (electron: IElectronAPI) => {
+export const readEnvironmentFile = async () => {
   let environmentFilePath = await getEnvironmentFilePath()
   console.log(readEnvironmentFile)
 

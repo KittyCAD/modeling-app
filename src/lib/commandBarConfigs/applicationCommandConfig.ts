@@ -439,7 +439,6 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationKittycadWebSocketUrl(
-          window.electron,
           environmentName,
           data?.url ?? ''
         )
@@ -488,7 +487,6 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationMlephantWebSocketUrl(
-          window.electron,
           environmentName,
           data?.url ?? ''
         )

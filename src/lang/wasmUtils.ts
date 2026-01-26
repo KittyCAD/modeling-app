@@ -25,6 +25,7 @@ export const initialiseWasm = async (): Promise<ModuleType> => {
   try {
     await reloadModule()
     const fullUrl = wasmUrl()
+    console.log(fullUrl)
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
     await init({ module_or_path: buffer })

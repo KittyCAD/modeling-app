@@ -54,10 +54,9 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    if (window.electron && !didReadFromDiskCacheForEnvironment) {
-      const electron = window.electron
+    if (!didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile(electron)
+      readEnvironmentFile()
         .then((environment) => {
           if (environment) {
             setSelectedEnvironmentFormatter(environment)

@@ -210,7 +210,7 @@ export function webSafePathSplit(targetPath: string): string[] {
 }
 
 export function webSafeJoin(paths: string[]): string {
-  return path.join(...paths)
+  return path.resolve(...paths)
 }
 
 /**
@@ -221,7 +221,7 @@ export function desktopSafePathSplit(targetPath: string): string[] {
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return paths.join(path.sep)
+  return path.resolve(...paths)
 }
 
 /**
