@@ -7,6 +7,7 @@ import type {
   Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
+  constraintUtils,
   segmentUtilsMap,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
@@ -49,7 +50,6 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
-import { initConstraintGroup } from '@src/machines/sketchSolve/constraints'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -490,7 +490,7 @@ export function updateSceneGraphFromDelta({
     if (obj.kind.type === 'Constraint') {
       const existing = context.sceneInfra.scene.getObjectByName(String(obj.id))
       if (!existing) {
-        const constraintGroup = initConstraintGroup(
+        const constraintGroup = constraintUtils.initConstraintGroup(
           obj,
           objects,
           factor,
