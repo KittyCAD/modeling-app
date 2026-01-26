@@ -3,8 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::shared::Color;
-use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::{shared::Color, units::UnitLength};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
