@@ -15,6 +15,7 @@ import {
   dialog,
   ipcMain,
   nativeTheme,
+  session,
   screen,
   shell,
   systemPreferences,
@@ -319,7 +320,7 @@ app.on('window-all-closed', () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', (event, data) => {
+app.on('ready', async (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
 
