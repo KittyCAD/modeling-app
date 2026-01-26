@@ -1157,14 +1157,13 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if points.len() != 2 {
+    let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
             vec![args.source_range],
         )));
-    }
-
-    match (&points[0], &points[1]) {
+    };
+    match (p1, p2) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
             let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1238,14 +1237,13 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if points.len() != 2 {
+    let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
             vec![args.source_range],
         )));
-    }
-
-    match (&points[0], &points[1]) {
+    };
+    match (p1, p2) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
             let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
