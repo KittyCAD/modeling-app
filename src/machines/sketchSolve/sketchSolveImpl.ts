@@ -49,6 +49,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { initConstraintGroup } from '@src/machines/sketchSolve/constraints'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -470,6 +471,7 @@ export function updateSceneGraphFromDelta({
   // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
   let skipBecauseBeforeCurrentSketch = true
   let skipBecauseAfterCurrentSketch = false
+  console.log('object', objects)
   objects.forEach((obj) => {
     if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
       skipBecauseBeforeCurrentSketch = false
@@ -480,9 +482,30 @@ export function updateSceneGraphFromDelta({
     if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
       return
     }
-    // sketch is no a drawable object, and
-    // TODO constraints have not been implemented yet
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    // sketch is not a drawable object
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+    // Render constraints
+    if (obj.kind.type === 'Constraint') {
+      const existing = context.sceneInfra.scene.getObjectByName(String(obj.id))
+      if (!existing) {
+        const constraintGroup = initConstraintGroup(
+          obj,
+          objects,
+          factor,
+          context.sceneInfra
+        )
+        if (constraintGroup) {
+          const sketchSceneGroup =
+            context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+          if (sketchSceneGroup) {
+            constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
+            constraintGroup.layers.set(SKETCH_LAYER)
+            sketchSceneGroup.add(constraintGroup)
+          }
+        }
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
