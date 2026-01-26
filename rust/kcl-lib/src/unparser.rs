@@ -3285,4 +3285,26 @@ startSketchOn(XY)
         let expected = code;
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn badly_formatted_inline_calls() {
+        let code = "\
+return union([right, left])
+  |> subtract(tools = [
+       translate(axle(), y = pitchStabL + forkBaseL + wheelRGap + wheelR + addedLength),
+       socket(rakeAngle = rearRake, xyTrans = [0, 12]),
+       socket(
+         rakeAngle = frontRake,
+         xyTrans = [
+           wheelW / 2 + wheelWGap + forkTineW / 2,
+           40 + addedLength
+         ],
+       ),
+     ])
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
 }
