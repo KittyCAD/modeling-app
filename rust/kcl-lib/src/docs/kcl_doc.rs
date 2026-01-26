@@ -1316,9 +1316,19 @@ impl ApplyMeta for ArgData {
 
 #[cfg(test)]
 mod test {
+    use std::path::{Path, PathBuf};
+
     use kcl_derive_docs::{for_all_example_test, for_each_example_test};
 
     use super::*;
+
+    fn stdlib_module_path(module_name: &str) -> PathBuf {
+        let file_stem = match module_name {
+            "std" | "" => "prelude",
+            other => other,
+        };
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("std").join(format!("{file_stem}.kcl"))
+    }
 
     #[test]
     fn smoke() {
@@ -1412,15 +1422,28 @@ mod test {
             );
         };
 
+        let source_path = stdlib_module_path(&d.module_name);
+        let owner_name = d.qual_name.as_str();
         for (i, eg) in d.examples.iter().enumerate() {
             if i != number {
                 continue;
             }
+            eprintln!(
+                "Testing example {NAME} for {owner_name} in {}",
+                source_path.display()
+            );
             let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
-                    panic!("Error testing example {}{i}: {}", d.name, e.error.message());
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
                 }
-                Err(other_err) => panic!("{}", other_err),
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
                 Ok(img) => img,
             };
             if eg.1.norun {
