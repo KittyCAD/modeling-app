@@ -325,15 +325,15 @@ profile001 = startProfile(sketch001, at = [-5, 0])
   |> line(end = [-1, -1], tag = $seg01)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
-  |> appearance(color = "#ff0000")
+  |> extrude(length = 5)
 extrude(
-  seg01,
-  length = 2,
-  method = MERGE,
-  hideSeams = false,
-) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
-
+       seg01,
+       length = 2,
+       method = MERGE,
+       hideSeams = false,
+     )
+  // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+  |> appearance(color = "#ff0000")
 
 // Extrude a face from an extruded object to create a new object
 sketch002 = startSketchOn(XY)
@@ -343,15 +343,15 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> yLine(length = 1.0)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude002 = extrude(profile002, length = 5)
-  |> appearance(color = "#00ff00")
+  |> extrude(length = 5)
 extrude(
-  seg02,
-  length = 2,
-  method = NEW,
-  hideSeams = false,
-) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
-
+       seg02,
+       length = 2,
+       method = NEW,
+       hideSeams = false,
+     )
+  // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+  |> appearance(color = "#00ff00")
 
 // Extrude a face from an extruded object and merge the result
 sketch003 = startSketchOn(XY)
@@ -361,14 +361,14 @@ profile003 = startProfile(sketch003, at = [1, 0])
   |> yLine(length = 1.0)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude003 = extrude(profile003, length = 5)
-  |> appearance(color = "#0000ff")
+  |> extrude(length = 5)
 extrude(
-  seg03,
-  length = 2,
-  method = MERGE,
-  hideSeams = true,
-)
+       seg03,
+       length = 2,
+       method = MERGE,
+       hideSeams = true,
+     )
+  |> appearance(color = "#0000ff")
 
 ```
 

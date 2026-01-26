@@ -670,8 +670,6 @@ description: Result of parsing extrude_face.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Add a red box to the side."
         ],
         "start": 0,
@@ -682,6 +680,23 @@ description: Result of parsing extrude_face.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
     "start": 0
   }
 }
