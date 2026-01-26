@@ -1327,7 +1327,9 @@ mod test {
             "std" | "" => "prelude",
             other => other,
         };
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("std").join(format!("{file_stem}.kcl"))
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("std")
+            .join(format!("{file_stem}.kcl"))
     }
 
     #[test]
@@ -1428,10 +1430,8 @@ mod test {
             if i != number {
                 continue;
             }
-            eprintln!(
-                "Testing example {NAME} for {owner_name} in {}",
-                source_path.display()
-            );
+            eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
+            eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
             let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
