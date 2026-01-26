@@ -431,7 +431,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Delete Face', groupId: 'modeling' },
               }),
-            icon: 'trash', // TODO: update
+            icon: 'deleteFace',
             status: 'available',
             title: 'Delete Face',
             description:
