@@ -105,12 +105,41 @@ async fn inner_appearance(
             ))
         })?;
 
+        let percent_range = (0.0)..=100.0;
+        let zero_one_range = (0.0)..=1.0;
+        for (prop, val) in [("Metalness", metalness), ("Roughness", roughness), ("Opacity", opacity)] {
+            if let Some(x) = val {
+                if !(percent_range.contains(&x)) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("{prop} must be between 0 and 100, but it was {x}"),
+                        vec![args.source_range],
+                    )));
+                }
+                if zero_one_range.contains(&x) && x != 0.0 {
+                    // TODO: Emit a warning, letting user know it should be a percentage
+                }
+            }
+        }
+        if let Some(opacity) = opacity
+            && opacity < 100.0
+        {
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        } else {
+            // OIT not needed.
+        }
         let color = Color {
             r: rgb.red,
             g: rgb.green,
             b: rgb.blue,
-            a: opacity.unwrap_or(100.0) as f32,
+            a: (opacity.unwrap_or(100.0) as f32) / 100.0,
         };
+        debug_assert!(color.a <= 1.0);
+        debug_assert!(color.a >= 0.0);
 
         exec_state
             .batch_modeling_cmd(
