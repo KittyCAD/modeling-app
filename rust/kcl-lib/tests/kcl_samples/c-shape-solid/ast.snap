@@ -84,8 +84,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Inner diameter — defines the hole in the middle of the ring"
         ],
         "start": 0,
@@ -126,8 +124,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Thickness of the ring (height in Z direction)"
         ],
         "start": 0,
@@ -168,8 +164,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Width of the wedge we will use to cut the split"
         ],
         "start": 0,
@@ -241,8 +235,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────────────────────",
           "// STEP 1: CREATE THE RING",
           "// ───────────────────────",
@@ -547,25 +539,6 @@ description: Result of parsing c-shape-solid.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "We extrude this sketch into a 3D solid. This is the full ring, with no gap yet.",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -675,6 +648,9 @@ description: Result of parsing c-shape-solid.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// We extrude this sketch into a 3D solid. This is the full ring, with no gap yet."
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -740,8 +716,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// ───────────────────────────────",
           "// STEP 2: CREATE THE WEDGE CUTTER",
           "// ───────────────────────────────",
@@ -817,8 +791,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Compute wedge dimensions"
         ],
         "start": 0,
@@ -1089,8 +1061,6 @@ description: Result of parsing c-shape-solid.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Draw the wedge on a plane slightly below the ring"
         ],
         "start": 0,
@@ -1925,6 +1895,102 @@ description: Result of parsing c-shape-solid.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "13": [
           {
             "commentStart": 0,
@@ -1945,7 +2011,17 @@ description: Result of parsing c-shape-solid.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "──────────────────────",
               "style": "line"
             }

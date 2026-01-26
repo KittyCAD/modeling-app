@@ -372,20 +372,6 @@ description: Result of parsing out_of_band_sketches.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "extend path",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -790,20 +776,6 @@ description: Result of parsing out_of_band_sketches.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "extend path",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -983,20 +955,6 @@ description: Result of parsing out_of_band_sketches.kcl
                     "value": {
                       "type": "inlineComment",
                       "value": "extend path",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "close",
                       "style": "line"
                     }
                   }
@@ -1182,20 +1140,6 @@ description: Result of parsing out_of_band_sketches.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "close",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -1334,11 +1278,35 @@ description: Result of parsing out_of_band_sketches.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
+              "type": "inlineComment",
+              "value": "extend path",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
               "type": "newLine"
             }
           }
         ],
         "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "extend path",
+              "style": "line"
+            }
+          },
           {
             "commentStart": 0,
             "end": 0,
@@ -1358,11 +1326,35 @@ description: Result of parsing out_of_band_sketches.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
+              "type": "inlineComment",
+              "value": "close",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
               "type": "newLine"
             }
           }
         ],
         "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "close",
+              "style": "line"
+            }
+          },
           {
             "commentStart": 0,
             "end": 0,

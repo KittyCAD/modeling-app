@@ -2200,7 +2200,27 @@ description: Result of parsing wing-spar.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
                       "value": "Cut circular holes along the chord curve of the airfoil to reduce the mass of each part",
                       "style": "line"
                     }
@@ -2214,13 +2234,9 @@ description: Result of parsing wing-spar.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Extrude the airfoil to material thicknes, then pattern along the length of the wing spars",
-                      "style": "line"
+                      "type": "newLine"
                     }
-                  }
-                ],
-                "15": [
+                  },
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -2228,8 +2244,18 @@ description: Result of parsing wing-spar.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model a thin sheet spar with a hemmed top edge for structure",
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Extrude the airfoil to material thicknes, then pattern along the length of the wing spars",
                       "style": "line"
                     }
                   }
@@ -2249,8 +2275,6 @@ description: Result of parsing wing-spar.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch an airfoil using the chord length, spar positions, and camber heights"
         ],
         "start": 0,
@@ -2330,6 +2354,9 @@ description: Result of parsing wing-spar.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model a thin sheet spar with a hemmed top edge for structure"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4028,25 +4055,6 @@ description: Result of parsing wing-spar.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "18": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Sketch the sheet metal profile for the rear spar, then extrude",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5781,25 +5789,6 @@ description: Result of parsing wing-spar.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "18": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Cut rectangular holes along the spar length between each rib",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5811,6 +5800,9 @@ description: Result of parsing wing-spar.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch the sheet metal profile for the rear spar, then extrude"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -7268,6 +7260,9 @@ description: Result of parsing wing-spar.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Cut rectangular holes along the spar length between each rib"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8689,7 +8684,56 @@ description: Result of parsing wing-spar.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

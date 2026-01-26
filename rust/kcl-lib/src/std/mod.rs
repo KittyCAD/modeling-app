@@ -26,6 +26,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub mod surfaces;
 pub mod sweep;
 pub mod transform;
 pub mod utils;
@@ -246,6 +247,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "appearance") => (
             |e, a| Box::pin(crate::std::appearance::appearance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::appearance"),
+        ),
+        ("solid", "flipSurface") => (
+            |e, a| Box::pin(crate::std::surfaces::flip_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::flipSurface"),
+        ),
+        ("solid", "split") => (
+            |e, a| Box::pin(crate::std::csg::split(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::split"),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
@@ -495,6 +504,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
+        ("sketch2", "horizontalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::horizontal_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::horizontalDistance"),
+        ),
+        ("sketch2", "verticalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::vertical_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::verticalDistance"),
+        ),
         ("sketch2", "equalLength") => (
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),
@@ -514,6 +531,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch2", "vertical") => (
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
+        ),
+        ("solid", "isSurface") => (
+            |e, a| Box::pin(crate::std::surfaces::is_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSurface"),
+        ),
+        ("solid", "isSolid") => (
+            |e, a| Box::pin(crate::std::surfaces::is_solid(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::isSolid"),
+        ),
+        ("solid", "deleteFace") => (
+            |e, a| Box::pin(crate::std::surfaces::delete_face(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::deleteFace"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")

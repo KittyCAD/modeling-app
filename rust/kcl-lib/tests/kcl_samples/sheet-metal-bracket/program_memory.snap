@@ -694,6 +694,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -701,7 +703,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -882,6 +883,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "seg05",
           "xAxis": {
             "x": 1.0,
@@ -1575,6 +1577,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1582,7 +1586,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1865,6 +1868,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,
@@ -2558,6 +2562,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2565,7 +2571,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2773,6 +2778,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,
@@ -3466,6 +3472,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3473,7 +3481,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3722,6 +3729,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg06",
               "xAxis": {
                 "x": 1.0,
@@ -4415,6 +4423,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4422,7 +4432,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4630,6 +4639,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg06",
               "xAxis": {
                 "x": 1.0,
@@ -5323,6 +5333,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5330,7 +5342,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5587,6 +5598,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -6280,6 +6292,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6287,7 +6301,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6495,6 +6508,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -7188,6 +7202,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7195,7 +7211,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7403,6 +7418,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -8096,6 +8112,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8103,7 +8121,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8311,6 +8328,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -9004,6 +9022,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9011,7 +9031,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,

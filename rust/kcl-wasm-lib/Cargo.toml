@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.119"
+version = "0.1.121"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -20,7 +20,7 @@ typed-path = "0.12.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
-data-encoding = "2.9.0"
+data-encoding = "2.10.0"
 futures = "0.3.31"
 # Enable the feature in a transitive dependency.
 getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
@@ -33,7 +33,7 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync", "rt"] }
-toml = "0.9.10"
+toml = "0.9.11"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.99"

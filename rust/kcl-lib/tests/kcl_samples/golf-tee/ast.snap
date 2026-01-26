@@ -519,8 +519,6 @@ description: Result of parsing golf-tee.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Tee Profile ---"
         ],
         "start": 0,
@@ -1187,20 +1185,6 @@ description: Result of parsing golf-tee.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "6": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "--- Solid Revolve ---",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -1338,6 +1322,9 @@ description: Result of parsing golf-tee.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// --- Solid Revolve ---"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1546,7 +1533,31 @@ description: Result of parsing golf-tee.kcl
             }
           }
         ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
           {
             "commentStart": 0,
             "end": 0,

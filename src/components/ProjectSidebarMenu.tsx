@@ -40,7 +40,7 @@ const ProjectSidebarMenu = ({
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home cursor-pointer">
         <AppLogoLink project={project} file={file} />
-        <Tooltip position="bottom-left">Go home</Tooltip>
+        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
       </div>
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />

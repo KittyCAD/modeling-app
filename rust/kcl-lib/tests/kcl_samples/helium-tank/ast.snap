@@ -2181,25 +2181,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "20": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Only revolving to 220deg so that the interior of the tank is visible. It should ultimately be closed at 360deg",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2212,8 +2193,6 @@ description: Result of parsing helium-tank.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch the perimeter of the gas tank- inside and out, then revolve around the vertical axis."
         ],
         "start": 0,
@@ -2338,6 +2317,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Only revolving to 220deg so that the interior of the tank is visible. It should ultimately be closed at 360deg"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2859,25 +2841,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "3": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model the outlet port of the valve, then union it all together",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2890,8 +2853,6 @@ description: Result of parsing helium-tank.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model the brass valve on top of the tank port"
         ],
         "start": 0,
@@ -3369,6 +3330,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model the outlet port of the valve, then union it all together"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3513,25 +3477,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Sketch the offset profile of the mounting bracket",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -4597,25 +4542,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "9": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Sketch the outer perimeter of the offset bracket, then subtract the inner offset to create a constant thickness sheet metal hoop",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -4627,6 +4553,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch the offset profile of the mounting bracket"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5703,25 +5632,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "11": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Cut holes in the bracket for a mounting strap",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5733,6 +5643,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch the outer perimeter of the offset bracket, then subtract the inner offset to create a constant thickness sheet metal hoop"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -6243,6 +6156,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Cut holes in the bracket for a mounting strap"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -6768,8 +6684,6 @@ description: Result of parsing helium-tank.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create holes in the bracket for anchor mounts to secure the bracket to a wall"
         ],
         "start": 0,
@@ -7125,25 +7039,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model a circular strap to secure the tank to the bracket",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -7779,25 +7674,6 @@ description: Result of parsing helium-tank.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "4": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create a second instance of the bracket and strap at a lower point on the tank",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -7809,6 +7685,9 @@ description: Result of parsing helium-tank.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model a circular strap to secure the tank to the bracket"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8045,6 +7924,9 @@ description: Result of parsing helium-tank.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "// Create a second instance of the bracket and strap at a lower point on the tank"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -8115,7 +7997,127 @@ description: Result of parsing helium-tank.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
           {
             "commentStart": 0,
             "end": 0,

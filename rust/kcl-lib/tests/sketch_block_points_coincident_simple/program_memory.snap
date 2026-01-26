@@ -12,7 +12,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 1,
+                "objectId": 2,
                 "kind": {
                   "point": {
                     "position": [
@@ -61,7 +61,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 2,
+                "objectId": 3,
                 "kind": {
                   "point": {
                     "position": [
@@ -110,7 +110,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 4,
+                "objectId": 5,
                 "kind": {
                   "point": {
                     "position": [
@@ -159,7 +159,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 5,
+                "objectId": 6,
                 "kind": {
                   "point": {
                     "position": [

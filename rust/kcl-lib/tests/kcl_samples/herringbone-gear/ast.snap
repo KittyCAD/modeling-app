@@ -2100,7 +2100,27 @@ description: Result of parsing herringbone-gear.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Position the end line of the sketch at the start of the next tooth",
                                           "style": "line"
                                         }
@@ -2114,13 +2134,43 @@ description: Result of parsing herringbone-gear.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
                                           "style": "line"
                                         }
                                       }
                                     ],
                                     "7": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
                                       {
                                         "commentStart": 0,
                                         "end": 0,
@@ -2149,8 +2199,6 @@ description: Result of parsing herringbone-gear.kcl
                             "kind": "const",
                             "moduleId": 0,
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -2187,6 +2235,23 @@ description: Result of parsing herringbone-gear.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
+                        "nonCodeMeta": {
+                          "nonCodeNodes": {
+                            "0": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ]
+                          },
+                          "startNodes": []
+                        },
                         "start": 0
                       },
                       "commentStart": 0,
@@ -2225,8 +2290,6 @@ description: Result of parsing herringbone-gear.kcl
                   "kind": "fn",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define a function to create a rotated gear sketch on an offset plane"
                   ],
                   "start": 0,
@@ -2306,8 +2369,6 @@ description: Result of parsing herringbone-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch on the base plane"
                   ],
                   "start": 0,
@@ -2414,8 +2475,6 @@ description: Result of parsing herringbone-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch that has been rotated by the helix angle"
                   ],
                   "start": 0,
@@ -2542,25 +2601,6 @@ description: Result of parsing herringbone-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "1": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Loft each rotated gear sketch together to form a herringbone gear",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -2573,8 +2613,6 @@ description: Result of parsing herringbone-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch at the total gear height that reverses the angle direction"
                   ],
                   "start": 0,
@@ -2716,6 +2754,9 @@ description: Result of parsing herringbone-gear.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Loft each rotated gear sketch together to form a herringbone gear"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2752,6 +2793,66 @@ description: Result of parsing herringbone-gear.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "5": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "6": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "7": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "8": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "9": [
                     {
                       "commentStart": 0,

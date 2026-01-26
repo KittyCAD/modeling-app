@@ -105,6 +105,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -112,7 +114,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -253,6 +254,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -366,6 +368,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -373,7 +377,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -555,6 +558,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -655,6 +659,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 1,
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
@@ -768,6 +773,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -775,7 +782,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -976,6 +982,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1090,6 +1097,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1190,6 +1198,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "seg01",
                       "xAxis": {
                         "x": 1.0,
@@ -1303,6 +1312,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -1310,7 +1321,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -1527,6 +1537,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1534,7 +1546,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1643,6 +1654,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -1756,6 +1768,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1763,7 +1777,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1906,6 +1919,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -2006,6 +2020,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2119,6 +2134,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2126,7 +2143,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2295,6 +2311,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "seg02",
         "xAxis": {
           "x": 1.0,
@@ -2409,6 +2426,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2509,6 +2527,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "type": "face",
                     "id": "[uuid]",
                     "artifactId": "[uuid]",
+                    "objectId": 1,
                     "value": "seg01",
                     "xAxis": {
                       "x": 1.0,
@@ -2622,6 +2641,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "on": {
                           "artifactId": "[uuid]",
                           "id": "[uuid]",
+                          "kind": "XZ",
+                          "objectId": 0,
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -2629,7 +2650,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "units": "mm"
                           },
                           "type": "plane",
-                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,

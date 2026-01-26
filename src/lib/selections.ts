@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { Object3D, Object3DEventMap } from 'three'
+import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -153,7 +153,7 @@ export async function getEventForSelectWithPoint(
 }
 
 export function getEventForSegmentSelection(
-  obj: Object3D<Object3DEventMap>,
+  obj: Object3D,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
@@ -695,6 +695,12 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const sketchBlock = entries.find(
+    (entry) => entry.artifact.type === 'sketchBlock'
+  )
+  if (sketchBlock) {
+    return sketchBlock
+  }
 
   for (const entry of entries) {
     // Segments take precedence
@@ -994,11 +1000,11 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   // Try to get the artifact from the graph
-  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const _artifact = artifactGraph.get(sketchBlock.planeId)
 
-  // If artifact doesn't exist in the graph, fallback to default XY plane
+  // Use the default XY plane.
   // This is a temporary solution while we determine the proper approach for default planes
-  if (!artifact) {
+  if (true) {
     const defaultPlanes = systemDeps.rustContext.defaultPlanes
     if (defaultPlanes?.xy) {
       const defaultResult = getDefaultSketchPlaneData(

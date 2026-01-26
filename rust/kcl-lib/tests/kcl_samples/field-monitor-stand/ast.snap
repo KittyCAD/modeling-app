@@ -914,8 +914,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model the base extrusion of the part"
         ],
         "start": 0,
@@ -1707,25 +1705,6 @@ description: Result of parsing field-monitor-stand.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "6": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model a supporting gusset on the interior",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2146,25 +2125,6 @@ description: Result of parsing field-monitor-stand.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "4": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Extrude the body of the mount to desired width",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2176,6 +2136,9 @@ description: Result of parsing field-monitor-stand.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model a supporting gusset on the interior"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2314,6 +2277,9 @@ description: Result of parsing field-monitor-stand.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Extrude the body of the mount to desired width"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2408,8 +2374,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extrude the gusset to desired thickness"
         ],
         "start": 0,
@@ -2511,8 +2475,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model the mounting holes"
         ],
         "start": 0,
@@ -2734,8 +2696,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Identify hole positions"
         ],
         "start": 0,
@@ -2960,8 +2920,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place a hole at each position"
         ],
         "start": 0,
@@ -3096,8 +3054,6 @@ description: Result of parsing field-monitor-stand.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extrude all holes, then subtract"
         ],
         "start": 0,
@@ -3637,8 +3593,6 @@ description: Result of parsing field-monitor-stand.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Fillet the exterior edges"
         ],
         "start": 0,
@@ -3762,6 +3716,114 @@ description: Result of parsing field-monitor-stand.kcl
           }
         ],
         "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
           {
             "commentStart": 0,
             "end": 0,
