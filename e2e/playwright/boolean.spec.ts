@@ -75,7 +75,11 @@ test.describe(
 
         await test.step(`Test ${operationName} operation`, async () => {
           // Click the boolean operation button in the toolbar
-          await toolbar.selectBoolean(operationName)
+          if (operationName === 'split') {
+            await toolbar.splitButton.click()
+          } else {
+            await toolbar.selectBoolean(operationName)
+          }
 
           // Verify command bar is showing the right command
           await expect(cmdBar.page.getByTestId('command-name')).toContainText(

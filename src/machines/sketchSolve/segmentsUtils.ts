@@ -138,7 +138,7 @@ export function deriveSegmentFreedom(
  * 7. Default color (lowest priority) - UNCONSTRAINED_COLOR
  */
 export function getSegmentColor({
-  isDraft,
+  isDraft = false,
   isHovered,
   isSelected,
   freedom,

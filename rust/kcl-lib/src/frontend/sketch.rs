@@ -210,6 +210,7 @@ pub struct Line {
     // The frontend should only display handles for the constructor inputs if the ctor is applicable.
     // (Or because they are the (locked) start/end of the segment).
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -217,6 +218,9 @@ pub struct Line {
 pub struct LineCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -236,6 +240,7 @@ pub struct Arc {
     // Invariant: Arc or TangentArc
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -244,6 +249,9 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -277,6 +285,8 @@ pub struct CircleCtor {
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
+    HorizontalDistance(Distance),
+    VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),

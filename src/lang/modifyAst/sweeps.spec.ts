@@ -790,6 +790,45 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       // Don't think we can find the artifact here for loft?
     })
 
+    it('should add a basic loft call with surface bodyType on open path without engine errors', async () => {
+      const openPaths = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2.32, -2.09])
+  |> line(end = [9.62, 4.63])
+plane001 = offsetPlane(XY, offset = 5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-0.75, -3.04])
+  |> line(end = [8.17, 4.09])`
+      const { ast, sketches } = await getAstAndSketchSelections(
+        openPaths,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(openPaths)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+      )
+      const { operations } = await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const loft = operations.find(
+        (op) => op.type === 'StdLibCall' && op.name === 'loft'
+      )
+      if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
+      expect(loft.isError).toBeFalsy()
+    })
+
     it('should edit a loft call with vDegree', async () => {
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`

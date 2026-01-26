@@ -10,20 +10,12 @@ permissions:
   contents: read
 
 jobs:
-  npm-build-wasm:
+  build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
-
-      - name: Track setup
-        run: .github/ci-cd-scripts/track-step.sh
-        env:
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: integration
-          CI_STEP: setup
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - id: filter
         name: Check for Rust changes
@@ -44,7 +36,7 @@ jobs:
 
       - name: Download Wasm cache
         id: download-wasm
-        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
+        if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
         uses: dawidd6/action-download-artifact@v12
         continue-on-error: true
         with:
@@ -58,9 +50,8 @@ jobs:
         id: wasm
         run: |
           set -euox pipefail
-          # Build Wasm if this is a scheduled run, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build Wasm if there are Rust changes or downloading from the cache failed
+          if [[ ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT

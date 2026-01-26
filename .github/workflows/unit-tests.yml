@@ -18,7 +18,23 @@ permissions:
   actions: read
 
 jobs:
-  npm-build-wasm:
+  track-setup:
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Track setup
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration
+          CI_STEP: setup
+
+  build-wasm:
+    needs: [track-setup]
     uses: ./.github/workflows/build-wasm.yml
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
@@ -55,7 +71,7 @@ jobs:
 
   npm-test-integration:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
     steps:
       - uses: actions/checkout@v6
 
