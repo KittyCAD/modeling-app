@@ -52,6 +52,8 @@ const ARC_CENTER_PARAM: &str = "center";
 
 const COINCIDENT_FN: &str = "coincident";
 const DISTANCE_FN: &str = "distance";
+const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
+const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
 const VERTICAL_FN: &str = "vertical";
@@ -606,6 +608,12 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
+            Constraint::HorizontalDistance(distance) => {
+                self.add_horizontal_distance(sketch, distance, &mut new_ast).await?
+            }
+            Constraint::VerticalDistance(distance) => {
+                self.add_vertical_distance(sketch, distance, &mut new_ast).await?
+            }
             Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, &mut new_ast).await?,
             Constraint::LinesEqualLength(lines_equal_length) => {
                 self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
@@ -1947,6 +1955,124 @@ impl FrontendState {
         Ok(sketch_block_range)
     }
 
+    async fn add_horizontal_distance(
+        &mut self,
+        sketch: ObjectId,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
+            return Err(Error {
+                msg: format!(
+                    "Horizontal distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
+                ),
+            });
+        };
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
+        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
+
+        // Create the horizontalDistance() call.
+        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![pt0_ast, pt1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: distance_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: distance.distance.value,
+                    suffix: distance.distance.units,
+                },
+                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
+    async fn add_vertical_distance(
+        &mut self,
+        sketch: ObjectId,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
+            return Err(Error {
+                msg: format!(
+                    "Vertical distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
+                ),
+            });
+        };
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
+        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
+
+        // Create the verticalDistance() call.
+        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![pt0_ast, pt1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: distance_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: distance.distance.value,
+                    suffix: distance.distance.units,
+                },
+                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
+        )?;
+        Ok(sketch_block_range)
+    }
+
     async fn add_horizontal(
         &mut self,
         sketch: ObjectId,
@@ -2327,6 +2453,28 @@ impl FrontendState {
                     false
                 }),
                 Constraint::Distance(d) => d.points.iter().any(|pt_id| {
+                    let pt_object = self.scene_graph.objects.get(pt_id.0);
+                    if let Some(obj) = pt_object
+                        && let ObjectKind::Segment { segment } = &obj.kind
+                        && let Segment::Point(pt) = segment
+                        && let Some(owner_line_id) = pt.owner
+                    {
+                        return segment_ids_set.contains(&owner_line_id);
+                    }
+                    false
+                }),
+                Constraint::HorizontalDistance(d) => d.points.iter().any(|pt_id| {
+                    let pt_object = self.scene_graph.objects.get(pt_id.0);
+                    if let Some(obj) = pt_object
+                        && let ObjectKind::Segment { segment } = &obj.kind
+                        && let Segment::Point(pt) = segment
+                        && let Some(owner_line_id) = pt.owner
+                    {
+                        return segment_ids_set.contains(&owner_line_id);
+                    }
+                    false
+                }),
+                Constraint::VerticalDistance(d) => d.points.iter().any(|pt_id| {
                     let pt_object = self.scene_graph.objects.get(pt_id.0);
                     if let Some(obj) = pt_object
                         && let ObjectKind::Segment { segment } = &obj.kind
@@ -4575,6 +4723,128 @@ sketch(on = XY) {
   point1 = sketch2::point(at = [var 1, var 2])
   point2 = sketch2::point(at = [var 3, var 4])
 sketch2::distance([point1, point2]) == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_horizontal_distance_two_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::HorizontalDistance(Distance {
+            points: vec![point0_id, point1_id],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+sketch2::horizontalDistance([point1, point2]) == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_vertical_distance_two_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::VerticalDistance(Distance {
+            points: vec![point0_id, point1_id],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+sketch2::verticalDistance([point1, point2]) == 2mm
 }
 "
         );

@@ -78,6 +78,8 @@ export type SketchSolveMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
         | 'construction'
     }
   | {
