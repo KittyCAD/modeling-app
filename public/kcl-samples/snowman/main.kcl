@@ -60,23 +60,37 @@ head = sphereByRevolve(rHead)
 // Buttons on middle (three small spheres along +X/front)
 btnSpacing = rMiddle * 0.6
 btnX = rMiddle * 0.92
-btn1 = sphereByRevolve(buttonR) |> translate(x = btnX, y = 0, z = zMiddleC + btnSpacing)
-btn2 = sphereByRevolve(buttonR) |> translate(x = btnX, y = 0, z = zMiddleC)
-btn3 = sphereByRevolve(buttonR) |> translate(x = btnX, y = 0, z = zMiddleC - btnSpacing)
-buttons = [btn1, btn2, btn3] |> appearance(color = "#000000", roughness = 50, metalness = 0)
+btn1 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC + btnSpacing)
+btn2 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC)
+btn3 = sphereByRevolve(buttonR)
+  |> translate(x = btnX, y = 0, z = zMiddleC - btnSpacing)
+buttons = [btn1, btn2, btn3]
+  |> appearance(color = "#000000", roughness = 50, metalness = 0)
 
 // Eyes on head (two small spheres)
 eyeX = rHead * 0.95
 eyeYOffset = rHead * 0.35
 eyeZ = zHeadC + rHead * 0.15
-eyeL = sphereByRevolve(eyeR) |> translate(x = eyeX, y = -eyeYOffset, z = eyeZ)
-eyeRht = sphereByRevolve(eyeR) |> translate(x = eyeX, y = eyeYOffset, z = eyeZ)
-eyes = [eyeL, eyeRht] |> appearance(color = "#000000", roughness = 50, metalness = 0)
+eyeL = sphereByRevolve(eyeR)
+  |> translate(x = eyeX, y = -eyeYOffset, z = eyeZ)
+eyeRht = sphereByRevolve(eyeR)
+  |> translate(x = eyeX, y = eyeYOffset, z = eyeZ)
+eyes = [eyeL, eyeRht]
+  |> appearance(color = "#000000", roughness = 50, metalness = 0)
 
-// Nose (simple cylinder approximating a carrot), extruded along +X from YZ plane
-noseSketch = startSketchOn(YZ)
-noseCircle = circle(noseSketch, center = [0, 0], radius = noseR)
-nose = extrude(noseCircle, length = noseLen)
+// Nose (simple revolve approximating a carrot)
+noseSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = noseLen)
+  |> yLine(length = -0.01)
+  |> tangentialArc(angle = -85deg, radius = .5, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), lengthX = noseLen * 0.9)
+  |> tangentialArc(endAbsolute = [0, -0.5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+nose = revolve(noseSketch, axis = X)
   |> translate(x = rHead * 0.98, y = 0, z = zHeadC)
   |> appearance(color = "#ff7f00", roughness = 40, metalness = 0)
 
@@ -96,18 +110,28 @@ hat = startSketchOn(hatBrim, face = END)
 armSketchR = startSketchOn(-XZ)
 armCircleR = circle(armSketchR, center = [0, 0], radius = armR)
 rightArm = extrude(armCircleR, length = armLen)
-  |> translate(x = 0, y = rMiddle - armEmbed, z = zMiddleC + armZOffset, global = true)
+  |> translate(
+       x = 0,
+       y = rMiddle - armEmbed,
+       z = zMiddleC + armZOffset,
+       global = true,
+     )
   |> appearance(color = "#6b4f2a", roughness = 60, metalness = 0)
 
 // Left arm: build along -Y using XZ (normal is -Y)
 armSketchL = startSketchOn(XZ)
 armCircleL = circle(armSketchL, center = [0, 0], radius = armR)
 leftArm = extrude(armCircleL, length = armLen)
-  |> translate(x = 0, y = -(rMiddle - armEmbed), z = zMiddleC + armZOffset, global = true)
+  |> translate(
+       x = 0,
+       y = -(rMiddle - armEmbed),
+       z = zMiddleC + armZOffset,
+       global = true,
+     )
   |> appearance(color = "#6b4f2a", roughness = 60, metalness = 0)
 
 // Small print base: diameter covers max of arm span and body footprint; extrude DOWN so top is clearly visible
-armReachY = (rMiddle - armEmbed) + armLen
+armReachY = rMiddle - armEmbed + armLen
 baseR = max([rBottom, armReachY]) + baseMargin
 baseDisk = startSketchOn(XY)
   |> circle(center = [0, 0], radius = baseR)
