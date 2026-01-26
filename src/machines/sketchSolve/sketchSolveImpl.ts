@@ -471,7 +471,6 @@ export function updateSceneGraphFromDelta({
   // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
   let skipBecauseBeforeCurrentSketch = true
   let skipBecauseAfterCurrentSketch = false
-  console.log('object', objects)
   objects.forEach((obj) => {
     if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
       skipBecauseBeforeCurrentSketch = false
@@ -488,14 +487,11 @@ export function updateSceneGraphFromDelta({
     }
     // Render constraints
     if (obj.kind.type === 'Constraint') {
-      const existing = context.sceneInfra.scene.getObjectByName(String(obj.id))
-      if (!existing) {
-        const constraintGroup = constraintUtils.initConstraintGroup(
-          obj,
-          objects,
-          factor,
-          context.sceneInfra
-        )
+      let constraintGroup = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      ) as Group | null
+      if (!constraintGroup) {
+        constraintGroup = constraintUtils.init(obj, objects)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -505,6 +501,15 @@ export function updateSceneGraphFromDelta({
             sketchSceneGroup.add(constraintGroup)
           }
         }
+      }
+      if (constraintGroup) {
+        constraintUtils.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra
+        )
       }
       return
     }

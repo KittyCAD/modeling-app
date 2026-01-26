@@ -31,52 +31,85 @@ const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leav
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
-  private arrowMaterial = new MeshBasicMaterial({
-    color: CONSTRAINT_COLOR[Themes.Dark],
+
+  // TODO if this is disposed it needs to be recreated
+  private readonly arrowMaterial = new MeshBasicMaterial({
+    color: 0xff0000,
     side: DoubleSide,
   })
 
-  public initConstraintGroup(
+  private readonly lineMaterial = new LineMaterial({
+    color: 0xff0000,
+    linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+    worldUnits: false,
+  })
+
+  private readonly leadLineMat = new LineMaterial({
+    color: 0xff0000,
+    linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+    worldUnits: false,
+  })
+
+  public init(obj: ApiObject, objects: Array<ApiObject>): Group | null {
+    if (obj.kind.type !== 'Constraint') return null
+
+    if (getEndPoints(obj, objects)) {
+      const constraint = obj.kind.constraint
+      const group = new Group()
+      group.name = obj.id.toString()
+      group.userData = { type: 'constraint', constraintType: constraint.type }
+
+      const leadGeom1 = new LineGeometry()
+      leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
+      const leadLine1 = new Line2(leadGeom1, this.leadLineMat)
+      leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+      group.add(leadLine1)
+
+      const leadGeom2 = new LineGeometry()
+      leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
+      const leadLine2 = new Line2(leadGeom2, this.leadLineMat)
+      leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
+      group.add(leadLine2)
+
+      const lineGeom1 = new LineGeometry()
+      lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
+      const line1 = new Line2(lineGeom1, this.lineMaterial)
+      line1.userData.type = DISTANCE_CONSTRAINT_BODY
+      group.add(line1)
+
+      const lineGeom2 = new LineGeometry()
+      lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
+      const line2 = new Line2(lineGeom2, this.lineMaterial)
+      line2.userData.type = DISTANCE_CONSTRAINT_BODY
+      group.add(line2)
+
+      this.arrowGeometry = this.arrowGeometry || createArrowGeometry()
+
+      // Arrow tip is at origin, so position directly at start/end
+      const arrow1 = new Mesh(this.arrowGeometry, this.arrowMaterial)
+      arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
+      group.add(arrow1)
+
+      const arrow2 = new Mesh(this.arrowGeometry, this.arrowMaterial)
+      arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
+      group.add(arrow2)
+
+      return group
+    }
+
+    return null
+  }
+
+  public update(
+    group: Group,
     obj: ApiObject,
     objects: Array<ApiObject>,
     scale: number,
     sceneInfra: SceneInfra
-  ): Group | null {
-    if (obj.kind.type !== 'Constraint') return null
-
-    const constraint = obj.kind.constraint
-    const group = new Group()
-    group.name = obj.id.toString()
-    group.userData = { type: 'constraint', constraintType: constraint.type }
-
-    if (
-      constraint.type === 'Distance' ||
-      constraint.type === 'HorizontalDistance' ||
-      constraint.type === 'VerticalDistance'
-    ) {
-      const [p1Id, p2Id] = constraint.points
-      const p1Obj = objects[p1Id]
-      const p2Obj = objects[p2Id]
-
-      if (
-        p1Obj?.kind.type !== 'Segment' ||
-        p1Obj.kind.segment.type !== 'Point' ||
-        p2Obj?.kind.type !== 'Segment' ||
-        p2Obj.kind.segment.type !== 'Point'
-      ) {
-        return null
-      }
-
-      const p1 = new Vector3(
-        p1Obj.kind.segment.position.x.value,
-        p1Obj.kind.segment.position.y.value,
-        0
-      )
-      const p2 = new Vector3(
-        p2Obj.kind.segment.position.x.value,
-        p2Obj.kind.segment.position.y.value,
-        0
-      )
+  ) {
+    const points = getEndPoints(obj, objects)
+    if (points) {
+      const { p1, p2 } = points
 
       // Offset 30px perpendicular to the line
       const dir = p2.clone().sub(p1).normalize()
@@ -88,7 +121,13 @@ export class ConstraintUtils {
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
+      this.lineMaterial.color.set(constraintColor)
+      this.lineMaterial.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+      this.leadLineMat.color.set(constraintColor)
+      this.leadLineMat.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+      this.arrowMaterial.color.set(constraintColor)
 
+      // Leader lines
       const extension = perp
         .clone()
         .normalize()
@@ -96,23 +135,28 @@ export class ConstraintUtils {
       const leadEnd1 = start.clone().add(extension)
       const leadEnd2 = end.clone().add(extension)
 
-      const leadLineMat = new LineMaterial({
-        color: constraintColor,
-        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-        worldUnits: false,
-      })
+      const leadLines = group.children.filter(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_LEADER_LINE
+      )
+      const leadLine1 = leadLines[0] as Line2
+      const leadLine2 = leadLines[1] as Line2
 
-      const leadGeom1 = new LineGeometry()
-      leadGeom1.setPositions([p1.x, p1.y, 0, leadEnd1.x, leadEnd1.y, 0])
-      const leadLine1 = new Line2(leadGeom1, leadLineMat)
-      leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine1)
-
-      const leadGeom2 = new LineGeometry()
-      leadGeom2.setPositions([p2.x, p2.y, 0, leadEnd2.x, leadEnd2.y, 0])
-      const leadLine2 = new Line2(leadGeom2, leadLineMat)
-      leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
-      group.add(leadLine2)
+      leadLine1.geometry.setPositions([
+        p1.x,
+        p1.y,
+        0,
+        leadEnd1.x,
+        leadEnd1.y,
+        0,
+      ])
+      leadLine2.geometry.setPositions([
+        p2.x,
+        p2.y,
+        0,
+        leadEnd2.x,
+        leadEnd2.y,
+        0,
+      ])
 
       // Main constraint lines with gap at center for label
       const halfGap = (DIMENSION_LABEL_GAP_PX / 2) * scale
@@ -120,46 +164,40 @@ export class ConstraintUtils {
       const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
       const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
 
-      const lineMat = new LineMaterial({
-        color: constraintColor,
-        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-        worldUnits: false,
-      })
+      const lines = group.children.filter(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_BODY
+      )
+      const line1 = lines[0] as Line2
+      const line2 = lines[1] as Line2
 
-      const lineGeom1 = new LineGeometry()
-      lineGeom1.setPositions([start.x, start.y, 0, gapStart.x, gapStart.y, 0])
-      const line1 = new Line2(lineGeom1, lineMat)
-      line1.userData.type = DISTANCE_CONSTRAINT_BODY
-      group.add(line1)
+      line1.geometry.setPositions([
+        start.x,
+        start.y,
+        0,
+        gapStart.x,
+        gapStart.y,
+        0,
+      ])
+      line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
 
-      const lineGeom2 = new LineGeometry()
-      lineGeom2.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
-      const line2 = new Line2(lineGeom2, lineMat)
-      line2.userData.type = DISTANCE_CONSTRAINT_BODY
-      group.add(line2)
-
-      this.arrowGeometry = this.arrowGeometry || createArrowGeometry()
-      this.arrowMaterial.color.set(constraintColor)
+      // Arrows
 
       const angle = Math.atan2(dir.y, dir.x)
+      const arrows = group.children.filter(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
+      )
+      const arrow1 = arrows[0] as Line2
+      const arrow2 = arrows[1] as Line2
 
       // Arrow tip is at origin, so position directly at start/end
-      const arrow1 = new Mesh(this.arrowGeometry, this.arrowMaterial)
       arrow1.position.copy(start)
       arrow1.rotation.z = angle + Math.PI / 2
       arrow1.scale.setScalar(scale)
-      arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
-      group.add(arrow1)
 
-      const arrow2 = new Mesh(this.arrowGeometry, this.arrowMaterial)
       arrow2.position.copy(end)
       arrow2.rotation.z = angle - Math.PI / 2
       arrow2.scale.setScalar(scale)
-      arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
-      group.add(arrow2)
     }
-
-    return group
   }
 }
 
@@ -179,4 +217,45 @@ function createArrowGeometry(): BufferGeometry {
   ])
   geom.setAttribute('position', new Float32BufferAttribute(vertices, 3))
   return geom
+}
+
+function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
+  if (obj.kind.type !== 'Constraint') {
+    return null
+  }
+
+  const constraint = obj.kind.constraint
+  if (
+    constraint.type === 'Distance' ||
+    constraint.type === 'HorizontalDistance' ||
+    constraint.type === 'VerticalDistance'
+  ) {
+    const [p1Id, p2Id] = constraint.points
+    const p1Obj = objects[p1Id]
+    const p2Obj = objects[p2Id]
+
+    if (
+      p1Obj?.kind.type !== 'Segment' ||
+      p1Obj.kind.segment.type !== 'Point' ||
+      p2Obj?.kind.type !== 'Segment' ||
+      p2Obj.kind.segment.type !== 'Point'
+    ) {
+      return null
+    }
+
+    const p1 = new Vector3(
+      p1Obj.kind.segment.position.x.value,
+      p1Obj.kind.segment.position.y.value,
+      0
+    )
+    const p2 = new Vector3(
+      p2Obj.kind.segment.position.x.value,
+      p2Obj.kind.segment.position.y.value,
+      0
+    )
+
+    return { p1, p2 }
+  }
+
+  return null
 }
