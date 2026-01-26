@@ -15,7 +15,7 @@ use crate::{
         ExecState, KclValue, ModelingCmdMeta, Solid,
         types::{ArrayLen, RuntimeType},
     },
-    std::{Args, args::TyF64, sketch::FaceTag},
+    std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
 };
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
@@ -212,4 +212,47 @@ async fn inner_delete_face(
 
     // Return the same body, it just has fewer faces.
     Ok(body)
+}
+
+/// Create a new surface that blends between two edges of separate surface bodies
+pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let surfaces = args.get_unlabeled_kw_arg("surfaces", &RuntimeType::solids(), exec_state)?;
+    let edges = args.kw_arg_edge_array_and_source("edges")?;
+
+    // validate_unique(&tags)?;
+    let edges: Vec<EdgeReference> = edges.into_iter().map(|item| item.0).collect();
+    let res = inner_blend(surfaces, edges, exec_state, args).await?;
+    Ok(res.into())
+}
+
+async fn inner_blend(
+    surfaces: Vec<Solid>,
+    edges: Vec<EdgeReference>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    let id = exec_state.next_uuid();
+
+    let object_ids = surfaces.clone().into_iter().map(|surface| surface.id).collect();
+
+    let edge_ids = edges
+        .into_iter()
+        .map(|edge_tag| edge_tag.get_engine_id(exec_state, &args))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::SurfaceBlend::builder()
+                    .object_ids(object_ids)
+                    .edge_ids(edge_ids.clone())
+                    .blend_type(kittycad_modeling_cmds::shared::BlendType::Tangent)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    //TODO: Ben do this properly by returning the new surface that is created
+    Ok(surfaces)
 }

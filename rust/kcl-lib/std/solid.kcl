@@ -1550,3 +1550,12 @@ export fn deleteFace(
   /// usual ID (UUID) of a face.
   faceIndices?: [number(Count); 1+],
 ): Solid {}
+
+/// Blend two surfaces together
+@(impl = std_rust, feature_tree = true)
+export fn blend(
+   /// The two surfaces that will be blended.
+   @surfaces: [Solid; 2],
+   /// The two edges that will be used to blend.
+   edges: [EdgeReference; 2],
+): [Solid; 2] {}
