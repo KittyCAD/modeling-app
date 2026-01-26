@@ -218,7 +218,6 @@ async function getUser(input: { token?: string }) {
 
   if (!token) return Promise.reject(new Error('No token found'))
 
-
   const me = await kcCall(() => users.get_user_self({ client }))
   if (me instanceof Error) return Promise.reject(me)
 
