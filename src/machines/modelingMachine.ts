@@ -369,6 +369,8 @@ export type ModelingMachineEvent =
         | 'Parallel'
         | 'Perpendicular'
         | 'Distance'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
         | 'construction'
     }
   | { type: 'unequip tool' }
@@ -5630,6 +5632,12 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         Distance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        HorizontalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        VerticalDistance: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         construction: {
