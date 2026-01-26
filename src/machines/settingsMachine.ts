@@ -299,9 +299,6 @@ export const settingsMachine = setup({
     setEngineHighlightEdges: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setEngineBackfaceColor: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -451,7 +448,7 @@ export const settingsMachine = setup({
           actions: [
             'setSettingAtLevel',
             'toastSuccess',
-            'setEngineBackfaceColor',
+            'Execute AST',
           ],
         },
 
@@ -465,7 +462,6 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -486,7 +482,6 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -568,7 +563,6 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -606,7 +600,6 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
