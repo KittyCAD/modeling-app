@@ -696,13 +696,6 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
-        if ctxt != ExprContext::Pipe {
-            if let Some(item) = format_items.last_mut()
-                && let Some(norm) = item.strip_suffix(", ")
-            {
-                *item = norm.to_owned();
-            }
-        }
         buf.push_str("[\n");
         let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
@@ -1599,7 +1592,7 @@ insideRevolve = startSketchOn(XZ)
 sphere = startSketchOn(XZ)
   |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
-       0 - 0.05
+       0 - 0.05,
      ])
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(
@@ -1666,7 +1659,7 @@ insideRevolve = startSketchOn(XZ)
 sphere = startSketchOn(XZ)
   |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
-       0 - 0.05
+       0 - 0.05,
      ])
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
@@ -1684,7 +1677,7 @@ sphere = startSketchOn(XZ)
 outsideRevolve = startSketchOn(XZ)
   |> startProfile(at = [
        insideDia / 2 + thickness + sphereDia,
-       0
+       0,
      ])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
@@ -1801,8 +1794,8 @@ myNestedVar = [
             r#"bing = { yo = 55 }
 myNestedVar = [
   {
-  prop = line(a = [bing.yo, 21], b = sketch001)
-}
+    prop = line(a = [bing.yo, 21], b = sketch001)
+  },
 ]
 "#
         );
@@ -2083,7 +2076,7 @@ scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
          edge2,
          edge4,
          getOppositeEdge(edge2),
-         getOppositeEdge(edge4)
+         getOppositeEdge(edge4),
        ],
      )
 // build the bracket sketch around the body
@@ -2116,7 +2109,7 @@ bracket_body = bracketSketch(w = width, d = depth, t = thk)
          getNextAdjacentEdge(edge7),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge6)
+         getNextAdjacentEdge(edge6),
        ],
      )
 // build the tabs of the mounting bracket (right side)
@@ -2136,7 +2129,7 @@ tabs_r = startSketchOn({
   |> subtract2d(tool = circle(
        center = [
          width / 2 + thk + hole_diam,
-         length / 2 - hole_diam
+         length / 2 - hole_diam,
        ],
        radius = hole_diam / 2,
      ))
@@ -2159,7 +2152,7 @@ tabs_l = startSketchOn({
   |> subtract2d(tool = circle(
        center = [
          -width / 2 - thk - hole_diam,
-         length / 2 - hole_diam
+         length / 2 - hole_diam,
        ],
        radius = hole_diam / 2,
      ))
@@ -2502,7 +2495,7 @@ yo = [
   "  2,",
   "three",
   4 + 5,
-  "  hey oooooo really long long long"
+  "  hey oooooo really long long long",
 ]
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3027,7 +3020,7 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
       profile2,
       profile3,
       profile4,
-      profile5
+      profile5,
     ],
     key = 1,
   )
@@ -3121,7 +3114,7 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
   17,
   18,
   19,
-  20
+  20,
 ]",
                 "preserves multi-line arrays",
             ),
@@ -3136,7 +3129,7 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
 [
   1,
   // 2,
-  3
+  3,
 ]",
                 "preserves comments",
             ),
@@ -3325,7 +3318,7 @@ return union([right, left])
          rakeAngle = frontRake,
          xyTrans = [
            wheelW / 2 + wheelWGap + forkTineW / 2,
-           40 + addedLength
+           40 + addedLength,
          ],
        ),
      ])
