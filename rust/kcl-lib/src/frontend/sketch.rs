@@ -286,6 +286,8 @@ pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
     Diameter(Diameter),
+    HorizontalDistance(Distance),
+    VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),
