@@ -19,7 +19,7 @@ import type {
   OffsetPlane,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
@@ -441,6 +441,8 @@ export function updateSceneGraphFromDelta({
           context.sceneInfra.camControls.camera,
           context.sceneEntitiesManager.axisGroup
         )) / context.sceneInfra.baseUnitMultiplier
+
+        console.log('factor', factor)
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
   )
@@ -491,7 +493,7 @@ export function updateSceneGraphFromDelta({
         String(obj.id)
       ) as Group | null
       if (!constraintGroup) {
-        constraintGroup = constraintUtils.init(obj, objects)
+        constraintGroup = constraintUtils.init(obj, objects, context.sceneInfra)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -766,6 +768,9 @@ export function initializeInitialSceneGraph({
       context,
       selectedIds: context.selectedIds,
       duringAreaSelectIds: context.duringAreaSelectIds,
+    })
+    context.sceneInfra.camControls.cameraChange.add(() => {
+      console.log('camerachange')
     })
 
     // Set sketchExecOutcome in context so drag callbacks can access it

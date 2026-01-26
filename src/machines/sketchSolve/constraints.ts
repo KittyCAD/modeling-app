@@ -7,6 +7,7 @@ import {
   Mesh,
   Float32BufferAttribute,
   DoubleSide,
+  OrthographicCamera,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -19,6 +20,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { orthoScale } from '@src/clientSideScene/helpers'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -32,25 +34,20 @@ const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leav
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
 
-  // TODO if this is disposed it needs to be recreated
-  private readonly arrowMaterial = new MeshBasicMaterial({
-    color: 0xff0000,
-    side: DoubleSide,
-  })
+  // TODO if these are disposed it needs to be recreated
+  private readonly materials = {
+    arrow: new MeshBasicMaterial({
+      color: 0xff0000,
+      side: DoubleSide,
+    }),
+    line: new LineMaterial({
+      color: 0xff0000,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      worldUnits: false,
+    }),
+  }
 
-  private readonly lineMaterial = new LineMaterial({
-    color: 0xff0000,
-    linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-    worldUnits: false,
-  })
-
-  private readonly leadLineMat = new LineMaterial({
-    color: 0xff0000,
-    linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-    worldUnits: false,
-  })
-
-  public init(obj: ApiObject, objects: Array<ApiObject>): Group | null {
+  public init(obj: ApiObject, objects: Array<ApiObject>, sceneInfra: SceneInfra): Group | null {
     if (obj.kind.type !== 'Constraint') return null
 
     if (getEndPoints(obj, objects)) {
@@ -61,36 +58,46 @@ export class ConstraintUtils {
 
       const leadGeom1 = new LineGeometry()
       leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine1 = new Line2(leadGeom1, this.leadLineMat)
+      const leadLine1 = new Line2(leadGeom1, this.materials.line)
       leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine1)
 
       const leadGeom2 = new LineGeometry()
       leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine2 = new Line2(leadGeom2, this.leadLineMat)
+      const leadLine2 = new Line2(leadGeom2, this.materials.line)
       leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine2)
 
       const lineGeom1 = new LineGeometry()
       lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const line1 = new Line2(lineGeom1, this.lineMaterial)
+      const line1 = new Line2(lineGeom1, this.materials.line)
       line1.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line1)
 
       const lineGeom2 = new LineGeometry()
       lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const line2 = new Line2(lineGeom2, this.lineMaterial)
+      const line2 = new Line2(lineGeom2, this.materials.line)
       line2.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line2)
 
       this.arrowGeometry = this.arrowGeometry || createArrowGeometry()
 
       // Arrow tip is at origin, so position directly at start/end
-      const arrow1 = new Mesh(this.arrowGeometry, this.arrowMaterial)
+      const arrow1 = new Mesh(this.arrowGeometry, this.materials.arrow)
+      arrow1.onBeforeRender = () => {
+        const camera = sceneInfra.camControls.camera
+        if (camera instanceof OrthographicCamera) {
+            const scale = orthoScale(camera)
+            console.log('scale', scale)
+            arrow1.scale.setScalar(scale)
+            arrow1.updateMatrix()
+            arrow1.updateMatrixWorld()
+        }
+      }
       arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow1)
 
-      const arrow2 = new Mesh(this.arrowGeometry, this.arrowMaterial)
+      const arrow2 = new Mesh(this.arrowGeometry, this.materials.arrow)
       arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow2)
 
@@ -121,11 +128,9 @@ export class ConstraintUtils {
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
-      this.lineMaterial.color.set(constraintColor)
-      this.lineMaterial.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
-      this.leadLineMat.color.set(constraintColor)
-      this.leadLineMat.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
-      this.arrowMaterial.color.set(constraintColor)
+      this.materials.line.color.set(constraintColor)
+      this.materials.line.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+      this.materials.arrow.color.set(constraintColor)
 
       // Leader lines
       const extension = perp
