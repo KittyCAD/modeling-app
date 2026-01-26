@@ -11,7 +11,7 @@ description: Operations executed dog-house-great-dane.kcl
         "type": "String",
         "value": "#a0825c"
       },
-      "visibility": "default",
+      "visibility": "export",
       "nodePath": {
         "steps": [
           {
@@ -40,7 +40,7 @@ description: Operations executed dog-house-great-dane.kcl
           "angle": "degrees"
         }
       },
-      "visibility": "default",
+      "visibility": "export",
       "nodePath": {
         "steps": [
           {
@@ -69,7 +69,7 @@ description: Operations executed dog-house-great-dane.kcl
           "angle": "degrees"
         }
       },
-      "visibility": "default",
+      "visibility": "export",
       "nodePath": {
         "steps": [
           {
@@ -1936,7 +1936,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 0
+            "index": 1
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1965,7 +1965,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 1
+            "index": 2
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1994,7 +1994,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2023,7 +2023,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 3
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2052,7 +2052,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2081,7 +2081,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2110,7 +2110,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2139,89 +2139,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "woodColor",
-      "value": {
-        "type": "String",
-        "value": "#a0825c"
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
             "index": 12
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "woodRoughness",
-      "value": {
-        "type": "Number",
-        "value": 80.0,
-        "ty": {
-          "type": "Default",
-          "len": "in",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "woodMetalness",
-      "value": {
-        "type": "Number",
-        "value": 0.0,
-        "ty": {
-          "type": "Default",
-          "len": "in",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2250,7 +2168,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2277,7 +2195,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2361,7 +2279,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2407,7 +2325,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2470,7 +2388,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2516,7 +2434,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -17825,26 +17743,6 @@ description: Operations executed dog-house-great-dane.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "front-wall.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
         "name": "right-wall.kcl",
         "moduleId": 0
       },
@@ -17873,6 +17771,26 @@ description: Operations executed dog-house-great-dane.kcl
           {
             "type": "ProgramBodyItem",
             "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "front-wall.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
           }
         ]
       },
@@ -20683,6 +20601,834 @@ description: Operations executed dog-house-great-dane.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
+        "name": "twoByFourY",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "lengthY": {
+            "value": {
+              "type": "Number",
+              "value": 63.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minX": {
+            "value": {
+              "type": "Number",
+              "value": 20.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minY": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minZ": {
+            "value": {
+              "type": "Number",
+              "value": 32.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "prism",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "minX": {
+            "value": {
+              "type": "Number",
+              "value": 20.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minY": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minZ": {
+            "value": {
+              "type": "Number",
+              "value": 32.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeX": {
+            "value": {
+              "type": "Number",
+              "value": 3.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeY": {
+            "value": {
+              "type": "Number",
+              "value": 63.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeZ": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 1.5,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#a0825c"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 80.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "translate",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "z": {
+          "value": {
+            "type": "Number",
+            "value": 32.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "twoByFourY",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "lengthY": {
+            "value": {
+              "type": "Number",
+              "value": 63.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minX": {
+            "value": {
+              "type": "Number",
+              "value": -23.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minY": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minZ": {
+            "value": {
+              "type": "Number",
+              "value": 32.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "prism",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "minX": {
+            "value": {
+              "type": "Number",
+              "value": -23.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minY": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "minZ": {
+            "value": {
+              "type": "Number",
+              "value": 32.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeX": {
+            "value": {
+              "type": "Number",
+              "value": 3.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeY": {
+            "value": {
+              "type": "Number",
+              "value": 63.0,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "sizeZ": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 1.5,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#a0825c"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 80.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "translate",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "z": {
+          "value": {
+            "type": "Number",
+            "value": 32.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
         "name": "twoByFourX",
         "functionSourceRange": [],
         "unlabeledArg": null,
@@ -20741,7 +21487,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21162,7 +21908,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21232,7 +21978,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21295,7 +22041,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21373,7 +22119,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21794,7 +22540,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21864,7 +22610,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -21927,7 +22673,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22005,7 +22751,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22426,7 +23172,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22496,7 +23242,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22539,7 +23285,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22550,6 +23296,49 @@ description: Operations executed dog-house-great-dane.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 31
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
           }
         ]
       },
@@ -22617,7 +23406,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23038,7 +23827,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23108,7 +23897,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23151,7 +23940,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23162,6 +23951,49 @@ description: Operations executed dog-house-great-dane.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 32
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
           }
         ]
       },
@@ -23229,7 +24061,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23602,7 +24434,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23643,7 +24475,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23705,7 +24537,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -23716,192 +24548,6 @@ description: Operations executed dog-house-great-dane.kcl
           {
             "type": "PipeBodyItem",
             "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "patternLinear3d",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "axis": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "distance": {
-          "value": {
-            "type": "Number",
-            "value": 5.833333333333333,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "instances": {
-          "value": {
-            "type": "Number",
-            "value": 10.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 32
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "patternLinear3d",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "axis": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "distance": {
-          "value": {
-            "type": "Number",
-            "value": 5.833333333333333,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "instances": {
-          "value": {
-            "type": "Number",
-            "value": 10.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 33
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -24001,61 +24647,80 @@ description: Operations executed dog-house-great-dane.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "twoByFourY",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "lengthY": {
-            "value": {
-              "type": "Number",
-              "value": 63.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
               }
-            },
-            "sourceRange": []
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 1.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              }
+            ]
           },
-          "minX": {
-            "value": {
-              "type": "Number",
-              "value": 20.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
+          "sourceRange": []
+        },
+        "distance": {
+          "value": {
+            "type": "Number",
+            "value": 5.833333333333333,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
-          "minY": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
           },
-          "minZ": {
-            "value": {
-              "type": "Number",
-              "value": 32.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -24075,171 +24740,62 @@ description: Operations executed dog-house-great-dane.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "prism",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "minX": {
-            "value": {
-              "type": "Number",
-              "value": 20.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minY": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minZ": {
-            "value": {
-              "type": "Number",
-              "value": 32.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeX": {
-            "value": {
-              "type": "Number",
-              "value": 3.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeY": {
-            "value": {
-              "type": "Number",
-              "value": 63.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeZ": {
-            "value": {
-              "type": "Number",
-              "value": 1.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
-      "name": "startSketchOn",
+      "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
         },
         "sourceRange": []
       },
       "labeledArgs": {
-        "length": {
+        "axis": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 1.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "distance": {
           "value": {
             "type": "Number",
-            "value": 1.5,
+            "value": 5.833333333333333,
             "ty": {
               "type": "Default",
               "len": "in",
@@ -24247,229 +24803,17 @@ description: Operations executed dog-house-great-dane.kcl
             }
           },
           "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "appearance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
         },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "color": {
-          "value": {
-            "type": "String",
-            "value": "#a0825c"
-          },
-          "sourceRange": []
-        },
-        "metalness": {
+        "instances": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": 10.0,
             "ty": {
               "type": "Known",
               "type": "Count"
             }
           },
           "sourceRange": []
-        },
-        "roughness": {
-          "value": {
-            "type": "Number",
-            "value": 80.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "translate",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 32.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 4
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "twoByFourY",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "lengthY": {
-            "value": {
-              "type": "Number",
-              "value": 63.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minX": {
-            "value": {
-              "type": "Number",
-              "value": -23.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minY": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minZ": {
-            "value": {
-              "type": "Number",
-              "value": 32.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
         }
       },
       "nodePath": {
@@ -24489,114 +24833,6 @@ description: Operations executed dog-house-great-dane.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "prism",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "minX": {
-            "value": {
-              "type": "Number",
-              "value": -23.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minY": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "minZ": {
-            "value": {
-              "type": "Number",
-              "value": 32.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeX": {
-            "value": {
-              "type": "Number",
-              "value": 3.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeY": {
-            "value": {
-              "type": "Number",
-              "value": 63.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "sizeZ": {
-            "value": {
-              "type": "Number",
-              "value": 1.5,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -24607,439 +24843,11 @@ description: Operations executed dog-house-great-dane.kcl
         "sourceRange": []
       },
       "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.5,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "appearance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "color": {
-          "value": {
-            "type": "String",
-            "value": "#a0825c"
-          },
-          "sourceRange": []
-        },
-        "metalness": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        },
-        "roughness": {
-          "value": {
-            "type": "Number",
-            "value": 80.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "translate",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 32.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 4
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        }
-      },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
             "index": 37
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 38
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 39
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -25092,7 +24900,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 37
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -25184,7 +24992,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 37
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -25262,7 +25070,7 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 40
+            "index": 38
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -25704,13 +25512,273 @@ description: Operations executed dog-house-great-dane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 40
+            "index": 38
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#a0825c"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 80.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 39
+          },
+          {
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "PipeBodyItem",
