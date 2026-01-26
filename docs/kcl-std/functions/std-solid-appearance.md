@@ -348,4 +348,39 @@ cube
 >
 </model-viewer>
 
+```kcl
+// This example shows the alpha (transparency and opacity) being changed.
+numSides = 8
+center = [0, 0]
+opacity = 50
+color = "#ff0000"
+
+startSketchOn(XY)
+  |> polygon(radius = 1, numSides, center)
+  |> extrude(length = 1)
+  |> translate(x = -0.5)
+  |> appearance(color, opacity)
+
+startSketchOn(XY)
+  |> polygon(radius = 1, numSides, center)
+  |> extrude(length = 1)
+  |> translate(x = 0.5)
+  |> appearance(color, opacity)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the appearance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
