@@ -2233,7 +2233,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Delete Face': {
     description: 'Delete a face from a body, leaving an open surface.',
-    icon: 'trash',
+    icon: 'deleteFace',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
