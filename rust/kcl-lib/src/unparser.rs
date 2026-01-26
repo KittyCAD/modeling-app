@@ -633,6 +633,24 @@ impl TagDeclarator {
 
 impl ArrayExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        fn indent_multiline_for_array(item: &str, indent: &str) -> String {
+            if !item.contains('\n') {
+                return item.to_owned();
+            }
+            let mut out = String::with_capacity(item.len() + indent.len() * 2);
+            let mut first = true;
+            for segment in item.split_inclusive('\n') {
+                if first {
+                    out.push_str(segment);
+                    first = false;
+                    continue;
+                }
+                out.push_str(indent);
+                out.push_str(segment);
+            }
+            out
+        }
+
         // Reconstruct the order of items in the array.
         // An item can be an element (i.e. an expression for a KCL value),
         // or a non-code item (e.g. a comment)
@@ -656,14 +674,15 @@ impl ArrayExpression {
         }
 
         // Format these items into a one-line array.
-        if let Some(item) = format_items.last_mut()
+        let mut flat_items = format_items.clone();
+        if let Some(item) = flat_items.last_mut()
             && let Some(norm) = item.strip_suffix(", ")
         {
             *item = norm.to_owned();
         }
         let mut flat_recast = String::with_capacity(256);
         flat_recast.push('[');
-        for fi in &format_items {
+        for fi in &flat_items {
             flat_recast.push_str(fi)
         }
         flat_recast.push(']');
@@ -677,6 +696,13 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
+        if ctxt != ExprContext::Pipe {
+            if let Some(item) = format_items.last_mut()
+                && let Some(norm) = item.strip_suffix(", ")
+            {
+                *item = norm.to_owned();
+            }
+        }
         buf.push_str("[\n");
         let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
@@ -684,12 +710,14 @@ impl ArrayExpression {
             options.get_indentation(indentation_level + 1)
         };
         for format_item in format_items {
-            buf.push_str(&inner_indentation);
-            buf.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+            let item = if let Some(x) = format_item.strip_suffix(" ") {
                 x
             } else {
                 &format_item
-            });
+            };
+            let indented_item = indent_multiline_for_array(item, &inner_indentation);
+            buf.push_str(&inner_indentation);
+            buf.push_str(&indented_item);
             if !format_item.ends_with('\n') {
                 buf.push('\n')
             }
@@ -1933,7 +1961,7 @@ scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
   edge2,
   edge4,
   getOppositeEdge(edge2),
-  getOppositeEdge(edge4)
+  getOppositeEdge(edge4),
 ]
    )
   // build the bracket sketch around the body
@@ -1966,7 +1994,7 @@ bracket_body = bracketSketch(w = width, d = depth, t = thk)
   getNextAdjacentEdge(edge7),
   getNextAdjacentEdge(edge2),
   getNextAdjacentEdge(edge3),
-  getNextAdjacentEdge(edge6)
+  getNextAdjacentEdge(edge6),
 ]
      )
   // build the tabs of the mounting bracket (right side)
@@ -1986,7 +2014,7 @@ tabs_r = startSketchOn({
   |> subtract2d(tool = circle(
        center = [
          width / 2 + thk + hole_diam,
-         length / 2 - hole_diam
+         length / 2 - hole_diam,
        ],
        radius = hole_diam / 2
      ))
