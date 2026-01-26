@@ -391,8 +391,12 @@ export class ConnectionManager extends EventTarget {
 
   generateWebsocketURL() {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+    // TODO: Make this toggleable, because it can be expensive to render.
+    const enableTransparency = 'true'
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    additionalSettings +=
+      '&order_independent_transparency=' + enableTransparency
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )

@@ -120,18 +120,6 @@ async fn inner_appearance(
                 }
             }
         }
-        if let Some(opacity) = opacity
-            && opacity < 100.0
-        {
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
-                )
-                .await?;
-        } else {
-            // OIT not needed.
-        }
         let color = Color {
             r: rgb.red,
             g: rgb.green,
@@ -151,6 +139,7 @@ async fn inner_appearance(
                         .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
                         .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
                         .ambient_occlusion(0.0)
+                        .maybe_backface_color(None)
                         .build(),
                 ),
             )
