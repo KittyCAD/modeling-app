@@ -299,6 +299,9 @@ export const settingsMachine = setup({
     setEngineHighlightEdges: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
+    setEngineBackfaceColor: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -442,6 +445,16 @@ export const settingsMachine = setup({
           ],
         },
 
+        'set.modeling.backfaceColor': {
+          target: 'persisting settings',
+
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineBackfaceColor',
+          ],
+        },
+
         'Reset settings': {
           target: 'persisting settings',
 
@@ -452,6 +465,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -472,6 +486,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -553,6 +568,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -590,6 +606,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',

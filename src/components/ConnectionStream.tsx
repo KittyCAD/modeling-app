@@ -34,7 +34,6 @@ import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnl
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
-import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -69,7 +68,7 @@ export const ConnectionStream = (props: {
       showScaleGrid: settings.modeling.showScaleGrid.current,
       cameraProjection: settings.modeling.cameraProjection.current,
       cameraOrbit: settings.modeling.cameraOrbit.current,
-      backfaceColor: DEFAULT_BACKFACE_COLOR,
+      backfaceColor: settings.modeling.backfaceColor.current,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -79,6 +78,7 @@ export const ConnectionStream = (props: {
       settings.modeling.showScaleGrid.current,
       settings.modeling.cameraProjection.current,
       settings.modeling.cameraOrbit.current,
+      settings.modeling.backfaceColor.current,
     ]
   )
   const safariObjectFitClass = useMemo(() => {

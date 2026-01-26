@@ -12,6 +12,7 @@ import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
@@ -20,6 +21,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type {
   BaseUnit,
   HideOnPlatformValue,
+  RgbaColor,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -30,6 +32,11 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
+import {
+  hexToRgb,
+  isValidRgbaColor,
+  rgbaToHex,
+} from '@src/lib/settings/settingsUtils'
 
 /**
  * A setting that can be set at the user or project level
@@ -374,6 +381,33 @@ export function createSettings() {
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
+      }),
+      backfaceColor: new Setting<RgbaColor>({
+        defaultValue: DEFAULT_BACKFACE_COLOR,
+        description: 'Default back-face color for surfaces',
+        hideOnLevel: 'project',
+        validate: (v) => isValidRgbaColor(v),
+        Component: ({ value, updateValue }) => {
+          const hexValue = rgbaToHex(value)
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={hexValue}
+                onChange={(event) => {
+                  const rgb = hexToRgb(event.target.value)
+                  if (!rgb) return
+                  const alpha = Number.isFinite(value.a) ? value.a : 1
+                  updateValue({ ...rgb, a: alpha })
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {hexValue.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
       }),
       /**
        * The controls for how to navigate the 3D view

@@ -3,6 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
+use kittycad_modeling_cmds::shared::Color;
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -228,6 +229,9 @@ pub struct ModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// The default color to use for surface backfaces.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub backface_color: Option<Color>,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -266,6 +270,7 @@ impl Default for ModelingSettings {
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
+            backface_color: None,
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),
