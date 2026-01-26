@@ -145,9 +145,9 @@ fillet(
   radius = 2,
   tags = [
     getCommonEdge(faces = [
-  sketch002.sketch.tags.face0,
-  sketch002.sketch.tags.face1
-])
+      sketch002.sketch.tags.face0,
+      sketch002.sketch.tags.face1
+    ])
   ],
 )
 

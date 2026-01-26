@@ -20,7 +20,7 @@ loft(
 ): Solid
 ```
 
-The sketches need to be closed and on different planes that are parallel.
+
 
 ### Arguments
 
@@ -161,27 +161,37 @@ loft(
 </model-viewer>
 
 ```kcl
-// Sketch a square on the XY plane
-squareSketch = startSketchOn(XY)
-  |> startProfile(at = [-100, 200])
-  |> line(end = [200, 0])
-  |> line(end = [0, -200])
-  |> line(end = [-200, 0])
-  |> close()
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-3, 0])
+  |> xLine(length = 6)
+plane001 = offsetPlane(XZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-2, -2])
+  |> line(endAbsolute = [-1.25, -0.5])
+  |> tangentialArc(endAbsolute = [-0.5, 0])
+  |> xLine(length = 1)
+  |> tangentialArc(end = [0.75, -0.5])
+  |> line(end = [0.75, -1.5])
 
-// Start a second sketch, 200 units above the XY plane.
-circleSketch = startSketchOn(offsetPlane(XY, offset = 100))
-  |> circle(center = [0, 100], radius = 50)
+plane002 = offsetPlane(XZ, offset = -10)
+sketch003 = startSketchOn(plane002)
+profile003 = startProfile(sketch003, at = [-2, -6])
+  |> line(end = [0.75, 1.5])
+  |> tangentialArc(end = [0.75, 0.5])
+  |> line(end = [1, 0])
+  |> tangentialArc(end = [0.75, -0.5])
+  |> line(end = [0.75, -1.5])
+plane003 = offsetPlane(XZ, offset = -15)
+sketch004 = startSketchOn(plane003)
+profile004 = startProfile(sketch004, at = [-3, -4])
+  |> xLine(length = 6)
 
-squareSketch002 = clone(squareSketch)
-  |> translate(z = 200)
-
-// Loft the square up and into the circle.
 loft(
   [
-    squareSketch,
-    circleSketch,
-    squareSketch002
+    profile001,
+    profile002,
+    profile003,
+    profile004
   ],
   bodyType = SURFACE,
 )
@@ -196,6 +206,37 @@ loft(
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+sketch001 = startSketchOn(-XY)
+profile001 = startProfile(sketch001, at = [-2, 3])
+  |> arc(interiorAbsolute = [0, 5], endAbsolute = [2, 3])
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [2, 0])
+  |> arc(interiorAbsolute = [0, -2], endAbsolute = [-2, 0])
+
+sketch003 = startSketchOn(XY)
+profile003 = startProfile(sketch003, at = [2, -3])
+  |> arc(interiorAbsolute = [0, -5], endAbsolute = [-2, -3])
+
+loft([profile001, profile002, profile003], bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the loft function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft4.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
