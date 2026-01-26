@@ -1,0 +1,102 @@
+// Dog House (Great Dane) - Left Wall
+// Left wall studs, slats, and side door placement.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Import and define parameters
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+import "door.kcl" as door
+
+// Slat sizing and cadence
+sideSlatWidth = studDepth
+sideSlatGap = 2
+sideSlatPitch = sideSlatWidth + sideSlatGap
+
+// Side door placement (left wall)
+sideDoorClearance = 0.5
+sideDoorPanelWidth = openingWidth - (2 * sideDoorClearance)
+sideDoorCenterY = frameLength / 2
+sideDoorStartY = sideDoorCenterY - (sideDoorPanelWidth / 2)
+sideDoorEndY = sideDoorCenterY + sideDoorPanelWidth / 2
+sideDoorX = -frameWidth / 2 - 9
+sideDoorY = sideDoorCenterY - frameWidth - (studThickness * 4) - 1
+
+// Top plate along Y at studTopZ
+topLeftPlate = twoByFourY(
+  minX = -frameWidth / 2,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+// Corner studs (vertical)
+frontLeftStud = twoByFourZ(
+  minX = -frameWidth / 2,
+  minY = 0,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+backLeftStud = twoByFourZ(
+  minX = -frameWidth / 2,
+  minY = frameLength - studThickness,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+
+// Side slats with door gap: pattern in front of and behind the opening
+sideSlatStartY = studDepth
+sideSlatEndY = frameLength - studDepth - sideSlatWidth
+
+fn sideSlatsWithDoor(minX) {
+  frontSlatEndY = sideDoorStartY - sideSlatWidth
+  frontSlatSpanY = frontSlatEndY - sideSlatStartY
+  frontSlatCount = floor(frontSlatSpanY / sideSlatPitch) + 1
+
+  frontSlats = patternLinear3d(
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = sideSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
+    axis = [0, 1, 0],
+    distance = sideSlatPitch,
+    instances = frontSlatCount,
+  )
+
+  backSlatStartY = sideDoorEndY + sideSlatGap
+  backSlatSpanY = sideSlatEndY - backSlatStartY
+  backSlatCount = floor(backSlatSpanY / sideSlatPitch) + 2
+
+  backSlats = patternLinear3d(
+    [
+      twoByFourZRotated(
+  minX = minX,
+  minY = backSlatStartY,
+  minZ = studBaseZ,
+  lengthZ = studHeight,
+)
+    ],
+    axis = [0, 1, 0],
+    distance = sideSlatPitch,
+    instances = backSlatCount,
+  )
+
+  return [frontSlats, backSlats]
+}
+
+leftSlats = sideSlatsWithDoor(minX = -frameWidth / 2)
+
+// Side door module cloned and placed in the wall opening
+sideDoorLeft = map(
+  door,
+  f = fn(@part) {
+    return clone(part)
+      |> rotate(axis = Z, angle = -90deg)
+      |> translate(x = sideDoorX, y = sideDoorY, z = 0)
+  },
+)
