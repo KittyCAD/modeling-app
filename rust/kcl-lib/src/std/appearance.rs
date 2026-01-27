@@ -1,6 +1,7 @@
 //! Standard library appearance.
 
 use anyhow::Result;
+use kcl_error::CompilationError;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
@@ -10,7 +11,7 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry, annotations,
         types::{ArrayLen, RuntimeType},
     },
     std::Args,
@@ -116,7 +117,10 @@ async fn inner_appearance(
                     )));
                 }
                 if zero_one_range.contains(&x) && x != 0.0 {
-                    // TODO: Emit a warning, letting user know it should be a percentage
+                    exec_state.warn(
+                        CompilationError::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
+                        annotations::WARN_SHOULD_BE_PERCENTAGE,
+                    );
                 }
             }
         }
