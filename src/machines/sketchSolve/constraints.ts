@@ -7,7 +7,6 @@ import {
   Mesh,
   Float32BufferAttribute,
   DoubleSide,
-  OrthographicCamera,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -20,7 +19,6 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { orthoScale } from '@src/clientSideScene/helpers'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -34,7 +32,7 @@ const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leav
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
 
-  // TODO if these are disposed it needs to be recreated
+  // TODO if these are disposed they need to be recreated
   private readonly materials = {
     arrow: new MeshBasicMaterial({
       color: 0xff0000,
@@ -112,13 +110,46 @@ export class ConstraintUtils {
     if (points) {
       const { p1, p2 } = points
 
-      // Offset 30px perpendicular to the line
-      const dir = p2.clone().sub(p1).normalize()
-      const perp = new Vector3(-dir.y, dir.x, 0)
-      const offset = perp.multiplyScalar(SEGMENT_OFFSET_PX * scale)
+      // Get constraint type to determine dimension line direction
+      const constraintType =
+        obj.kind.type === 'Constraint' ? obj.kind.constraint.type : 'Distance'
 
-      const start = p1.clone().add(offset)
-      const end = p2.clone().add(offset)
+      // Direction along the dimension line
+      let dir: Vector3
+      // Perpendicular direction for offset
+      let perp: Vector3
+      // Start and end points on the dimension line (after offset)
+      let start: Vector3
+      let end: Vector3
+
+      if (constraintType === 'HorizontalDistance') {
+        // Place distance on the bottom if the points are under the X axis
+        const isBottom = (p1.y + p2.y) / 2 < 0
+        dir = new Vector3(p1.x < p2.x ? 1 : -1, 0, 0)
+        perp = new Vector3(0, isBottom ? -1 : 1, 0)
+        const offsetY =
+          (isBottom ? Math.min(p1.y, p2.y) : Math.max(p1.y, p2.y)) +
+          SEGMENT_OFFSET_PX * scale * (isBottom ? -1 : 1)
+        start = new Vector3(p1.x, offsetY, 0)
+        end = new Vector3(p2.x, offsetY, 0)
+      } else if (constraintType === 'VerticalDistance') {
+        // Place distance on the left side if the points are more on the left side..
+        const isLeft = (p1.x + p2.x) / 2 < 0
+        dir = new Vector3(0, p1.y < p2.y ? 1 : -1, 0)
+        perp = new Vector3(isLeft ? -1 : 1, 0, 0)
+        const offsetX =
+          (isLeft ? Math.min(p1.x, p2.x) : Math.max(p1.x, p2.x)) +
+          SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
+        start = new Vector3(offsetX, p1.y, 0)
+        end = new Vector3(offsetX, p2.y, 0)
+      } else {
+        // "Distance": line is parallel to the segment
+        dir = p2.clone().sub(p1).normalize()
+        perp = new Vector3(-dir.y, dir.x, 0)
+        const offset = perp.clone().multiplyScalar(SEGMENT_OFFSET_PX * scale)
+        start = p1.clone().add(offset)
+        end = p2.clone().add(offset)
+      }
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
@@ -180,7 +211,6 @@ export class ConstraintUtils {
       line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, end.x, end.y, 0])
 
       // Arrows
-
       const angle = Math.atan2(dir.y, dir.x)
       const arrows = group.children.filter(
         (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
