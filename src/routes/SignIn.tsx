@@ -55,20 +55,20 @@ const SignIn = () => {
   }
 
   const commitEnvironmentChange = (requestedEnvironment: string) => {
-    if (!window.electron) return
+    const electron = window.electron
+    if (!electron) return
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     void (async () => {
-      const persistedEnvironment = await readEnvironmentFile(
-        window.electron
-      ).catch(() => '')
+      const persistedEnvironment = await readEnvironmentFile(electron).catch(
+        () => ''
+      )
       if (requestedEnvironmentFormatted === persistedEnvironment) {
         return
       }
-      await writeEnvironmentFile(
-        window.electron,
-        requestedEnvironmentFormatted
-      ).catch(reportRejection)
+      await writeEnvironmentFile(electron, requestedEnvironmentFormatted).catch(
+        reportRejection
+      )
       window.location.reload()
     })()
   }
