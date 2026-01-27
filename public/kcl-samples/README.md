@@ -219,6 +219,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![single-impeller-blade](screenshots/single-impeller-blade.png)](single-impeller-blade/main.kcl)
 #### [sls](sls/main.kcl) ([screenshot](screenshots/sls.png))
 [![sls](screenshots/sls.png)](sls/main.kcl)
+#### [snowman](snowman/main.kcl) ([screenshot](screenshots/snowman.png))
+[![snowman](screenshots/snowman.png)](snowman/main.kcl)
 #### [socket-head-cap-screw](socket-head-cap-screw/main.kcl) ([screenshot](screenshots/socket-head-cap-screw.png))
 [![socket-head-cap-screw](screenshots/socket-head-cap-screw.png)](socket-head-cap-screw/main.kcl)
 #### [sphere](sphere/main.kcl) ([screenshot](screenshots/sphere.png))
