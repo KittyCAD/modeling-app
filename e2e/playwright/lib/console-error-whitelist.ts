@@ -161,7 +161,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     at initGLContext (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:16993:43)
     at WebGLRenderer (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:17024:18)
     at SceneInfra (http://localhost:3000/src/clientSideScene/sceneInfra.ts:185:38)
-    at module code (http://localhost:3000/src/lib/singletons.ts:14:41)`,
+    at module code (http://localhost:3000/src/lib/app.ts:14:41)`,
       foundInSpec: `e2e/playwright/testing-segment-overlays.spec.ts angledLineToX`,
       project: 'webkit',
     },
