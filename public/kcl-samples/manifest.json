@@ -418,6 +418,7 @@
       "2x4.kcl",
       "back-frame.kcl",
       "dimensions.kcl",
+      "dog-bone-sign.kcl",
       "door.kcl",
       "floor.kcl",
       "frame.kcl",
@@ -1353,6 +1354,19 @@
     "multipleFiles": false,
     "title": "Artemis SLS Rocket",
     "description": "Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "snowman/main.kcl",
+    "multipleFiles": false,
+    "title": "Snowman (stylized)",
+    "description": "Three stacked spheres with simple facial features and a top hat standing on a small platform",
     "files": [
       "main.kcl"
     ]

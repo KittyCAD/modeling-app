@@ -628,9 +628,8 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   }
 }
 
-export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
-  const sketchSegments =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
+  const sketchSegments = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSegments || !(sketchSegments instanceof Group)) {
     // no segments to clean
     return

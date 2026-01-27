@@ -6,9 +6,9 @@
 
 // Import and define parameters
 import * from "dimensions.kcl"
-woodColor = "#a0825c"
-woodRoughness = 80
-woodMetalness = 0
+export woodColor = "#a0825c"
+export woodRoughness = 80
+export woodMetalness = 0
 
 fn prism(minX, minY, minZ, sizeX, sizeY, sizeZ) {
   return startSketchOn(XY)

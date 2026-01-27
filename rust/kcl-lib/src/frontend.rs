@@ -1723,20 +1723,8 @@ impl FrontendState {
             }
         };
 
-        // Create the coincident() call.
-        let coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![seg0_ast, seg1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
+        // Create the coincident() call using shared helper.
+        let coincident_ast = create_coincident_ast(seg0_ast, seg1_ast);
 
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -2084,14 +2072,8 @@ impl FrontendState {
         };
         let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
 
-        // Create the horizontal() call.
-        let horizontal_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
-            unlabeled: Some(line_ast),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
+        // Create the horizontal() call using shared helper.
+        let horizontal_ast = create_horizontal_ast(line_ast);
 
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -2150,20 +2132,8 @@ impl FrontendState {
         };
         let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
 
-        // Create the equalLength() call.
-        let equal_length_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![line0_ast, line1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
+        // Create the equalLength() call using shared helper.
+        let equal_length_ast = create_equal_length_ast(line0_ast, line1_ast);
 
         // Add the constraint to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -2299,14 +2269,8 @@ impl FrontendState {
         };
         let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
 
-        // Create the vertical() call.
-        let vertical_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
-            unlabeled: Some(line_ast),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
+        // Create the vertical() call using shared helper.
+        let vertical_ast = create_vertical_ast(line_ast);
 
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self.mutate_ast(
@@ -2728,14 +2692,7 @@ fn get_or_insert_ast_reference(
         return Ok(var_expr);
     };
 
-    Ok(ast::Expr::MemberExpression(Box::new(ast::Node::no_src(
-        ast::MemberExpression {
-            object: var_expr,
-            property: ast::Expr::Name(Box::new(ast::Name::new(property))),
-            computed: false,
-            digest: None,
-        },
-    ))))
+    Ok(create_member_expression(var_expr, property))
 }
 
 fn mutate_ast_node_by_source_range(
@@ -3135,7 +3092,7 @@ fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     ast.recast_top(&Default::default(), 0)
 }
 
-fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
+pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
     Ok(ast::Expr::ArrayExpression(Box::new(ast::Node {
         inner: ast::ArrayExpression {
             elements: vec![to_source_expr(&point.x)?, to_source_expr(&point.y)?],
@@ -3195,7 +3152,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     })
 }
 
-fn ast_name_expr(name: String) -> ast::Expr {
+pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
     ast::Expr::Name(Box::new(ast_name(name)))
 }
 
@@ -3224,7 +3181,7 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
     }
 }
 
-fn ast_sketch2_name(name: &str) -> ast::Name {
+pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
     ast::Name {
         name: ast::Node {
             inner: ast::Identifier {
@@ -3245,6 +3202,106 @@ fn ast_sketch2_name(name: &str) -> ast::Name {
         abs_path: false,
         digest: None,
     }
+}
+
+// Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
+
+/// Create an AST node for sketch2::coincident([expr1, expr2])
+pub(crate) fn create_coincident_ast(expr1: ast::Expr, expr2: ast::Expr) -> ast::Expr {
+    // Create array [expr1, expr2]
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![expr1, expr2],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create sketch2::coincident([...])
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
+        unlabeled: Some(array_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create an AST node for sketch2::line(start = [...], end = [...])
+pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
+        unlabeled: None,
+        arguments: vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(LINE_END_PARAM)),
+                arg: end_ast,
+            },
+        ],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create an AST node for sketch2::horizontal(line)
+pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
+        unlabeled: Some(line_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create an AST node for sketch2::vertical(line)
+pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
+        unlabeled: Some(line_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create a member expression like object.property (e.g., line1.end)
+pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -> ast::Expr {
+    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+        object: object_expr,
+        property: ast::Expr::Name(Box::new(ast::Node::no_src(ast::Name {
+            name: ast::Node::no_src(ast::Identifier {
+                name: property.to_string(),
+                digest: None,
+            }),
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        }))),
+        computed: false,
+        digest: None,
+    })))
+}
+
+/// Create an AST node for sketch2::equalLength([line1, line2])
+pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Expr) -> ast::Expr {
+    // Create array [line1, line2]
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: vec![line1_expr, line2_expr],
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+
+    // Create sketch2::equalLength([...])
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
+        unlabeled: Some(array_expr),
+        arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
 }
 
 #[cfg(test)]
