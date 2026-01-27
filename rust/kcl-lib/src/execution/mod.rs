@@ -29,6 +29,7 @@ pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
 pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -68,6 +69,7 @@ pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
 mod sketch_solve;
+mod sketch_transpiler;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -635,6 +637,29 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
         }
+    }
+
+    /// Create a new mock executor context for WASM LSP servers.
+    /// This is a convenience function that creates a mock engine and FileManager from a FileSystemManager.
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_mock_for_lsp(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
+        use crate::mock_engine;
+
+        let mock_engine = Arc::new(Box::new(
+            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
+        ) as Box<dyn EngineManager>);
+
+        let fs = Arc::new(FileManager::new(fs_manager));
+
+        Ok(ExecutorContext {
+            engine: mock_engine,
+            fs,
+            settings,
+            context_type: ContextType::Mock,
+        })
     }
 
     #[cfg(not(target_arch = "wasm32"))]

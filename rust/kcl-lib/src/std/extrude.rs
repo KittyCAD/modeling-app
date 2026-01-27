@@ -752,7 +752,7 @@ fn surface_of(path: &Path, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
             });
             Some(extrude_surface)
         }
-        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Bezier { .. } => {
             let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                 face_id: actual_face_id,
                 tag: path.get_base().tag.clone(),
@@ -797,7 +797,7 @@ fn clone_surface_of(path: &Path, clone_path_id: Uuid, actual_face_id: Uuid) -> O
             });
             Some(extrude_surface)
         }
-        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Bezier { .. } => {
             let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                 face_id: actual_face_id,
                 tag: path.get_base().tag.clone(),
