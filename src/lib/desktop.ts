@@ -36,6 +36,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { Stats } from 'fs'
+import os from 'node:os'
 
 const convertStatsToFileMetadata = (
   stats: Stats | null
@@ -511,18 +512,9 @@ export async function writeProjectSettingsFile(
 }
 
 const getAppFolderName = (electron: IElectronAPI) => {
-  const platform =
-    electron.platform ??
-    (electron.os.isLinux
-      ? 'linux'
-      : electron.os.isMac
-        ? 'darwin'
-        : electron.os.isWindows
-          ? 'win32'
-          : 'unknown')
   return getAppFolderNameFromMetadata({
     packageName: electron.packageJson.name,
-    platform,
+    platform: os.platform(),
     isStaging: IS_STAGING,
     isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })
