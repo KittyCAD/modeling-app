@@ -148,3 +148,4 @@ snowmanParts = concat(parts1, items = [nose, hat])
 limbs = [rightArm, leftArm]
 
 concat(snowmanParts, items = limbs)
+  |> rotate(axis = Z, angle = -90deg, global = true)
