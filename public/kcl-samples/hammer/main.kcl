@@ -64,9 +64,9 @@ firstProfiles = subtract(
   [headSideProfile],
   tools = [
     union([
-  leftSideCut,
-  union([rearCut, rightSideCut])
-])
+      leftSideCut,
+      union([rearCut, rightSideCut])
+    ])
   ],
 )
 
