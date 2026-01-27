@@ -53,6 +53,23 @@ const SignIn = () => {
     setSelectedEnvironment(requestedEnvironmentFormatted)
   }
 
+  const commitEnvironmentChange = async (requestedEnvironment: string) => {
+    if (!window.electron) return
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    const persistedEnvironment = await readEnvironmentFile(window.electron).catch(
+      () => ''
+    )
+    if (requestedEnvironmentFormatted === persistedEnvironment) {
+      return
+    }
+    await writeEnvironmentFile(
+      window.electron,
+      requestedEnvironmentFormatted
+    ).catch(reportRejection)
+    window.location.reload()
+  }
+
   useEffect(() => {
     if (window.electron && !didReadFromDiskCacheForEnvironment) {
       const electron = window.electron
@@ -93,38 +110,8 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
-    const baseDomain =
-      window.electron?.process?.env?.VITE_ZOO_BASE_DOMAIN ||
-      env().VITE_ZOO_BASE_DOMAIN ||
-      ''
     const requestedEnvironment = selectedEnvironment.trim()
-    const shouldClearEnvironmentOverride =
-      requestedEnvironment === '' ||
-      (baseDomain !== '' && requestedEnvironment === baseDomain)
-    const effectiveRequestedEnvironment = shouldClearEnvironmentOverride
-      ? baseDomain
-      : requestedEnvironment
-    updateEnvironment(
-      shouldClearEnvironmentOverride ? null : requestedEnvironment
-    )
-
-    const persistedEnvironment = await readEnvironmentFile(electron).catch(
-      () => ''
-    )
-    const effectivePersistedEnvironment =
-      persistedEnvironment === '' ? baseDomain : persistedEnvironment
-    const shouldReloadForCsp =
-      effectiveRequestedEnvironment !== effectivePersistedEnvironment
-    const environmentToPersist = shouldClearEnvironmentOverride
-      ? ''
-      : requestedEnvironment
-    if (shouldReloadForCsp) {
-      await writeEnvironmentFile(electron, environmentToPersist).catch(
-        reportRejection
-      )
-      window.location.reload()
-      return
-    }
+    updateEnvironment(requestedEnvironment)
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -142,11 +129,9 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile(electron, '')
       return
     }
 
-    writeEnvironmentFile(electron, environmentToPersist).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -218,6 +203,7 @@ const SignIn = () => {
                       <AdvancedSignInOptions
                         selectedEnvironment={selectedEnvironment}
                         setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                        onEnvironmentCommit={commitEnvironmentChange}
                       />
                     )}
                   </>

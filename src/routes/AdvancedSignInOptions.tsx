@@ -11,16 +11,23 @@ interface Domain {
 function SupportedDomainsRadioGroup({
   selected,
   setSelected,
+  onCommit,
   domains,
 }: {
   selected: string
   setSelected: (environment: string) => void
+  onCommit?: (environment: string) => void
   domains: Domain[]
 }) {
+  const handleChange = (value: string) => {
+    setSelected(value)
+    onCommit?.(value)
+  }
+
   return (
     <div className="w-full py-4">
       <div className="mx-auto w-full max-w-md">
-        <RadioGroup value={selected} onChange={setSelected}>
+        <RadioGroup value={selected} onChange={handleChange}>
           <div className="space-y-2">
             {domains.map((domain) => (
               <RadioGroup.Option
@@ -71,9 +78,11 @@ function SupportedDomainsRadioGroup({
 export const AdvancedSignInOptions = ({
   selectedEnvironment,
   setSelectedEnvironment,
+  onEnvironmentCommit,
 }: {
   selectedEnvironment: string
   setSelectedEnvironment: (environment: string) => void
+  onEnvironmentCommit?: (environment: string) => void
 }) => {
   const domains: Domain[] = [
     {
@@ -132,6 +141,7 @@ export const AdvancedSignInOptions = ({
                 <SupportedDomainsRadioGroup
                   selected={selectedEnvironment}
                   setSelected={setSelectedEnvironment}
+                  onCommit={onEnvironmentCommit}
                   domains={domains}
                 />
                 <ActionButton
@@ -166,6 +176,14 @@ export const AdvancedSignInOptions = ({
                       onChange={(event) =>
                         setSelectedEnvironment(event.target.value)
                       }
+                      onBlur={(event) =>
+                        onEnvironmentCommit?.(event.currentTarget.value)
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          onEnvironmentCommit?.(event.currentTarget.value)
+                        }
+                      }}
                     />
                   )}
                 </Combobox>
