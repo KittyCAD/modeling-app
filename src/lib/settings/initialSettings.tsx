@@ -375,6 +375,11 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      enableTransparency: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether or not transparent rendering is enabled',
+        validate: (v) => typeof v === 'boolean',
+      }),
       /**
        * The controls for how to navigate the 3D view
        */

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
+    is_default, DefaultFalse, DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings,
 };
 
 /// Project specific settings for the app.
@@ -115,6 +115,9 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not rendering transparency is enabled.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_transparency: DefaultFalse,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
     /// If true, the grid cells will be fixed-size, where the width is your default length unit.
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
@@ -309,6 +312,7 @@ mod tests {
                     base_unit: Some(UnitLength::Yards),
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    enable_transparency: false.into(),
                     snap_to_grid: None,
                     major_grid_spacing: None,
                     minor_grids_per_major: None,

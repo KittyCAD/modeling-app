@@ -13,6 +13,7 @@ export interface SettingsViaQueryString {
   theme: Themes
   highlightEdges: boolean
   enableSSAO: boolean
+  enableTransparency: boolean
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType

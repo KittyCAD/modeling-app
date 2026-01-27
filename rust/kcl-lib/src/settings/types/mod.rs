@@ -228,6 +228,9 @@ pub struct ModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not transparent rendering is enabled.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_transparency: DefaultFalse,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -266,6 +269,7 @@ impl Default for ModelingSettings {
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
+            enable_transparency: Default::default(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),
@@ -294,6 +298,29 @@ impl From<DefaultTrue> for bool {
 }
 
 impl From<bool> for DefaultTrue {
+    fn from(b: bool) -> Self {
+        Self(b)
+    }
+}
+
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[ts(export)]
+#[serde(transparent)]
+pub struct DefaultFalse(pub bool);
+
+impl Default for DefaultFalse {
+    fn default() -> Self {
+        Self(false)
+    }
+}
+
+impl From<DefaultFalse> for bool {
+    fn from(default_true: DefaultFalse) -> Self {
+        default_true.0
+    }
+}
+
+impl From<bool> for DefaultFalse {
     fn from(b: bool) -> Self {
         Self(b)
     }

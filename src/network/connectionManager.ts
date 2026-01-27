@@ -103,6 +103,7 @@ export class ConnectionManager extends EventTarget {
     theme: Themes.Dark,
     highlightEdges: true,
     enableSSAO: true,
+    enableTransparency: false,
     showScaleGrid: false,
     cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
     cameraOrbit: 'spherical',
@@ -146,6 +147,7 @@ export class ConnectionManager extends EventTarget {
         theme: Themes.Dark,
         highlightEdges: true,
         enableSSAO: true,
+        enableTransparency: false,
         showScaleGrid: false,
         cameraProjection: 'perspective',
         cameraOrbit: 'spherical',
@@ -391,8 +393,13 @@ export class ConnectionManager extends EventTarget {
 
   generateWebsocketURL() {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+    const enableTransparency = this.settings.enableTransparency
+      ? this.settings.enableTransparency
+      : 'false'
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    additionalSettings +=
+      '&order_independent_transparency=' + enableTransparency
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
