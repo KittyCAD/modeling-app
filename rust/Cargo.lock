@@ -2185,7 +2185,7 @@ dependencies = [
 [[package]]
 name = "kcl-ezpz"
 version = "0.2.15"
-source = "git+https://github.com/KittyCAD/ezpz?branch=kurt-point-on-arc#11e26e2b8e2a18eac0ba033377581e99b542699f"
+source = "git+https://github.com/KittyCAD/ezpz?branch=kurt-point-on-arc#e1348319b535d28c31d276c5f5b349a639cb5286"
 dependencies = [
  "faer",
  "indexmap 2.13.0",
