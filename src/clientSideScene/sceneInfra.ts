@@ -437,12 +437,12 @@ export class SceneInfra {
   //   // Dispose of any other resources like geometries, materials, textures
   // }
 
-  getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
+  getClientSceneScaleFactor(target: Mesh | Group | null | undefined) {
     const orthoFactor = orthoScale(this.camControls.camera)
     const factor =
-      (this.camControls.camera instanceof OrthographicCamera
+      (this.camControls.camera instanceof OrthographicCamera || !target
         ? orthoFactor
-        : perspScale(this.camControls.camera, meshOrGroup)) /
+        : perspScale(this.camControls.camera, target)) /
       this._baseUnitMultiplier
     return factor
   }

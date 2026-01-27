@@ -12,14 +12,14 @@ import {
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
-import { Group, OrthographicCamera, Mesh } from 'three'
+import { Group, Mesh } from 'three'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
   OffsetPlane,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
@@ -29,7 +29,6 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
-import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -432,17 +431,9 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds: Array<number>
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
-
-        console.log('factor', factor)
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
   )
@@ -712,15 +703,9 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
@@ -770,7 +755,35 @@ export function initializeInitialSceneGraph({
       duringAreaSelectIds: context.duringAreaSelectIds,
     })
     context.sceneInfra.camControls.cameraChange.add(() => {
-      console.log('camerachange')
+      // Update all constraint groups when camera changes (for scale-dependent rendering)
+      const sketchSolveGroup =
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+        return
+      }
+
+      const objects =
+        context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+      const scaleFactor = context.sceneInfra.getClientSceneScaleFactor(
+        context.sceneEntitiesManager.axisGroup
+      )
+
+      const constraintGroups = sketchSolveGroup.children.filter(
+        (child) => child.userData.type === 'constraint'
+      )
+      constraintGroups.forEach((group) => {
+        const objId = parseInt(group.name)
+        const obj = objects[objId]
+        if (obj) {
+          constraintUtils.update(
+            group as Group,
+            obj,
+            objects,
+            scaleFactor,
+            context.sceneInfra
+          )
+        }
+      })
     })
 
     // Set sketchExecOutcome in context so drag callbacks can access it
