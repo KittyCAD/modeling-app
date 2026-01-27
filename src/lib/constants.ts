@@ -74,6 +74,9 @@ export const KCL_DEFAULT_INSTANCES = `3`
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
+/** The default KCL scale arg value that means no scale */
+export const KCL_DEFAULT_SCALE = `1`
+
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
 
