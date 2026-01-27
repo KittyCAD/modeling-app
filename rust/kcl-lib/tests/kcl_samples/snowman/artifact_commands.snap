@@ -211,7 +211,7 @@ description: Artifact commands snowman.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.2,
@@ -425,7 +425,7 @@ description: Artifact commands snowman.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.2,
@@ -639,7 +639,7 @@ description: Artifact commands snowman.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.2,
@@ -1247,7 +1247,7 @@ description: Artifact commands snowman.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -1264,7 +1264,7 @@ description: Artifact commands snowman.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -1281,7 +1281,7 @@ description: Artifact commands snowman.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -1692,7 +1692,7 @@ description: Artifact commands snowman.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -1709,7 +1709,7 @@ description: Artifact commands snowman.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -1982,7 +1982,7 @@ description: Artifact commands snowman.kcl
           "r": 1.0,
           "g": 0.49803922,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.4,
@@ -2315,7 +2315,7 @@ description: Artifact commands snowman.kcl
           "r": 0.06666667,
           "g": 0.06666667,
           "b": 0.06666667,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.1,
         "roughness": 0.4,
@@ -2522,7 +2522,7 @@ description: Artifact commands snowman.kcl
           "r": 0.41960785,
           "g": 0.30980393,
           "b": 0.16470589,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.6,
@@ -2729,7 +2729,7 @@ description: Artifact commands snowman.kcl
           "r": 0.41960785,
           "g": 0.30980393,
           "b": 0.16470589,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.6,
@@ -2909,7 +2909,7 @@ description: Artifact commands snowman.kcl
           "r": 0.7411765,
           "g": 0.7411765,
           "b": 0.7411765,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.7,
@@ -2938,7 +2938,7 @@ description: Artifact commands snowman.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.2,

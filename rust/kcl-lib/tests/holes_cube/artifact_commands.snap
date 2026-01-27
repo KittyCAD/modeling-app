@@ -621,7 +621,7 @@ description: Artifact commands holes_cube.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -923,7 +923,7 @@ description: Artifact commands holes_cube.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1174,7 +1174,7 @@ description: Artifact commands holes_cube.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1205,7 +1205,7 @@ description: Artifact commands holes_cube.kcl
           "r": 0.85490197,
           "g": 0.2627451,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.5,
