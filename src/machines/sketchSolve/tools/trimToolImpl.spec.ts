@@ -114,8 +114,11 @@ afterAll(() => {
 // Removed helper functions - no longer used after migrating getTrimSpawnTerminations tests to Rust
 
 /**
- * Helper function to execute the full trim flow and return the resulting KCL code
- * Now uses createOnAreaSelectEndCallback internally
+ * Test-only helper that runs the trim flow and returns a result for assertions.
+ * Uses createOnAreaSelectEndCallback (the same function used by trimToolDiagram in production).
+ * When trim is a no-op (line doesn't intersect any segments), createOnAreaSelectEndCallback
+ * returns without calling onNewSketchOutcome; this helper then returns the original kclCode
+ * so tests can assert "output equals input" (e.g. the no-op test).
  */
 async function executeTrimFlow({
   kclCode,
@@ -169,7 +172,8 @@ async function executeTrimFlow({
     return hadError
   }
 
-  // If no operations were executed (no-op case), return the original KCL code
+  // No-op: createOnAreaSelectEndCallback never invoked onNewSketchOutcome (same as production).
+  // Return original code so tests can assert "unchanged."
   if (!lastResult) {
     return { sourceDelta: { text: kclCode } }
   }
