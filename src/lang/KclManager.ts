@@ -42,8 +42,6 @@ import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
-
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -60,7 +58,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import { history, redo, redoDepth, undo, undoDepth } from '@codemirror/commands'
+import { history, redoDepth, undoDepth } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
@@ -114,6 +112,13 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import {
+  HistoryView,
+  type TransactionSpecNoChanges,
+} from '@src/editor/HistoryView'
+import { fsHistoryExtension } from '@src/editor/plugins/fs'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -126,7 +131,6 @@ type UpdateCodeEditorOptions = {
   /** Only has an effect if `shouldClearHistory` is `false`.
   if it is `true` then this will act as `false`. */
   shouldAddToHistory: boolean
-  /** Only has an effect if `shouldExecute` is also `true`. */
   shouldWriteToDisk: boolean
   /** Only has an effect if `shouldExecute` is also `true`. */
   shouldResetCamera: boolean
@@ -210,7 +214,8 @@ export class KclManager extends EventTarget {
 
   // CORE STATE
 
-  private _editorView: EditorView
+  private readonly _editorView: EditorView
+  private readonly _globalHistoryView: HistoryView
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -244,6 +249,7 @@ export class KclManager extends EventTarget {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
+  livePathsToWatch = signal<string[]>([])
 
   private _execState: ExecState = emptyExecState()
   private _variables = signal<VariableMap>({})
@@ -262,8 +268,10 @@ export class KclManager extends EventTarget {
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
-    this.undoDepth.value = undoDepth(vu.state)
-    this.redoDepth.value = redoDepth(vu.state)
+    this.undoDepth.value =
+      undoDepth(vu.state) + undoDepth(this._globalHistoryView.state)
+    this.redoDepth.value =
+      redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
   /**
    * A client-side representation of the commands that have been sent,
@@ -486,6 +494,7 @@ export class KclManager extends EventTarget {
 
   static requestCameraResetAnnotation = Annotation.define<boolean>()
   static requestSkipWriteToFile = Annotation.define<boolean>()
+  static requestSkipExecution = Annotation.define<boolean>()
 
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -499,7 +508,7 @@ export class KclManager extends EventTarget {
    * then fires (and forgets) an execution with a debounce.
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
-    const shouldExecute =
+    const notIgnoredUpdate =
       this.engineCommandManager.started &&
       update.docChanged &&
       update.transactions.some((tr) => {
@@ -533,17 +542,24 @@ export class KclManager extends EventTarget {
       tr.annotation(KclManager.requestSkipWriteToFile)
     )
     const shouldWriteToFile =
-      !this.isBufferMode && shouldExecute && !hasSkipWriteToFileEffect
+      !this.isBufferMode && notIgnoredUpdate && !hasSkipWriteToFileEffect
 
-    if (shouldExecute) {
+    if (notIgnoredUpdate) {
       const newCode = update.state.doc.toString()
 
       // We don't want to block on writing to file
       if (shouldWriteToFile) {
-        void this.deferredWriteToFile(newCode)
+        // Need to close over `this._currentFilePath`'s value before deferrment,
+        // otherwise the deferred write could have a changed value after rapid navigation
+        void this.writeToFile(newCode, this._currentFilePath)
       }
 
-      this.deferredExecution({ newCode, shouldResetCamera })
+      const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
+        tr.annotation(KclManager.requestSkipExecution)
+      )
+      if (!hasSkipExecutionAnnotation) {
+        this.deferredExecution({ newCode, shouldResetCamera })
+      }
     }
   })
 
@@ -603,11 +619,6 @@ export class KclManager extends EventTarget {
     300
   )
 
-  private deferredWriteToFile = deferredCallback(
-    (newCode: string) => this.writeToFile(newCode),
-    1_000
-  )
-
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
@@ -637,8 +648,9 @@ export class KclManager extends EventTarget {
     this._wasmInstancePromise = wasmInstance
     this.singletons = singletons
 
-    /** Merged code from EditorManager and CodeManager classes */
+    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView()
+    this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     if (isDesktop()) {
       this._code.value = ''
@@ -859,7 +871,7 @@ export class KclManager extends EventTarget {
       .map((file) => {
         return file.value
       })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+    this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -936,6 +948,13 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+
+    // Update project thumbnail after successful execution
+    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      createThumbnailPNGOnDesktop({
+        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+      })
+    }
   }
 
   /**
@@ -1246,6 +1265,9 @@ export class KclManager extends EventTarget {
   get state() {
     return this.editorState
   }
+  get globalHistoryView() {
+    return this._globalHistoryView
+  }
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
   }
@@ -1484,11 +1506,14 @@ export class KclManager extends EventTarget {
       ],
     })
   }
+  addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
+    this._globalHistoryView.dispatch(spec)
+  }
   undo() {
-    undo(this._editorView)
+    this._globalHistoryView.undo(this._editorView)
   }
   redo() {
-    redo(this._editorView)
+    this._globalHistoryView.redo(this._editorView)
   }
   clearLocalHistory() {
     // Clear history
@@ -1502,6 +1527,24 @@ export class KclManager extends EventTarget {
       effects: [historyCompartment.reconfigure([history()])],
       annotations: [editorCodeUpdateEvent],
     })
+  }
+  clearGlobalHistory() {
+    this._globalHistoryView.dispatch(
+      {
+        effects: [this._globalHistoryView.historyCompartment.reconfigure([])],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+
+    // Add history back
+    this._globalHistoryView.dispatch(
+      {
+        effects: [
+          this._globalHistoryView.historyCompartment.reconfigure([history()]),
+        ],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
   }
 
   // Invoked by codeMirror during undo/redo.
@@ -1728,7 +1771,10 @@ export class KclManager extends EventTarget {
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
-        editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
+        !resolvedOptions.shouldExecute && resolvedOptions.shouldWriteToDisk
+          ? // Separate annotation for only skipping execution, so that we can write without executing
+            KclManager.requestSkipExecution.of(true)
+          : editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
         KclManager.requestSkipWriteToFile.of(
           !resolvedOptions.shouldWriteToDisk
         ),
@@ -1738,9 +1784,12 @@ export class KclManager extends EventTarget {
       ],
     })
   }
-  async writeToFile(newCode = this.codeSignal.value) {
+  async writeToFile(
+    newCode = this.codeSignal.value,
+    path = this._currentFilePath
+  ) {
     if (this.isBufferMode) return
-    if (window.electron) {
+    if (window.electron && path !== null) {
       const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
@@ -1752,13 +1801,14 @@ export class KclManager extends EventTarget {
           time: Date.now(),
         }
         this.timeoutWriter = setTimeout(() => {
-          if (!this._currentFilePath)
+          if (!path) {
             return reject(new Error('currentFilePath not set'))
+          }
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
-            .writeFile(this._currentFilePath, newCode)
+            .writeFile(path, newCode)
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1776,6 +1826,11 @@ export class KclManager extends EventTarget {
     ast: Program,
     options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
   ) {
+    const resolvedOptions: NonNullable<typeof options> = Object.assign(
+      { shouldExecute: false },
+      options ?? {},
+      { shouldWriteToDisk: true }
+    )
     const wasmInstance = await this.wasmInstancePromise
 
     // We clear the AST when it cannot be parsed. If we are trying to write an
@@ -1783,7 +1838,7 @@ export class KclManager extends EventTarget {
     // to be in, and it's not going to be pretty, but at the least, let's not
     // permanently delete the user's code accidentally.
     // if you want to clear the scene, pass in the `isDeleting` option.
-    if (ast.body.length === 0 && !options?.isDeleting) return
+    if (ast.body.length === 0 && !resolvedOptions.isDeleting) return
     const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
@@ -1793,7 +1848,7 @@ export class KclManager extends EventTarget {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
-    this.updateCodeEditor(newCode, options)
+    this.updateCodeEditor(newCode, resolvedOptions)
   }
   goIntoTemporaryWorkspaceModeWithCode(code: string) {
     this.isBufferMode = true

@@ -180,8 +180,6 @@ description: Result of parsing makeup-mirror.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Arm parameters"
         ],
         "start": 0,
@@ -281,8 +279,6 @@ description: Result of parsing makeup-mirror.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Mirror parameters"
         ],
         "start": 0,
@@ -880,8 +876,6 @@ description: Result of parsing makeup-mirror.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Geometry",
           "// Add a function to create the hinge"
         ],
@@ -2528,8 +2522,6 @@ description: Result of parsing makeup-mirror.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Add a function to create the arm"
         ],
         "start": 0,
@@ -4287,8 +4279,6 @@ description: Result of parsing makeup-mirror.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Add a function to create the mirror"
         ],
         "start": 0,
@@ -4825,6 +4815,42 @@ description: Result of parsing makeup-mirror.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "10": [
           {
             "commentStart": 0,
@@ -4861,7 +4887,31 @@ description: Result of parsing makeup-mirror.kcl
             }
           }
         ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
           {
             "commentStart": 0,
             "end": 0,

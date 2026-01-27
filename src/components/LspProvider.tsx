@@ -278,6 +278,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
+    kclManager.clearGlobalHistory()
 
     if (redirect) {
       void navigate(PATHS.HOME)

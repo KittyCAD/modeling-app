@@ -1336,8 +1336,6 @@ description: Result of parsing tooling-nest-block.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch and extrude the base cube"
         ],
         "start": 0,
@@ -2117,8 +2115,6 @@ description: Result of parsing tooling-nest-block.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Write a function to create a hemispherical nest in a given cube side"
         ],
         "start": 0,
@@ -2264,8 +2260,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on the top face"
         ],
         "start": 0,
@@ -2411,8 +2405,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on side 1"
         ],
         "start": 0,
@@ -2842,8 +2834,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on side 2"
         ],
         "start": 0,
@@ -3424,8 +3414,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on side 3"
         ],
         "start": 0,
@@ -3580,8 +3568,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on side 4"
         ],
         "start": 0,
@@ -4793,8 +4779,6 @@ description: Result of parsing tooling-nest-block.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Model each nest on the bottom face"
         ],
         "start": 0,
@@ -4866,7 +4850,104 @@ description: Result of parsing tooling-nest-block.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "22": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "26": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "27": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "35": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

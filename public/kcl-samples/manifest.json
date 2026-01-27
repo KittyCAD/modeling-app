@@ -155,19 +155,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
-    ],
-    "pathFromProjectDirectoryToFirstFile": "brake-rotor/main.kcl",
-    "multipleFiles": false,
-    "title": "Brake Rotor",
-    "description": "A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
-    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
@@ -189,7 +176,7 @@
     "description": "A car wheel assembly with a rotor, tire, and lug nuts.",
     "files": [
       "brake-caliper.kcl",
-      "car-rotor.kcl",
+      "brake-rotor.kcl",
       "car-tire.kcl",
       "car-wheel.kcl",
       "lug-nut.kcl",
@@ -419,6 +406,26 @@
     "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects.",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
+    "multipleFiles": true,
+    "title": "A Dog House for a Great Dane",
+    "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
+    "files": [
+      "2x4.kcl",
+      "back-frame.kcl",
+      "dimensions.kcl",
+      "door.kcl",
+      "floor.kcl",
+      "frame.kcl",
+      "front-wall.kcl",
+      "left-wall.kcl",
+      "main.kcl",
+      "right-wall.kcl",
+      "roof.kcl"
     ]
   },
   {
@@ -1815,6 +1822,19 @@
     "multipleFiles": false,
     "title": "Wedge",
     "description": "A wedge is a triangular prism defined by it's length, width, and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wheel-hub/main.kcl",
+    "multipleFiles": false,
+    "title": "Hub",
+    "description": "A wheel hub is the part that connects the wheel to the suspension",
     "files": [
       "main.kcl"
     ]
