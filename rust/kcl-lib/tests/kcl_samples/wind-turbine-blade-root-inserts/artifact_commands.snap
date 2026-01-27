@@ -1543,7 +1543,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1560,7 +1560,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1577,7 +1577,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1594,7 +1594,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1611,7 +1611,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1628,7 +1628,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1645,7 +1645,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1662,7 +1662,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1679,7 +1679,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1696,7 +1696,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1713,7 +1713,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1730,7 +1730,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1747,7 +1747,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1764,7 +1764,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1781,7 +1781,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1798,7 +1798,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 0.72156864,
           "g": 0.4509804,
           "b": 0.2,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3097,7 +3097,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3510,7 +3510,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
