@@ -126,6 +126,13 @@ The projection mode the camera should use while modeling.
 
 **Default:** None
 
+##### enable_oit
+
+Whether or not Order-Independent Transparency is enabled.
+
+
+**Default:** None
+
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
