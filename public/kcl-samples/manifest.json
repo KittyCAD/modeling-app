@@ -1306,14 +1306,10 @@
   },
   {
     "file": "main.kcl",
-    "categories": [
-      "Construction",
-      "Manufacturing"
-    ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "Sheet Metal Bracket",
-    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
+    "title": "@settings(defaultLengthUnit = mm)",
+    "description": "",
     "files": [
       "main.kcl"
     ]

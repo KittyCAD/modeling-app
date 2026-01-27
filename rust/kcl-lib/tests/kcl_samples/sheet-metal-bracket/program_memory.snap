@@ -38,10 +38,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1554,
-            "end": 1560,
+            "commentStart": 2381,
+            "end": 2387,
             "moduleId": 0,
-            "start": 1554,
+            "start": 2381,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -51,22 +51,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
           "tag": {
-            "commentStart": 1664,
-            "end": 1670,
+            "commentStart": 2463,
+            "end": 2469,
             "moduleId": 0,
-            "start": 1664,
+            "start": 2463,
             "type": "TagDeclarator",
             "value": "seg02"
           },
-          "type": "extrudePlane"
+          "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
@@ -108,10 +101,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1973,
-            "end": 1979,
+            "commentStart": 2800,
+            "end": 2806,
             "moduleId": 0,
-            "start": 1973,
+            "start": 2800,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -122,10 +115,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2022,
-            "end": 2028,
+            "commentStart": 2849,
+            "end": 2855,
             "moduleId": 0,
-            "start": 2022,
+            "start": 2849,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -149,7 +142,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3066,
+            "end": 3072,
+            "moduleId": 0,
+            "start": 3066,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
           "type": "extrudeArc"
         },
         {
@@ -157,12 +157,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2267,
-            "end": 2273,
+            "commentStart": 3143,
+            "end": 3152,
             "moduleId": 0,
-            "start": 2267,
+            "start": 3143,
             "type": "TagDeclarator",
-            "value": "seg05"
+            "value": "holeFace"
           },
           "type": "extrudePlane"
         },
@@ -171,13 +171,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
           "type": "extrudeArc"
         },
         {
@@ -199,10 +192,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2555,
-            "end": 2561,
+            "commentStart": 3398,
+            "end": 3404,
             "moduleId": 0,
-            "start": 2555,
+            "start": 3398,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -213,10 +206,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2631,
-            "end": 2637,
+            "commentStart": 3474,
+            "end": 3480,
             "moduleId": 0,
-            "start": 2631,
+            "start": 3474,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -276,10 +269,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.18529523872436982
             ],
             "tag": {
-              "commentStart": 1554,
-              "end": 1560,
+              "commentStart": 2381,
+              "end": 2387,
               "moduleId": 0,
-              "start": 1554,
+              "start": 2381,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -304,7 +297,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               -1.9217889209813437,
               2.375
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2463,
+              "end": 2469,
+              "moduleId": 0,
+              "start": 2463,
+              "type": "TagDeclarator",
+              "value": "seg02"
+            },
             "to": [
               -1.8010481926952102,
               2.467647619362185
@@ -319,30 +319,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "from": [
               -1.8010481926952102,
-              2.467647619362185
-            ],
-            "tag": {
-              "commentStart": 1664,
-              "end": 1670,
-              "moduleId": 0,
-              "start": 1664,
-              "type": "TagDeclarator",
-              "value": "seg02"
-            },
-            "to": [
-              0.0,
-              2.467647619362185
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
               2.467647619362185
             ],
             "tag": null,
@@ -441,10 +417,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               -0.00000000000000016653345369377348
             ],
             "tag": {
-              "commentStart": 1973,
-              "end": 1979,
+              "commentStart": 2800,
+              "end": 2806,
               "moduleId": 0,
-              "start": 1973,
+              "start": 2800,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -465,10 +441,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.12499999999999983
             ],
             "tag": {
-              "commentStart": 2022,
-              "end": 2028,
+              "commentStart": 2849,
+              "end": 2855,
               "moduleId": 0,
-              "start": 2022,
+              "start": 2849,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -532,7 +508,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.0425296492674767,
               2.407352380637815
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3066,
+              "end": 3072,
+              "moduleId": 0,
+              "start": 3066,
+              "type": "TagDeclarator",
+              "value": "seg05"
+            },
             "to": [
               1.8010481926952098,
               2.5926476193621846
@@ -550,30 +533,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.5926476193621846
             ],
             "tag": {
-              "commentStart": 2267,
-              "end": 2273,
+              "commentStart": 3143,
+              "end": 3152,
               "moduleId": 0,
-              "start": 2267,
+              "start": 3143,
               "type": "TagDeclarator",
-              "value": "seg05"
+              "value": "holeFace"
             },
-            "to": [
-              0.0,
-              2.5926476193621846
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              2.5926476193621846
-            ],
-            "tag": null,
             "to": [
               -1.8010481926952098,
               2.5926476193621846
@@ -652,10 +618,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1249999999999997
             ],
             "tag": {
-              "commentStart": 2555,
-              "end": 2561,
+              "commentStart": 3398,
+              "end": 3404,
               "moduleId": 0,
-              "start": 2555,
+              "start": 3398,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -676,10 +642,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1249999999999997
             ],
             "tag": {
-              "commentStart": 2631,
-              "end": 2637,
+              "commentStart": 3474,
+              "end": 3480,
               "moduleId": 0,
-              "start": 2631,
+              "start": 3474,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -739,6 +705,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           }
         },
         "tags": {
+          "holeFace": {
+            "type": "TagIdentifier",
+            "value": "holeFace"
+          },
           "seg01": {
             "type": "TagIdentifier",
             "value": "seg01"
@@ -884,7 +854,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "artifactId": "[uuid]",
           "objectId": 4,
-          "value": "seg05",
+          "value": "holeFace",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -921,10 +891,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1554,
-                  "end": 1560,
+                  "commentStart": 2381,
+                  "end": 2387,
                   "moduleId": 0,
-                  "start": 1554,
+                  "start": 2381,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -934,22 +904,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
-                "tag": null,
-                "type": "extrudeArc"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
                 "tag": {
-                  "commentStart": 1664,
-                  "end": 1670,
+                  "commentStart": 2463,
+                  "end": 2469,
                   "moduleId": 0,
-                  "start": 1664,
+                  "start": 2463,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
-                "type": "extrudePlane"
+                "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
@@ -991,10 +954,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1973,
-                  "end": 1979,
+                  "commentStart": 2800,
+                  "end": 2806,
                   "moduleId": 0,
-                  "start": 1973,
+                  "start": 2800,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1005,10 +968,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2022,
-                  "end": 2028,
+                  "commentStart": 2849,
+                  "end": 2855,
                   "moduleId": 0,
-                  "start": 2022,
+                  "start": 2849,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1032,7 +995,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3066,
+                  "end": 3072,
+                  "moduleId": 0,
+                  "start": 3066,
+                  "type": "TagDeclarator",
+                  "value": "seg05"
+                },
                 "type": "extrudeArc"
               },
               {
@@ -1040,12 +1010,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2267,
-                  "end": 2273,
+                  "commentStart": 3143,
+                  "end": 3152,
                   "moduleId": 0,
-                  "start": 2267,
+                  "start": 3143,
                   "type": "TagDeclarator",
-                  "value": "seg05"
+                  "value": "holeFace"
                 },
                 "type": "extrudePlane"
               },
@@ -1054,13 +1024,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
                 "type": "extrudeArc"
               },
               {
@@ -1082,10 +1045,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2555,
-                  "end": 2561,
+                  "commentStart": 3398,
+                  "end": 3404,
                   "moduleId": 0,
-                  "start": 2555,
+                  "start": 3398,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -1096,10 +1059,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2631,
-                  "end": 2637,
+                  "commentStart": 3474,
+                  "end": 3480,
                   "moduleId": 0,
-                  "start": 2631,
+                  "start": 3474,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -1159,10 +1122,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.18529523872436982
                   ],
                   "tag": {
-                    "commentStart": 1554,
-                    "end": 1560,
+                    "commentStart": 2381,
+                    "end": 2387,
                     "moduleId": 0,
-                    "start": 1554,
+                    "start": 2381,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1187,7 +1150,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     -1.9217889209813437,
                     2.375
                   ],
-                  "tag": null,
+                  "tag": {
+                    "commentStart": 2463,
+                    "end": 2469,
+                    "moduleId": 0,
+                    "start": 2463,
+                    "type": "TagDeclarator",
+                    "value": "seg02"
+                  },
                   "to": [
                     -1.8010481926952102,
                     2.467647619362185
@@ -1202,30 +1172,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "from": [
                     -1.8010481926952102,
-                    2.467647619362185
-                  ],
-                  "tag": {
-                    "commentStart": 1664,
-                    "end": 1670,
-                    "moduleId": 0,
-                    "start": 1664,
-                    "type": "TagDeclarator",
-                    "value": "seg02"
-                  },
-                  "to": [
-                    0.0,
-                    2.467647619362185
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
                     2.467647619362185
                   ],
                   "tag": null,
@@ -1324,10 +1270,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     -0.00000000000000016653345369377348
                   ],
                   "tag": {
-                    "commentStart": 1973,
-                    "end": 1979,
+                    "commentStart": 2800,
+                    "end": 2806,
                     "moduleId": 0,
-                    "start": 1973,
+                    "start": 2800,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -1348,10 +1294,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.12499999999999983
                   ],
                   "tag": {
-                    "commentStart": 2022,
-                    "end": 2028,
+                    "commentStart": 2849,
+                    "end": 2855,
                     "moduleId": 0,
-                    "start": 2022,
+                    "start": 2849,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -1415,7 +1361,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.0425296492674767,
                     2.407352380637815
                   ],
-                  "tag": null,
+                  "tag": {
+                    "commentStart": 3066,
+                    "end": 3072,
+                    "moduleId": 0,
+                    "start": 3066,
+                    "type": "TagDeclarator",
+                    "value": "seg05"
+                  },
                   "to": [
                     1.8010481926952098,
                     2.5926476193621846
@@ -1433,30 +1386,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.5926476193621846
                   ],
                   "tag": {
-                    "commentStart": 2267,
-                    "end": 2273,
+                    "commentStart": 3143,
+                    "end": 3152,
                     "moduleId": 0,
-                    "start": 2267,
+                    "start": 3143,
                     "type": "TagDeclarator",
-                    "value": "seg05"
+                    "value": "holeFace"
                   },
-                  "to": [
-                    0.0,
-                    2.5926476193621846
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    2.5926476193621846
-                  ],
-                  "tag": null,
                   "to": [
                     -1.8010481926952098,
                     2.5926476193621846
@@ -1535,10 +1471,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1249999999999997
                   ],
                   "tag": {
-                    "commentStart": 2555,
-                    "end": 2561,
+                    "commentStart": 3398,
+                    "end": 3404,
                     "moduleId": 0,
-                    "start": 2555,
+                    "start": 3398,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -1559,10 +1495,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1249999999999997
                   ],
                   "tag": {
-                    "commentStart": 2631,
-                    "end": 2637,
+                    "commentStart": 3474,
+                    "end": 3480,
                     "moduleId": 0,
-                    "start": 2631,
+                    "start": 3474,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -1622,6 +1558,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 }
               },
               "tags": {
+                "holeFace": {
+                  "type": "TagIdentifier",
+                  "value": "holeFace"
+                },
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01"
@@ -1740,8 +1680,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }
@@ -1808,6 +1748,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "len": "in",
       "angle": "degrees"
     }
+  },
+  "holeFace": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "holeFace"
   },
   "interiorBendRadius": {
     "type": "Number",
@@ -1906,10 +1851,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1919,22 +1864,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -1976,10 +1914,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1990,10 +1928,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2017,7 +1955,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -2025,12 +1970,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -2039,13 +1984,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -2067,10 +2005,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2081,10 +2019,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -2144,10 +2082,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2172,7 +2110,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -2187,30 +2132,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -2309,10 +2230,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2333,10 +2254,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2400,7 +2321,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -2418,30 +2346,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -2520,10 +2431,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2544,10 +2455,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -2607,6 +2518,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -2816,10 +2731,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2829,22 +2744,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -2886,10 +2794,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2900,10 +2808,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2927,7 +2835,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -2935,12 +2850,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -2949,13 +2864,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -2977,10 +2885,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2991,10 +2899,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -3054,10 +2962,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3082,7 +2990,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -3097,30 +3012,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -3219,10 +3110,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3243,10 +3134,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3310,7 +3201,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -3328,30 +3226,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -3430,10 +3311,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3454,10 +3335,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -3517,6 +3398,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -3767,10 +3652,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3780,22 +3665,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -3837,10 +3715,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3851,10 +3729,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3878,7 +3756,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -3886,12 +3771,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -3900,13 +3785,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -3928,10 +3806,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -3942,10 +3820,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -4005,10 +3883,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4033,7 +3911,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -4048,30 +3933,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -4170,10 +4031,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -4194,10 +4055,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -4261,7 +4122,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -4279,30 +4147,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -4381,10 +4232,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -4405,10 +4256,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -4468,6 +4319,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -4677,10 +4532,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4690,22 +4545,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -4747,10 +4595,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -4761,10 +4609,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -4788,7 +4636,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -4796,12 +4651,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -4810,13 +4665,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -4838,10 +4686,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -4852,10 +4700,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -4915,10 +4763,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4943,7 +4791,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -4958,30 +4813,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -5080,10 +4911,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -5104,10 +4935,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -5171,7 +5002,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -5189,30 +5027,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -5291,10 +5112,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -5315,10 +5136,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -5378,6 +5199,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -5599,7 +5424,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "objectId": 3,
-              "value": "seg05",
+              "value": "holeFace",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5636,10 +5461,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5649,22 +5474,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -5706,10 +5524,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -5720,10 +5538,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -5747,7 +5565,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -5755,12 +5580,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -5769,13 +5594,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -5797,10 +5615,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -5811,10 +5629,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -5874,10 +5692,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5902,7 +5720,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -5917,30 +5742,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -6039,10 +5840,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -6063,10 +5864,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -6130,7 +5931,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -6148,30 +5956,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -6250,10 +6041,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -6274,10 +6065,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -6337,6 +6128,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -6509,7 +6304,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "objectId": 3,
-              "value": "seg05",
+              "value": "holeFace",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6546,10 +6341,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6559,22 +6354,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -6616,10 +6404,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -6630,10 +6418,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -6657,7 +6445,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -6665,12 +6460,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -6679,13 +6474,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -6707,10 +6495,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -6721,10 +6509,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -6784,10 +6572,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6812,7 +6600,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -6827,30 +6622,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -6949,10 +6720,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -6973,10 +6744,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -7040,7 +6811,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -7058,30 +6836,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -7160,10 +6921,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -7184,10 +6945,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -7247,6 +7008,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -7419,7 +7184,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "objectId": 3,
-              "value": "seg05",
+              "value": "holeFace",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7456,10 +7221,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7469,22 +7234,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -7526,10 +7284,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -7540,10 +7298,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -7567,7 +7325,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -7575,12 +7340,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -7589,13 +7354,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -7617,10 +7375,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -7631,10 +7389,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -7694,10 +7452,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7722,7 +7480,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -7737,30 +7502,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -7859,10 +7600,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -7883,10 +7624,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -7950,7 +7691,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -7968,30 +7716,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -8070,10 +7801,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -8094,10 +7825,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -8157,6 +7888,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
@@ -8329,7 +8064,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "objectId": 3,
-              "value": "seg05",
+              "value": "holeFace",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8366,10 +8101,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1554,
-                      "end": 1560,
+                      "commentStart": 2381,
+                      "end": 2387,
                       "moduleId": 0,
-                      "start": 1554,
+                      "start": 2381,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8379,22 +8114,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
                     "tag": {
-                      "commentStart": 1664,
-                      "end": 1670,
+                      "commentStart": 2463,
+                      "end": 2469,
                       "moduleId": 0,
-                      "start": 1664,
+                      "start": 2463,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
-                    "type": "extrudePlane"
+                    "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
@@ -8436,10 +8164,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1973,
-                      "end": 1979,
+                      "commentStart": 2800,
+                      "end": 2806,
                       "moduleId": 0,
-                      "start": 1973,
+                      "start": 2800,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -8450,10 +8178,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2022,
-                      "end": 2028,
+                      "commentStart": 2849,
+                      "end": 2855,
                       "moduleId": 0,
-                      "start": 2022,
+                      "start": 2849,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -8477,7 +8205,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [],
-                    "tag": null,
+                    "tag": {
+                      "commentStart": 3066,
+                      "end": 3072,
+                      "moduleId": 0,
+                      "start": 3066,
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
                     "type": "extrudeArc"
                   },
                   {
@@ -8485,12 +8220,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2267,
-                      "end": 2273,
+                      "commentStart": 3143,
+                      "end": 3152,
                       "moduleId": 0,
-                      "start": 2267,
+                      "start": 3143,
                       "type": "TagDeclarator",
-                      "value": "seg05"
+                      "value": "holeFace"
                     },
                     "type": "extrudePlane"
                   },
@@ -8499,13 +8234,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
                     "type": "extrudeArc"
                   },
                   {
@@ -8527,10 +8255,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2555,
-                      "end": 2561,
+                      "commentStart": 3398,
+                      "end": 3404,
                       "moduleId": 0,
-                      "start": 2555,
+                      "start": 3398,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -8541,10 +8269,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2631,
-                      "end": 2637,
+                      "commentStart": 3474,
+                      "end": 3480,
                       "moduleId": 0,
-                      "start": 2631,
+                      "start": 3474,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -8604,10 +8332,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "tag": {
-                        "commentStart": 1554,
-                        "end": 1560,
+                        "commentStart": 2381,
+                        "end": 2387,
                         "moduleId": 0,
-                        "start": 1554,
+                        "start": 2381,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8632,7 +8360,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -1.9217889209813437,
                         2.375
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 2463,
+                        "end": 2469,
+                        "moduleId": 0,
+                        "start": 2463,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
                       "to": [
                         -1.8010481926952102,
                         2.467647619362185
@@ -8647,30 +8382,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       },
                       "from": [
                         -1.8010481926952102,
-                        2.467647619362185
-                      ],
-                      "tag": {
-                        "commentStart": 1664,
-                        "end": 1670,
-                        "moduleId": 0,
-                        "start": 1664,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        2.467647619362185
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
                         2.467647619362185
                       ],
                       "tag": null,
@@ -8769,10 +8480,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "tag": {
-                        "commentStart": 1973,
-                        "end": 1979,
+                        "commentStart": 2800,
+                        "end": 2806,
                         "moduleId": 0,
-                        "start": 1973,
+                        "start": 2800,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -8793,10 +8504,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "tag": {
-                        "commentStart": 2022,
-                        "end": 2028,
+                        "commentStart": 2849,
+                        "end": 2855,
                         "moduleId": 0,
-                        "start": 2022,
+                        "start": 2849,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -8860,7 +8571,14 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.0425296492674767,
                         2.407352380637815
                       ],
-                      "tag": null,
+                      "tag": {
+                        "commentStart": 3066,
+                        "end": 3072,
+                        "moduleId": 0,
+                        "start": 3066,
+                        "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
                       "to": [
                         1.8010481926952098,
                         2.5926476193621846
@@ -8878,30 +8596,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "tag": {
-                        "commentStart": 2267,
-                        "end": 2273,
+                        "commentStart": 3143,
+                        "end": 3152,
                         "moduleId": 0,
-                        "start": 2267,
+                        "start": 3143,
                         "type": "TagDeclarator",
-                        "value": "seg05"
+                        "value": "holeFace"
                       },
-                      "to": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        2.5926476193621846
-                      ],
-                      "tag": null,
                       "to": [
                         -1.8010481926952098,
                         2.5926476193621846
@@ -8980,10 +8681,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2555,
-                        "end": 2561,
+                        "commentStart": 3398,
+                        "end": 3404,
                         "moduleId": 0,
-                        "start": 2555,
+                        "start": 3398,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -9004,10 +8705,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "tag": {
-                        "commentStart": 2631,
-                        "end": 2637,
+                        "commentStart": 3474,
+                        "end": 3480,
                         "moduleId": 0,
-                        "start": 2631,
+                        "start": 3474,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -9067,6 +8768,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     }
                   },
                   "tags": {
+                    "holeFace": {
+                      "type": "TagIdentifier",
+                      "value": "holeFace"
+                    },
                     "seg01": {
                       "type": "TagIdentifier",
                       "value": "seg01"
