@@ -115,6 +115,9 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not Order-Independent Transparency (OIT) is enabled.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_oit: DefaultTrue,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
     /// If true, the grid cells will be fixed-size, where the width is your default length unit.
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
@@ -309,6 +312,7 @@ mod tests {
                     base_unit: Some(UnitLength::Yards),
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    enable_oit: true.into(),
                     snap_to_grid: None,
                     major_grid_spacing: None,
                     minor_grids_per_major: None,

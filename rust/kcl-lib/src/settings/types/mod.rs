@@ -228,6 +228,9 @@ pub struct ModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not Order-Independent Transparency is enabled.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_oit: DefaultTrue,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
@@ -266,6 +269,7 @@ impl Default for ModelingSettings {
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
+            enable_oit: Default::default(),
             show_scale_grid: Default::default(),
             fixed_size_grid: true,
             snap_to_grid: Default::default(),

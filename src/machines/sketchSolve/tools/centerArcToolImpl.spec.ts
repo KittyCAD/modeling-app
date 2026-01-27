@@ -30,6 +30,7 @@ function createSceneGraphDelta(
       settings: {
         highlight_edges: false,
         enable_ssao: false,
+        enable_oit: false,
         show_grid: false,
         replay: null,
         project_directory: null,

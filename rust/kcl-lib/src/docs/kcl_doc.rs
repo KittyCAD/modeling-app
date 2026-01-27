@@ -711,6 +711,7 @@ pub struct ExampleProperties {
     pub norun: bool,
     pub no3d: bool,
     pub inline: bool,
+    pub enable_oit: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1060,15 +1061,25 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut enable_oit = false;
                     for a in args {
                         match a.trim() {
+                            "enable_oit" => enable_oit = true,
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
                             _ => {}
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
+                    example = Some((
+                        String::new(),
+                        ExampleProperties {
+                            norun,
+                            no3d,
+                            inline,
+                            enable_oit,
+                        },
+                    ));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -1432,7 +1443,7 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, eg.1.enable_oit).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
                         "Error testing example {NAME} for {owner_name} in {}: {}",

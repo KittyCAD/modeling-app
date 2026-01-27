@@ -73,7 +73,7 @@
 ///     |> extrude(length = sideLen)
 ///     |> appearance(color = appearance::hexString([red, g, b]), metalness = 80, roughness = 40)
 /// }
-/// 
+///
 /// fn grid(offset, red) {
 ///   return map(
 ///     [0 ..< n * n],
@@ -82,7 +82,7 @@
 ///     },
 ///   )
 /// }
-/// 
+///
 /// map(
 ///   [0..<n],
 ///   f = fn(@i) {

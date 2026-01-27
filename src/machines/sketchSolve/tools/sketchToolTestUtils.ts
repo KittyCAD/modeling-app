@@ -27,6 +27,7 @@ export function createSceneGraphDelta(
       version: 0,
       objects: objectsArray,
       settings: {
+        enable_oit: false,
         highlight_edges: false,
         enable_ssao: false,
         show_grid: false,
