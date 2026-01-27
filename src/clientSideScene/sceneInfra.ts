@@ -108,7 +108,7 @@ export class SceneInfra {
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
-  
+
   public readonly baseUnitChange = new Signal()
   public readonly scaleFactor = signal<number>(1)
 
