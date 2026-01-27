@@ -221,7 +221,7 @@ export function desktopSafePathSplit(targetPath: string): string[] {
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return path.resolve(...paths)
+  return paths.join(path.sep)
 }
 
 /**
