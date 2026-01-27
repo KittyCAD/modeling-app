@@ -891,6 +891,7 @@ impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
+impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {

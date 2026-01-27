@@ -508,8 +508,8 @@ export fn offsetPlane(
 @(impl = std_rust, feature_tree = true)
 export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
-  @geometry: Sketch | Solid | ImportedGeometry,
-): Sketch | Solid | ImportedGeometry {}
+  @geometries: [Sketch | Solid | ImportedGeometry; +1],
+): [Sketch | Solid | ImportedGeometry; +1] {}
 
 /// Asserts that a value is the boolean value true.
 ///
