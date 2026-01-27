@@ -1,10 +1,3 @@
-//! Trim tool logic - migrated from TypeScript for performance
-//!
-//! This module contains the core trim loop logic that was previously in TypeScript.
-//! The main function `process_trim_loop` takes trim points and objects, and returns
-//! the trim operations that need to be executed.
-
-// Use native Rust types from kcl_lib frontend for better performance
 use crate::{
     frontend::{
         api::{Object, ObjectId, ObjectKind},
