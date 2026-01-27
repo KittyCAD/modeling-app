@@ -511,9 +511,18 @@ export async function writeProjectSettingsFile(
 }
 
 const getAppFolderName = (electron: IElectronAPI) => {
+  const platform =
+    electron.platform ??
+    (electron.os.isLinux
+      ? 'linux'
+      : electron.os.isMac
+        ? 'darwin'
+        : electron.os.isWindows
+          ? 'win32'
+          : 'unknown')
   return getAppFolderNameFromMetadata({
     packageName: electron.packageJson.name,
-    platform: electron.platform,
+    platform,
     isStaging: IS_STAGING,
     isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })

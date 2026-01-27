@@ -1,6 +1,6 @@
 type AppFolderNameOptions = {
   packageName: string
-  platform?: string
+  platform: string
   isStaging: boolean
   isStagingOrDebug: boolean
   appIdBase?: string
@@ -13,12 +13,11 @@ export const getAppFolderName = ({
   isStagingOrDebug,
   appIdBase = 'dev.zoo.modeling-app',
 }: AppFolderNameOptions) => {
-  const normalizedPlatform = platform ?? 'unknown'
   const appId = isStaging
     ? `${appIdBase}-staging`
     : isStagingOrDebug
       ? `${appIdBase}-local`
       : appIdBase
 
-  return normalizedPlatform === 'linux' ? packageName : appId
+  return platform === 'linux' ? packageName : appId
 }
