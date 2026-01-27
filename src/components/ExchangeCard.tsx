@@ -216,6 +216,12 @@ export const ChatBubble = (props: {
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
     (props.side === 'left' ? 'rounded-br-md' : 'rounded-bl-md')
 
+  console.log(
+    'hasVisibleChildren(props.children)',
+    hasVisibleChildren(props.children),
+    Boolean(hasVisibleChildren(props.children))
+  )
+
   return (
     <div
       className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}
