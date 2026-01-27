@@ -66,6 +66,7 @@ export type SpawnToolActor = <K extends EquipTool>(
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
+  | { type: 'camera scale change' }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
@@ -484,7 +485,7 @@ export function updateSceneGraphFromDelta({
         String(obj.id)
       ) as Group | null
       if (!constraintGroup) {
-        constraintGroup = constraintUtils.init(obj, objects, context.sceneInfra)
+        constraintGroup = constraintUtils.init(obj, objects)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -754,37 +755,6 @@ export function initializeInitialSceneGraph({
       selectedIds: context.selectedIds,
       duringAreaSelectIds: context.duringAreaSelectIds,
     })
-    context.sceneInfra.camControls.cameraChange.add(() => {
-      // Update all constraint groups when camera changes (for scale-dependent rendering)
-      const sketchSolveGroup =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
-        return
-      }
-
-      const objects =
-        context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
-      const scaleFactor = context.sceneInfra.getClientSceneScaleFactor(
-        context.sceneEntitiesManager.axisGroup
-      )
-
-      const constraintGroups = sketchSolveGroup.children.filter(
-        (child) => child.userData.type === 'constraint'
-      )
-      constraintGroups.forEach((group) => {
-        const objId = parseInt(group.name)
-        const obj = objects[objId]
-        if (obj) {
-          constraintUtils.update(
-            group as Group,
-            obj,
-            objects,
-            scaleFactor,
-            context.sceneInfra
-          )
-        }
-      })
-    })
 
     // Set sketchExecOutcome in context so drag callbacks can access it
     // Use current code from editorManager since editSketch doesn't return kclSource
@@ -800,6 +770,34 @@ export function initializeInitialSceneGraph({
     }
   }
   return {}
+}
+
+export function onCameraScaleChange({ context }: SolveActionArgs): void {
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+    return
+  }
+
+  const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
+
+  const constraintGroups = sketchSolveGroup.children.filter(
+    (child) => child.userData.type === 'constraint'
+  )
+  constraintGroups.forEach((group) => {
+    const objId = group.userData.object_id
+    const obj = objects[objId]
+    if (obj) {
+      constraintUtils.update(
+        group as Group,
+        obj,
+        objects,
+        scaleFactor,
+        context.sceneInfra
+      )
+    }
+  })
 }
 
 // Debounced editor update function - persists across calls

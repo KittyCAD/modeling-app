@@ -47,14 +47,18 @@ export class ConstraintUtils {
     }),
   }
 
-  public init(obj: ApiObject, objects: Array<ApiObject>, sceneInfra: SceneInfra): Group | null {
+  public init(obj: ApiObject, objects: Array<ApiObject>): Group | null {
     if (obj.kind.type !== 'Constraint') return null
 
     if (getEndPoints(obj, objects)) {
       const constraint = obj.kind.constraint
       const group = new Group()
       group.name = obj.id.toString()
-      group.userData = { type: 'constraint', constraintType: constraint.type }
+      group.userData = {
+        type: 'constraint',
+        constraintType: constraint.type,
+        object_id: obj.id,
+      }
 
       const leadGeom1 = new LineGeometry()
       leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
@@ -84,16 +88,6 @@ export class ConstraintUtils {
 
       // Arrow tip is at origin, so position directly at start/end
       const arrow1 = new Mesh(this.arrowGeometry, this.materials.arrow)
-      arrow1.onBeforeRender = () => {
-        const camera = sceneInfra.camControls.camera
-        if (camera instanceof OrthographicCamera) {
-            const scale = orthoScale(camera)
-            console.log('scale', scale)
-            arrow1.scale.setScalar(scale)
-            arrow1.updateMatrix()
-            arrow1.updateMatrixWorld()
-        }
-      }
       arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow1)
 

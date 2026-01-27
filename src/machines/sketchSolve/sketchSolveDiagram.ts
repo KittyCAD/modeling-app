@@ -44,6 +44,7 @@ import {
   deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
+  onCameraScaleChange,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 
@@ -178,6 +179,7 @@ export const sketchSolveMachine = setup({
     'update selected ids': assign(updateSelectedIds),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
+    'camera scale change': onCameraScaleChange,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -244,6 +246,9 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
+    },
+    'camera scale change': {
+      actions: 'camera scale change',
     },
     'set draft entities': {
       actions: 'set draft entities',
