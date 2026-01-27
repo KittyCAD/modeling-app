@@ -4,13 +4,17 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { Vector3, Group } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
@@ -261,10 +265,14 @@ export const machine = setup({
               }
             },
             onNewSketchOutcome: (outcome) => {
-              self._parent?.send({
+              const sendData: SketchSolveMachineEvent = {
                 type: 'update sketch outcome',
-                data: outcome,
-              })
+                data: outcome as {
+                  sourceDelta: SourceDelta
+                  sceneGraphDelta: SceneGraphDelta
+                },
+              }
+              self._parent?.send(sendData)
             },
           })
 

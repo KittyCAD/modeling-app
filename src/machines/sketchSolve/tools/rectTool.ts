@@ -8,7 +8,10 @@ import type {
   SourceDelta,
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
@@ -110,10 +113,15 @@ export const machine = setup({
                 rect: { min, max },
               })
 
-              self._parent?.send({
+              const sendData: SketchSolveMachineEvent = {
                 type: 'update sketch outcome',
-                data: { ...result, writeToDisk: false },
-              })
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                  writeToDisk: false,
+                },
+              }
+              self._parent?.send(sendData)
               await new Promise((resolve) => requestAnimationFrame(resolve))
             } catch (err) {
               console.error('failed to edit segment', err)
@@ -140,21 +148,24 @@ export const machine = setup({
 
       const output = event.output
 
-      self._parent?.send({
+      const sendData: SketchSolveMachineEvent = {
         type: 'set draft entities',
         data: {
-          // Only setting line ids instead of segmentIds
           segmentIds: output.draft.segmentIds,
           constraintIds: output.draft.constraintIds,
         },
-      })
+      }
+      self._parent?.send(sendData)
 
       return {
         draft: output.draft,
       }
     }),
     'delete draft entities': ({ self }) => {
-      self._parent?.send({ type: 'delete draft entities' })
+      const sendData: SketchSolveMachineEvent = {
+        type: 'delete draft entities',
+      }
+      self._parent?.send(sendData)
     },
     'remove point listener': ({ context }) => {
       context.sceneInfra.setCallbacks({
@@ -264,7 +275,10 @@ export const machine = setup({
         finalize: {
           actions: [
             ({ self }) => {
-              self._parent?.send({ type: 'clear draft entities' })
+              const sendData: SketchSolveMachineEvent = {
+                type: 'clear draft entities',
+              }
+              self._parent?.send(sendData)
             },
             assign({
               origin: [0, 0],
@@ -282,7 +296,10 @@ export const machine = setup({
     },
     'delete draft entities': {
       entry: ({ self }) => {
-        self._parent?.send({ type: 'delete draft entities' })
+        const sendData: SketchSolveMachineEvent = {
+          type: 'delete draft entities',
+        }
+        self._parent?.send(sendData)
       },
       always: {
         target: 'awaiting first point',
