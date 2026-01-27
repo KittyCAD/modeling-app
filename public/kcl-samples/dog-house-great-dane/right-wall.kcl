@@ -49,11 +49,11 @@ fn sideSlats(minX) {
   return patternLinear3d(
     [
       twoByFourZRotated(
-  minX = minX,
-  minY = sideSlatStartY,
-  minZ = studBaseZ,
-  lengthZ = studHeight,
-)
+        minX = minX,
+        minY = sideSlatStartY,
+        minZ = studBaseZ,
+        lengthZ = studHeight,
+      )
     ],
     axis = [0, 1, 0],
     distance = sideSlatActualPitch,

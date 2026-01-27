@@ -102,11 +102,11 @@ fn doorSlats(doorY) {
   return patternLinear3d(
     [
       twoByFourZ(
-  minX = doorSlatStartX,
-  minY = doorY,
-  minZ = doorSlatMinZ,
-  lengthZ = doorInnerHeight,
-)
+        minX = doorSlatStartX,
+        minY = doorY,
+        minZ = doorSlatMinZ,
+        lengthZ = doorInnerHeight,
+      )
     ],
     axis = [1, 0, 0],
     distance = doorSlatActualPitch,

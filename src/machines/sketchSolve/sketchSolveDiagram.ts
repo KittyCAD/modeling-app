@@ -150,7 +150,9 @@ export const sketchSolveMachine = setup({
     'initialize initial scene graph': assign(initializeInitialSceneGraph),
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
-    'cleanup sketch solve group': cleanupSketchSolveGroup,
+    'cleanup sketch solve group': ({ context }) => {
+      cleanupSketchSolveGroup(context.sceneInfra)
+    },
     'send unequip to tool': ({ context }) => {
       // Use the actor reference directly - optional chaining handles missing actor gracefully
       context.childTool?.send({ type: 'unequip' })
