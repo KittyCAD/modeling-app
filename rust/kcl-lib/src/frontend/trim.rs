@@ -115,6 +115,8 @@ pub struct CoincidentData {
 pub struct ConstraintToMigrate {
     pub constraint_id: ObjectId,
     pub other_entity_id: ObjectId,
+    /// True if the coincident constraint is between two points (point–point).
+    /// False if it is between a point and a line/arc/segment (point–line coincident).
     pub is_point_point: bool,
     pub attach_to_endpoint: AttachToEndpoint,
 }
