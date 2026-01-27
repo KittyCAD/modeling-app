@@ -296,10 +296,16 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const exchangesLength = props.conversation?.exchanges.length ?? 0
+  const lastExchange = exchangesLength
+    ? props.conversation?.exchanges[exchangesLength - 1]
+    : undefined
+  const isEndOfStream = lastExchange?.responses.some(
+    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
+  )
 
-  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
+  // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    const exchangesLength = props.conversation?.exchanges.length ?? 0
     if (exchangesLength === 0) return
 
     requestAnimationFrame(() => {
@@ -310,7 +316,21 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         })
       }
     })
-  }, [props.conversation?.exchanges.length])
+  }, [exchangesLength])
+
+  // Autoscroll: right after Zookeeper completes its turn in the exchange.
+  useEffect(() => {
+    if (isEndOfStream) {
+      requestAnimationFrame(() => {
+        if (refScroll.current) {
+          refScroll.current.scrollTo({
+            top: refScroll.current.scrollHeight,
+            behavior: 'smooth',
+          })
+        }
+      })
+    }
+  }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -331,7 +351,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto">
+          <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
               {props.userBlockedOnPayment ? (
                 <StarterCard
@@ -339,7 +359,12 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
-                  exchangeCards
+                  <>
+                    {exchangeCards}
+                    {lastExchange && !isEndOfStream && (
+                      <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
+                    )}
+                  </>
                 ) : (
                   <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
                 )
