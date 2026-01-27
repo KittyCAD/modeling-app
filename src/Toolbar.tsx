@@ -14,7 +14,6 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { kclManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -23,10 +22,14 @@ import type {
   ToolbarItemResolvedDropdown,
   ToolbarModeName,
 } from '@src/lib/toolbar'
-import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import {
+  isToolbarItemResolvedDropdown,
+  useToolbarConfig,
+} from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useSingletons } from '@src/lib/boot'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -43,6 +46,8 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
+    const { kclManager, commandBarActor } = useSingletons()
+    const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -681,6 +686,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
+  const { kclManager } = useSingletons()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()

@@ -6,13 +6,14 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
+  const { kclManager, sceneInfra } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   const { state: modelingState } = useModelingContext()
@@ -49,7 +50,7 @@ export function UnitsMenu() {
     }
     setRulerWidth(rulerWidth)
     setRulerLabelValue(displayValue)
-  }, [inSketchMode])
+  }, [inSketchMode, sceneInfra])
 
   useEffect(() => {
     const unsubscribers = [
@@ -60,11 +61,19 @@ export function UnitsMenu() {
     return () => {
       unsubscribers.forEach((unsubscriber) => unsubscriber())
     }
-  }, [onCameraChange])
+  }, [
+    onCameraChange,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.fileSettings])
+  }, [
+    kclManager.fileSettings,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
 
   return (
     <Popover className="relative pointer-events-auto flex">

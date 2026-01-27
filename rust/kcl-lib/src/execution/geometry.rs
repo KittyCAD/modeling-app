@@ -720,7 +720,7 @@ impl ProfileClosed {
 }
 
 /// Has the profile been closed?
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[derive(Debug, Serialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
 pub enum ProfileClosed {
     /// It's definitely open.
@@ -1070,7 +1070,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
+#[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -1434,6 +1434,17 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A cubic Bezier curve.
+    Bezier {
+        #[serde(flatten)]
+        base: BasePath,
+        /// First control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control1: [f64; 2],
+        /// Second control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control2: [f64; 2],
+    },
 }
 
 impl Path {
@@ -1451,6 +1462,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
             Path::Ellipse { base, .. } => base.geo_meta.id,
             Path::Conic { base, .. } => base.geo_meta.id,
+            Path::Bezier { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1468,6 +1480,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Ellipse { base, .. } => base.geo_meta.id = id,
             Path::Conic { base, .. } => base.geo_meta.id = id,
+            Path::Bezier { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1485,6 +1498,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
             Path::Ellipse { base, .. } => base.tag.clone(),
             Path::Conic { base, .. } => base.tag.clone(),
+            Path::Bezier { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1502,6 +1516,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base,
             Path::Ellipse { base, .. } => base,
             Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 
@@ -1586,6 +1601,10 @@ impl Path {
                 // Not supported.
                 None
             }
+            Self::Bezier { .. } => {
+                // Not supported - Bezier curve length requires numerical integration.
+                None
+            }
         };
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
@@ -1604,6 +1623,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => Some(base),
             Path::Ellipse { base, .. } => Some(base),
             Path::Conic { base, .. } => Some(base),
+            Path::Bezier { base, .. } => Some(base),
         }
     }
 
@@ -1656,7 +1676,8 @@ impl Path {
             | Path::ToPoint { .. }
             | Path::Horizontal { .. }
             | Path::AngledLineTo { .. }
-            | Path::Base { .. } => {
+            | Path::Base { .. }
+            | Path::Bezier { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
