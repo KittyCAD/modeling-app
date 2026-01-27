@@ -378,6 +378,14 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
+        kcl_ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
         kcl_ezpz::Constraint::Horizontal(line) | kcl_ezpz::Constraint::Vertical(line) => {
             extract_ids_from_line(line, variable_set);
         }

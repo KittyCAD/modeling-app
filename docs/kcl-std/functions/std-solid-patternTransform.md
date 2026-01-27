@@ -321,9 +321,9 @@ fn chessboard(@i) {
   isEven = rem(i, divisor = 2) == 0
   return [
     {
-  translate = [row * gap, column * gap, 0],
-  replicate = isEven
-}
+      translate = [row * gap, column * gap, 0],
+      replicate = isEven
+    }
   ]
 }
 

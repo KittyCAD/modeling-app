@@ -531,7 +531,7 @@ const OperationItem = ({
         operation: item,
         rustContext: systemDeps.rustContext,
         artifact,
-      }).catch((e) => toast.error(e))
+      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
   }, [
     item,

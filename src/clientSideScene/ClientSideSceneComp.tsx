@@ -41,6 +41,7 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -143,6 +144,7 @@ export const ClientSideScene = ({
       container.removeEventListener('mousedown', sceneInfra.onMouseDown)
       container.removeEventListener('mouseup', onMouseUp)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+      cleanupSketchSolveGroup(sceneInfra)
 
       observer.disconnect()
       media.removeEventListener('change', handleChange)

@@ -1563,6 +1563,34 @@ export const useToolbarConfig = () => {
             isActive: (state) => false,
           },
           {
+            id: 'HorizontalDistance',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'HorizontalDistance',
+              }),
+            icon: 'horizontalDimension',
+            status: 'available',
+            title: 'Horizontal Distance',
+            hotkey: 'Shift+D',
+            description: 'Constrain horizontal distance between two points',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'VerticalDistance',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'VerticalDistance',
+              }),
+            icon: 'verticalDimension',
+            status: 'available',
+            title: 'Vertical Distance',
+            hotkey: 'Shift+V',
+            description: 'Constrain vertical distance between two points',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
             id: 'construction',
             onClick: ({ modelingSend, isActive }) =>
               modelingSend({
