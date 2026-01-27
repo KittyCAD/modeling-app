@@ -23,8 +23,7 @@ export default defineConfig((env) => {
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
-      // CSP is injected at runtime in the main process for desktop builds.
-      indexHtmlCsp(false),
+      indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),
