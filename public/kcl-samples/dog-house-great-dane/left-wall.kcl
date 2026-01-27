@@ -57,11 +57,11 @@ fn sideSlatsWithDoor(minX) {
   frontSlats = patternLinear3d(
     [
       twoByFourZRotated(
-  minX = minX,
-  minY = sideSlatStartY,
-  minZ = studBaseZ,
-  lengthZ = studHeight,
-)
+        minX = minX,
+        minY = sideSlatStartY,
+        minZ = studBaseZ,
+        lengthZ = studHeight,
+      )
     ],
     axis = [0, 1, 0],
     distance = sideSlatPitch,
@@ -75,11 +75,11 @@ fn sideSlatsWithDoor(minX) {
   backSlats = patternLinear3d(
     [
       twoByFourZRotated(
-  minX = minX,
-  minY = backSlatStartY,
-  minZ = studBaseZ,
-  lengthZ = studHeight,
-)
+        minX = minX,
+        minY = backSlatStartY,
+        minZ = studBaseZ,
+        lengthZ = studHeight,
+      )
     ],
     axis = [0, 1, 0],
     distance = sideSlatPitch,

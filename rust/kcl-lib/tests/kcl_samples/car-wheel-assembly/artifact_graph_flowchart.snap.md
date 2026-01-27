@@ -1222,7 +1222,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   700["Plane<br>[3394, 3411, 5]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  721["Sweep Extrusion<br>[4294, 4326, 5]<br>Consumed: true"]
+  721["Sweep Extrusion<br>[4301, 4333, 5]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg, ArrayElement { index: 0 }, PipeBodyItem { index: 1 }]
   722[Wall]
     %% face_code_ref=Missing NodePath
@@ -1272,7 +1272,7 @@ flowchart LR
   754["SweepEdge Adjacent"]
   755["SweepEdge Opposite"]
   756["SweepEdge Adjacent"]
-  757["Sweep Revolve<br>[4374, 4391, 5]<br>Consumed: true"]
+  757["Sweep Revolve<br>[4395, 4412, 5]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg, ArrayElement { index: 1 }, PipeBodyItem { index: 2 }]
   758[Wall]
     %% face_code_ref=Missing NodePath
@@ -1295,7 +1295,7 @@ flowchart LR
   769["SweepEdge Adjacent"]
   770["SweepEdge Adjacent"]
   771["SweepEdge Adjacent"]
-  772["CompositeSolid Intersect<br>[4260, 4399, 5]<br>Consumed: false"]
+  772["CompositeSolid Intersect<br>[4260, 4420, 5]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   773["Plane<br>[551, 577, 6]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]

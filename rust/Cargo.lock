@@ -2124,7 +2124,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "anyhow",
  "clap",
@@ -2135,7 +2135,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2144,7 +2144,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2154,7 +2154,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "miette",
  "serde",
@@ -2178,7 +2178,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.121"
+version = "0.2.122"
 dependencies = [
  "anyhow",
  "clap",
@@ -2199,7 +2199,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "anyhow",
  "clap",
@@ -2219,7 +2219,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.121"
+version = "0.2.122"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2317,7 +2317,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2330,7 +2330,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2344,7 +2344,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.121"
+version = "0.1.122"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",

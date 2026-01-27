@@ -33,11 +33,11 @@ backSlatY = frameLength - backSlatDepth
 backSlats = patternLinear3d(
   [
     twoByFourZ(
-  minX = backSlatStartX,
-  minY = backSlatY,
-  minZ = studBaseZ,
-  lengthZ = studHeight,
-)
+      minX = backSlatStartX,
+      minY = backSlatY,
+      minZ = studBaseZ,
+      lengthZ = studHeight,
+    )
   ],
   axis = [1, 0, 0],
   distance = backSlatActualPitch,
