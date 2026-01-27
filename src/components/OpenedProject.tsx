@@ -37,16 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import {
-  billingActor,
-  systemIOActor,
-  getSettings,
-  kclManager,
-  useLayout,
-  setLayout,
-  getLayout,
-} from '@src/lib/singletons'
-import { useSettings, useToken } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -63,8 +54,8 @@ import {
   getOpenPanes,
   LayoutRootNode,
 } from '@src/lib/layout'
-import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
@@ -82,6 +73,19 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  const {
+    billingActor,
+    systemIOActor,
+    getSettings,
+    kclManager,
+    useLayout,
+    setLayout,
+    getLayout,
+    useSettings,
+    useToken,
+  } = useSingletons()
+  const defaultAreaLibrary = useDefaultAreaLibrary()
+  const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
   const loaderData = useLoaderData<IndexLoaderData>()
@@ -113,7 +117,7 @@ export function OpenedProject() {
       return
     void kclManager.executeCode()
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [systemIOState])
+  }, [systemIOState, kclManager])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -207,6 +211,7 @@ export function OpenedProject() {
             kclManager,
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
+            systemIOActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -223,6 +228,8 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
+    kclManager,
+    systemIOActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -297,7 +304,7 @@ export function OpenedProject() {
         className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
       />
     ),
-    []
+    [kclManager]
   )
 
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(

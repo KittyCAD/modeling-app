@@ -26,8 +26,8 @@ import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { appActor, setLayout } from '@src/lib/singletons'
-import { AppMachineEventType } from '@src/lib/types'
+import { AppMachineEventType, type AppMachineEvent } from '@src/lib/types'
+import type { Layout } from '@src/lib/layout'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -132,9 +132,13 @@ function onSubmitKCLSampleCreation({
 export function createApplicationCommands({
   systemIOActor,
   wasmInstance,
+  appActor,
+  setLayout,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   wasmInstance: ModuleType
+  appActor: { send: (event: AppMachineEvent) => void }
+  setLayout: (layout: Layout) => void
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',

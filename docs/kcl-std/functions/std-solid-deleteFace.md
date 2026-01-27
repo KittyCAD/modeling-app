@@ -9,7 +9,7 @@ Delete a face from a body (a solid, or a polysurface).
 
 ```kcl
 deleteFace(
-  @val: Solid,
+  @body: Solid,
   faces?: [TaggedFace; 1+],
   faceIndices?: [number(_); 1+],
 ): Solid
@@ -21,7 +21,7 @@ deleteFace(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `val` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Target to delete a surface from. | Yes |
+| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Target to delete a surface from. | Yes |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | Face to delete. This is the usual face representation, e.g. a tagged face. | No |
 | `faceIndices` | [[`number(_)`](/docs/kcl-std/types/std-types-number); 1+] | Face to delete. The index is a stable ordering of faces, used when you can't get the usual ID (UUID) of a face. | No |
 
@@ -114,7 +114,7 @@ fn square(@plane, offset, y) {
 cube = [
   square(XY, offset = 0, y = false),
   square(XZ, offset = 0, y = true)
-  |> flipSurface(),
+    |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),

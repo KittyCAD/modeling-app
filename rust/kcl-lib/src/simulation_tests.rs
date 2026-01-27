@@ -286,7 +286,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }));
 
             #[cfg(not(feature = "artifact-graph"))]
-            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             #[cfg(feature = "artifact-graph")]
             let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             #[cfg(feature = "artifact-graph")]
@@ -309,6 +309,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     })
                     .flatten(),
             );
+
+            // Filter out Z0005 (old sketch syntax) from test snapshots
+            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
