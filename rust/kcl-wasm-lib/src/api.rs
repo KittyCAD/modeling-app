@@ -395,6 +395,48 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Transpile old sketch syntax (startProfile in pipe) to new sketch block syntax.
+    ///
+    /// This function re-executes the program using the execution cache (which should be very fast
+    /// if the program hasn't changed), then extracts the sketch and transpiles it.
+    ///
+    /// # Arguments
+    /// * `program_ast_json` - Program AST as JSON string
+    /// * `variable_name` - Name of the variable containing the old sketch syntax
+    /// * `path` - Optional file path for execution context
+    /// * `settings` - Execution settings as JSON string
+    ///
+    /// # Returns
+    /// The transpiled code as a string, or an error if execution or transpilation fails.
+    #[wasm_bindgen]
+    pub async fn transpile_old_sketch(
+        &self,
+        program_ast_json: &str,
+        variable_name: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let program: Program = serde_json::from_str(program_ast_json)
+            .map_err(|e| JsValue::from_str(&format!("Could not deserialize KCL AST: {e}")))?;
+
+        // Create executor context (not mock mode, so it can use the cache)
+        let ctx = self
+            .create_executor_ctx(settings, path, false)
+            .map_err(|e| JsValue::from_str(&format!("Could not create executor context: {e}")))?;
+
+        // Re-execute using cache and transpile
+        let result = kcl_lib::transpile_old_sketch_to_new_with_execution(&ctx, program, variable_name)
+            .await
+            .map_err(|e| JsValue::from_str(&format!("Failed to transpile sketch: {:?}", e)));
+
+        // Always close the context to avoid resource leaks
+        ctx.close().await;
+
+        result.map(|transpiled_code| JsValue::from_str(&transpiled_code))
+    }
+
     /// Chain a segment to a previous segment by adding it and creating a coincident constraint.
     #[wasm_bindgen]
     pub async fn chain_segment(

@@ -33,16 +33,6 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import {
-  authActor,
-  billingActor,
-  commandBarActor,
-  kclManager,
-  settingsActor,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
-import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
@@ -66,6 +56,10 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
+import { useSingletons } from '@src/lib/boot'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -75,6 +69,16 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const {
+    authActor,
+    billingActor,
+    commandBarActor,
+    kclManager,
+    useSettings,
+    useToken,
+    systemIOActor,
+    settingsActor,
+  } = useSingletons()
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -195,7 +199,7 @@ const Home = () => {
   useEffect(() => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
-  }, [])
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -243,6 +247,7 @@ const Home = () => {
                       onboardingStatus,
                       navigate,
                       kclManager,
+                      systemIOActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
@@ -257,7 +262,7 @@ const Home = () => {
                 </ActionButton>
                 <ActionButton
                   Element="button"
-                  onClick={onDismissOnboardingInvite}
+                  onClick={() => onDismissOnboardingInvite(settingsActor)}
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
@@ -370,7 +375,7 @@ const Home = () => {
           projects={projects}
           query={query}
           sort={sort}
-          handleRenameProject={handleRenameProject}
+          handleRenameProject={handleRenameProject(systemIOActor)}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -389,7 +394,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
 }
 
@@ -506,6 +511,7 @@ function ProjectGrid({
   handleRenameProject,
   ...rest
 }: ProjectGridProps) {
+  const { systemIOActor } = useSingletons()
   const state = useSystemIOState()
 
   return (
@@ -521,7 +527,7 @@ function ProjectGrid({
                   key={project.name}
                   project={project}
                   handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
             </ul>
@@ -553,36 +559,43 @@ function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-async function handleRenameProject(
-  e: FormEvent<HTMLFormElement>,
-  project: Project
+function handleRenameProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  const { newProjectName } = Object.fromEntries(
-    new FormData(e.target as HTMLFormElement)
-  )
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+    const { newProjectName } = Object.fromEntries(
+      new FormData(e.target as HTMLFormElement)
+    )
 
-  if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-    toast.error('Project names cannot start with a dot (.)')
-    return
-  }
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
 
-  if (newProjectName !== project.name) {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        requestedProjectName: String(newProjectName),
-        projectName: project.name,
-        redirect: false, // only redirect when renaming from within the project
-      },
-    })
+    if (newProjectName !== project.name) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+          redirect: false,
+        },
+      })
+    }
   }
 }
 
-async function handleDeleteProject(project: Project) {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.deleteProject,
-    data: { requestedProjectName: project.name },
-  })
+function handleDeleteProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+) {
+  return async function (project: Project) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.deleteProject,
+      data: {
+        requestedProjectName: String(project.name),
+      },
+    })
+  }
 }
 
 export default Home

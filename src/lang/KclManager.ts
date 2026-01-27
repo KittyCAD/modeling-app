@@ -881,6 +881,7 @@ export class KclManager extends EventTarget {
           ast,
           sourceCode: this.code,
           instance: await this._wasmInstancePromise,
+          rustContext: this.singletons.rustContext,
         })
       )
       if (this._sceneEntitiesManager) {
@@ -1446,6 +1447,7 @@ export class KclManager extends EventTarget {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
+
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
