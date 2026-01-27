@@ -587,11 +587,11 @@ impl ExecutorContext {
                 fps: None,
                 order_independent_transparency: Some(settings.enable_oit),
                 pool: None,
-                post_effect: if settings.enable_ssao || settings.enable_oit {
+                post_effect: dbg!(if settings.enable_ssao || settings.enable_oit {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
-                },
+                }),
                 pr: None,
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },

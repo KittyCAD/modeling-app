@@ -39,8 +39,12 @@ pub struct Snapshot3d {
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
-pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
-    let ctx = new_context(true, current_file).await?;
+pub async fn execute_and_snapshot_3d(
+    code: &str,
+    current_file: Option<PathBuf>,
+    enable_oit: bool,
+) -> Result<Snapshot3d, ExecError> {
+    let ctx = new_context_oit(true, current_file, enable_oit).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let image = do_execute_and_snapshot(&ctx, program)
         .await
@@ -156,6 +160,14 @@ async fn do_execute_and_snapshot(
 }
 
 pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
+    new_context_oit(with_auth, current_file, false).await
+}
+
+pub async fn new_context_oit(
+    with_auth: bool,
+    current_file: Option<PathBuf>,
+    enable_oit: bool,
+) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
     if !with_auth {
@@ -168,7 +180,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
     let mut settings = ExecutorSettings {
         highlight_edges: true,
         enable_ssao: true,
-        enable_oit: false,
+        enable_oit,
         show_grid: false,
         replay: None,
         project_directory: None,
