@@ -57,21 +57,21 @@ sketch003 = startSketchOn(body, face = seg01)
 // Identify hole positions
 holeCenters = [
   [
-  plateHoleDistanceX1,
-  plateHoleDistanceY1
-],
+    plateHoleDistanceX1,
+    plateHoleDistanceY1
+  ],
   [
-  plateHoleDistanceX1,
-  plateHoleDistanceY2
-],
+    plateHoleDistanceX1,
+    plateHoleDistanceY2
+  ],
   [
-  plateHoleDistanceX2,
-  plateHoleDistanceY1
-],
+    plateHoleDistanceX2,
+    plateHoleDistanceY1
+  ],
   [
-  plateHoleDistanceX2,
-  plateHoleDistanceY2
-]
+    plateHoleDistanceX2,
+    plateHoleDistanceY2
+  ]
 ]
 
 // Place a hole at each position

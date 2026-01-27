@@ -63,7 +63,7 @@ fn square(@plane, offset, y) {
 cube = [
   square(XY, offset = 0, y = false),
   square(XZ, offset = 0, y = true)
-  |> flipSurface(),
+    |> flipSurface(),
   square(YZ, offset = 0, y = false),
   square(XY, offset = sideLen, y = false),
   square(XZ, offset = -sideLen, y = true),
