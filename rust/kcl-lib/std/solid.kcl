@@ -1557,5 +1557,5 @@ export fn blend(
    /// The two surfaces that will be blended.
    @surfaces: [Solid; 2],
    /// The two edges that will be used to blend.
-   edges: [EdgeReference; 2],
+   edges: [TaggedEdge; 2],
 ): [Solid; 2] {}

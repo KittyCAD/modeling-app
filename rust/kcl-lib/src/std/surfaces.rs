@@ -233,7 +233,7 @@ async fn inner_blend(
 ) -> Result<Vec<Solid>, KclError> {
     let id = exec_state.next_uuid();
 
-    let object_ids = surfaces.clone().into_iter().map(|surface| surface.id).collect();
+    let object_ids = surfaces.iter().map(|surface| surface.id).collect();
 
     let edge_ids = edges
         .into_iter()
