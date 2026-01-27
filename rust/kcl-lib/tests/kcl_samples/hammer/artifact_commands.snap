@@ -1975,7 +1975,7 @@ description: Artifact commands hammer.kcl
           "r": 0.94509804,
           "g": 0.30980393,
           "b": 0.015686275,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
