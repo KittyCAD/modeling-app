@@ -130,8 +130,6 @@ async fn inner_appearance(
             b: rgb.blue,
             a: (opacity.unwrap_or(100.0) as f32) / 100.0,
         };
-        debug_assert!(color.a <= 1.0);
-        debug_assert!(color.a >= 0.0);
 
         exec_state
             .batch_modeling_cmd(

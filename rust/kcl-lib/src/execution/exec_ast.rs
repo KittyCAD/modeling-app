@@ -3716,6 +3716,17 @@ c = ((PI * 2) / 3): number(deg)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn warn_on_not_percentage() {
+        let ast = "
+        startSketchOn(XY) |> circle(radius = 3, center = [0, 0]) |> extrude(length = 1)
+        |> appearance(color = \"#003399\", metalness = 0.3)
+";
+
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn non_count_indexing() {
         let ast = r#"x = [0, 0]
 y = x[1mm]
