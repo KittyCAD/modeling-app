@@ -129,6 +129,17 @@ async fn inner_appearance(
         debug_assert!(color.a <= 1.0);
         debug_assert!(color.a >= 0.0);
 
+        // Enable order-independent transparency if the user has something transparent.
+        let has_transparency = color.a < 1.0;
+        if has_transparency {
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(true).build()),
+                )
+                .await?;
+        }
+
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),

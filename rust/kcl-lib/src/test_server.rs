@@ -168,7 +168,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
     let mut settings = ExecutorSettings {
         highlight_edges: true,
         enable_ssao: true,
-        enable_oit: true,
+        enable_oit: false,
         show_grid: false,
         replay: None,
         project_directory: None,
