@@ -1890,7 +1890,7 @@ async fn inner_bezier_curve(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let to = match (
+    let (to, control1_abs, control2_abs) = match (
         control1,
         control2,
         end,
@@ -1904,6 +1904,15 @@ async fn inner_bezier_curve(
             let to = [
                 from.x + end[0].to_length_units(from.units),
                 from.y + end[1].to_length_units(from.units),
+            ];
+            // Calculate absolute control points
+            let control1_abs = [
+                from.x + control1[0].to_length_units(from.units),
+                from.y + control1[1].to_length_units(from.units),
+            ];
+            let control2_abs = [
+                from.x + control2[0].to_length_units(from.units),
+                from.y + control2[1].to_length_units(from.units),
             ];
 
             exec_state
@@ -1922,11 +1931,13 @@ async fn inner_bezier_curve(
                     ),
                 )
                 .await?;
-            to
+            (to, control1_abs, control2_abs)
         }
         // Absolute
         (None, None, None, Some(control1), Some(control2), Some(end)) => {
             let to = [end[0].to_length_units(from.units), end[1].to_length_units(from.units)];
+            let control1_abs = control1.clone().map(|v| v.to_length_units(from.units));
+            let control2_abs = control2.clone().map(|v| v.to_length_units(from.units));
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -1943,7 +1954,7 @@ async fn inner_bezier_curve(
                     ),
                 )
                 .await?;
-            to
+            (to, control1_abs, control2_abs)
         }
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1953,7 +1964,7 @@ async fn inner_bezier_curve(
         }
     };
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::Bezier {
         base: BasePath {
             from: from.ignore_units(),
             to,
@@ -1964,6 +1975,8 @@ async fn inner_bezier_curve(
                 metadata: args.source_range.into(),
             },
         },
+        control1: control1_abs,
+        control2: control2_abs,
     };
 
     let mut new_sketch = sketch;
