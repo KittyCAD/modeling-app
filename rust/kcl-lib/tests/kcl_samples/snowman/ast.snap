@@ -8341,18 +8341,40 @@ description: Result of parsing snowman.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
-          "arguments": [
+          "body": [
             {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "items",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "items",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "limbs",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                }
+              ],
+              "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
@@ -8361,7 +8383,30 @@ description: Result of parsing snowman.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "limbs",
+                  "name": "concat",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "snowmanParts",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -8370,49 +8415,125 @@ description: Result of parsing snowman.kcl
                 "type": "Name",
                 "type": "Name"
               }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "axis",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "Z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "angle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "argument": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "90deg",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 90.0,
+                        "suffix": "Deg"
+                      }
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "operator": "-",
+                    "start": 0,
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "global",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "raw": "true",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": true
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "rotate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": "concat",
               "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
           "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "snowmanParts",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
+          "type": "PipeExpression",
+          "type": "PipeExpression"
         },
         "moduleId": 0,
         "start": 0,
