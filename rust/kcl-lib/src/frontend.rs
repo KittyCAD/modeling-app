@@ -5499,7 +5499,7 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
   line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
   sketch2::coincident([line1.end, line2.start])
   line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
@@ -5588,7 +5588,7 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
   line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
   sketch2::coincident([line1.end, line2.start])
   line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
@@ -5601,7 +5601,7 @@ sketch2::distance([line1.start, line1.end]) == 2 * x
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.324mm, var 2.118mm])
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
 sketch2::distance([line1.start, line1.end]) == x
 }
 "
@@ -5631,7 +5631,7 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
   line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
   sketch2::coincident([line1.end, line2.start])
   line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
@@ -5644,7 +5644,7 @@ sketch2::distance([line1.start, line1.end]) == 2 * x
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 1.283mm, var -0.781mm])
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
 sketch2::distance([line1.start, line1.end]) == x
 }
 "
