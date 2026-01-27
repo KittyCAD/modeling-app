@@ -297,9 +297,13 @@ const StarterCard = ({ text }: { text: string }) => {
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
 
-  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
+  const exchangesLength = props.conversation?.exchanges.length ?? 0
+  const lastExchange = exchangesLength
+    ? props.conversation?.exchanges[exchangesLength - 1]
+    : undefined
+
+  // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    const exchangesLength = props.conversation?.exchanges.length ?? 0
     if (exchangesLength === 0) return
 
     requestAnimationFrame(() => {
@@ -310,7 +314,28 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         })
       }
     })
-  }, [props.conversation?.exchanges.length])
+  }, [exchangesLength])
+
+  // Autoscroll: right after final Zookeeper `end_of_stream` message is added.
+  useEffect(() => {
+    if (!lastExchange?.responses) {
+      return
+    }
+    const hasStreamEnded = lastExchange.responses.some(
+      (res) => 'end_of_stream' in res
+    )
+
+    if (hasStreamEnded) {
+      requestAnimationFrame(() => {
+        if (refScroll.current) {
+          refScroll.current.scrollTo({
+            top: refScroll.current.scrollHeight,
+            behavior: 'smooth',
+          })
+        }
+      })
+    }
+  }, [lastExchange?.responses])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
