@@ -357,7 +357,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 <StarterCard
                   text={`Zookeeper is unavailable because your balance is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
                 />
-              ) : props.isLoading || props.needsReconnect ? (
+              ) : props.isLoading && !props.needsReconnect ? (
                 <div className="text-center p-4">
                   <Loading isDummy={true} className="!text-ml-green"></Loading>
                 </div>
