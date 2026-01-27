@@ -95,7 +95,7 @@ pub use errors::{
 };
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
-    clear_mem_cache, typed_path::TypedPath,
+    clear_mem_cache, transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{

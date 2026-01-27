@@ -89,6 +89,12 @@ export default class RustContext {
     return ctxInstance
   }
 
+  /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
+  async createNewContext(): Promise<Context> {
+    const instance = await this._wasmInstancePromise
+    return new instance.Context(this.engineCommandManager, projectFsManager)
+  }
+
   get wasmInstancePromise() {
     return this._wasmInstancePromise
   }
