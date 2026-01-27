@@ -7,10 +7,6 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 /**
- * Helper to calculate intersection between a line segment and an arc
- * @internal - exported for testing
- */
-/**
  * Creates the onAreaSelectEnd callback for trim operations.
  * Handles the trim flow by processing trim points and executing trim strategies.
  *
