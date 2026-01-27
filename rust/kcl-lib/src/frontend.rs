@@ -1743,55 +1743,24 @@ impl FrontendState {
     ) -> api::Result<SourceRange> {
         let sketch_id = sketch;
 
-        // Handle single line segment or two points
-        let elements = if distance.points.len() == 1 {
-            // Single line segment case
-            let line_id = distance.points[0];
-            let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
-                msg: format!("Line segment not found: {line_id:?}"),
-            })?;
-            let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-                return Err(Error {
-                    msg: format!("Object is not a segment: {line_object:?}"),
-                });
-            };
-            let Segment::Line(_) = line_segment else {
-                return Err(Error {
-                    msg: format!("Single argument to distance() must be a line segment, got: {line_segment:?}"),
-                });
-            };
-            // Reference the line segment directly
-            let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source, "line", None)?;
-            vec![line_ast]
-        } else if distance.points.len() == 2 {
-            // Two points case (original behavior)
-            let [pt0_id, pt1_id] = distance.points.as_slice() else {
-                return Err(Error {
-                    msg: format!(
-                        "Distance constraint must have 1 or 2 arguments, got {}",
-                        distance.points.len()
-                    ),
-                });
-            };
-            // Map the runtime objects back to variable names.
-            let pt0_ast = self.point_id_to_ast_reference(*pt0_id, new_ast)?;
-            let pt1_ast = self.point_id_to_ast_reference(*pt1_id, new_ast)?;
-            vec![pt0_ast, pt1_ast]
-        } else {
+        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
-                    "Distance constraint must have 1 or 2 arguments, got {}",
+                    "Distance constraint must have exactly 2 points, got {}",
                     distance.points.len()
                 ),
             });
         };
+        // Map the runtime objects back to variable names.
+        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
+        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
 
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements,
+                    elements: vec![pt0_ast, pt1_ast],
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -4807,23 +4776,26 @@ sketch(on = XY) {
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
-        // Find the line segment (not the points)
-        let line_id = sketch
-            .segments
+        // Find the line segment and use its start/end points (distance() accepts two points only)
+        let (start_id, end_id) = frontend
+            .scene_graph
+            .objects
             .iter()
-            .find(|&seg_id| {
-                let obj = frontend.scene_graph.objects.get(seg_id.0);
-                matches!(
-                    obj.map(|o| &o.kind),
-                    Some(ObjectKind::Segment {
-                        segment: Segment::Line(_)
-                    })
-                )
+            .find_map(|obj| {
+                let ObjectKind::Segment { segment } = &obj.kind else {
+                    return None;
+                };
+                let Segment::Line(line) = segment else { return None };
+                if sketch.segments.contains(&obj.id) {
+                    Some((line.start, line.end))
+                } else {
+                    None
+                }
             })
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![*line_id],
+            points: vec![start_id, end_id],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -4841,7 +4813,7 @@ sketch(on = XY) {
 
 sketch(on = XY) {
   line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
-sketch2::distance([line1]) == 5mm
+sketch2::distance([line1.start, line1.end]) == 5mm
 }
 "
         );

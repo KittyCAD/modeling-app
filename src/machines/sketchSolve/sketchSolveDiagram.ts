@@ -425,13 +425,23 @@ export const sketchSolveMachine = setup({
             }
           }
         }
+        // distance() accepts two points: when user selects one line, pass its endpoints
+        const pointsForDistance =
+          currentSelections.length === 1 &&
+          currentSelections[0]?.kind?.type === 'Segment' &&
+          currentSelections[0].kind.segment?.type === 'Line'
+            ? [
+                currentSelections[0].kind.segment.start,
+                currentSelections[0].kind.segment.end,
+              ]
+            : segmentsToConstrain
         const result = await context.rustContext.addConstraint(
           0,
           context.sketchId,
           {
             type: 'Distance',
             distance: { value: distance, units },
-            points: segmentsToConstrain,
+            points: pointsForDistance,
           },
           await jsAppSettings(context.rustContext.settingsActor)
         )
