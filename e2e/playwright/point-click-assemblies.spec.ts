@@ -308,7 +308,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '1',
           headerArguments: {
             Objects: '1 other',
             X: '',

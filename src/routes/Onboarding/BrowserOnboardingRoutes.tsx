@@ -15,7 +15,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -31,6 +30,7 @@ import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { useSingletons } from '@src/lib/boot'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -59,6 +59,7 @@ const browserOnboardingComponents: Record<
 }
 
 function Welcome() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser'
 
   // Ensure panes are closed
@@ -79,7 +80,7 @@ function Welcome() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -104,6 +105,7 @@ function Welcome() {
 }
 
 function Scene() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser/scene'
 
   // Things that happen when we load this route
@@ -121,7 +123,7 @@ function Scene() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -238,6 +240,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: BrowserOnboardingPath =
     '/browser/feature-tree-pane'
 
@@ -261,7 +264,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -320,6 +323,7 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
+  const { commandBarActor } = useSingletons()
   const thisOnboardingStatus: BrowserOnboardingPath =
     '/browser/prompt-to-edit-prompt'
   const prompt =
@@ -387,6 +391,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: BrowserOnboardingPath =
     '/browser/prompt-to-edit-result'
 
@@ -407,7 +412,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
