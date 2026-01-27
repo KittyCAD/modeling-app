@@ -2,15 +2,15 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[101, 137, 1]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+      %% [ProgramBodyItem { index: 0 }]
     3["Segment<br>[101, 137, 1]"]
-      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+      %% [ProgramBodyItem { index: 0 }]
     4[Solid2d]
   end
   1["Plane<br>[78, 95, 1]"]
-    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+    %% [ProgramBodyItem { index: 0 }]
   5["Sweep Extrusion<br>[143, 163, 1]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
+    %% [ProgramBodyItem { index: 0 }]
   6[Wall]
     %% face_code_ref=Missing NodePath
   7["Cap Start"]
