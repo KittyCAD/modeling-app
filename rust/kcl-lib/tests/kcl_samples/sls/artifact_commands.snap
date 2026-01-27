@@ -215,7 +215,7 @@ description: Artifact commands sls.kcl
           "r": 0.03137255,
           "g": 0.03137255,
           "b": 0.03137255,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -710,7 +710,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -991,7 +991,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 0.58431375,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1194,7 +1194,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1397,7 +1397,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1610,7 +1610,7 @@ description: Artifact commands sls.kcl
           "r": 0.039215688,
           "g": 0.039215688,
           "b": 0.039215688,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1823,7 +1823,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2325,7 +2325,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2664,7 +2664,7 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

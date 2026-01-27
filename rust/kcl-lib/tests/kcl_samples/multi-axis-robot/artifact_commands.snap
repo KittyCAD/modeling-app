@@ -1023,7 +1023,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.45882353,
           "g": 0.25490198,
           "b": 0.0627451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -2599,7 +2599,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.27058825,
           "g": 0.27058825,
           "b": 0.27058825,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4417,7 +4417,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4434,7 +4434,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4451,7 +4451,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4468,7 +4468,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4686,7 +4686,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.30980393,
           "g": 0.49019608,
           "b": 0.32941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -5565,7 +5565,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.30980393,
           "g": 0.49019608,
           "b": 0.32941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
