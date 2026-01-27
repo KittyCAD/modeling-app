@@ -3,24 +3,37 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import {
-  authActor,
-  commandBarActor,
-  kclManager,
-  settingsActor,
-} from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
+import type { authMachine } from '@src/machines/authMachine'
+import type { ActorRefFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
-export function modelingMenuCallbackMostActions(
-  settings: SettingsType,
-  navigate: NavigateFunction,
-  filePath: string,
-  engineCommandManager: ConnectionManager,
+export function modelingMenuCallbackMostActions({
+  settings,
+  navigate,
+  filePath,
+  engineCommandManager,
+  sceneInfra,
+  authActor,
+  commandBarActor,
+  kclManager,
+  settingsActor,
+}: {
+  settings: SettingsType
+  navigate: NavigateFunction
+  filePath: string
+  engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
-) {
+  authActor: ActorRefFrom<typeof authMachine>
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
+  settingsActor: SettingsActorType
+}) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {

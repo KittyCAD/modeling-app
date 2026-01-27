@@ -16,12 +16,7 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import {
-  kclManager,
-  engineCommandManager,
-  sceneInfra,
-  settingsActor,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -30,6 +25,8 @@ import { useSignals } from '@preact/signals-react/runtime'
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  const { engineCommandManager, kclManager, sceneInfra, settingsActor } =
+    useSingletons()
   useSignals()
   useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData

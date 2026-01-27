@@ -25,7 +25,7 @@ import {
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/app'
 import type {
   FileLoaderData,
   HomeLoaderData,
