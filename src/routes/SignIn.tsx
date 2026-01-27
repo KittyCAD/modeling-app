@@ -54,21 +54,23 @@ const SignIn = () => {
     setSelectedEnvironment(requestedEnvironmentFormatted)
   }
 
-  const commitEnvironmentChange = async (requestedEnvironment: string) => {
+  const commitEnvironmentChange = (requestedEnvironment: string) => {
     if (!window.electron) return
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
-    const persistedEnvironment = await readEnvironmentFile(window.electron).catch(
-      () => ''
-    )
-    if (requestedEnvironmentFormatted === persistedEnvironment) {
-      return
-    }
-    await writeEnvironmentFile(
-      window.electron,
-      requestedEnvironmentFormatted
-    ).catch(reportRejection)
-    window.location.reload()
+    void (async () => {
+      const persistedEnvironment = await readEnvironmentFile(
+        window.electron
+      ).catch(() => '')
+      if (requestedEnvironmentFormatted === persistedEnvironment) {
+        return
+      }
+      await writeEnvironmentFile(
+        window.electron,
+        requestedEnvironmentFormatted
+      ).catch(reportRejection)
+      window.location.reload()
+    })()
   }
 
   useEffect(() => {
