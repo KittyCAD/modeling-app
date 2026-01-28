@@ -111,7 +111,7 @@ jobs:
         run: |
           set -euo pipefail
           pushd rust
-          just overwrite-sim-test kcl_samples
+          just update-sim-test kcl_samples
           popd
           git add \
             rust/kcl-lib/tests \
