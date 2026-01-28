@@ -384,9 +384,14 @@ code,
       container-type: inline-size;
     }
 
-    --border-radius: calc(round(calc(1cqw / 1cqmax * 1)) * 4px);
+    /** compare the value of cqw units and cqmax to get a binary value */
+    --is-not-full-width: round(calc(55cqw / 100cqmax * 1));
+    /** Unused, just leaving in case we need it someday. */
+    --is-full-width: abs(calc(var(--is-not-full-width) - 1));
+    --border-radius: calc(var(--is-not-full-width) * 4px);
     border-bottom-right-radius: var(--border-radius);
     border-bottom-left-radius: var(--border-radius);
+    border-inline-width: calc(var(--is-not-full-width) * 1px);
   }
 }
 
