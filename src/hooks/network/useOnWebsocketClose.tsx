@@ -3,6 +3,8 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
+const MAX_WEBSOCKET_CLOSE_ON_ERROR_1006_ATTEMPTS = 3
+
 export interface IUseOnWebsocketClose {
   callback: () => void
   infiniteDetectionLoopCallback: () => void
@@ -29,7 +31,7 @@ export function useOnWebsocketClose({
         // This will result in an infinite loop
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'possible infinite loop detection, run attempts',
+          message: `possible infinite loop detected, try up to ${MAX_WEBSOCKET_CLOSE_ON_ERROR_1006_ATTEMPTS} times`,
           metadata: {
             code: event?.detail?.code,
             attempt: numberOf1006Disconnects.current,
@@ -37,7 +39,7 @@ export function useOnWebsocketClose({
         })
       }
 
-      if (numberOf1006Disconnects.current > 3) {
+      if (numberOf1006Disconnects.current > MAX_WEBSOCKET_CLOSE_ON_ERROR_1006_ATTEMPTS) {
         infiniteDetectionLoopCallback()
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
