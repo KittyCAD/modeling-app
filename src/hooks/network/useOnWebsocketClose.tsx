@@ -37,22 +37,26 @@ export function useOnWebsocketClose({
             attempt: numberOf1006Disconnects.current,
           },
         })
+
+        if (
+          numberOf1006Disconnects.current >
+          MAX_WEBSOCKET_CLOSE_ON_ERROR_1006_ATTEMPTS
+        ) {
+          infiniteDetectionLoopCallback()
+          // Most likely your internet is out. Do not try to auto reconnect
+          // This will result in an infinite loop
+          EngineDebugger.addLog({
+            label: 'useOnWebsocketClose',
+            message: 'stop auto connection, detected infinite loop',
+            metadata: {
+              code: event?.detail?.code,
+              attempt: numberOf1006Disconnects.current,
+            },
+          })
+          return
+        }
       }
 
-      if (numberOf1006Disconnects.current > MAX_WEBSOCKET_CLOSE_ON_ERROR_1006_ATTEMPTS) {
-        infiniteDetectionLoopCallback()
-        // Most likely your internet is out. Do not try to auto reconnect
-        // This will result in an infinite loop
-        EngineDebugger.addLog({
-          label: 'useOnWebsocketClose',
-          message: 'stop auto connection, detected infinite loop',
-          metadata: {
-            code: event?.detail?.code,
-            attempt: numberOf1006Disconnects.current,
-          },
-        })
-        return
-      }
 
       callback()
     }
