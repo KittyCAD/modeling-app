@@ -43,7 +43,7 @@ export function useOnWebsocketClose({
         // This will result in an infinite loop
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'stop auto connected, detected infinite loop',
+          message: 'stop auto connection, detected infinite loop',
           metadata: {
             code: event?.detail?.code,
             attempt: numberOf1006Disconnects.current,
