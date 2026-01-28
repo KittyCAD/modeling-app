@@ -380,18 +380,18 @@ code,
   }
 
   .toolbar {
+    box-sizing: border-box;
     :has(> &) {
       container-type: inline-size;
     }
 
-    /** compare the value of cqw units and cqmax to get a binary value */
-    --is-not-full-width: round(calc(55cqw / 100cqmax * 1));
-    /** Unused, just leaving in case we need it someday. */
-    --is-full-width: abs(calc(var(--is-not-full-width) - 1));
-    --border-radius: calc(var(--is-not-full-width) * 4px);
-    border-bottom-right-radius: var(--border-radius);
-    border-bottom-left-radius: var(--border-radius);
-    border-inline-width: calc(var(--is-not-full-width) * 1px);
+    /** relate the values of cqi units (% container's inline size)
+    and percentage (which uses child's inline-size) to get a percentage */
+    --container-percentage-width: calc(100cqi - 100%);
+    --br: min(var(--container-percentage-width), 4px);
+    border-bottom-right-radius: var(--br);
+    border-bottom-left-radius: var(--br);
+    border-inline-width: min(var(--container-percentage-width), 1px);
   }
 }
 
