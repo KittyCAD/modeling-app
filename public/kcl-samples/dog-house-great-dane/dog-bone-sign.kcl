@@ -1,0 +1,41 @@
+// Dog House (Great Dane) - Dog Bone Sign
+// Parametric bone sign profile, extruded and wood-colored.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Import and declare parameters
+import * from "2x4.kcl"
+
+// Bone profile parameters (adjusted for a thicker center bar)
+boneHalfWidth = 6.06
+boneNeckTopX = -3.31
+boneNeckBottomX = -3.07
+boneNeckTopZ = 3.6
+boneNeckBottomZ = -0.6
+
+boneTopLobeInterior = [-4.95, 5.08]
+boneTopLobeEnd = [-6.06, 1.13]
+boneBottomLobeInterior = [-5.04, -2.99]
+boneBottomLobeEnd = [boneNeckBottomX, boneNeckBottomZ]
+
+export signThickness = 0.75
+export signWidth = boneHalfWidth * 2
+export signHeight = boneTopLobeInterior[1] - boneBottomLobeInterior[1]
+
+boneBottomOffsetZ = -boneBottomLobeInterior[1]
+
+boneSketch = startSketchOn(XZ)
+boneProfile = startProfile(boneSketch, at = [0, boneNeckTopZ])
+  |> xLine(length = boneNeckTopX)
+  |> arc(interiorAbsolute = boneTopLobeInterior, endAbsolute = boneTopLobeEnd)
+  |> arc(interiorAbsolute = boneBottomLobeInterior, endAbsolute = boneBottomLobeEnd)
+  |> xLine(length = -boneBottomLobeEnd[0])
+  |> mirror2d(axis = Y)
+
+dogBoneSign = boneProfile
+  |> extrude(length = signThickness)
+  |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)
+  |> translate(z = boneBottomOffsetZ)
+
+[dogBoneSign]

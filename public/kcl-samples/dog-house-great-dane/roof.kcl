@@ -38,6 +38,22 @@ collarTieHalfWidth = roofHalfWidth * (peakZ - collarTieCenterZ) / (peakZ - eaveZ
 collarTieLength = 2 * collarTieHalfWidth
 collarTieMinZ = collarTieCenterZ - (studThickness / 2)
 
+// Import upper side wall beams as reference geometry
+topRightPlate = twoByFourY(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+topLeftPlate = twoByFourY(
+  minX = -frameWidth / 2,
+  minY = 0,
+  minZ = studTopZ,
+  lengthY = frameLength,
+)
+
+// Create half-width rafter beams to make slot cuts
 rightRafterhalf = twoByFourX(
        minX = -rafterLength / 2 - 3,
        minY = rafterStartY,
@@ -58,6 +74,7 @@ leftRafterHalf = twoByFourX(
   |> translate(x = -roofHalfWidth / 2, y = -3.5 / 2, z = rafterMidZ)
   |> scale(x = 1.025, z = 1.025, global = false)
 
+// Model the left and right rafters. Subtract interface to mesh with other beams
 rightRafter = twoByFourX(
        minX = -rafterLength / 2 - 3,
        minY = rafterStartY,
@@ -67,6 +84,7 @@ rightRafter = twoByFourX(
   |> rotate(axis = [0, 1, 0], angle = -roofAngle)
   |> translate(x = roofHalfWidth / 2, y = 0, z = rafterMidZ)
   |> subtract(tools = leftRafterHalf)
+  |> subtract(tools = topLeftPlate)
 
 leftRafter = twoByFourX(
        minX = -rafterLength / 2,
@@ -77,7 +95,9 @@ leftRafter = twoByFourX(
   |> rotate(axis = [0, 1, 0], angle = roofAngle)
   |> translate(x = -roofHalfWidth / 2, y = 0, z = rafterMidZ)
   |> subtract(tools = rightRafterhalf)
+  |> subtract(tools = topRightPlate)
 
+// Create the center collar tie
 collarTie = twoByFourX(
        minX = -collarTieHalfWidth + 2.25,
        minY = rafterStartY,
@@ -86,6 +106,7 @@ collarTie = twoByFourX(
      )
   |> subtract(tools = [clone(leftRafter), clone(rightRafter)])
 
+// Pattern the roof beams the length of the roof
 rightRafters = patternLinear3d(
   [rightRafter],
   axis = [0, 1, 0],
@@ -107,28 +128,8 @@ collarTies = patternLinear3d(
   instances = rafterCount,
 )
 
-// Right wall plates
-// Continuous top plate along Y at studTopZ
-topRightPlate = twoByFourY(
-  minX = frameWidth / 2 - studDepth,
-  minY = 0,
-  minZ = studTopZ,
-  lengthY = frameLength,
-)
-
-// Top plate along Y at studTopZ
-topLeftPlate = twoByFourY(
-  minX = -frameWidth / 2,
-  minY = 0,
-  minZ = studTopZ,
-  lengthY = frameLength,
-)
-
-solid001 = subtract(leftRafters, tools = topRightPlate)
-
-solid002 = subtract(rightRafters, tools = topLeftPlate)
-
-sketch001 = startSketchOn(YZ)
+// Model a ridgeboard to hold it all together
+ridgeBoardSlots = startSketchOn(YZ)
   |> startProfile(at = [
        rafterStartY - 0.025,
        ridgeBoardZ + 3.75
@@ -147,4 +148,13 @@ ridgeBoard = twoByFourYRotated(
        minZ = ridgeBoardZ + 1,
        lengthY = frameLength,
      )
-  |> subtract(tools = sketch001)
+  |> subtract(tools = ridgeBoardSlots)
+
+// Apply wooden appearance
+[
+       rightRafters,
+       leftRafters,
+       collarTies,
+       ridgeBoard
+     ]
+  |> appearance(color = woodColor, roughness = woodRoughness, metalness = woodMetalness)

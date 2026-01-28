@@ -130,16 +130,16 @@ fillets = fillet(
   radius = 1,
   tags = [
     getCommonEdge(faces = [
-  innerFaceOfTheUprofileBottom,
-  innerFaceOfTheUProfileLeftSide
-]),
+      innerFaceOfTheUprofileBottom,
+      innerFaceOfTheUProfileLeftSide
+    ]),
     getCommonEdge(faces = [
-  innerFaceOfTheUprofileRightSide,
-  innerFaceOfTheUprofileBottom
-]),
+      innerFaceOfTheUprofileRightSide,
+      innerFaceOfTheUprofileBottom
+    ]),
     getCommonEdge(faces = [
-  innerFaceOfTheWall,
-  upperFaceOfTheUprofile
-])
+      innerFaceOfTheWall,
+      upperFaceOfTheUprofile
+    ])
   ],
 )
