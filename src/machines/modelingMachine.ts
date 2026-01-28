@@ -362,7 +362,7 @@ export type ModelingMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
@@ -5581,7 +5581,7 @@ export const modelingMachine = setup({
         Horizontal: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
-        Distance: {
+        Dimension: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         HorizontalDistance: {
