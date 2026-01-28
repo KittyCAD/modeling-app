@@ -1179,6 +1179,19 @@ pub(crate) async fn inner_start_profile(
     ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    create_sketch(id, sketch_surface, at, tag, exec_state, ctx, source_range).await
+}
+
+pub(crate) async fn create_sketch(
+    id: Uuid,
+    sketch_surface: SketchSurface,
+    at: [TyF64; 2],
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+) -> Result<Sketch, KclError> {
     match &sketch_surface {
         SketchSurface::Face(face) => {
             // Flush the batch for our fillets/chamfers if there are any.
@@ -1203,8 +1216,8 @@ pub(crate) async fn inner_start_profile(
         _ => {}
     }
 
+    let path_id = id;
     let enable_sketch_id = exec_state.next_uuid();
-    let path_id = exec_state.next_uuid();
     let move_pen_id = exec_state.next_uuid();
     let disable_sketch_id = exec_state.next_uuid();
     exec_state

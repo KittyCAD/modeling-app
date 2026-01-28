@@ -1376,10 +1376,12 @@ impl Node<SketchBlock> {
             exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
         }
         // Substitute solutions back into sketch variables.
+        let sketch_engine_id = exec_state.next_uuid();
         let solution_ty = solver_numeric_type(exec_state);
         let variables = substitute_sketch_vars(
             variables,
             &sketch_surface,
+            sketch_engine_id,
             &solve_outcome,
             solution_ty,
             solve_analysis.as_ref(),
@@ -1389,12 +1391,12 @@ impl Node<SketchBlock> {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
                 &sketch_surface,
+                sketch_engine_id,
                 &solve_outcome,
                 solver_numeric_type(exec_state),
                 solve_analysis.as_ref(),
             )?);
         }
-        let solved_segments = solved_segments; // Remove mutability
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
@@ -1454,7 +1456,15 @@ impl Node<SketchBlock> {
 
         // If not in sketch mode, send everything to the engine.
         if !exec_state.sketch_mode() {
-            create_segments_in_engine(&sketch_surface, &solved_segments, ctx, exec_state, range).await?;
+            create_segments_in_engine(
+                &sketch_surface,
+                sketch_engine_id,
+                &mut solved_segments,
+                ctx,
+                exec_state,
+                range,
+            )
+            .await?;
         }
 
         let metadata = Metadata {
@@ -1848,6 +1858,7 @@ impl Node<MemberExpression> {
                                             freedom: *start_freedom,
                                         },
                                         surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1875,6 +1886,7 @@ impl Node<MemberExpression> {
                                             freedom: *start_freedom,
                                         },
                                         surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1970,6 +1982,7 @@ impl Node<MemberExpression> {
                                             freedom: *end_freedom,
                                         },
                                         surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -1997,6 +2010,7 @@ impl Node<MemberExpression> {
                                             freedom: *end_freedom,
                                         },
                                         surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
                                         meta: segment.meta.clone(),
                                     },
                                 },
@@ -2061,6 +2075,7 @@ impl Node<MemberExpression> {
                                             freedom: *center_freedom,
                                         },
                                         surface: segment.surface.clone(),
+                                        sketch_id: segment.sketch_id,
                                         meta: segment.meta.clone(),
                                     },
                                 },
