@@ -33,6 +33,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -41,6 +42,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         name,
         frame_position,
         frame_plane,
+        leader_scale,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -59,6 +61,7 @@ async fn inner_datum(
     name: String,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
@@ -120,6 +123,7 @@ async fn inner_datum(
                             precision: 0,
                             font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
                             font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
+                            leader_scale: leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
                         }),
                         feature_tag: None,
                     })
@@ -146,6 +150,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -155,6 +160,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         precision,
         frame_position,
         frame_plane,
+        leader_scale,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -173,6 +179,7 @@ async fn inner_flatness(
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
@@ -248,6 +255,7 @@ async fn inner_flatness(
                                     .as_ref()
                                     .map(|n| n.n.round() as u32)
                                     .unwrap_or(36),
+                                leader_scale: leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
                             }),
                             feature_tag: None,
                         })
