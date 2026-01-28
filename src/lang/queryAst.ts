@@ -1195,8 +1195,6 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // @pierremtb: not having a pathToNode at this point could mean the selection
-    // is from an imported module, see https://github.com/KittyCAD/modeling-app/issues/8616
     console.warn('No match for selection, likely a bug (or bad selection)', s)
   }
 
