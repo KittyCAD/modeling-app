@@ -41,6 +41,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import {
   buildSegmentCtorFromObject,
+  SketchSolveContext,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
@@ -61,6 +62,7 @@ import {
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -311,11 +313,28 @@ export function findEntityUnderCursorId(
     }
   }
 
+  // const constraintHit = (intersects as any[]).find(
+  //     (intersect: any) =>
+  //       intersect.object?.userData?.type === 'distance-constraint-hit-area'
+  //   )
+  //   if (constraintHit) {
+  //     const constraintGroup = getParentGroup(constraintHit.object, [
+  //       'constraint',
+  //     ])
+  //     console.log('Constraint clicked:', {
+  //       constraintId: constraintGroup?.userData.object_id,
+  //       constraintType: constraintGroup?.userData.constraintType,
+  //       clickedOn: constraintHit.object.userData.subtype,
+  //     })
+  //     return
+  //   }
+
   // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
   const groupUnderCursor = getParentGroup(selected, [
     SEGMENT_TYPE_POINT,
     SEGMENT_TYPE_LINE,
     SEGMENT_TYPE_ARC,
+    CONSTRAINT_TYPE,
   ])
   if (groupUnderCursor) {
     const groupId = Number(groupUnderCursor.name)
@@ -462,18 +481,26 @@ export function createOnClickCallback({
     selectedIds: Array<number>
     duringAreaSelectIds: Array<number>
   }) => void
+  getContextData: () => SketchSolveContext['sketchExecOutcome']
 }): (arg: {
   selected?: Object3D
   mouseEvent: MouseEvent
   intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected }) => {
+  return async ({ selected, mouseEvent }) => {
     // Find the segment group under the cursor using the same logic as drag operations
     const entityUnderCursorId = findEntityUnderCursorId(
       selected,
       getParentGroup
     )
+    if (
+      mouseEvent.detail === 2 &&
+      selected?.parent?.userData.type === CONSTRAINT_TYPE
+    ) {
+      // Double clicking on Constraint
+      console.log('dbl click', selected, entityUnderCursorId)
+    }
 
     if (entityUnderCursorId !== null) {
       // Segment found - select it and clear any area selection
@@ -1448,6 +1475,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
         selectedIds: Array<number>
         duringAreaSelectIds: Array<number>
       }) => self.send({ type: 'update selected ids', data }),
+      getContextData: () => {
+        const snapshot = self.getSnapshot()
+        return snapshot.context.sketchExecOutcome
+      },
     }),
     onMouseEnter: createOnMouseEnterCallback({
       updateSegmentHover,

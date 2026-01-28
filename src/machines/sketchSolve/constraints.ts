@@ -11,6 +11,7 @@ import {
   SpriteMaterial,
   CanvasTexture,
   Color,
+  PlaneGeometry,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -20,6 +21,7 @@ import {
   DISTANCE_CONSTRAINT_BODY,
   DISTANCE_CONSTRAINT_LABEL,
   DISTANCE_CONSTRAINT_LEADER_LINE,
+  DISTANCE_CONSTRAINT_HIT_AREA,
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
@@ -33,6 +35,10 @@ const CONSTRAINT_COLOR = {
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
+const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
+const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
+
+export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
@@ -48,6 +54,12 @@ export class ConstraintUtils {
       linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
       worldUnits: false,
     }),
+    hitArea: new MeshBasicMaterial({
+      color: 0x00ff00,
+      transparent: true,
+      opacity: 0.3,
+      side: DoubleSide,
+    }),
   }
 
   public init(obj: ApiObject, objects: Array<ApiObject>): Group | null {
@@ -58,7 +70,7 @@ export class ConstraintUtils {
       const group = new Group()
       group.name = obj.id.toString()
       group.userData = {
-        type: 'constraint',
+        type: CONSTRAINT_TYPE,
         constraintType: constraint.type,
         object_id: obj.id,
       }
@@ -112,6 +124,47 @@ export class ConstraintUtils {
       label.userData.canvas = canvas
       label.userData.texture = texture
       group.add(label)
+
+      // Hit areas for click detection (invisible but raycasted)
+      const leadLine1HitArea = new Mesh(
+        new PlaneGeometry(1, 1),
+        this.materials.hitArea
+      )
+      leadLine1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+      leadLine1HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
+      group.add(leadLine1HitArea)
+
+      const leadLine2HitArea = new Mesh(
+        new PlaneGeometry(1, 1),
+        this.materials.hitArea
+      )
+      leadLine2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+      leadLine2HitArea.userData.subtype = DISTANCE_CONSTRAINT_LEADER_LINE
+      group.add(leadLine2HitArea)
+
+      const line1HitArea = new Mesh(
+        new PlaneGeometry(1, 1),
+        this.materials.hitArea
+      )
+      line1HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+      line1HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
+      group.add(line1HitArea)
+
+      const line2HitArea = new Mesh(
+        new PlaneGeometry(1, 1),
+        this.materials.hitArea
+      )
+      line2HitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+      line2HitArea.userData.subtype = DISTANCE_CONSTRAINT_BODY
+      group.add(line2HitArea)
+
+      const labelHitArea = new Mesh(
+        new PlaneGeometry(1, 1),
+        this.materials.hitArea
+      )
+      labelHitArea.userData.type = DISTANCE_CONSTRAINT_HIT_AREA
+      labelHitArea.userData.subtype = DISTANCE_CONSTRAINT_LABEL
+      group.add(labelHitArea)
 
       return group
     }
@@ -263,7 +316,7 @@ export class ConstraintUtils {
           oldDimensionLabel !== newDimensionLabel ||
           oldConstraintColor !== constraintColor
         ) {
-          // Update texture if needed
+          // Update texture: only if needed because this is not cheap
           const ctx = canvas.getContext('2d')
           if (ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -272,6 +325,11 @@ export class ConstraintUtils {
             ctx.textBaseline = 'middle'
             ctx.fillStyle = '#' + new Color(constraintColor).getHexString()
             ctx.fillText(newDimensionLabel, canvas.width / 2, canvas.height / 2)
+
+            // Measure actual text size for hit area
+            const textMetrics = ctx.measureText(newDimensionLabel)
+            label.userData.textWidth = textMetrics.width
+            label.userData.textHeight = 24 // Font size approximation
           }
           const texture = label.userData.texture as CanvasTexture
           texture.needsUpdate = true
@@ -282,6 +340,89 @@ export class ConstraintUtils {
           canvas.width * scale * 0.5,
           canvas.height * scale * 0.5,
           1
+        )
+
+        // Update label hit area based on actual text size
+        const labelHitAreas = group.children.filter(
+          (child) =>
+            child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+            child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
+        )
+        const labelHitArea = labelHitAreas[0] as Mesh
+        if (labelHitArea) {
+          const textWidth =
+            (label.userData.textWidth || canvas.width) * scale * 0.5
+          const textHeight = (label.userData.textHeight || 24) * scale * 0.5
+
+          labelHitArea.position.copy(midpoint)
+          labelHitArea.scale.set(
+            textWidth + LABEL_HIT_AREA_PADDING_PX * scale,
+            textHeight + LABEL_HIT_AREA_PADDING_PX * scale,
+            1
+          )
+        }
+      }
+
+      // Update hit areas for lines
+      const hitAreas = group.children.filter(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA
+      ) as Mesh[]
+
+      // Helper to update a line hit area
+      const updateLineHitArea = (
+        hitArea: Mesh,
+        p1: Vector3,
+        p2: Vector3,
+        hitWidth: number
+      ) => {
+        const length = p1.distanceTo(p2)
+        const midpoint = p1.clone().add(p2).multiplyScalar(0.5)
+        const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
+
+        hitArea.position.copy(midpoint)
+        hitArea.rotation.z = angle
+        hitArea.scale.set(length, hitWidth, 1)
+      }
+
+      // Update leader line hit areas
+      const leaderHitAreas = hitAreas.filter(
+        (ha) => ha.userData.subtype === DISTANCE_CONSTRAINT_LEADER_LINE
+      )
+      if (leaderHitAreas[0]) {
+        updateLineHitArea(
+          leaderHitAreas[0],
+          p1,
+          leadEnd1,
+          HIT_AREA_WIDTH_PX * scale
+        )
+      }
+      if (leaderHitAreas[1]) {
+        updateLineHitArea(
+          leaderHitAreas[1],
+          p2,
+          leadEnd2,
+          HIT_AREA_WIDTH_PX * scale
+        )
+      }
+
+      // Update main constraint body hit areas
+      const bodyHitAreas = hitAreas.filter(
+        (ha) => ha.userData.subtype === DISTANCE_CONSTRAINT_BODY
+      )
+      if (bodyHitAreas[0]) {
+        updateLineHitArea(
+          bodyHitAreas[0],
+          start,
+          gapStart,
+          HIT_AREA_WIDTH_PX * scale
+        )
+      }
+      if (bodyHitAreas[1]) {
+        updateLineHitArea(
+          bodyHitAreas[1],
+          gapEnd,
+          end,
+          HIT_AREA_WIDTH_PX * scale
         )
       }
     }

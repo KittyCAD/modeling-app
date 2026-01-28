@@ -32,6 +32,7 @@ export const DISTANCE_CONSTRAINT_ARROW = 'distance-constraint-arrow'
 export const DISTANCE_CONSTRAINT_LEADER_LINE =
   'distance-constraint-leading-line'
 export const DISTANCE_CONSTRAINT_LABEL = 'distance-constraint-label'
+export const DISTANCE_CONSTRAINT_HIT_AREA = 'distance-constraint-hit-area'
 
 // Handle names
 export const ARC_ANGLE_END = 'arc-angle-end'
