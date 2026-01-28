@@ -1750,7 +1750,7 @@ impl FrontendState {
             });
         };
         let sketch_id = sketch;
-        
+
         // Map the runtime objects back to variable names.
         let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
         let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
@@ -4814,7 +4814,6 @@ sketch2::horizontalDistance([point1, point2]) == 2mm
         ctx.close().await;
         mock_ctx.close().await;
     }
-
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_single_arc_segment() {
