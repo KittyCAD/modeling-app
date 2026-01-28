@@ -1,5 +1,6 @@
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
+use uuid::Uuid;
 
 use crate::{
     ExecState, ExecutorContext, KclError,
@@ -12,7 +13,7 @@ use crate::{
     std::{
         Args, CircularDirection,
         args::TyF64,
-        sketch::{StraightLineParams, inner_start_profile, relative_arc, straight_line},
+        sketch::{StraightLineParams, create_sketch, relative_arc, straight_line},
         utils::{distance, point_to_len_unit, point_to_mm, untype_point},
     },
     std_utils::untyped_point_to_unit,
@@ -20,7 +21,8 @@ use crate::{
 
 pub(crate) async fn create_segments_in_engine(
     sketch_surface: &SketchSurface,
-    segments: &[Segment],
+    sketch_engine_id: Uuid,
+    segments: &mut [Segment],
     ctx: &ExecutorContext,
     exec_state: &mut ExecState,
     range: SourceRange,
@@ -75,7 +77,16 @@ pub(crate) async fn create_segments_in_engine(
             sketch.paths.push(Path::ToPoint { base });
         } else {
             // Create a new path.
-            let sketch = inner_start_profile(sketch_surface.clone(), start, None, exec_state, ctx, range).await?;
+            let sketch = create_sketch(
+                sketch_engine_id,
+                sketch_surface.clone(),
+                start,
+                None,
+                exec_state,
+                ctx,
+                range,
+            )
+            .await?;
             outer_sketch = Some(sketch);
         };
 
@@ -85,6 +96,16 @@ pub(crate) async fn create_segments_in_engine(
                 vec![range],
             )));
         };
+
+        // Verify that the sketch ID of the segment matches the current sketch.
+        if segment.sketch_id != sketch_engine_id {
+            let message = format!(
+                "segment sketch ID doesn't match sketch ID being used to the engine; segment.sketch_id={:?}, sketch_engine_id={sketch_engine_id:?}",
+                segment.sketch_id
+            );
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+        }
 
         match &segment.kind {
             SegmentKind::Point { .. } => {
@@ -201,6 +222,7 @@ async fn inner_region(
             meta,
             ModelingCmd::from(
                 mcmd::CreateRegion::builder()
+                    .object_id(seg0.sketch_id)
                     .segment(seg0.id)
                     .intersection_segment(seg1.id)
                     .intersection_index(intersection_index)

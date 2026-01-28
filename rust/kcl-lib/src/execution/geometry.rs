@@ -2000,6 +2000,8 @@ pub struct Segment {
     pub object_id: ObjectId,
     pub kind: SegmentKind,
     pub surface: SketchSurface,
+    /// The engine ID of the sketch that this is a part of.
+    pub sketch_id: Uuid,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }

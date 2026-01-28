@@ -5,6 +5,7 @@ use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kcl_ezpz::Warning;
 use kittycad_modeling_cmds::units::UnitLength;
+use uuid::Uuid;
 
 use crate::{
     ExecState, KclError,
@@ -74,13 +75,14 @@ pub(crate) fn normalize_to_solver_unit(
 pub(super) fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     surface: &SketchSurface,
+    sketch_id: Uuid,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value = substitute_sketch_var(value, surface, solve_outcome, solution_ty, analysis)?;
+        let subbed_value = substitute_sketch_var(value, surface, sketch_id, solve_outcome, solution_ty, analysis)?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
@@ -89,6 +91,7 @@ pub(super) fn substitute_sketch_vars(
 fn substitute_sketch_var(
     value: KclValue,
     surface: &SketchSurface,
+    sketch_id: Uuid,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -120,14 +123,14 @@ fn substitute_sketch_var(
         KclValue::Tuple { value, meta } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, surface, solve_outcome, solution_ty, analysis))
+                .map(|v| substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::Tuple { value: subbed, meta })
         }
         KclValue::HomArray { value, ty } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, surface, solve_outcome, solution_ty, analysis))
+                .map(|v| substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::HomArray { value: subbed, ty })
         }
@@ -138,7 +141,9 @@ fn substitute_sketch_var(
         } => {
             let subbed = value
                 .into_iter()
-                .map(|(k, v)| substitute_sketch_var(v, surface, solve_outcome, solution_ty, analysis).map(|v| (k, v)))
+                .map(|(k, v)| {
+                    substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis).map(|v| (k, v))
+                })
                 .collect::<Result<HashMap<_, _>, KclError>>()?;
             Ok(KclValue::Object {
                 value: subbed,
@@ -155,7 +160,14 @@ fn substitute_sketch_var(
             value: abstract_segment,
         } => match abstract_segment.repr {
             SegmentRepr::Unsolved { segment } => {
-                let subbed = substitute_sketch_var_in_segment(segment, surface, solve_outcome, solution_ty, analysis)?;
+                let subbed = substitute_sketch_var_in_segment(
+                    segment,
+                    surface,
+                    sketch_id,
+                    solve_outcome,
+                    solution_ty,
+                    analysis,
+                )?;
                 Ok(KclValue::Segment {
                     value: Box::new(AbstractSegment {
                         repr: SegmentRepr::Solved { segment: subbed },
@@ -181,6 +193,7 @@ fn substitute_sketch_var(
 pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     surface: &SketchSurface,
+    sketch_id: Uuid,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -202,6 +215,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     freedom: point_freedom(position_x_freedom, position_y_freedom),
                 },
                 surface: surface.clone(),
+                sketch_id,
                 meta: segment.meta,
             })
         }
@@ -237,6 +251,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     construction: *construction,
                 },
                 surface: surface.clone(),
+                sketch_id,
                 meta: segment.meta,
             })
         }
@@ -282,6 +297,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     construction: *construction,
                 },
                 surface: surface.clone(),
+                sketch_id,
                 meta: segment.meta,
             })
         }
