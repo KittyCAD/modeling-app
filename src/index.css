@@ -391,7 +391,6 @@ code,
     --br: min(var(--container-percentage-width), 4px);
     border-bottom-right-radius: var(--br);
     border-bottom-left-radius: var(--br);
-    border-inline-width: min(var(--container-percentage-width), 1px);
   }
 }
 
