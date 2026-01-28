@@ -12,9 +12,9 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { EditorFixture } from './fixtures/editorFixture'
-import { HomePageFixture } from './fixtures/homePageFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 async function insertPartIntoAssembly(
   path: string,
