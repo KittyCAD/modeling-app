@@ -9,6 +9,7 @@ import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import { getAppFolderName } from '@src/lib/appFolderName'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -43,16 +44,11 @@ const getMimeType = (filePath: string) => {
 }
 
 const getEnvironmentFolderName = () => {
-  const isStaging = packageJSON.name.includes('-staging')
-  const isStagingOrDebug =
-    isStaging ||
-    packageJSON.version === '0.0.0' ||
-    packageJSON.version === 'dev'
   return getAppFolderName({
     packageName: packageJSON.name,
     platform: os.platform(),
-    isStaging,
-    isStagingOrDebug,
+    isStaging: IS_STAGING,
+    isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })
 }
 
