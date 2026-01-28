@@ -464,7 +464,6 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::helices(),
             RuntimeType::imported(),
@@ -472,11 +471,11 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         exec_state,
     )?;
 
-    let objects = hidden_inner(objects, true, exec_state, args).await?;
+    let objects = hide_inner(objects, true, exec_state, args).await?;
     Ok(objects.into())
 }
 
-async fn hidden_inner(
+async fn hide_inner(
     objects: HideableGeometry,
     hidden: bool,
     exec_state: &mut ExecState,

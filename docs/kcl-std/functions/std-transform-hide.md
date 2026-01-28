@@ -8,7 +8,7 @@ layout: manual
 Hide solids, sketches, or imported objects.
 
 ```kcl
-hide(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
+hide(@objects: [Solid; 1+] | [Helix; 1+] | ImportedGeometry): [Solid; 1+] | [Helix; 1+] | ImportedGeometry
 ```
 
 Hidden objects remain in the model and can still be referenced by later operations.
@@ -19,11 +19,11 @@ while you work.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to hide. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to hide. | Yes |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples
@@ -79,13 +79,12 @@ cube
 </model-viewer>
 
 ```kcl
-// Hide a sketch on face
+// Hide a helix, leave its cylinder
 cylinder = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 2mm)
-dot = startSketchOn(cylinder, face = END)
-  |> circle(center = [0, 0], radius = 1)
-hide(dot)
+helix001 = helix(revolutions = 16, angleStart = 0, cylinder)
+hide(helix001)
 
 ```
 

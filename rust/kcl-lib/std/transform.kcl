@@ -665,16 +665,15 @@ export fn scale(
 ///     |> hide()
 /// ```
 /// ```kcl
-/// // Hide a sketch on face
+/// // Hide a helix, leave its cylinder
 /// cylinder = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 2mm)
-/// dot = startSketchOn(cylinder, face = END)
-///   |> circle(center = [0, 0], radius = 1)
-/// hide(dot)
+/// helix001 = helix(revolutions = 16, angleStart = 0, cylinder)
+/// hide(helix001)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn hide(
   /// The solid, sketch, or set of solids or sketches to hide.
-  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+]| ImportedGeometry,
-): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+]| ImportedGeometry {}
+  @objects: [Solid; 1+] | [Helix; 1+]| ImportedGeometry,
+): [Solid; 1+] | [Helix; 1+]| ImportedGeometry {}

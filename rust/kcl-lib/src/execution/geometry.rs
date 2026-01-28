@@ -165,8 +165,11 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
-    SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
+    // TODO: Sketches should be groups of profiles that relate to a plane,
+    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
+    // are not hideable.
+    // SketchSet(Vec<Sketch>),
 }
 
 impl From<HideableGeometry> for crate::execution::KclValue {
@@ -185,21 +188,6 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
                         ty: crate::execution::types::RuntimeType::solid(),
-                    }
-                }
-            }
-            HideableGeometry::SketchSet(mut s) => {
-                if s.len() == 1
-                    && let Some(s) = s.pop()
-                {
-                    crate::execution::KclValue::Sketch { value: Box::new(s) }
-                } else {
-                    crate::execution::KclValue::HomArray {
-                        value: s
-                            .into_iter()
-                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
-                            .collect(),
-                        ty: crate::execution::types::RuntimeType::sketch(),
                     }
                 }
             }
@@ -231,7 +219,6 @@ impl HideableGeometry {
                 Ok(vec![id])
             }
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
-            HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
