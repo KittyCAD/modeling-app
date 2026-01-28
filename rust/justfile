@@ -59,7 +59,7 @@ overwrite-sim-test test_name:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
     [ {{test_name}} != "kcl_samples" ] || ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
 
-# Run a KCL deterministic simulation test case and accept output. Only update PNGs if they changed more than the threshold. This is used by CI.
+# Run a KCL deterministic simulation test case and accept output. Only update PNG files if they changed more than the threshold. This is used by CI.
 update-sim-test test_name:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::parse
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::unparse
