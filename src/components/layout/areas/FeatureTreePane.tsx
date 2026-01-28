@@ -25,16 +25,7 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import {
-  commandBarActor,
-  engineCommandManager,
-  getLayout,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-  setLayout,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode, type SourceRange } from '@src/lang/wasm'
@@ -45,6 +36,7 @@ import {
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
+  type Layout,
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
@@ -57,14 +49,15 @@ import {
   sendSelectionEvent,
 } from '@src/lib/featureTree'
 
-// Defined outside of React to prevent rerenders
-// TODO: get all system dependencies into React via global context
-const systemDeps = {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  rustContext,
-}
+type Singletons = ReturnType<typeof useSingletons>
+type SystemDeps = Pick<
+  Singletons,
+  | 'kclManager'
+  | 'sceneInfra'
+  | 'sceneEntitiesManager'
+  | 'rustContext'
+  | 'commandBarActor'
+>
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -85,13 +78,11 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
-function isCodePaneOpen() {
-  return getOpenPanes({ rootLayout: getLayout() }).includes(
-    DefaultLayoutPaneID.Code
-  )
+function isCodePaneOpen(layout: Layout) {
+  return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
 }
-function openCodePane() {
-  const rootLayout = structuredClone(getLayout())
+function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
+  const rootLayout = structuredClone(layout)
   setLayout(
     togglePaneLayoutNode({
       rootLayout,
@@ -102,7 +93,24 @@ function openCodePane() {
 }
 
 export const FeatureTreePaneContents = memo(() => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    getLayout,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+    setLayout,
+  } = useSingletons()
   const { send: modelingSend, state: modelingState } = useModelingContext()
+  const systemDeps: SystemDeps = {
+    kclManager,
+    sceneInfra,
+    sceneEntitiesManager,
+    rustContext,
+    commandBarActor,
+  }
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
@@ -112,7 +120,7 @@ export const FeatureTreePaneContents = memo(() => {
         modelingSend,
       })
     },
-    [modelingSend]
+    [modelingSend, kclManager]
   )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
@@ -147,8 +155,9 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   function goToError() {
-    if (!isCodePaneOpen()) {
-      openCodePane()
+    const l = getLayout()
+    if (!isCodePaneOpen(l)) {
+      openCodePane(l, setLayout)
     }
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
@@ -165,7 +174,9 @@ export const FeatureTreePaneContents = memo(() => {
           </Loading>
         ) : (
           <>
-            {!modelingState.matches('Sketch') && <DefaultPlanes />}
+            {!modelingState.matches('Sketch') && (
+              <DefaultPlanes systemDeps={systemDeps} />
+            )}
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
@@ -201,6 +212,8 @@ export const FeatureTreePaneContents = memo(() => {
                   items={opOrList}
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
               ) : (
@@ -209,6 +222,8 @@ export const FeatureTreePaneContents = memo(() => {
                   item={opOrList}
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
               )
@@ -258,6 +273,8 @@ function OperationItemGroup({
   items,
   code,
   sketchNoFace,
+  systemDeps,
+  engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
@@ -284,6 +301,8 @@ function OperationItemGroup({
                 item={op}
                 code={code}
                 sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
               />
             )
@@ -428,6 +447,8 @@ interface OperationProps {
   item: Operation
   code: string
   sketchNoFace: boolean
+  systemDeps: SystemDeps
+  engineCommandManager: Singletons['engineCommandManager']
   onSelect: (sourceRange: SourceRange) => void
 }
 /**
@@ -439,7 +460,11 @@ const OperationItem = ({
   code,
   sketchNoFace,
   onSelect,
+  systemDeps,
+  engineCommandManager,
 }: OperationProps) => {
+  const { getLayout, setLayout } = useSingletons()
+  const { kclManager, sceneInfra, commandBarActor } = systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -485,7 +510,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [sketchNoFace, onSelect, item]
+    [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -506,9 +531,15 @@ const OperationItem = ({
         operation: item,
         rustContext: systemDeps.rustContext,
         artifact,
-      }).catch((e) => toast.error(e))
+      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
-  }, [item])
+  }, [
+    item,
+    commandBarActor,
+    systemDeps.kclManager.artifactGraph,
+    systemDeps.kclManager.code,
+    systemDeps.rustContext,
+  ])
 
   function enterAppearanceFlow() {
     selectOperation()
@@ -622,8 +653,9 @@ const OperationItem = ({
           if (item.type === 'GroupEnd') {
             return
           }
-          if (!isCodePaneOpen()) {
-            openCodePane()
+          const l = getLayout()
+          if (!isCodePaneOpen(l)) {
+            openCodePane(l, setLayout)
           }
           selectOperation().catch(reportRejection)
         }}
@@ -645,8 +677,9 @@ const OperationItem = ({
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
-                if (!isCodePaneOpen()) {
-                  openCodePane()
+                const l = getLayout()
+                if (!isCodePaneOpen(l)) {
+                  openCodePane(l, setLayout)
                 }
                 selectOperation(functionRange).catch(reportRejection)
               }}
@@ -816,7 +849,8 @@ const OperationItem = ({
   )
 }
 
-const DefaultPlanes = () => {
+const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
+  const { rustContext, sceneInfra } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -865,7 +899,7 @@ const DefaultPlanes = () => {
         systemDeps
       )
     },
-    [modelingState.context.store.useNewSketchMode]
+    [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

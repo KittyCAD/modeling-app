@@ -10891,6 +10891,14 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
+            "control1": [
+              2.085,
+              7.74
+            ],
+            "control2": [
+              2.8259999999999996,
+              8.74
+            ],
             "from": [
               2.385,
               7.74
@@ -10900,7 +10908,7 @@ description: Variables in memory after executing french-press.kcl
               0.07999999999999963,
               8.74
             ],
-            "type": "ToPoint",
+            "type": "Bezier",
             "units": "in"
           },
           {

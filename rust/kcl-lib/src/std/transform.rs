@@ -43,6 +43,16 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let scale_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::count(), exec_state)?;
     let scale_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::count(), exec_state)?;
     let factor: Option<TyF64> = args.get_kw_arg_opt("factor", &RuntimeType::count(), exec_state)?;
+    for scale_dim in [&scale_x, &scale_y, &scale_z, &factor] {
+        if let Some(num) = scale_dim
+            && num.n == 0.0
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot scale by 0".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    }
     let (scale_x, scale_y, scale_z) = match (scale_x, scale_y, scale_z, factor) {
         (None, None, None, Some(factor)) => (Some(factor.clone()), Some(factor.clone()), Some(factor)),
         // Ensure at least one scale value is provided.

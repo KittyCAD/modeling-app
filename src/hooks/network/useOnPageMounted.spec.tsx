@@ -1,9 +1,10 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { expect, vi, describe, test } from 'vitest'
-import { engineCommandManager } from '@src/lib/singletons'
+import { App } from '@src/lib/app'
 
 describe('useOnPageMounted', () => {
+  const singletons = new App().singletons
   describe('on mounted', () => {
     test('should run once', () => {
       const callback = vi.fn(() => 1)
@@ -16,7 +17,9 @@ describe('useOnPageMounted', () => {
       expect(callback).toHaveBeenCalledTimes(1)
 
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(engineCommandManager)
+      result.current.resetGlobalEngineCommandManager(
+        singletons.engineCommandManager
+      )
     })
     test('should reset with helper function', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -28,13 +31,17 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      result.current.resetGlobalEngineCommandManager(engineCommandManager)
+      result.current.resetGlobalEngineCommandManager(
+        singletons.engineCommandManager
+      )
       rerender({ callback: callback_2 })
       unmount()
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(engineCommandManager)
+      result.current.resetGlobalEngineCommandManager(
+        singletons.engineCommandManager
+      )
     })
     test('should fail to call the callback again, did not reset', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -51,7 +58,9 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(engineCommandManager)
+      result.current.resetGlobalEngineCommandManager(
+        singletons.engineCommandManager
+      )
     })
   })
 })

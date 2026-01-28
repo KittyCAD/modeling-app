@@ -508,6 +508,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
+        ("sketch2", "radius") => (
+            |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::radius"),
+        ),
+        ("sketch2", "diameter") => (
+            |e, a| Box::pin(crate::std::constraints::diameter(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::diameter"),
+        ),
+        ("sketch2", "horizontalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::horizontal_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::horizontalDistance"),
+        ),
+        ("sketch2", "verticalDistance") => (
+            |e, a| Box::pin(crate::std::constraints::vertical_distance(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::verticalDistance"),
+        ),
         ("sketch2", "equalLength") => (
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),
@@ -535,6 +551,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "isSolid") => (
             |e, a| Box::pin(crate::std::surfaces::is_solid(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::isSolid"),
+        ),
+        ("solid", "deleteFace") => (
+            |e, a| Box::pin(crate::std::surfaces::delete_face(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::deleteFace"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
