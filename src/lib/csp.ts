@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import os from 'os'
 import { fileURLToPath } from 'node:url'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
@@ -7,6 +8,7 @@ import { app, protocol } from 'electron'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import { getAppFolderName } from '@src/lib/appFolderName'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -36,16 +38,11 @@ const uniqueSources = (sources: Array<string | undefined>) => {
 }
 
 const getEnvironmentFolderName = () => {
-  const isStaging = packageJSON.name.includes('-staging')
-  const isStagingOrDebug =
-    isStaging ||
-    packageJSON.version === '0.0.0' ||
-    packageJSON.version === 'dev'
   return getAppFolderName({
     packageName: packageJSON.name,
-    platform: process.platform,
-    isStaging,
-    isStagingOrDebug,
+    platform: os.platform(),
+    isStaging: IS_STAGING,
+    isStagingOrDebug: IS_STAGING_OR_DEBUG,
   })
 }
 
