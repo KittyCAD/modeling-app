@@ -56,8 +56,12 @@ export const ConnectionStream = (props: {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+  const {
+    tryConnecting,
+    isConnecting,
+    numberOfConnectionAttempts,
+    numberOf1006Disconnects,
+  } = useTryConnect()
   const settingsEngine: SettingsViaQueryString = useMemo(
     () => ({
       theme: settings.app.theme.current,
@@ -178,6 +182,7 @@ export const ConnectionStream = (props: {
           settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          numberOf1006Disconnects,
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
@@ -200,6 +205,7 @@ export const ConnectionStream = (props: {
       props.authToken,
       sceneInfra.camControls.wasDragging,
       project?.path,
+      numberOf1006Disconnects,
     ]
   )
 
@@ -252,12 +258,18 @@ export const ConnectionStream = (props: {
       settings: settingsEngine,
       setShowManualConnect,
       sceneInfra,
+      numberOf1006Disconnects,
     }).catch((e) => {
       console.warn(e)
       setShowManualConnect(true)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnecting, numberOfConnectionAttempts, props.authToken])
+  }, [
+    isConnecting,
+    numberOfConnectionAttempts,
+    props.authToken,
+    numberOf1006Disconnects,
+  ])
 
   const onPageIdleParams = useMemo(
     () => ({
@@ -286,6 +298,7 @@ export const ConnectionStream = (props: {
           settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          numberOf1006Disconnects,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -295,9 +308,15 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       },
       engineCommandManager,
+      numberOf1006Disconnects,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      numberOf1006Disconnects,
+    ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
@@ -318,6 +337,7 @@ export const ConnectionStream = (props: {
           settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          numberOf1006Disconnects,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -325,7 +345,12 @@ export const ConnectionStream = (props: {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      numberOf1006Disconnects,
+    ]
   )
   useOnVitestEngineOnline(onVitestEngineOnline)
 
@@ -345,6 +370,7 @@ export const ConnectionStream = (props: {
           settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          numberOf1006Disconnects,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -353,7 +379,12 @@ export const ConnectionStream = (props: {
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      numberOf1006Disconnects,
+    ]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
@@ -381,6 +412,7 @@ export const ConnectionStream = (props: {
           settings: settingsEngine,
           setShowManualConnect,
           sceneInfra,
+          numberOf1006Disconnects,
         }).catch((e) => {
           console.warn(e)
           setShowManualConnect(true)
@@ -388,7 +420,12 @@ export const ConnectionStream = (props: {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      numberOf1006Disconnects,
+    ]
   )
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
 
@@ -469,6 +506,7 @@ export const ConnectionStream = (props: {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
+            numberOf1006Disconnects.current = 0
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',
@@ -482,6 +520,7 @@ export const ConnectionStream = (props: {
               settings: settingsEngine,
               setShowManualConnect,
               sceneInfra,
+              numberOf1006Disconnects,
             }).catch((e) => {
               console.warn(e)
               setShowManualConnect(true)

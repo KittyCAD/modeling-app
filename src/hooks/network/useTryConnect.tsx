@@ -194,6 +194,7 @@ async function tryConnecting({
   engineCommandManager,
   kclManager,
   rustContext,
+  numberOf1006Disconnects,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -209,6 +210,7 @@ async function tryConnecting({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
+  numberOf1006Disconnects: React.RefObject<number>
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -265,6 +267,7 @@ async function tryConnecting({
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
+          numberOf1006Disconnects.current = 0
           setShowManualConnect(false)
           EngineDebugger.addLog({
             label: 'tryConnecting',
@@ -317,6 +320,7 @@ export const useTryConnect = () => {
   const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  const numberOf1006Disconnects = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
     'engineCommandManager' | 'kclManager' | 'rustContext'
@@ -332,5 +336,6 @@ export const useTryConnect = () => {
       }),
     isConnecting,
     numberOfConnectionAttempts,
+    numberOf1006Disconnects,
   }
 }

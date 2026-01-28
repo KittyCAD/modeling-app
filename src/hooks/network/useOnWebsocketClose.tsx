@@ -7,6 +7,7 @@ export interface IUseOnWebsocketClose {
   callback: () => void
   infiniteDetectionLoopCallback: () => void
   engineCommandManager: ConnectionManager
+  numberOf1006Disconnects: React.RefObject<number>
 }
 
 /**
@@ -18,24 +19,40 @@ export function useOnWebsocketClose({
   callback,
   infiniteDetectionLoopCallback,
   engineCommandManager,
+  numberOf1006Disconnects,
 }: IUseOnWebsocketClose) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
       if (event?.detail?.code === '1006') {
+        numberOf1006Disconnects.current = numberOf1006Disconnects.current + 1
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'detected infinite loop',
+          message: 'possible infinite loop detection, run attempts',
           metadata: {
             code: event?.detail?.code,
+            attempt: numberOf1006Disconnects.current,
           },
         })
+      }
 
+      if (numberOf1006Disconnects.current >= 3) {
         infiniteDetectionLoopCallback()
+        // Most likely your internet is out. Do not try to auto reconnect
+        // This will result in an infinite loop
+        EngineDebugger.addLog({
+          label: 'useOnWebsocketClose',
+          message: 'stop auto connected, detected infinite loop',
+          metadata: {
+            code: event?.detail?.code,
+            attempt: numberOf1006Disconnects.current,
+          },
+        })
         return
       }
 
+      console.log("ATTEMPTS!", numberOf1006Disconnects.current)
       callback()
     }
 
@@ -50,5 +67,10 @@ export function useOnWebsocketClose({
         onWebsocketClose as EventListener
       )
     }
-  }, [callback, infiniteDetectionLoopCallback, engineCommandManager])
+  }, [
+    callback,
+    infiniteDetectionLoopCallback,
+    engineCommandManager,
+    numberOf1006Disconnects,
+  ])
 }
