@@ -47,7 +47,12 @@ import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificat
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
-if (os.platform() === 'linux') {
+// Only applied to tests to avoid interfering with users who may be using Wayland
+if (
+  os.platform() === 'linux' &&
+  process.env.NODE_ENV === 'test' &&
+  process.env.CI === 'true'
+) {
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('ozone-platform', 'x11')
 }

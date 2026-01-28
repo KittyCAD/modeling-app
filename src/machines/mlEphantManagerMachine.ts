@@ -107,6 +107,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.AbruptClose
+      closeReason?: string
     }
 
 export interface Exchange {
@@ -134,6 +135,7 @@ export interface MlEphantManagerContext {
   apiToken: string
   ws?: WebSocket
   abruptlyClosed: boolean
+  closeReason?: string
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
@@ -154,6 +156,7 @@ export const mlEphantDefaultContext = (args: {
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
   abruptlyClosed: false,
+  closeReason: undefined,
   conversation: undefined,
   cachedSetup: undefined,
   lastMessageId: undefined,
@@ -301,6 +304,16 @@ export const mlEphantManagerMachine = setup({
         toast.error(event.error.message)
       }
     },
+    handleAbruptClose: assign(({ event }) => {
+      assertEvent(event, MlEphantManagerTransitions.AbruptClose)
+      if (event.closeReason) {
+        toast.error(event.closeReason)
+      }
+      return {
+        abruptlyClosed: true,
+        closeReason: event.closeReason,
+      }
+    }),
     cacheSetup: assign({
       conversationId: ({ event }) => {
         assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
@@ -501,10 +514,16 @@ export const mlEphantManagerMachine = setup({
             }
           })
 
-          ws.addEventListener('close', function (event: Event) {
+          ws.addEventListener('close', function (event: CloseEvent) {
             if (theRefParentSend !== undefined && devCalledClose === false) {
+              let closeReason: string | undefined
+              if (event.code === 1009) {
+                closeReason =
+                  'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
+              }
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
+                closeReason,
               })
             }
           })
@@ -666,7 +685,7 @@ export const mlEphantManagerMachine = setup({
         ...transitions([MlEphantManagerTransitions.ConversationClose]),
         [MlEphantManagerTransitions.AbruptClose]: {
           target: MlEphantManagerTransitions.AbruptClose,
-          actions: [assign({ abruptlyClosed: true })],
+          actions: ['handleAbruptClose'],
         },
       },
     },
@@ -684,7 +703,7 @@ export const mlEphantManagerMachine = setup({
                 ]),
                 [MlEphantManagerTransitions.AbruptClose]: {
                   target: MlEphantManagerTransitions.AbruptClose,
-                  actions: [assign({ abruptlyClosed: true })],
+                  actions: ['handleAbruptClose'],
                 },
               },
             },

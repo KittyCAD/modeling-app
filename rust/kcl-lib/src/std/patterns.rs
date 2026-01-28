@@ -289,6 +289,14 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
+    for (dim, name) in [(scale.x, "x"), (scale.y, "y"), (scale.z, "z")] {
+        if dim == 0.0 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("cannot set {name} = 0, scale factor must be nonzero"),
+                source_ranges,
+            )));
+        }
+    }
     let translate = match transform.get("translate") {
         Some(x) => {
             let arr = point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
