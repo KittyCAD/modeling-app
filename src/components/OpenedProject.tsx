@@ -119,13 +119,16 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
       return
-    kclManager.executeCode().then(() => {
-      resetCameraPosition({
-        sceneInfra,
-        engineCommandManager,
-        settingsActor,
+    kclManager
+      .executeCode()
+      .then(async () => {
+        await resetCameraPosition({
+          sceneInfra,
+          engineCommandManager,
+          settingsActor,
+        })
       })
-    })
+      .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
   }, [
     systemIOState,
