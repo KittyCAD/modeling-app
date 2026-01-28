@@ -2458,10 +2458,7 @@ impl Node<BinaryExpression> {
                                 let constraint = crate::front::Constraint::Distance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
                                     distance: n.try_into().map_err(|_| {
-                                        internal_err(
-                                            "Failed to convert distance units numeric suffix:",
-                                            range,
-                                        )
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -2583,10 +2580,7 @@ impl Node<BinaryExpression> {
                                     crate::front::Constraint::Diameter(Diameter {
                                         arc: arc_object_id,
                                         diameter: n.try_into().map_err(|_| {
-                                            internal_err(
-                                                "Failed to convert diameter units numeric suffix:",
-                                                range,
-                                            )
+                                            internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
                                     })
                                 } else {
@@ -2594,10 +2588,7 @@ impl Node<BinaryExpression> {
                                     crate::front::Constraint::Radius(Radius {
                                         arc: arc_object_id,
                                         radius: n.try_into().map_err(|_| {
-                                            internal_err(
-                                                "Failed to convert radius units numeric suffix:",
-                                                range,
-                                            )
+                                            internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
                                     })
                                 };
@@ -2649,10 +2640,7 @@ impl Node<BinaryExpression> {
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
                                     distance: n.try_into().map_err(|_| {
-                                        internal_err(
-                                            "Failed to convert distance units numeric suffix:",
-                                            range,
-                                        )
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -2702,10 +2690,7 @@ impl Node<BinaryExpression> {
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
                                     distance: n.try_into().map_err(|_| {
-                                        internal_err(
-                                            "Failed to convert distance units numeric suffix:",
-                                            range,
-                                        )
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
