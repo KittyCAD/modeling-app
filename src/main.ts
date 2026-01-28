@@ -50,7 +50,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 if (
   os.platform() === 'linux' &&
   process.env.NODE_ENV === 'test' &&
-process.env.CI === 'true'
+  process.env.CI === 'true'
 ) {
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('ozone-platform', 'x11')
