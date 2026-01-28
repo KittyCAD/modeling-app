@@ -1475,7 +1475,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "r": 0.6862745,
           "g": 0.48235294,
           "b": 0.13725491,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2305,7 +2305,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "r": 0.13725491,
           "g": 0.6862745,
           "b": 0.5764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

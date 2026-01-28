@@ -330,10 +330,10 @@ export const collectProjectFiles = async (args: {
     }
     recursivelyPushFilePromises(args.projectContext?.children)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
-    const MB20 = 2 ** 20 * 20
-    if (uploadSize > MB20) {
+    const MB64 = 2 ** 20 * 64
+    if (uploadSize > MB64) {
       toast.error(
-        'Your project exceeds 20Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
+        'Your project exceeds 64Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
       )
     }
   }

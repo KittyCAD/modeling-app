@@ -327,7 +327,7 @@ export const NothingInParticular = (props: {
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="brain" className="w-6 h-6" />}>
-          <span className="animate-shimmer">Thinking</span>
+          <span>Thinking</span>
         </ThoughtHeader>
       }
     >

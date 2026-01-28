@@ -282,7 +282,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.8784314,
           "g": 0.8784314,
           "b": 0.8784314,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1438,7 +1438,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.8901961,
           "g": 0.8901961,
           "b": 0.8901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1645,7 +1645,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 1.0,
           "g": 0.18039216,
           "b": 0.50980395,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1852,7 +1852,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.6117647,
           "g": 0.9098039,
           "b": 0.9490196,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2059,7 +2059,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 1.0,
           "g": 0.18039216,
           "b": 0.50980395,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2333,7 +2333,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.078431375,
           "g": 0.078431375,
           "b": 0.078431375,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2488,7 +2488,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.81960785,
           "g": 0.81960785,
           "b": 0.81960785,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2816,7 +2816,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.078431375,
           "g": 0.078431375,
           "b": 0.078431375,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2971,7 +2971,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.81960785,
           "g": 0.81960785,
           "b": 0.81960785,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3299,7 +3299,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.078431375,
           "g": 0.078431375,
           "b": 0.078431375,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3454,7 +3454,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.81960785,
           "g": 0.81960785,
           "b": 0.81960785,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3836,7 +3836,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.078431375,
           "g": 0.078431375,
           "b": 0.078431375,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3991,7 +3991,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.81960785,
           "g": 0.81960785,
           "b": 0.81960785,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4404,7 +4404,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4421,7 +4421,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 0.92941177,
           "g": 0.92941177,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4769,7 +4769,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4786,7 +4786,7 @@ description: Artifact commands stylized-mini-bus.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
