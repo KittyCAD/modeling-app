@@ -1101,42 +1101,50 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                 (
                     UnsolvedSegmentKind::Point { position: pos0, .. },
                     UnsolvedSegmentKind::Point { position: pos1, .. },
-                ) => match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
-                    (
-                        UnsolvedExpr::Unknown(p0_x),
-                        UnsolvedExpr::Unknown(p0_y),
-                        UnsolvedExpr::Unknown(p1_x),
-                        UnsolvedExpr::Unknown(p1_y),
-                    ) => Ok(KclValue::SketchConstraint {
-                        value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance {
-                                points: [
-                                    ConstrainablePoint2d {
-                                        vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
-                                        object_id: unsolved0.object_id,
-                                    },
-                                    ConstrainablePoint2d {
-                                        vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
-                                        object_id: unsolved1.object_id,
-                                    },
-                                ],
-                            },
-                            meta: vec![args.source_range.into()],
-                        }),
-                    }),
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        "unimplemented: arguments must be all sketch vars in all coordinates".to_owned(),
-                        vec![args.source_range],
-                    ))),
-                },
+                ) => {
+                    // Both segments are points. Create a distance constraint
+                    // between them.
+                    match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
+                        (
+                            UnsolvedExpr::Unknown(p0_x),
+                            UnsolvedExpr::Unknown(p0_y),
+                            UnsolvedExpr::Unknown(p1_x),
+                            UnsolvedExpr::Unknown(p1_y),
+                        ) => {
+                            // All coordinates are sketch vars. Proceed.
+                            let sketch_constraint = SketchConstraint {
+                                kind: SketchConstraintKind::Distance {
+                                    points: [
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            object_id: unsolved0.object_id,
+                                        },
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            object_id: unsolved1.object_id,
+                                        },
+                                    ],
+                                },
+                                meta: vec![args.source_range.into()],
+                            };
+                            Ok(KclValue::SketchConstraint {
+                                value: Box::new(sketch_constraint),
+                            })
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "unimplemented: distance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    "arguments must be unsolved points".to_owned(),
+                    "distance() arguments must be unsolved points".to_owned(),
                     vec![args.source_range],
                 ))),
             }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "arguments must be point segments".to_owned(),
+            "distance() arguments must be point segments".to_owned(),
             vec![args.source_range],
         ))),
     }
