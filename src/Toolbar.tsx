@@ -239,12 +239,12 @@ const Toolbar_ = memo(
         data-current-mode={currentMode}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
       >
         <ul
           ref={toolbarButtonsRef}
           className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center '
+            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
           }
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
