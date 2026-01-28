@@ -20,9 +20,8 @@ describe('useOnWebsocketClose', () => {
           engineCommandManager,
           numberOf1006Disconnects,
         })
-        return {actual}
-      }
-      )
+        return { actual }
+      })
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(0)
@@ -42,8 +41,7 @@ describe('useOnWebsocketClose', () => {
           numberOf1006Disconnects,
         })
         return { actual }
-      }
-      )
+      })
       unmount()
       expect(spyAdd).toHaveBeenCalledTimes(1)
       expect(spyRemove).toHaveBeenCalledTimes(1)
@@ -53,8 +51,7 @@ describe('useOnWebsocketClose', () => {
       const infiniteLoopCallback = vi.fn(() => 1)
       const engineCommandManager = new ConnectionManager()
       const { unmount } = renderHook(() => {
-
-      const numberOf1006Disconnects = useRef(0)
+        const numberOf1006Disconnects = useRef(0)
 
         const actual = useOnWebsocketClose({
           callback,
@@ -62,9 +59,8 @@ describe('useOnWebsocketClose', () => {
           engineCommandManager,
           numberOf1006Disconnects,
         })
-       return {actual}
-      }
-      )
+        return { actual }
+      })
       engineCommandManager.dispatchEvent(
         new Event(EngineCommandManagerEvents.WebsocketClosed)
       )
@@ -83,10 +79,8 @@ describe('useOnWebsocketClose', () => {
           engineCommandManager,
           numberOf1006Disconnects,
         })
-        return {actual}
-      }
-
-      )
+        return { actual }
+      })
       const infiniteEvent = new CustomEvent(
         EngineCommandManagerEvents.WebsocketClosed,
         {
@@ -99,6 +93,102 @@ describe('useOnWebsocketClose', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(0)
+    })
+    test('should call infinite detection loop callback on close event, 3 times', async () => {
+      const callback = vi.fn(() => 1)
+      const infiniteLoopCallback = vi.fn(() => 1)
+      const engineCommandManager = new ConnectionManager()
+      const { unmount, result } = renderHook(() => {
+        const numberOf1006Disconnects = useRef(0)
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback: infiniteLoopCallback,
+          engineCommandManager,
+          numberOf1006Disconnects,
+        })
+        return { numberOf1006Disconnects }
+      })
+      const infiniteEvent = new CustomEvent(
+        EngineCommandManagerEvents.WebsocketClosed,
+        {
+          detail: {
+            code: '1006',
+          },
+        }
+      )
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      unmount()
+      expect(result.current.numberOf1006Disconnects.current).toBe(3)
+      expect(callback).toHaveBeenCalledTimes(3)
+      expect(infiniteLoopCallback).toHaveBeenCalledTimes(0)
+    })
+    test('should call infinite detection loop callback on close event, stops after 3', async () => {
+      const callback = vi.fn(() => 1)
+      const infiniteLoopCallback = vi.fn(() => 1)
+      const engineCommandManager = new ConnectionManager()
+      const { unmount, result } = renderHook(() => {
+        const numberOf1006Disconnects = useRef(0)
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback: infiniteLoopCallback,
+          engineCommandManager,
+          numberOf1006Disconnects,
+        })
+        return { numberOf1006Disconnects }
+      })
+      const infiniteEvent = new CustomEvent(
+        EngineCommandManagerEvents.WebsocketClosed,
+        {
+          detail: {
+            code: '1006',
+          },
+        }
+      )
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      unmount()
+      expect(result.current.numberOf1006Disconnects.current).toBe(4)
+      expect(callback).toHaveBeenCalledTimes(3)
+      expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
+    })
+    test('should call infinite detection loop callback on close event, call infinite loop detection even more', async () => {
+      const callback = vi.fn(() => 1)
+      const infiniteLoopCallback = vi.fn(() => 1)
+      const engineCommandManager = new ConnectionManager()
+      const { unmount, result } = renderHook(() => {
+        const numberOf1006Disconnects = useRef(0)
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback: infiniteLoopCallback,
+          engineCommandManager,
+          numberOf1006Disconnects,
+        })
+        return { numberOf1006Disconnects }
+      })
+      const infiniteEvent = new CustomEvent(
+        EngineCommandManagerEvents.WebsocketClosed,
+        {
+          detail: {
+            code: '1006',
+          },
+        }
+      )
+      // next 3 are legit reconnects
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      // these will trigger the manual reconnect modal, will not trigger automatic reconnection
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      unmount()
+      expect(result.current.numberOf1006Disconnects.current).toBe(6)
+      expect(callback).toHaveBeenCalledTimes(3)
+      expect(infiniteLoopCallback).toHaveBeenCalledTimes(3)
     })
   })
 })

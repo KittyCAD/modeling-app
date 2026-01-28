@@ -37,7 +37,7 @@ export function useOnWebsocketClose({
         })
       }
 
-      if (numberOf1006Disconnects.current >= 3) {
+      if (numberOf1006Disconnects.current > 3) {
         infiniteDetectionLoopCallback()
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
@@ -52,7 +52,6 @@ export function useOnWebsocketClose({
         return
       }
 
-      console.log("ATTEMPTS!", numberOf1006Disconnects.current)
       callback()
     }
 
