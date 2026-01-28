@@ -28,7 +28,10 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
-import { OAUTH2_DEVICE_CLIENT_ID, ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  OAUTH2_DEVICE_CLIENT_ID,
+  ZOO_STUDIO_PROTOCOL,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'

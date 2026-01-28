@@ -1,12 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('node:os', () => ({
-  default: {
-    platform: () => 'linux',
-  },
-  platform: () => 'linux',
-}))
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 import type { EnvironmentConfiguration } from '@src/lib/constants'

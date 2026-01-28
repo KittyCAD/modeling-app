@@ -5,10 +5,10 @@ import { fileURLToPath } from 'node:url'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
 import { app, protocol } from 'electron'
+import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import { getAppFolderName } from '@src/lib/appFolderName'
-import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -37,12 +37,22 @@ const uniqueSources = (sources: Array<string | undefined>) => {
   return result
 }
 
+const getMimeType = (filePath: string) => {
+  const type = mime.lookup(filePath)
+  return typeof type === 'string' ? type : 'application/octet-stream'
+}
+
 const getEnvironmentFolderName = () => {
+  const isStaging = packageJSON.name.includes('-staging')
+  const isStagingOrDebug =
+    isStaging ||
+    packageJSON.version === '0.0.0' ||
+    packageJSON.version === 'dev'
   return getAppFolderName({
     packageName: packageJSON.name,
     platform: os.platform(),
-    isStaging: IS_STAGING,
-    isStagingOrDebug: IS_STAGING_OR_DEBUG,
+    isStaging,
+    isStagingOrDebug,
   })
 }
 
@@ -107,7 +117,7 @@ const buildCsp = (domain?: string) => {
   )
 }
 
-const writeIndexHtmlWithCsp = async (indexPath: string) => {
+const buildIndexHtmlWithCsp = async (indexPath: string) => {
   const domain = await readEnvironmentDomainForCsp()
   const csp = buildCsp(domain)
   const html = await fs.promises.readFile(indexPath, 'utf8')
@@ -117,28 +127,24 @@ const writeIndexHtmlWithCsp = async (indexPath: string) => {
     /<head[^>]*>/i,
     (match) => `${match}\n  ${metaTag}`
   )
-
-  const userDataPath = app.getPath('userData')
-  await fs.promises.mkdir(userDataPath, { recursive: true })
-  const targetPath = path.join(userDataPath, 'index.csp.html')
-  await fs.promises.writeFile(targetPath, updatedHtml, 'utf8')
-  return targetPath
+  return Buffer.from(updatedHtml, 'utf8')
 }
 
 export const registerFileProtocolCsp = () => {
-  protocol.interceptFileProtocol('file', (request, callback) => {
+  protocol.interceptBufferProtocol('file', (request, callback) => {
     void (async () => {
       const filePath = fileURLToPath(request.url)
-      if (path.basename(filePath) !== 'index.html') {
-        callback(filePath)
-        return
-      }
       try {
-        const cspIndexPath = await writeIndexHtmlWithCsp(filePath)
-        callback(cspIndexPath)
+        if (path.basename(filePath) === 'index.html') {
+          const data = await buildIndexHtmlWithCsp(filePath)
+          callback({ data, mimeType: 'text/html' })
+          return
+        }
+        const data = await fs.promises.readFile(filePath)
+        callback({ data, mimeType: getMimeType(filePath) })
       } catch (error) {
-        console.error('Failed to inject CSP into index.html', error)
-        callback(filePath)
+        console.error('Failed to load file protocol response', error)
+        callback({ data: Buffer.alloc(0), mimeType: 'application/octet-stream' })
       }
     })()
   })
