@@ -1096,6 +1096,13 @@ pub async fn ensure_sketch_plane_in_engine(
     if plane.is_initialized() {
         return Ok(());
     }
+    #[cfg(feature = "artifact-graph")]
+    {
+        if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
+            plane.object_id = Some(existing_object_id);
+            return Ok(());
+        }
+    }
 
     let clobber = false;
     let size = LengthUnit(60.0);
