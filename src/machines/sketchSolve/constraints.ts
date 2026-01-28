@@ -10,6 +10,7 @@ import {
   Sprite,
   SpriteMaterial,
   CanvasTexture,
+  Color,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -17,6 +18,7 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import {
   DISTANCE_CONSTRAINT_ARROW,
   DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_LABEL,
   DISTANCE_CONSTRAINT_LEADER_LINE,
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
@@ -31,7 +33,6 @@ const CONSTRAINT_COLOR = {
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
-const DISTANCE_CONSTRAINT_LABEL = 'distance_constraint_label'
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
@@ -127,7 +128,7 @@ export class ConstraintUtils {
   ) {
     const points = getEndPoints(obj, objects)
     if (points) {
-      const { p1, p2 } = points
+      const { p1, p2, distance } = points
 
       // Get constraint type to determine dimension line direction
       const constraintType =
@@ -246,45 +247,42 @@ export class ConstraintUtils {
       arrow2.rotation.z = angle - Math.PI / 2
       arrow2.scale.setScalar(scale)
 
-      // Label
       const label = group.children.find(
         (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
       ) as Sprite | undefined
       if (label) {
-        // Calculate distance based on constraint type
-        let distance: number
-        if (constraintType === 'HorizontalDistance') {
-          distance = Math.abs(p2.x - p1.x)
-        } else if (constraintType === 'VerticalDistance') {
-          distance = Math.abs(p2.y - p1.y)
-        } else {
-          distance = p1.distanceTo(p2)
-        }
-
-        // Update canvas texture
         const canvas = label.userData.canvas as HTMLCanvasElement
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height)
-          ctx.font = '24px sans-serif'
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-          ctx.fillStyle =
-            getResolvedTheme(sceneInfra.theme) === Themes.Dark
-              ? '#121212'
-              : '#d9d9d9'
-          ctx.fillText(
-            distance.toFixed(3),
-            canvas.width / 2,
-            canvas.height / 2
-          )
-        }
-        const texture = label.userData.texture as CanvasTexture
-        texture.needsUpdate = true
 
-        // Position at midpoint and scale
+        const oldDimensionLabel = label.userData.dimension
+        const oldConstraintColor = label.userData.constraintColor
+        const newDimensionLabel = parseFloat(
+          distance.value.toFixed(3)
+        ).toString()
+
+        if (
+          oldDimensionLabel !== newDimensionLabel ||
+          oldConstraintColor !== constraintColor
+        ) {
+          // Update texture if needed
+          const ctx = canvas.getContext('2d')
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.font = '24px sans-serif'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.fillStyle = '#' + new Color(constraintColor).getHexString()
+            ctx.fillText(newDimensionLabel, canvas.width / 2, canvas.height / 2)
+          }
+          const texture = label.userData.texture as CanvasTexture
+          texture.needsUpdate = true
+        }
+
         label.position.copy(midpoint)
-        label.scale.set(canvas.width * scale * 0.5, canvas.height * scale * 0.5, 1)
+        label.scale.set(
+          canvas.width * scale * 0.5,
+          canvas.height * scale * 0.5,
+          1
+        )
       }
     }
   }
@@ -343,7 +341,7 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
       0
     )
 
-    return { p1, p2 }
+    return { p1, p2, distance: constraint.distance }
   }
 
   return null
