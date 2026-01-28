@@ -16,12 +16,12 @@ function SupportedDomainsRadioGroup({
 }: {
   selected: string
   setSelected: (environment: string) => void
-  onCommit?: (environment: string) => void
+  onCommit: (environment: string) => void
   domains: Domain[]
 }) {
   const handleChange = (value: string) => {
     setSelected(value)
-    onCommit?.(value)
+    onCommit(value)
   }
 
   return (
@@ -82,7 +82,7 @@ export const AdvancedSignInOptions = ({
 }: {
   selectedEnvironment: string
   setSelectedEnvironment: (environment: string) => void
-  onEnvironmentCommit?: (environment: string) => void
+  onEnvironmentCommit: (environment: string) => void
 }) => {
   const domains: Domain[] = [
     {
@@ -177,11 +177,11 @@ export const AdvancedSignInOptions = ({
                         setSelectedEnvironment(event.target.value)
                       }
                       onBlur={(event) =>
-                        onEnvironmentCommit?.(event.currentTarget.value)
+                        onEnvironmentCommit(event.currentTarget.value)
                       }
                       onKeyDown={(event) => {
                         if (event.key === 'Enter') {
-                          onEnvironmentCommit?.(event.currentTarget.value)
+                          onEnvironmentCommit(event.currentTarget.value)
                         }
                       }}
                     />
