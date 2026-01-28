@@ -202,7 +202,7 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .into_iter()
                             .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
                             .collect(),
-                        ty: crate::execution::types::RuntimeType::sketch(),
+                        ty: crate::execution::types::RuntimeType::helices(),
                     }
                 }
             }
