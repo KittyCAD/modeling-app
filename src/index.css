@@ -378,6 +378,16 @@ code,
     @apply border rounded border-chalkboard-30/50 dark:border-chalkboard-80/30;
     @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
   }
+
+  .toolbar {
+    :has(> &) {
+      container-type: inline-size;
+    }
+
+    --border-radius: calc(round(calc(1cqw / 1cqmax * 1)) * 4px);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+  }
 }
 
 @layer utilities {
