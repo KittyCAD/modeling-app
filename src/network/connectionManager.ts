@@ -103,7 +103,7 @@ export class ConnectionManager extends EventTarget {
     theme: Themes.Dark,
     highlightEdges: true,
     enableSSAO: true,
-    enableTransparency: false,
+    enableOIT: false,
     showScaleGrid: false,
     cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
     cameraOrbit: 'spherical',
@@ -141,13 +141,14 @@ export class ConnectionManager extends EventTarget {
     if (settings) {
       // completely overwrite the settings
       this.settings = settings
+      console.log("[race] I AM HERE FIRST(1)!", this.settings.enableOIT)
     } else {
       // Gotcha: This runs in testing environments
       this.settings = {
         theme: Themes.Dark,
         highlightEdges: true,
         enableSSAO: true,
-        enableTransparency: false,
+        enableOIT: false,
         showScaleGrid: false,
         cameraProjection: 'perspective',
         cameraOrbit: 'spherical',
@@ -181,6 +182,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: () => void
   }) {
+    console.log('[race] starting with', settings)
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: 'start',
@@ -220,6 +222,7 @@ export class ConnectionManager extends EventTarget {
 
     if (settings) {
       this.settings = settings
+      console.log("[race] I AM HERE FIRST(2)!", this.settings.enableOIT)
     }
 
     this.streamDimensions = {
@@ -228,6 +231,7 @@ export class ConnectionManager extends EventTarget {
     }
 
     const url = this.generateWebsocketURL()
+    console.log('[race] WEBSOCKET URL!')
     this.connection = new Connection({
       url,
       token,
@@ -392,14 +396,14 @@ export class ConnectionManager extends EventTarget {
   }
 
   generateWebsocketURL() {
+    console.log("[race] I AM HERE FIRST!", this.settings.enableOIT)
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
-    const enableTransparency = this.settings.enableTransparency
-      ? this.settings.enableTransparency
+    const enableOIT = this.settings.enableOIT
+      ? this.settings.enableOIT
       : 'false'
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    additionalSettings +=
-      '&order_independent_transparency=' + enableTransparency
+    additionalSettings += '&order_independent_transparency=' + enableOIT
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )

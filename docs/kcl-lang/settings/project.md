@@ -126,6 +126,13 @@ The default unit to use in modeling dimensions.
 
 **Default:** None
 
+##### enable_oit
+
+Whether or not Order-Independent Transparency (OIT) is enabled.
+
+
+**Default:** None
+
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.

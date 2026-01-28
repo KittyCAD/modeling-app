@@ -375,9 +375,10 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
-      enableTransparency: new Setting<boolean>({
+      enableOIT: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether or not transparent rendering is enabled',
+        description:
+          'Whether or not Order-Independent Transparency is enabled.',
         validate: (v) => typeof v === 'boolean',
       }),
       /**

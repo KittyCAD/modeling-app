@@ -467,6 +467,10 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
+    /// Whether or not Order-Independent Transparency is enabled.
+    /// This enables transparent solids and nicer graphics but can be expensive.
+    /// This only works if SSAO is enabled.
+    pub enable_oit: bool,
     /// Show grid?
     pub show_grid: bool,
     /// Should engine store this for replay?
@@ -486,7 +490,8 @@ impl Default for ExecutorSettings {
     fn default() -> Self {
         Self {
             highlight_edges: true,
-            enable_ssao: false,
+            enable_ssao: true,
+            enable_oit: true,
             show_grid: false,
             replay: None,
             project_directory: None,
@@ -507,6 +512,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
         Self {
             highlight_edges: settings.modeling.highlight_edges.into(),
             enable_ssao: settings.modeling.enable_ssao.into(),
+            enable_oit: settings.modeling.enable_oit.into(),
             show_grid: settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
@@ -527,6 +533,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
         Self {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
+            enable_oit: modeling.enable_oit.into(),
             show_grid: modeling.show_scale_grid,
             replay: None,
             project_directory: None,
@@ -541,6 +548,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
         Self {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
+            enable_oit: modeling.enable_oit.into(),
             show_grid: Default::default(),
             replay: None,
             project_directory: None,
@@ -574,22 +582,24 @@ impl ExecutorContext {
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+            .commands_ws(kittycad::modeling::CommandsWsParams {
+                api_call_id: None,
+                fps: None,
+                order_independent_transparency: Some(settings.enable_oit),
+                pool: None,
+                post_effect: if settings.enable_ssao || settings.enable_oit {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+                pr: None,
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                unlocked_framerate: None,
+                video_res_height: None,
+                video_res_width: None,
+                webrtc: Some(false),
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =
@@ -702,6 +712,7 @@ impl ExecutorContext {
             ExecutorSettings {
                 highlight_edges: true,
                 enable_ssao: false,
+                enable_oit: true,
                 show_grid: false,
                 replay: None,
                 project_directory: None,

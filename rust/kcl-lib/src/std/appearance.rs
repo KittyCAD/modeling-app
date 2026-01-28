@@ -62,6 +62,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
     let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
     let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
+    let opacity: Option<TyF64> = args.get_kw_arg_opt("opacity", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
@@ -76,6 +77,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         color,
         metalness.map(|t| t.n),
         roughness.map(|t| t.n),
+        opacity.map(|t| t.n),
         exec_state,
         args,
     )
@@ -88,6 +90,7 @@ async fn inner_appearance(
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
+    opacity: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
@@ -102,12 +105,29 @@ async fn inner_appearance(
             ))
         })?;
 
+        let percent_range = (0.0)..=100.0;
+        let zero_one_range = (0.0)..=1.0;
+        for (prop, val) in [("Metalness", metalness), ("Roughness", roughness), ("Opacity", opacity)] {
+            if let Some(x) = val {
+                if !(percent_range.contains(&x)) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("{prop} must be between 0 and 100, but it was {x}"),
+                        vec![args.source_range],
+                    )));
+                }
+                if zero_one_range.contains(&x) && x != 0.0 {
+                    // TODO: Emit a warning, letting user know it should be a percentage
+                }
+            }
+        }
         let color = Color {
             r: rgb.red,
             g: rgb.green,
             b: rgb.blue,
-            a: 100.0,
+            a: (opacity.unwrap_or(100.0) as f32) / 100.0,
         };
+        debug_assert!(color.a <= 1.0);
+        debug_assert!(color.a >= 0.0);
 
         exec_state
             .batch_modeling_cmd(
@@ -119,6 +139,7 @@ async fn inner_appearance(
                         .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
                         .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
                         .ambient_occlusion(0.0)
+                        .maybe_backface_color(None)
                         .build(),
                 ),
             )

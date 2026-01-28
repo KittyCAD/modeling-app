@@ -352,6 +352,7 @@ export function addAppearance({
   wasmInstance,
   metalness,
   roughness,
+  opacity,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -361,6 +362,7 @@ export function addAppearance({
   wasmInstance: ModuleType
   metalness?: KclCommandValue
   roughness?: KclCommandValue
+  opacity?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
@@ -391,11 +393,15 @@ export function addAppearance({
   const roughnessExpr = roughness
     ? [createLabeledArg('roughness', valueOrVariable(roughness))]
     : []
+  const opacityExpr = opacity
+    ? [createLabeledArg('opacity', valueOrVariable(opacity))]
+    : []
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('appearance', objectsExpr, [
     ...colorExpr,
     ...metalnessExpr,
     ...roughnessExpr,
+    ...opacityExpr,
   ])
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
@@ -404,6 +410,10 @@ export function addAppearance({
 
   if (roughness && 'variableName' in roughness && roughness.variableName) {
     insertVariableAndOffsetPathToNode(roughness, modifiedAst, mNodeToEdit)
+  }
+
+  if (opacity && 'variableName' in opacity && opacity.variableName) {
+    insertVariableAndOffsetPathToNode(opacity, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,

@@ -62,6 +62,7 @@ export const ConnectionStream = (props: {
     () => ({
       theme: settings.app.theme.current,
       enableSSAO: settings.modeling.enableSSAO.current,
+      enableOIT: settings.modeling.enableOIT.current,
       highlightEdges: settings.modeling.highlightEdges.current,
       showScaleGrid: settings.modeling.showScaleGrid.current,
       cameraProjection: settings.modeling.cameraProjection.current,
@@ -76,6 +77,7 @@ export const ConnectionStream = (props: {
       settings.modeling.showScaleGrid.current,
       settings.modeling.cameraProjection.current,
       settings.modeling.cameraOrbit.current,
+      settings.modeling.enableOIT.current
     ]
   )
   const safariObjectFitClass = useMemo(() => {

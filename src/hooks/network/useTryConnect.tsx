@@ -224,6 +224,7 @@ async function tryConnecting({
         numberOfConnectionAttempts.current =
           numberOfConnectionAttempts.current + 1
 
+        console.log('[race] attempt', settings)
         try {
           // Has a time to connect window, if it does not connect, it will go to the next attempt
           await attemptToConnectToEngine({

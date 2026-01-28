@@ -292,6 +292,7 @@ export type ModelingCommandSchema = {
     color: string
     metalness?: KclCommandValue
     roughness?: KclCommandValue
+    opacity?: KclCommandValue
   }
   Translate: {
     nodeToEdit?: PathToNode
@@ -1644,6 +1645,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       roughness: {
+        inputType: 'kcl',
+        required: false,
+      },
+      opacity: {
         inputType: 'kcl',
         required: false,
       },

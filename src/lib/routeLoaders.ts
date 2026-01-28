@@ -176,6 +176,7 @@ export const fileLoader =
         type: 'load.project',
         project,
       })
+      await waitFor(settingsActor, (state) => state.matches('idle'))
 
       const appProjectDir = settings.settings.app.projectDirectory.current
       const requestedProjectDirectoryPath = project.path.includes(appProjectDir)

@@ -699,6 +699,7 @@ export const readProjectSettingsFile = async (
   if (err(configObj)) {
     return Promise.reject(configObj)
   }
+  console.log('[race] returning', configObj)
   return configObj
 }
 
