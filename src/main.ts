@@ -47,7 +47,11 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
 // Only applied to tests to avoid interfering with users who may be using Wayland
-if (os.platform() === 'linux' && process.env.NODE_ENV === 'test') {
+if (
+  os.platform() === 'linux' &&
+  process.env.NODE_ENV === 'test' &&
+  Boolean(process.env.CI)
+) {
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('ozone-platform', 'x11')
 }
