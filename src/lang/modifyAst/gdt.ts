@@ -49,6 +49,7 @@ export function addFlatnessGdt({
   precision,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -61,6 +62,7 @@ export function addFlatnessGdt({
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -130,6 +132,7 @@ export function addFlatnessGdt({
     wasmInstance,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })
@@ -208,6 +211,7 @@ export function addFlatnessGdt({
  * @param name - The datum identifier (e.g., 'A', 'B', 'C')
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -451,6 +455,7 @@ function processGdtStyleParameters({
   nodeToEdit,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
 }: {
@@ -459,6 +464,7 @@ function processGdtStyleParameters({
   nodeToEdit?: PathToNode
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
 }): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
@@ -482,6 +488,13 @@ function processGdtStyleParameters({
     framePlane.variableName
   ) {
     insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+  }
+  if (
+    leaderScale &&
+    'variableName' in leaderScale &&
+    leaderScale.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(leaderScale, modifiedAst, nodeToEdit)
   }
   if (
     fontPointSize &&
@@ -517,7 +530,12 @@ function processGdtStyleParameters({
     labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
   }
 
-  // Add font-related optional labeled arguments if provided
+  // Add scale-related optional labeled arguments if provided
+  if (leaderScale !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('leaderScale', valueOrVariable(leaderScale))
+    )
+  }
   if (fontPointSize !== undefined) {
     labeledArgs.push(
       createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
