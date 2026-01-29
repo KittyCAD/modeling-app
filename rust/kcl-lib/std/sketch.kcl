@@ -596,6 +596,85 @@ export fn ellipse(
 /// extrude(openProfile, length = 2, bodyType = SURFACE)
 /// ```
 /// ```kcl
+/// // Extrude a face from an extruded object
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-5, 0])
+///   |> xLine(length=1)
+///   |> yLine(length = -1)
+///   |> line(end = [-1, -1], tag = $seg01)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg01, length = 2, method = MERGE, hideSeams=false) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+///   |> appearance(color = "#ff0000")
+/// 
+/// // Extrude a face from an extruded object to create a new object
+/// sketch002 = startSketchOn(XY)
+/// profile002 = startProfile(sketch002, at = [-1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg02)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg02, length=2, method = NEW, hideSeams=false) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+///   |> appearance(color = "#00ff00")
+/// 
+/// // Extrude a face from an extruded object and merge the result
+/// sketch003 = startSketchOn(XY)
+/// profile003 = startProfile(sketch003, at = [1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg03)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///   |> extrude(length = 5)
+/// extrude(seg03, length=2, method = MERGE, hideSeams=true) 
+///   |> appearance(color = "#0000ff")
+/// ```
+/// ```kcl
+/// // Create a yellow extruded triangle.
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [0, 0])
+///   |> yLine(length = 1, tag = $a)
+///   |> xLine(length = 1, tag = $b)
+///   |> close(tag = $c)
+/// cube = extrude(profile001, length = 1)
+/// |> appearance(color = "#ffaa00")
+/// 
+/// // Extrude a red box from one of the triangle's side faces.
+/// box = extrude(
+///        c,
+///        length = 4,
+///        hideSeams = false,
+///        method = NEW,
+///      )
+///   |> appearance(color = "#ff0000")
+/// ```
+/// ```kcl
+/// // You can even extrude faces from sweeps!
+/// // In this example, the sweep is blue, 
+/// // and the extrusion from its end face is yellow
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-1.0, 1.0])
+///   |> yLine(length = -2.0)
+///   |> xLine(length = 2.0)
+///   |> yLine(length = 2.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// sketch003 = startSketchOn(XZ)
+/// profile002 = startProfile(sketch003, at = [0, 0])
+///   |> yLine(length = 2.0)
+///   |> tangentialArc(end = [-2.0, 2.0])
+///   |> xLine(length = -2.0)
+///   |> tangentialArc(end = [-2, 2.0])
+///   |> yLine(length = 2)
+/// sweep001 = sweep(profile001, path = profile002, tagEnd = $endSweep)
+/// |> appearance(color = "#0000FF")
+/// extrude(endSweep, length = 2, method = NEW)
+/// |> appearance(color = "#FFFF00")
+/// ```
+/// ```kcl
 /// // Surface extrude of a closed profile
 /// closedProfile = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -606,7 +685,7 @@ export fn ellipse(
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Face | TaggedFace; 1+],
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
@@ -631,6 +710,9 @@ export fn extrude(
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
+  /// Whether or not to hide the seams between the original and resulting object.
+  /// Only used if a face is extruded and method = MERGE
+  hideSeams?: bool,
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
