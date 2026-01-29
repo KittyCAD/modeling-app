@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
