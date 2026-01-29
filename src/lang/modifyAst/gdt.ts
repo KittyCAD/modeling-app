@@ -35,6 +35,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  * @param precision - Number of decimal places to display (optional)
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -225,6 +226,7 @@ export function addDatumGdt({
   wasmInstance,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -236,6 +238,7 @@ export function addDatumGdt({
   wasmInstance: ModuleType
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -295,6 +298,7 @@ export function addDatumGdt({
     nodeToEdit: mNodeToEdit,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })

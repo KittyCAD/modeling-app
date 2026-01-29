@@ -1726,13 +1726,13 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   // Extract optional parameters
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
-    'error' in arg ? undefined : arg
-  )
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1741,6 +1741,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     name,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),

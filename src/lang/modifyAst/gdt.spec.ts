@@ -794,6 +794,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
       const framePlane = 'XZ'
+      const leaderScale = await getKclCommandValue(
+        '1.1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const fontPointSize = await getKclCommandValue(
         '48',
         instanceInThisFile,
@@ -812,6 +817,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         name,
         framePosition,
         framePlane,
+        leaderScale,
         fontPointSize,
         fontScale,
         wasmInstance: instanceInThisFile,
@@ -829,6 +835,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('name = "A"')
       expect(newCode).toContain('framePosition = [5, 0]')
       expect(newCode).toContain('framePlane = XZ')
+      expect(newCode).toContain('leaderScale = 1.1')
       expect(newCode).toContain('fontPointSize = 48')
       expect(newCode).toContain('fontScale = 2')
     })

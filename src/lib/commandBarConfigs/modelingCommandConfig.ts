@@ -359,6 +359,7 @@ export type ModelingCommandSchema = {
     name: string
     framePosition?: KclCommandValue
     framePlane?: string
+    leaderScale?: KclCommandValue
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
@@ -2180,6 +2181,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'XZ Plane', value: KCL_PLANE_XZ },
           { name: 'YZ Plane', value: KCL_PLANE_YZ },
         ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
       fontPointSize: {
