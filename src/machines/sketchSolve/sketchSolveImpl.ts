@@ -71,18 +71,18 @@ export type SketchSolveMachineEvent =
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
-    type:
-    | 'coincident'
-    | 'LinesEqualLength'
-    | 'Vertical'
-    | 'Horizontal'
-    | 'Parallel'
-    | 'Perpendicular'
-    | 'Distance'
-    | 'HorizontalDistance'
-    | 'VerticalDistance'
-    | 'construction'
-  }
+      type:
+        | 'coincident'
+        | 'LinesEqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+        | 'Perpendicular'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
+    }
   | {
     type: 'update selected ids'
     data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
