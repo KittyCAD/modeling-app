@@ -274,7 +274,6 @@ export function OpenedProject() {
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   })
 
   // Only create the native file menus on desktop

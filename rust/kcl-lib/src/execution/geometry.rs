@@ -9,6 +9,7 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
@@ -1900,6 +1901,8 @@ pub struct ConstrainablePoint2d {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
+    /// The engine ID.
+    pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: UnsolvedSegmentKind,
     #[serde(skip)]
@@ -1938,10 +1941,22 @@ pub enum UnsolvedSegmentKind {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
+    /// The engine ID.
+    pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: SegmentKind,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+impl Segment {
+    pub fn is_construction(&self) -> bool {
+        match &self.kind {
+            SegmentKind::Point { .. } => true,
+            SegmentKind::Line { construction, .. } => *construction,
+            SegmentKind::Arc { construction, .. } => *construction,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
