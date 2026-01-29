@@ -140,7 +140,10 @@ export const registerFileProtocolCsp = () => {
         callback({ data, mimeType: getMimeType(filePath) })
       } catch (error) {
         console.error('Failed to load file protocol response', error)
-        callback({ data: Buffer.alloc(0), mimeType: 'application/octet-stream' })
+        callback({
+          data: Buffer.alloc(0),
+          mimeType: 'application/octet-stream',
+        })
       }
     })()
   })
