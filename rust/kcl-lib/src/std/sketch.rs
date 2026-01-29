@@ -1279,7 +1279,7 @@ pub(crate) async fn inner_start_profile(
         units,
         mirror: Default::default(),
         clone: Default::default(),
-        meta: vec![args.source_range.into()],
+        meta: vec![source_range.into()],
         tags: Default::default(),
         start: current_path.clone(),
         is_closed: ProfileClosed::No,
