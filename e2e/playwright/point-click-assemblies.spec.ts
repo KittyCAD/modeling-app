@@ -186,7 +186,7 @@ test.describe(
       cmdBar: CmdBarFixture,
       selectionType: 'scene' | 'feature-tree'
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
+      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
       async function selectBracket() {
         if (selectionType === 'scene') {
           const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -891,7 +891,7 @@ foreign
           currentArgKey: 'variableName',
           currentArgValue: '',
           headerArguments: {
-            Objects: '1 other',
+            Objects: '1 plane',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -901,7 +901,7 @@ foreign
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 other',
+            Objects: '1 plane',
             VariableName: 'clone001',
           },
           commandName: 'Clone',
