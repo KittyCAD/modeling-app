@@ -194,11 +194,11 @@ export function modelingMenuCallbackMostActions({
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-        resetCameraPosition({
-          sceneInfra,
-          engineCommandManager,
-          settingsActor,
-        }).catch(reportRejection)
+      resetCameraPosition({
+        sceneInfra,
+        engineCommandManager,
+        settingsActor,
+      }).catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
