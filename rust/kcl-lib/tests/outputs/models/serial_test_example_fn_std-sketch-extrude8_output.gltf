@@ -4243,9 +4243,9 @@
       "doubleSided": false,
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.9,
-          0.9,
-          0.9,
+          0,
+          1,
+          0,
           1
         ],
         "metallicFactor": 1,
@@ -4281,9 +4281,9 @@
       "doubleSided": false,
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0,
-          1,
-          0,
+          0.9,
+          0.9,
+          0.9,
           1
         ],
         "metallicFactor": 1,
