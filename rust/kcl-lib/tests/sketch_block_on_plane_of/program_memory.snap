@@ -312,7 +312,39 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     "end_freedom": "Free",
                     "construction": false
                   }
-                }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 1,
+                  "origin": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "yAxis": {
+                    "x": -0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  }
+                },
+                "sketchId": "[uuid]"
               }
             }
           }
@@ -396,7 +428,39 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     "end_freedom": "Free",
                     "construction": false
                   }
-                }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 1,
+                  "origin": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "yAxis": {
+                    "x": -0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  }
+                },
+                "sketchId": "[uuid]"
               }
             }
           }
@@ -480,7 +544,39 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     "end_freedom": "Free",
                     "construction": false
                   }
-                }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 1,
+                  "origin": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "yAxis": {
+                    "x": -0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  }
+                },
+                "sketchId": "[uuid]"
               }
             }
           }
@@ -564,7 +660,39 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
                     "end_freedom": "Free",
                     "construction": false
                   }
-                }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 1,
+                  "origin": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "yAxis": {
+                    "x": -0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": "mm"
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  }
+                },
+                "sketchId": "[uuid]"
               }
             }
           }
