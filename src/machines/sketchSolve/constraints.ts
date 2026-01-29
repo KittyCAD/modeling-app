@@ -42,6 +42,7 @@ export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
+  private editingInputElement: HTMLInputElement | null = null
 
   // TODO if these are disposed they need to be recreated
   private readonly materials = {
@@ -427,6 +428,84 @@ export class ConstraintUtils {
       }
     }
   }
+
+  public updateEditingInput(
+    constraintId: number | undefined,
+    objects: Array<ApiObject>,
+    sceneInfra: SceneInfra | undefined
+  ): void {
+    if (constraintId === undefined) {
+      if (this.editingInputElement) {
+        this.editingInputElement.remove()
+        this.editingInputElement = null
+      }
+    } else {
+      const constraintObject = objects[constraintId]
+      if (constraintObject?.kind.type === 'Constraint') {
+        const constraintType = constraintObject.kind.constraint.type
+        if (
+          constraintType === 'Distance' ||
+          constraintType === 'HorizontalDistance' ||
+          constraintType === 'VerticalDistance'
+        ) {
+          const distance = constraintObject.kind.constraint.distance
+
+          if (!sceneInfra) {
+            console.warn('SceneInfra not available for constraint editing')
+            return
+          }
+          const sketchSolveGroup =
+            sceneInfra.scene.getObjectByName('sketchSolveGroup')
+          const constraintGroup = sketchSolveGroup?.getObjectByName(
+            constraintId.toString()
+          )
+          if (!constraintGroup) {
+            console.warn(`Constraint group ${constraintId} not found in scene`)
+            return
+          }
+          const label = constraintGroup.children.find(
+            (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+          ) as Sprite | undefined
+          if (!label) {
+            console.warn(`Label not found in constraint group ${constraintId}`)
+            return
+          }
+
+          const worldPosition = new Vector3()
+          label.getWorldPosition(worldPosition)
+          const screenPosition = worldPosition.clone()
+          screenPosition.project(sceneInfra.camControls.camera)
+
+          const x =
+            (screenPosition.x * 0.5 + 0.5) *
+            sceneInfra.renderer.domElement.clientWidth
+          const y =
+            (-screenPosition.y * 0.5 + 0.5) *
+            sceneInfra.renderer.domElement.clientHeight
+
+          // Create or update the input element
+          if (!this.editingInputElement) {
+            this.editingInputElement = createEditingInput()
+
+            const canvasContainer = sceneInfra.renderer.domElement.parentElement
+            if (canvasContainer) {
+              canvasContainer.appendChild(this.editingInputElement)
+            }
+          }
+
+          this.editingInputElement.style.left = `${x}px`
+          this.editingInputElement.style.top = `${y}px`
+          this.editingInputElement.style.transform = 'translate(-50%, -50%)'
+          this.editingInputElement.value = parseFloat(
+            distance.value.toFixed(3)
+          ).toString()
+
+          this.editingInputElement.focus()
+          this.editingInputElement.select()
+        }
+      }
+    }
+  }
 }
 
 // Arrow with tip at origin, pointing +Y, base extends into -Y
@@ -486,4 +565,20 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
   }
 
   return null
+}
+
+function createEditingInput() {
+  const input = document.createElement('input')
+  input.type = 'text'
+  input.style.position = 'absolute'
+  input.style.zIndex = '1000'
+  input.style.padding = '4px 8px'
+  input.style.fontSize = '14px'
+  input.style.border = '2px solid #4a9eff'
+  input.style.borderRadius = '4px'
+  input.style.outline = 'none'
+  input.style.background = 'white'
+  input.style.color = 'black'
+
+  return input
 }

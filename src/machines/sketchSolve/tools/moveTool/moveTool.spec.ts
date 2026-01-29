@@ -1334,11 +1334,13 @@ describe('createOnClickCallback', () => {
   it('should select a segment when clicking on it to enable editing', async () => {
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
     const pointGroup = createPointSegmentGroup({ segmentId: 13 })
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1357,10 +1359,12 @@ describe('createOnClickCallback', () => {
   it('should clear selection when clicking on empty space to deselect all segments', async () => {
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1382,10 +1386,12 @@ describe('createOnClickCallback', () => {
     parentGroup.name = '42'
     const getParentGroup = vi.fn(() => parentGroup)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1407,10 +1413,12 @@ describe('createOnClickCallback', () => {
     nonSegmentGroup.userData = { type: 'other' }
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1434,10 +1442,12 @@ describe('createOnClickCallback', () => {
     pointGroup.add(handleChild)
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1459,10 +1469,12 @@ describe('createOnClickCallback', () => {
     lineGroup.userData = { type: 'LINE' }
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({

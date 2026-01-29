@@ -475,13 +475,14 @@ export function createOnMouseLeaveCallback({
 export function createOnClickCallback({
   getParentGroup,
   onUpdateSelectedIds,
+  onEditConstraint,
 }: {
   getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
   onUpdateSelectedIds: (data: {
     selectedIds: Array<number>
     duringAreaSelectIds: Array<number>
   }) => void
-  getContextData: () => SketchSolveContext['sketchExecOutcome']
+  onEditConstraint: (constraintId: number) => void
 }): (arg: {
   selected?: Object3D
   mouseEvent: MouseEvent
@@ -496,10 +497,11 @@ export function createOnClickCallback({
     )
     if (
       mouseEvent.detail === 2 &&
-      selected?.parent?.userData.type === CONSTRAINT_TYPE
+      selected?.parent?.userData.type === CONSTRAINT_TYPE &&
+      entityUnderCursorId
     ) {
       // Double clicking on Constraint
-      console.log('dbl click', selected, entityUnderCursorId)
+      onEditConstraint(entityUnderCursorId)
     }
 
     if (entityUnderCursorId !== null) {
@@ -1475,9 +1477,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         selectedIds: Array<number>
         duringAreaSelectIds: Array<number>
       }) => self.send({ type: 'update selected ids', data }),
-      getContextData: () => {
-        const snapshot = self.getSnapshot()
-        return snapshot.context.sketchExecOutcome
+      onEditConstraint: (constraintId: number) => {
+        self.send({
+          type: 'start editing constraint',
+          data: { constraintId },
+        })
       },
     }),
     onMouseEnter: createOnMouseEnterCallback({

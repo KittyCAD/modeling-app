@@ -47,6 +47,7 @@ import {
   onCameraScaleChange,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { constraintUtils } from '@src/machines/sketchSolve/segments'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -627,6 +628,42 @@ export const sketchSolveMachine = setup({
           })
         }
       },
+    },
+    'start editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: ({ event }) => {
+            assertEvent(event, 'start editing constraint')
+            return event.data.constraintId
+          },
+        }),
+        ({ event, context }) => {
+          assertEvent(event, 'start editing constraint')
+          const objects =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+          constraintUtils.updateEditingInput(
+            event.data.constraintId,
+            objects,
+            context.sceneInfra
+          )
+        },
+      ],
+    },
+    'stop editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: undefined,
+        }),
+        ({ context }) => {
+          const objects =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+          constraintUtils.updateEditingInput(
+            undefined,
+            objects,
+            context.sceneInfra
+          )
+        },
+      ],
     },
   },
   states: {

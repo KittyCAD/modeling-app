@@ -49,6 +49,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { CONSTRAINT_TYPE } from './constraints'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -112,6 +113,11 @@ export type SketchSolveMachineEvent =
     }
   | { type: 'clear draft entities' }
   | { type: 'delete draft entities' }
+  | {
+      type: 'start editing constraint'
+      data: { constraintId: number }
+    }
+  | { type: 'stop editing constraint' }
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
@@ -134,6 +140,7 @@ export type SketchSolveContext = {
     segmentIds: Array<number>
     constraintIds: Array<number>
   }
+  editingConstraintId?: number
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchId: number
   // Dependencies passed from parent
@@ -782,7 +789,7 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
   const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
 
   const constraintGroups = sketchSolveGroup.children.filter(
-    (child) => child.userData.type === 'constraint'
+    (child) => child.userData.type === CONSTRAINT_TYPE
   )
   constraintGroups.forEach((group) => {
     const objId = group.userData.object_id
