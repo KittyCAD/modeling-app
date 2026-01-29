@@ -29,18 +29,18 @@ pub(crate) struct ModelingCmdMeta<'a> {
 }
 
 impl<'a> ModelingCmdMeta<'a> {
-    pub fn new(ctx: &'a ExecutorContext, source_range: SourceRange) -> Self {
+    pub fn new(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: None,
         }
     }
 
-    pub fn with_id(ctx: &'a ExecutorContext, source_range: SourceRange, id: Uuid) -> Self {
+    pub fn with_id(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange, id: Uuid) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: Some(id),
         }
     }
@@ -74,12 +74,6 @@ impl<'a> ModelingCmdMeta<'a> {
         let id = id_generator.next_uuid();
         self.id = Some(id);
         id
-    }
-}
-
-impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
-    fn from(args: &'a Args) -> Self {
-        ModelingCmdMeta::new(&args.ctx, args.source_range)
     }
 }
 

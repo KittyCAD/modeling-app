@@ -15,6 +15,18 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     8[Solid2d]
   end
+  subgraph path25 [Path]
+    25["Path<br>[307, 1019, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    26["Segment<br>[307, 1019, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    27["Segment<br>[307, 1019, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    28["Segment<br>[307, 1019, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    29["Segment<br>[307, 1019, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  end
   1["Plane<br>[58, 75, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   9["Sweep Extrusion<br>[244, 265, 0]<br>Consumed: false"]
@@ -39,9 +51,9 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Opposite"]
   23["SweepEdge Adjacent"]
-  24["PlaneOfFace<br>[275, 301, 0]"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  25["SketchBlock<br>[307, 1019, 0]"]
+  24["Plane<br>[307, 1019, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  30["SketchBlock<br>[307, 1019, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   2 --- 3
@@ -84,7 +96,6 @@ flowchart LR
   10 --- 16
   10 --- 17
   23 <--x 10
-  10 <--x 24
   17 <--x 11
   11 --- 18
   11 --- 19
@@ -98,5 +109,10 @@ flowchart LR
   18 <--x 15
   20 <--x 15
   22 <--x 15
-  24 <--x 25
+  24 --- 25
+  24 <--x 30
+  25 --- 26
+  25 --- 27
+  25 --- 28
+  25 --- 29
 ```
