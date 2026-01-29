@@ -14,8 +14,8 @@ use crate::{
     CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
-        Solid, TagIdentifier, annotations,
+        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -533,6 +533,18 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
 impl<'a> FromKclValue<'a> for Vec<KclValue> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone().into_array())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<Extrudable> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let items = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(Extrudable::from_kcl_val)
+            .collect::<Option<Vec<_>>>()?;
+        Some(items)
     }
 }
 
@@ -1061,6 +1073,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
+impl<'a> FromKclValue<'a> for Extrudable {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = FaceTag::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
@@ -1257,6 +1277,15 @@ impl<'a> FromKclValue<'a> for Box<Plane> {
 impl<'a> FromKclValue<'a> for Box<Sketch> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::TagIdentifier(value) = arg else {
             return None;
         };
         Some(value.to_owned())

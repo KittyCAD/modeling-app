@@ -287,7 +287,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Face | TaggedFace; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,
@@ -298,6 +298,7 @@ mod tests {
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
   method?: string,
+  hideSeams?: bool,
   bodyType?: string,
 ): [Solid; 1+]"#
         );
