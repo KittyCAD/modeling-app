@@ -758,7 +758,8 @@ export const sketchSolveMachine = setup({
 
                 // Note: after dragging some segments, context.kclManager.ast seems to
                 // be updated so we parse code to get an up to date ast...
-                const wasmInstance = await context.kclManager.wasmInstancePromise
+                const wasmInstance =
+                  await context.kclManager.wasmInstancePromise
                 const parseResult = parse(context.kclManager.code, wasmInstance)
                 if (err(parseResult) || !resultIsOk(parseResult)) {
                   console.error('Failed to parse current code')
