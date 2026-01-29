@@ -387,6 +387,80 @@ extrude(
 </model-viewer>
 
 ```kcl
+// Create a yellow extruded triangle.
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1, tag = $a)
+  |> xLine(length = 1, tag = $b)
+  |> close(tag = $c)
+cube = extrude(profile001, length = 1)
+  |> appearance(color = "#ffaa00")
+
+// Extrude a red box from one of the triangle's side faces.
+box = extrude(
+       c,
+       length = 4,
+       hideSeams = false,
+       method = NEW,
+     )
+  |> appearance(color = "#ff0000")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// You can even extrude faces from sweeps!
+// In this example, the sweep is blue,
+// and the extrusion from its end face is yellow
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-1.0, 1.0])
+  |> yLine(length = -2.0)
+  |> xLine(length = 2.0)
+  |> yLine(length = 2.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch003 = startSketchOn(XZ)
+profile002 = startProfile(sketch003, at = [0, 0])
+  |> yLine(length = 2.0)
+  |> tangentialArc(end = [-2.0, 2.0])
+  |> xLine(length = -2.0)
+  |> tangentialArc(end = [-2, 2.0])
+  |> yLine(length = 2)
+sweep001 = sweep(profile001, path = profile002, tagEnd = $endSweep)
+  |> appearance(color = "#0000FF")
+extrude(endSweep, length = 2, method = NEW)
+  |> appearance(color = "#FFFF00")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
 // Surface extrude of a closed profile
 closedProfile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -400,10 +474,10 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude11.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
