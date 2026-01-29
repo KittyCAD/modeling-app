@@ -1,4 +1,4 @@
-// Sketch grey trianglular prism.
+// Sketch grey triangular prism.
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1, tag = $a)
