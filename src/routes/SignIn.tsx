@@ -54,6 +54,25 @@ const SignIn = () => {
     setSelectedEnvironment(requestedEnvironmentFormatted)
   }
 
+  const commitEnvironmentChange = (requestedEnvironment: string) => {
+    const electron = window.electron
+    if (!electron) return
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    void (async () => {
+      const persistedEnvironment = await readEnvironmentFile(electron).catch(
+        () => ''
+      )
+      if (requestedEnvironmentFormatted === persistedEnvironment) {
+        return
+      }
+      await writeEnvironmentFile(electron, requestedEnvironmentFormatted).catch(
+        reportRejection
+      )
+      window.location.reload()
+    })()
+  }
+
   useEffect(() => {
     if (window.electron && !didReadFromDiskCacheForEnvironment) {
       const electron = window.electron
@@ -93,7 +112,8 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
-    updateEnvironment(selectedEnvironment)
+    const requestedEnvironment = selectedEnvironment.trim()
+    updateEnvironment(requestedEnvironment)
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -111,11 +131,9 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile(electron, '')
       return
     }
 
-    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -187,6 +205,7 @@ const SignIn = () => {
                       <AdvancedSignInOptions
                         selectedEnvironment={selectedEnvironment}
                         setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                        onEnvironmentCommit={commitEnvironmentChange}
                       />
                     )}
                   </>

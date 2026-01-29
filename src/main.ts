@@ -33,6 +33,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -327,6 +328,8 @@ app.on('window-all-closed', () => {
 app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
+
+  registerFileProtocolCsp()
 
   // Create the mainWindow
   mainWindow = createWindow()
