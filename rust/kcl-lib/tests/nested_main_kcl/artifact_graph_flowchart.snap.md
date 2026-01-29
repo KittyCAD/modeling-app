@@ -1,15 +1,15 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[43, 81, 1]<br>Consumed: true"]
+    2["Path<br>[0, 39, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    3["Segment<br>[43, 81, 1]"]
+    3["Segment<br>[0, 39, 0]"]
       %% [ProgramBodyItem { index: 0 }]
     4[Solid2d]
   end
-  1["Plane<br>[18, 35, 1]"]
+  1["Plane<br>[0, 39, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  5["Sweep Revolve<br>[89, 142, 1]<br>Consumed: false"]
+  5["Sweep Revolve<br>[0, 39, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
   6[Wall]
     %% face_code_ref=Missing NodePath

@@ -639,13 +639,19 @@ impl ArtifactGraph {
     }
 }
 
-fn import_statement_node_paths(
+#[derive(Clone)]
+struct ImportCodeRef {
+    node_path: NodePath,
+    range: SourceRange,
+}
+
+fn import_statement_code_refs(
     ast: &Node<Program>,
     module_infos: &ModuleInfoMap,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
-) -> FnvHashMap<ModuleId, NodePath> {
-    let mut node_paths = FnvHashMap::default();
+) -> FnvHashMap<ModuleId, ImportCodeRef> {
+    let mut code_refs = FnvHashMap::default();
     for body_item in &ast.body {
         let BodyItem::ImportStatement(import_stmt) = body_item else {
             continue;
@@ -658,9 +664,9 @@ fn import_statement_node_paths(
         };
         let range = SourceRange::from(import_stmt);
         let node_path = NodePath::from_range(programs, cached_body_items, range).unwrap_or_default();
-        node_paths.entry(module_id).or_insert(node_path);
+        code_refs.entry(module_id).or_insert(ImportCodeRef { node_path, range });
     }
-    node_paths
+    code_refs
 }
 
 fn module_id_for_import_path(module_infos: &ModuleInfoMap, import_path: &ImportPath) -> Option<ModuleId> {
@@ -683,17 +689,20 @@ fn module_id_for_import_path(module_infos: &ModuleInfoMap, import_path: &ImportP
     })
 }
 
-fn node_path_for_range(
+fn code_ref_for_range(
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     range: SourceRange,
-    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
-) -> NodePath {
-    if let Some(node_path) = import_node_paths.get(&range.module_id()) {
-        return node_path.clone();
+    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
+) -> (SourceRange, NodePath) {
+    if let Some(code_ref) = import_code_refs.get(&range.module_id()) {
+        return (code_ref.range, code_ref.node_path.clone());
     }
 
-    NodePath::from_range(programs, cached_body_items, range).unwrap_or_default()
+    (
+        range,
+        NodePath::from_range(programs, cached_body_items, range).unwrap_or_default(),
+    )
 }
 
 /// Build the artifact graph from the artifact commands and the responses.  The
@@ -713,14 +722,14 @@ pub(super) fn build_artifact_graph(
 
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
-    let import_node_paths = import_statement_node_paths(ast, module_infos, programs, item_count);
+    let import_code_refs = import_statement_code_refs(ast, module_infos, programs, item_count);
 
     // Fill in NodePaths for artifacts that were added directly to the map
     // during execution.
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, programs, item_count, &import_node_paths);
+        fill_in_node_paths(exec_artifact, programs, item_count, &import_code_refs);
     }
 
     for artifact_command in artifact_commands {
@@ -749,7 +758,7 @@ pub(super) fn build_artifact_graph(
             programs,
             item_count,
             exec_artifacts,
-            &import_node_paths,
+            &import_code_refs,
         )?;
         for artifact in artifact_updates {
             // Merge with existing artifacts.
@@ -773,25 +782,31 @@ fn fill_in_node_paths(
     artifact: &mut Artifact,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
-    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
+    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
         Artifact::StartSketchOnFace(face) => {
             if face.code_ref.node_path.is_empty() {
-                face.code_ref.node_path =
-                    node_path_for_range(programs, cached_body_items, face.code_ref.range, import_node_paths);
+                let (range, node_path) =
+                    code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
+                face.code_ref.range = range;
+                face.code_ref.node_path = node_path;
             }
         }
         Artifact::StartSketchOnPlane(plane) => {
             if plane.code_ref.node_path.is_empty() {
-                plane.code_ref.node_path =
-                    node_path_for_range(programs, cached_body_items, plane.code_ref.range, import_node_paths);
+                let (range, node_path) =
+                    code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
+                plane.code_ref.range = range;
+                plane.code_ref.node_path = node_path;
             }
         }
         Artifact::SketchBlock(block) => {
             if block.code_ref.node_path.is_empty() {
-                block.code_ref.node_path =
-                    node_path_for_range(programs, cached_body_items, block.code_ref.range, import_node_paths);
+                let (range, node_path) =
+                    code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
+                block.code_ref.range = range;
+                block.code_ref.node_path = node_path;
             }
         }
         _ => {}
@@ -884,7 +899,7 @@ fn artifacts_to_update(
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
-    import_node_paths: &FnvHashMap<ModuleId, NodePath>,
+    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
     let response = responses.get(&uuid);
@@ -894,9 +909,9 @@ fn artifacts_to_update(
     // correct value based on NodePath.
     let path_to_node = Vec::new();
     let range = artifact_command.range;
-    let node_path = node_path_for_range(programs, cached_body_items, range, import_node_paths);
+    let (code_ref_range, node_path) = code_ref_for_range(programs, cached_body_items, range, import_code_refs);
     let code_ref = CodeRef {
-        range,
+        range: code_ref_range,
         node_path,
         path_to_node,
     };
