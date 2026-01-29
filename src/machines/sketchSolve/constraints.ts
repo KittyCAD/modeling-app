@@ -54,6 +54,8 @@ const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detect
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
+const debug_hit_areas = false
+
 export type EditingCallbacks = {
   cancel: () => void
   submit: (value: string) => void
@@ -80,7 +82,7 @@ export class ConstraintUtils {
     hitArea: new MeshBasicMaterial({
       color: 0x00ff00,
       transparent: true,
-      opacity: 0.3,
+      opacity: debug_hit_areas ? 0.3 : 0,
       side: DoubleSide,
     }),
   }
