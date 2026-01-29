@@ -1787,7 +1787,7 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.8392157,
           "g": 0.2627451,
           "b": 0.59607846,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2088,7 +2088,7 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.23529412,
           "g": 0.6784314,
           "b": 0.827451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2389,7 +2389,7 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

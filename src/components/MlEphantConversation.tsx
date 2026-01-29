@@ -221,7 +221,7 @@ export const MlEphantConversationInput = (
           className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}

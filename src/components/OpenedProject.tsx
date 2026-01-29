@@ -65,6 +65,7 @@ import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -77,6 +78,9 @@ export function OpenedProject() {
     billingActor,
     systemIOActor,
     getSettings,
+    settingsActor,
+    engineCommandManager,
+    sceneInfra,
     kclManager,
     useLayout,
     setLayout,
@@ -115,9 +119,24 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
       return
-    void kclManager.executeCode()
+    kclManager
+      .executeCode()
+      .then(async () => {
+        await resetCameraPosition({
+          sceneInfra,
+          engineCommandManager,
+          settingsActor,
+        })
+      })
+      .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [systemIOState, kclManager])
+  }, [
+    systemIOState,
+    kclManager,
+    sceneInfra,
+    engineCommandManager,
+    settingsActor,
+  ])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -255,7 +274,6 @@ export function OpenedProject() {
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   })
 
   // Only create the native file menus on desktop

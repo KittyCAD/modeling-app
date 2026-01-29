@@ -288,25 +288,10 @@ export const sketchSolveMachine = setup({
         }
       },
     },
-    Distance: {
+    Dimension: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        let segmentsToConstrain = context.selectedIds
-        if (segmentsToConstrain.length === 1) {
-          const first =
-            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-              segmentsToConstrain[0]
-            ]
-          if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind?.segment?.type === 'Line'
-          ) {
-            segmentsToConstrain = [
-              first.kind.segment.start,
-              first.kind.segment.end,
-            ]
-          }
-        }
+        const segmentsToConstrain = context.selectedIds
         const currentSelections = segmentsToConstrain
           .map(
             (id) =>
@@ -346,14 +331,117 @@ export const sketchSolveMachine = setup({
               distance = roundOff(distanceResult.distance)
             }
           }
+        } else if (currentSelections.length === 1) {
+          const first = currentSelections[0]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Arc'
+          ) {
+            // Calculate radius for arc segment from its center and start point
+            const centerPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.center
+              ]
+            const startPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.start
+              ]
+            if (
+              centerPoint?.kind?.type === 'Segment' &&
+              centerPoint.kind.segment?.type === 'Point' &&
+              startPoint?.kind?.type === 'Segment' &&
+              startPoint.kind.segment?.type === 'Point'
+            ) {
+              const point1 = {
+                x: centerPoint.kind.segment.position.x,
+                y: centerPoint.kind.segment.position.y,
+              }
+              const point2 = {
+                x: startPoint.kind.segment.position.x,
+                y: startPoint.kind.segment.position.y,
+              }
+              const distanceResult = distanceBetweenPoint2DExpr(
+                point1,
+                point2,
+                await context.kclManager.wasmInstancePromise
+              )
+              if (!(distanceResult instanceof Error)) {
+                distance = roundOff(distanceResult.distance)
+              }
+            }
+            // Apply radius constraint for arc
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'Radius',
+                radius: { value: distance, units },
+                arc: segmentsToConstrain[0],
+              },
+              await jsAppSettings(context.rustContext.settingsActor)
+            )
+            if (result) {
+              self.send({
+                type: 'update sketch outcome',
+                data: result,
+              })
+            }
+            return
+          } else if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            // Calculate distance for line segment from its endpoints
+            const startPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.start
+              ]
+            const endPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.end
+              ]
+            if (
+              startPoint?.kind?.type === 'Segment' &&
+              startPoint.kind.segment?.type === 'Point' &&
+              endPoint?.kind?.type === 'Segment' &&
+              endPoint.kind.segment?.type === 'Point'
+            ) {
+              const point1 = {
+                x: startPoint.kind.segment.position.x,
+                y: startPoint.kind.segment.position.y,
+              }
+              const point2 = {
+                x: endPoint.kind.segment.position.x,
+                y: endPoint.kind.segment.position.y,
+              }
+              const distanceResult = distanceBetweenPoint2DExpr(
+                point1,
+                point2,
+                await context.kclManager.wasmInstancePromise
+              )
+              if (!(distanceResult instanceof Error)) {
+                distance = roundOff(distanceResult.distance)
+              }
+            }
+          }
         }
+        // distance() accepts two points: when user selects one line, pass its endpoints
+        const pointsForDistance =
+          currentSelections.length === 1 &&
+          currentSelections[0]?.kind?.type === 'Segment' &&
+          currentSelections[0].kind.segment?.type === 'Line'
+            ? [
+                currentSelections[0].kind.segment.start,
+                currentSelections[0].kind.segment.end,
+              ]
+            : segmentsToConstrain
         const result = await context.rustContext.addConstraint(
           0,
           context.sketchId,
           {
             type: 'Distance',
             distance: { value: distance, units },
-            points: segmentsToConstrain,
+            points: pointsForDistance,
           },
           await jsAppSettings(context.rustContext.settingsActor)
         )
