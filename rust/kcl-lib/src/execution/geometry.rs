@@ -3,9 +3,8 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
@@ -21,7 +20,11 @@ use crate::{
     },
     front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;
@@ -810,29 +813,26 @@ impl Sketch {
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
             ModelingCmdReq {
-                cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &self.on {
-                    // We pass in the normal for the plane here.
-                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                cmd: ModelingCmd::from(
                     mcmd::EnableSketchMode::builder()
                         .animated(false)
                         .ortho(false)
                         .entity_id(self.on.id())
                         .adjust_camera(false)
-                        .planar_normal(normal.into())
-                        .build()
-                } else {
-                    mcmd::EnableSketchMode::builder()
-                        .animated(false)
-                        .ortho(false)
-                        .entity_id(self.on.id())
-                        .adjust_camera(false)
-                        .build()
-                }),
+                        .maybe_planar_normal(if let SketchSurface::Plane(plane) = &self.on {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            Some(normal.into())
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
                 cmd_id: exec_state.next_uuid().into(),
             },
             inner_cmd,
             ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build()),
                 cmd_id: exec_state.next_uuid().into(),
             },
         ]
@@ -880,6 +880,58 @@ impl SketchSurface {
             SketchSurface::Plane(plane) => plane.object_id = Some(object_id),
             SketchSurface::Face(face) => face.object_id = object_id,
         }
+    }
+}
+
+/// A Sketch, Face, or TaggedFace.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Extrudable {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Face.
+    Face(FaceTag),
+}
+
+impl Extrudable {
+    /// Get the relevant id.
+    pub async fn id_to_extrude(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+        }
+    }
+
+    pub fn as_sketch(&self) -> Option<Sketch> {
+        match self {
+            Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => Some(solid.sketch),
+                None => None,
+            },
+        }
+    }
+
+    pub fn is_closed(&self) -> ProfileClosed {
+        match self {
+            Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid.sketch.is_closed,
+                _ => ProfileClosed::Maybe,
+            },
+        }
+    }
+}
+
+impl From<Sketch> for Extrudable {
+    fn from(value: Sketch) -> Self {
+        Extrudable::Sketch(Box::new(value))
     }
 }
 
@@ -935,11 +987,13 @@ impl Sketch {
     ) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
+        let mut sketch_copy = self.clone();
+        sketch_copy.tags.clear();
         tag_identifier.info.push((
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                sketch: self.id,
+                geometry: Geometry::Sketch(sketch_copy),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
