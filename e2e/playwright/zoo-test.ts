@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { test as playwrightTestFn } from '@playwright/test'
 
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'

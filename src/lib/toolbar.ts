@@ -1,9 +1,10 @@
 import type { EventFrom, StateFrom } from 'xstate'
+import { useMemo } from 'react'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -82,1489 +83,1532 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
-export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
-  modeling: {
-    check: (state) =>
-      !(
-        state.matches('Sketch') ||
-        state.matches('Sketch no face') ||
-        state.matches('animating to existing sketch') ||
-        state.matches('animating to plane') ||
-        state.matches('sketchSolveMode')
-      ),
-    items: [
-      {
-        id: 'sketch',
-        onClick: ({
-          modelingSend,
-          modelingState,
-          sketchPathId,
-          editorHasFocus,
-        }) => {
-          const isSketchBlock = isSketchBlockSelected(
-            modelingState.context.selectionRanges
-          )
+export const useToolbarConfig = () => {
+  const { commandBarActor } = useSingletons()
+  return useMemo<Record<ToolbarModeName, ToolbarMode>>(
+    () => ({
+      modeling: {
+        check: (state) =>
+          !(
+            state.matches('Sketch') ||
+            state.matches('Sketch no face') ||
+            state.matches('animating to existing sketch') ||
+            state.matches('animating to plane') ||
+            state.matches('sketchSolveMode')
+          ),
+        items: [
+          {
+            id: 'sketch',
+            onClick: ({
+              modelingSend,
+              modelingState,
+              sketchPathId,
+              editorHasFocus,
+            }) => {
+              const isSketchBlock = isSketchBlockSelected(
+                modelingState.context.selectionRanges
+              )
 
-          // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
-          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-            modelingSend({ type: 'Enter sketch' })
-          } else {
-            // No sketch context - start new sketch
-            modelingSend({
-              type: 'Enter sketch',
-              data: { forceNewSketch: true },
-            })
-          }
-        },
-        icon: 'sketch',
-        status: 'available',
-        title: ({ editorHasFocus, sketchPathId, modelingState }) => {
-          const isSketchBlock = isSketchBlockSelected(
-            modelingState.context.selectionRanges
-          )
+              // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
+              if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+                modelingSend({ type: 'Enter sketch' })
+              } else {
+                // No sketch context - start new sketch
+                modelingSend({
+                  type: 'Enter sketch',
+                  data: { forceNewSketch: true },
+                })
+              }
+            },
+            icon: 'sketch',
+            status: 'available',
+            title: ({ editorHasFocus, sketchPathId, modelingState }) => {
+              const isSketchBlock = isSketchBlockSelected(
+                modelingState.context.selectionRanges
+              )
 
-          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-            return 'Edit Sketch'
-          } else {
-            return 'Start Sketch'
-          }
-        },
-        showTitle: true,
-        hotkey: 'S',
-        description: 'Start drawing a 2D sketch',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL(
-              '/docs/kcl-std/functions/std-sketch-startSketchOn'
-            ),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'extrude',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Extrude', groupId: 'modeling' },
-          }),
-        icon: 'extrude',
-        status: 'available',
-        title: 'Extrude',
-        hotkey: 'E',
-        description: 'Pull a sketch into 3D along its normal or perpendicular.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-extrude'),
-          },
-        ],
-      },
-      {
-        id: 'sweep',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Sweep', groupId: 'modeling' },
-          }),
-        icon: 'sweep',
-        status: 'available',
-        title: 'Sweep',
-        hotkey: 'W',
-        description:
-          'Create a 3D body by moving a sketch region along an arbitrary path.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-sweep'),
-          },
-        ],
-      },
-      {
-        id: 'loft',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Loft', groupId: 'modeling' },
-          }),
-        icon: 'loft',
-        status: 'available',
-        title: 'Loft',
-        hotkey: 'L',
-        description:
-          'Create a 3D body by blending between two or more sketches.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-loft'),
-          },
-        ],
-      },
-      {
-        id: 'revolve',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Revolve', groupId: 'modeling' },
-          }),
-        icon: 'revolve',
-        status: 'available',
-        title: 'Revolve',
-        hotkey: 'R',
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-revolve'),
-          },
-          {
-            label: 'KCL example',
-            url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'fillet3d',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Fillet', groupId: 'modeling' },
-          }),
-        icon: 'fillet3d',
-        status: 'available',
-        title: 'Fillet',
-        hotkey: 'F',
-        description: 'Round the edges of a 3D solid.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-fillet'),
-          },
-        ],
-      },
-      {
-        id: 'chamfer3d',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Chamfer', groupId: 'modeling' },
-          }),
-        icon: 'chamfer3d',
-        status: 'available',
-        title: 'Chamfer',
-        hotkey: 'C',
-        description: 'Bevel the edges of a 3D solid.',
-        extraNote:
-          'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
-        links: [
-          {
-            label: 'issue tracker',
-            url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
-          },
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-chamfer'),
-          },
-        ],
-      },
-      {
-        id: 'shell',
-        onClick: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Shell', groupId: 'modeling' },
-          })
-        },
-        icon: 'shell',
-        status: 'available',
-        title: 'Shell',
-        description: 'Hollow out a 3D solid.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
-          },
-        ],
-      },
-      {
-        id: 'hole',
-        onClick: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Hole', groupId: 'modeling' },
-          })
-        },
-        icon: 'hole',
-        status: 'available',
-        title: 'Hole',
-        description:
-          'Standard holes that could be drilled or cut into a 3D solid.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'booleans',
-        array: [
-          {
-            id: 'boolean-union',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Boolean Union', groupId: 'modeling' },
-              }),
-            icon: 'booleanUnion',
-            status: 'available',
-            title: 'Union',
-            description: 'Combine two or more solids into a single solid.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-union'),
-              },
-            ],
-          },
-          {
-            id: 'boolean-subtract',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Boolean Subtract', groupId: 'modeling' },
-              }),
-            icon: 'booleanSubtract',
-            status: 'available',
-            title: 'Subtract',
-            description: 'Subtract one solid from another.',
+              if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+                return 'Edit Sketch'
+              } else {
+                return 'Start Sketch'
+              }
+            },
+            showTitle: true,
+            hotkey: 'S',
+            description: 'Start drawing a 2D sketch',
             links: [
               {
                 label: 'KCL docs',
                 url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-subtract'
+                  '/docs/kcl-std/functions/std-sketch-startSketchOn'
                 ),
               },
             ],
           },
+          'break',
           {
-            id: 'boolean-intersect',
+            id: 'extrude',
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
-                data: { name: 'Boolean Intersect', groupId: 'modeling' },
+                data: { name: 'Extrude', groupId: 'modeling' },
               }),
-            icon: 'booleanIntersect',
+            icon: 'extrude',
             status: 'available',
-            title: 'Intersect',
-            description: 'Create a solid from the intersection of two solids.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-intersect'
-                ),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'split',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Boolean Split', groupId: 'modeling' },
-          }),
-        icon: 'split',
-        status: 'available',
-        title: 'Split',
-        description: 'Split a solid or surface into multiple surfaces.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
-          },
-        ],
-      },
-      {
-        id: 'surface',
-        array: [
-          {
-            id: 'flip-surface',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Flip Surface', groupId: 'modeling' },
-              }),
-            icon: 'flipSurface',
-            status: 'available',
-            title: 'Flip Surface',
+            title: 'Extrude',
+            hotkey: 'E',
             description:
-              'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
+              'Pull a sketch into 3D along its normal or perpendicular.',
             links: [
               {
-                label: 'API docs',
+                label: 'KCL docs',
                 url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-flipSurface'
+                  '/docs/kcl-std/functions/std-sketch-extrude'
                 ),
               },
             ],
           },
           {
-            id: 'join',
-            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Join',
-            description: 'Join surfaces together',
-            links: [],
+            id: 'sweep',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Sweep', groupId: 'modeling' },
+              }),
+            icon: 'sweep',
+            status: 'available',
+            title: 'Sweep',
+            hotkey: 'W',
+            description:
+              'Create a 3D body by moving a sketch region along an arbitrary path.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-sketch-sweep'
+                ),
+              },
+            ],
           },
           {
-            id: 'delete-face',
-            // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Delete Face',
-            description: 'Deletes a face from a body, leaving an open surface.',
-            links: [],
+            id: 'loft',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Loft', groupId: 'modeling' },
+              }),
+            icon: 'loft',
+            status: 'available',
+            title: 'Loft',
+            hotkey: 'L',
+            description:
+              'Create a 3D body by blending between two or more sketches.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-loft'),
+              },
+            ],
           },
-        ],
-      },
-      'break',
-      {
-        id: 'planes',
-        array: [
           {
-            id: 'plane-offset',
+            id: 'revolve',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Revolve', groupId: 'modeling' },
+              }),
+            icon: 'revolve',
+            status: 'available',
+            title: 'Revolve',
+            hotkey: 'R',
+            description:
+              'Create a 3D body by rotating a sketch region about an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-sketch-revolve'
+                ),
+              },
+              {
+                label: 'KCL example',
+                url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'fillet3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Fillet', groupId: 'modeling' },
+              }),
+            icon: 'fillet3d',
+            status: 'available',
+            title: 'Fillet',
+            hotkey: 'F',
+            description: 'Round the edges of a 3D solid.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-fillet'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'chamfer3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Chamfer', groupId: 'modeling' },
+              }),
+            icon: 'chamfer3d',
+            status: 'available',
+            title: 'Chamfer',
+            hotkey: 'C',
+            description: 'Bevel the edges of a 3D solid.',
+            extraNote:
+              'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
+            links: [
+              {
+                label: 'issue tracker',
+                url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
+              },
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-chamfer'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'shell',
             onClick: () => {
               commandBarActor.send({
                 type: 'Find and select command',
-                data: { name: 'Offset plane', groupId: 'modeling' },
+                data: { name: 'Shell', groupId: 'modeling' },
               })
             },
-            hotkey: 'O',
-            icon: 'plane',
+            icon: 'shell',
             status: 'available',
-            title: 'Offset plane',
-            description: 'Create a plane parallel to an existing plane.',
+            title: 'Shell',
+            description: 'Hollow out a 3D solid.',
             links: [
               {
                 label: 'KCL docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-offsetPlane'),
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
               },
             ],
           },
           {
-            id: 'plane-points',
-            onClick: () =>
-              console.error('Plane through points not yet implemented'),
-            status: 'unavailable',
-            title: '3-point plane',
-            description: 'Create a plane from three points.',
-            links: [],
-          },
-        ],
-      },
-      {
-        id: 'helix',
-        onClick: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Helix', groupId: 'modeling' },
-          })
-        },
-        hotkey: 'H',
-        icon: 'helix',
-        status: 'available',
-        title: 'Helix',
-        description: 'Create a helix or spiral in 3D about an axis.',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'insert',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Insert', groupId: 'code' },
-          }),
-        hotkey: 'I',
-        icon: 'import',
-        status: 'available',
-        disabled: () => !isDesktop(),
-        title: 'Insert',
-        description: 'Insert from a file in the current project directory',
-        links: [
-          {
-            label: 'API docs',
-            url: withSiteBaseURL('/docs/kcl-lang/modules'),
-          },
-        ],
-      },
-      {
-        id: 'transform',
-        array: [
-          {
-            id: 'translate',
-            onClick: () =>
+            id: 'hole',
+            onClick: () => {
               commandBarActor.send({
                 type: 'Find and select command',
-                data: { name: 'Translate', groupId: 'modeling' },
-              }),
-            icon: 'move',
-            status: 'available',
-            title: 'Translate',
-            description: 'Apply a translation to a solid or sketch.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-transform-translate'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'rotate',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Rotate', groupId: 'modeling' },
-              }),
-            icon: 'rotate',
-            status: 'available',
-            title: 'Rotate',
-            description: 'Apply a rotation to a solid or sketch.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-transform-rotate'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'scale',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Scale', groupId: 'modeling' },
-              }),
-            icon: 'scale',
-            status: 'available',
-            title: 'Scale',
-            description: 'Apply scaling to a solid or sketch.',
-            links: [
-              {
-                label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
-              },
-            ],
-          },
-          {
-            id: 'clone',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Clone', groupId: 'modeling' },
-              }),
-            status: 'available',
-            title: 'Clone',
-            icon: 'clone',
-            description: 'Clone a solid or sketch.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
-              },
-            ],
-          },
-          {
-            id: 'appearance',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Appearance', groupId: 'modeling' },
-              }),
-            status: 'available',
-            title: 'Appearance',
-            icon: 'text',
-            description:
-              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'pattern',
-        array: [
-          {
-            id: 'pattern-circular-3d',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
-              }),
-            status: 'available',
-            title: 'Circular Pattern',
-            icon: 'patternCircular3d',
-            description:
-              'Create a circular pattern of 3D solids around an axis.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-patternCircular3d'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'pattern-linear-3d',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
-              }),
-            status: 'available',
-            title: 'Linear Pattern',
-            icon: 'patternLinear3d',
-            description: 'Create a linear pattern of 3D solids along an axis.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-solid-patternLinear3d'
-                ),
-              },
-            ],
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'gdt',
-        array: [
-          {
-            id: 'gdt-flatness',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'GDT Flatness', groupId: 'modeling' },
-              }),
-            status: 'experimental',
-            title: 'Flatness',
-            icon: 'gdtFlatness',
-            description:
-              'Specifies flatness tolerance - how much a surface can deviate from perfectly flat.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL(
-                  '/docs/kcl-std/functions/std-gdt-flatness'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'gdt-datum',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'GDT Datum', groupId: 'modeling' },
-              }),
-            status: 'experimental',
-            title: 'Datum',
-            icon: 'gdtDatum',
-            description:
-              'Establishes a reference surface for other GD&T measurements.',
-            links: [
-              {
-                label: 'KCL docs',
-                url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-datum'),
-              },
-            ],
-          },
-          {
-            id: 'gdt-profile',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Profile',
-            description:
-              'Specifies how much a surface or edge can deviate from its ideal shape.',
-            links: [],
-          },
-          {
-            id: 'gdt-position',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Position',
-            description:
-              'Controls location tolerance of holes, pins, and other features.',
-            links: [],
-          },
-          {
-            id: 'gdt-perpendicularity',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Perpendicularity',
-            description:
-              'Specifies how perpendicular one feature must be to another.',
-            links: [],
-          },
-          {
-            id: 'gdt-parallelism',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Parallelism',
-            description:
-              'Specifies how parallel one feature must be to another.',
-            links: [],
-          },
-          {
-            id: 'gdt-dimension',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Dimension',
-            description: 'Adds size dimensions with manufacturing tolerances.',
-            links: [],
-          },
-          {
-            id: 'gdt-note',
-            onClick: () => {},
-            status: 'unavailable',
-            title: 'Note',
-            description:
-              'Adds text notes for manufacturing instructions or inspection requirements.',
-            links: [],
-          },
-        ],
-      },
-    ],
-  },
-  sketching: {
-    check: (state) =>
-      state.matches('Sketch') ||
-      state.matches('Sketch no face') ||
-      state.matches('animating to existing sketch') ||
-      state.matches('animating to plane'),
-    items: [
-      {
-        id: 'sketch-exit',
-        onClick: ({ modelingSend }) =>
-          modelingSend({
-            type: 'Cancel',
-          }),
-        disableHotkey: (state) =>
-          !(
-            state.matches({ Sketch: 'SketchIdle' }) ||
-            state.matches('Sketch no face')
-          ),
-        icon: 'arrowShortLeft',
-        status: 'available',
-        title: 'Exit sketch',
-        showTitle: true,
-        hotkey: 'Esc',
-        description: 'Exit the current sketch',
-        links: [],
-      },
-      'break',
-      {
-        id: 'line',
-        onClick: ({ modelingState, modelingSend }) => {
-          modelingSend({
-            type: 'change tool',
-            data: {
-              tool: !modelingState.matches({ Sketch: 'Line tool' })
-                ? 'line'
-                : 'none',
+                data: { name: 'Hole', groupId: 'modeling' },
+              })
             },
-          })
-        },
-        icon: 'line',
-        status: 'available',
-        disabled: (state) => state.matches('Sketch no face'),
-        title: 'Line',
-        hotkey: (state) =>
-          state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
-        description: 'Start drawing straight lines',
-        links: [],
-        isActive: (state) => state.matches({ Sketch: 'Line tool' }),
-      },
-      {
-        id: 'arcs',
-        array: [
-          {
-            id: 'three-point-arc',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({
-                    Sketch: 'Arc three point tool',
-                  })
-                    ? 'arcThreePoint'
-                    : 'none',
-                },
-              }),
-            icon: 'arc',
+            icon: 'hole',
             status: 'available',
-            title: 'Three-point Arc',
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Arc three point tool' })
-                ? ['Esc', 'T']
-                : 'T',
-            showTitle: false,
-            description: 'Draw a circular arc defined by three points',
+            title: 'Hole',
+            description:
+              'Standard holes that could be drilled or cut into a 3D solid.',
             links: [
               {
-                label: 'GitHub issue',
-                url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
               },
             ],
-            isActive: (state) =>
-              state.matches({ Sketch: 'Arc three point tool' }),
           },
+          'break',
           {
-            id: 'tangential-arc',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({ Sketch: 'Tangential arc to' })
-                    ? 'tangentialArc'
-                    : 'none',
-                },
-              }),
-            icon: 'arc',
-            status: 'available',
-            disabled: (state) => {
-              return (
-                (!isEditingExistingSketch({
-                  sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
-                  wasmInstance: state.context.wasmInstance,
-                }) &&
-                  !state.matches({ Sketch: 'Tangential arc to' })) ||
-                pipeHasCircle({
-                  sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
-                  wasmInstance: state.context.wasmInstance,
-                })
-              )
-            },
-            disabledReason: (state) => {
-              return !isEditingExistingSketch({
-                sketchDetails: state.context.sketchDetails,
-                kclManager: state.context.kclManager,
-                wasmInstance: state.context.wasmInstance,
-              }) && !state.matches({ Sketch: 'Tangential arc to' })
-                ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
-                : undefined
-            },
-            title: 'Tangential Arc',
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Tangential arc to' })
-                ? ['Esc', 'A']
-                : 'A',
-            description: 'Start drawing an arc tangent to the current segment',
-            links: [],
-            isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'circles',
-        array: [
-          {
-            id: 'circle-center',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({ Sketch: 'Circle tool' })
-                    ? 'circle'
-                    : 'none',
-                },
-              }),
-            icon: 'circle',
-            status: 'available',
-            title: 'Center circle',
-            disabled: (state) => state.matches('Sketch no face'),
-            isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
-            showTitle: false,
-            description: 'Start drawing a circle from its center',
-            links: [],
-          },
-          {
-            id: 'circle-three-points',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({
-                    Sketch: 'Circle three point tool',
-                  })
-                    ? 'circleThreePoint'
-                    : 'none',
-                },
-              }),
-            icon: 'circle',
-            status: 'available',
-            title: '3-point circle',
-            isActive: (state) =>
-              state.matches({ Sketch: 'Circle three point tool' }),
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Circle three point tool' })
-                ? ['Alt+C', 'Esc']
-                : 'Alt+C',
-            showTitle: false,
-            description: 'Draw a circle defined by three points',
-            links: [],
-          },
-        ],
-      },
-      {
-        id: 'rectangles',
-        array: [
-          {
-            id: 'corner-rectangle',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({ Sketch: 'Rectangle tool' })
-                    ? 'rectangle'
-                    : 'none',
-                },
-              }),
-            icon: 'rectangle',
-            status: 'available',
-            disabled: (state) => state.matches('Sketch no face'),
-            title: 'Corner rectangle',
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
-            description: 'Start drawing a rectangle',
-            links: [],
-            isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
-          },
-          {
-            id: 'center-rectangle',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({
-                    Sketch: 'Center Rectangle tool',
-                  })
-                    ? 'center rectangle'
-                    : 'none',
-                },
-              }),
-            icon: 'rectangle',
-            status: 'available',
-            disabled: (state) => state.matches('Sketch no face'),
-            title: 'Center rectangle',
-            description: 'Start drawing a rectangle from its center',
-            links: [],
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Center Rectangle tool' })
-                ? ['Alt+R', 'Esc']
-                : 'Alt+R',
-            isActive: (state) =>
-              state.matches({ Sketch: 'Center Rectangle tool' }),
-          },
-        ],
-      },
-      {
-        id: 'polygon',
-        onClick: () => console.error('Polygon not yet implemented'),
-        icon: 'polygon',
-        status: 'kcl-only',
-        title: 'Polygon',
-        showTitle: false,
-        description: 'Draw a polygon with a specified number of sides',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-polygon'),
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'mirror',
-        onClick: () => console.error('Mirror not yet implemented'),
-        icon: 'mirror',
-        status: 'kcl-only',
-        title: 'Mirror',
-        showTitle: false,
-        description: 'Mirror sketch entities about a line or axis',
-        links: [
-          {
-            label: 'KCL docs',
-            url: withSiteBaseURL(
-              '/docs/kcl-std/functions/std-transform-mirror2d'
-            ),
-          },
-        ],
-      },
-      {
-        id: 'constraints',
-        array: [
-          {
-            id: 'constraint-length',
-            disabled: (state, wasmInstance) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({
-                  type: 'Constrain length',
-                  data: {
-                    selection: state.context.selectionRanges,
-                    // dummy data is okay for checking if the constrain is possible
-                    length: {
-                      valueAst: createLiteral(1, wasmInstance),
-                      valueText: '1',
-                      valueCalculated: '1',
-                    },
+            id: 'booleans',
+            array: [
+              {
+                id: 'boolean-union',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Boolean Union', groupId: 'modeling' },
+                  }),
+                icon: 'booleanUnion',
+                status: 'available',
+                title: 'Union',
+                description: 'Combine two or more solids into a single solid.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-union'
+                    ),
                   },
-                })
-              ),
+                ],
+              },
+              {
+                id: 'boolean-subtract',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Boolean Subtract', groupId: 'modeling' },
+                  }),
+                icon: 'booleanSubtract',
+                status: 'available',
+                title: 'Subtract',
+                description: 'Subtract one solid from another.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-subtract'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'boolean-intersect',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Boolean Intersect', groupId: 'modeling' },
+                  }),
+                icon: 'booleanIntersect',
+                status: 'available',
+                title: 'Intersect',
+                description:
+                  'Create a solid from the intersection of two solids.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-intersect'
+                    ),
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'split',
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
-                data: {
-                  name: 'Constrain length',
-                  groupId: 'modeling',
+                data: { name: 'Boolean Split', groupId: 'modeling' },
+              }),
+            icon: 'split',
+            status: 'available',
+            title: 'Split',
+            description: 'Split a solid or surface into multiple surfaces.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
+              },
+            ],
+          },
+          {
+            id: 'surface',
+            array: [
+              {
+                id: 'flip-surface',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Flip Surface', groupId: 'modeling' },
+                  }),
+                icon: 'flipSurface',
+                status: 'available',
+                title: 'Flip Surface',
+                description:
+                  'Flip the orientation of a surface, swapping which side is the front and which is the reverse.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-flipSurface'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'join',
+                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9080
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Join',
+                description: 'Join surfaces together',
+                links: [],
+              },
+              {
+                id: 'delete-face',
+                // TODO: enable with https://github.com/KittyCAD/modeling-app/issues/9690
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Delete Face',
+                description:
+                  'Deletes a face from a body, leaving an open surface.',
+                links: [],
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'planes',
+            array: [
+              {
+                id: 'plane-offset',
+                onClick: () => {
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Offset plane', groupId: 'modeling' },
+                  })
                 },
+                hotkey: 'O',
+                icon: 'plane',
+                status: 'available',
+                title: 'Offset plane',
+                description: 'Create a plane parallel to an existing plane.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-offsetPlane'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'plane-points',
+                onClick: () =>
+                  console.error('Plane through points not yet implemented'),
+                status: 'unavailable',
+                title: '3-point plane',
+                description: 'Create a plane from three points.',
+                links: [],
+              },
+            ],
+          },
+          {
+            id: 'helix',
+            onClick: () => {
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Helix', groupId: 'modeling' },
+              })
+            },
+            hotkey: 'H',
+            icon: 'helix',
+            status: 'available',
+            title: 'Helix',
+            description: 'Create a helix or spiral in 3D about an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'insert',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Insert', groupId: 'code' },
+              }),
+            hotkey: 'I',
+            icon: 'import',
+            status: 'available',
+            disabled: () => !isDesktop(),
+            title: 'Insert',
+            description: 'Insert from a file in the current project directory',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL('/docs/kcl-lang/modules'),
+              },
+            ],
+          },
+          {
+            id: 'transform',
+            array: [
+              {
+                id: 'translate',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Translate', groupId: 'modeling' },
+                  }),
+                icon: 'move',
+                status: 'available',
+                title: 'Translate',
+                description: 'Apply a translation to a solid or sketch.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-transform-translate'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'rotate',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Rotate', groupId: 'modeling' },
+                  }),
+                icon: 'rotate',
+                status: 'available',
+                title: 'Rotate',
+                description: 'Apply a rotation to a solid or sketch.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-transform-rotate'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'scale',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Scale', groupId: 'modeling' },
+                  }),
+                icon: 'scale',
+                status: 'available',
+                title: 'Scale',
+                description: 'Apply scaling to a solid or sketch.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
+                  },
+                ],
+              },
+              {
+                id: 'clone',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Clone', groupId: 'modeling' },
+                  }),
+                status: 'available',
+                title: 'Clone',
+                icon: 'clone',
+                description: 'Clone a solid or sketch.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
+                  },
+                ],
+              },
+              {
+                id: 'appearance',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Appearance', groupId: 'modeling' },
+                  }),
+                status: 'available',
+                title: 'Appearance',
+                icon: 'text',
+                description:
+                  'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-appearance'
+                    ),
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'pattern',
+            array: [
+              {
+                id: 'pattern-circular-3d',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
+                  }),
+                status: 'available',
+                title: 'Circular Pattern',
+                icon: 'patternCircular3d',
+                description:
+                  'Create a circular pattern of 3D solids around an axis.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-patternCircular3d'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'pattern-linear-3d',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
+                  }),
+                status: 'available',
+                title: 'Linear Pattern',
+                icon: 'patternLinear3d',
+                description:
+                  'Create a linear pattern of 3D solids along an axis.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-patternLinear3d'
+                    ),
+                  },
+                ],
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'gdt',
+            array: [
+              {
+                id: 'gdt-flatness',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'GDT Flatness', groupId: 'modeling' },
+                  }),
+                status: 'experimental',
+                title: 'Flatness',
+                icon: 'gdtFlatness',
+                description:
+                  'Specifies flatness tolerance - how much a surface can deviate from perfectly flat.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-gdt-flatness'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'gdt-datum',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'GDT Datum', groupId: 'modeling' },
+                  }),
+                status: 'experimental',
+                title: 'Datum',
+                icon: 'gdtDatum',
+                description:
+                  'Establishes a reference surface for other GD&T measurements.',
+                links: [
+                  {
+                    label: 'KCL docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-gdt-datum'
+                    ),
+                  },
+                ],
+              },
+              {
+                id: 'gdt-profile',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Profile',
+                description:
+                  'Specifies how much a surface or edge can deviate from its ideal shape.',
+                links: [],
+              },
+              {
+                id: 'gdt-position',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Position',
+                description:
+                  'Controls location tolerance of holes, pins, and other features.',
+                links: [],
+              },
+              {
+                id: 'gdt-perpendicularity',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Perpendicularity',
+                description:
+                  'Specifies how perpendicular one feature must be to another.',
+                links: [],
+              },
+              {
+                id: 'gdt-parallelism',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Parallelism',
+                description:
+                  'Specifies how parallel one feature must be to another.',
+                links: [],
+              },
+              {
+                id: 'gdt-dimension',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Dimension',
+                description:
+                  'Adds size dimensions with manufacturing tolerances.',
+                links: [],
+              },
+              {
+                id: 'gdt-note',
+                onClick: () => {},
+                status: 'unavailable',
+                title: 'Note',
+                description:
+                  'Adds text notes for manufacturing instructions or inspection requirements.',
+                links: [],
+              },
+            ],
+          },
+        ],
+      },
+      sketching: {
+        check: (state) =>
+          state.matches('Sketch') ||
+          state.matches('Sketch no face') ||
+          state.matches('animating to existing sketch') ||
+          state.matches('animating to plane'),
+        items: [
+          {
+            id: 'sketch-exit',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Cancel',
+              }),
+            disableHotkey: (state) =>
+              !(
+                state.matches({ Sketch: 'SketchIdle' }) ||
+                state.matches('Sketch no face')
+              ),
+            icon: 'arrowShortLeft',
+            status: 'available',
+            title: 'Exit sketch',
+            showTitle: true,
+            hotkey: 'Esc',
+            description: 'Exit the current sketch',
+            links: [],
+          },
+          'break',
+          {
+            id: 'line',
+            onClick: ({ modelingState, modelingSend }) => {
+              modelingSend({
+                type: 'change tool',
+                data: {
+                  tool: !modelingState.matches({ Sketch: 'Line tool' })
+                    ? 'line'
+                    : 'none',
+                },
+              })
+            },
+            icon: 'line',
+            status: 'available',
+            disabled: (state) => state.matches('Sketch no face'),
+            title: 'Line',
+            hotkey: (state) =>
+              state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
+            description: 'Start drawing straight lines',
+            links: [],
+            isActive: (state) => state.matches({ Sketch: 'Line tool' }),
+          },
+          {
+            id: 'arcs',
+            array: [
+              {
+                id: 'three-point-arc',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({
+                        Sketch: 'Arc three point tool',
+                      })
+                        ? 'arcThreePoint'
+                        : 'none',
+                    },
+                  }),
+                icon: 'arc',
+                status: 'available',
+                title: 'Three-point Arc',
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Arc three point tool' })
+                    ? ['Esc', 'T']
+                    : 'T',
+                showTitle: false,
+                description: 'Draw a circular arc defined by three points',
+                links: [
+                  {
+                    label: 'GitHub issue',
+                    url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
+                  },
+                ],
+                isActive: (state) =>
+                  state.matches({ Sketch: 'Arc three point tool' }),
+              },
+              {
+                id: 'tangential-arc',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({
+                        Sketch: 'Tangential arc to',
+                      })
+                        ? 'tangentialArc'
+                        : 'none',
+                    },
+                  }),
+                icon: 'arc',
+                status: 'available',
+                disabled: (state) => {
+                  return (
+                    (!isEditingExistingSketch({
+                      sketchDetails: state.context.sketchDetails,
+                      kclManager: state.context.kclManager,
+                      wasmInstance: state.context.wasmInstance,
+                    }) &&
+                      !state.matches({ Sketch: 'Tangential arc to' })) ||
+                    pipeHasCircle({
+                      sketchDetails: state.context.sketchDetails,
+                      kclManager: state.context.kclManager,
+                      wasmInstance: state.context.wasmInstance,
+                    })
+                  )
+                },
+                disabledReason: (state) => {
+                  return !isEditingExistingSketch({
+                    sketchDetails: state.context.sketchDetails,
+                    kclManager: state.context.kclManager,
+                    wasmInstance: state.context.wasmInstance,
+                  }) && !state.matches({ Sketch: 'Tangential arc to' })
+                    ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
+                    : undefined
+                },
+                title: 'Tangential Arc',
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Tangential arc to' })
+                    ? ['Esc', 'A']
+                    : 'A',
+                description:
+                  'Start drawing an arc tangent to the current segment',
+                links: [],
+                isActive: (state) =>
+                  state.matches({ Sketch: 'Tangential arc to' }),
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'circles',
+            array: [
+              {
+                id: 'circle-center',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({ Sketch: 'Circle tool' })
+                        ? 'circle'
+                        : 'none',
+                    },
+                  }),
+                icon: 'circle',
+                status: 'available',
+                title: 'Center circle',
+                disabled: (state) => state.matches('Sketch no face'),
+                isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
+                showTitle: false,
+                description: 'Start drawing a circle from its center',
+                links: [],
+              },
+              {
+                id: 'circle-three-points',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({
+                        Sketch: 'Circle three point tool',
+                      })
+                        ? 'circleThreePoint'
+                        : 'none',
+                    },
+                  }),
+                icon: 'circle',
+                status: 'available',
+                title: '3-point circle',
+                isActive: (state) =>
+                  state.matches({ Sketch: 'Circle three point tool' }),
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Circle three point tool' })
+                    ? ['Alt+C', 'Esc']
+                    : 'Alt+C',
+                showTitle: false,
+                description: 'Draw a circle defined by three points',
+                links: [],
+              },
+            ],
+          },
+          {
+            id: 'rectangles',
+            array: [
+              {
+                id: 'corner-rectangle',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({ Sketch: 'Rectangle tool' })
+                        ? 'rectangle'
+                        : 'none',
+                    },
+                  }),
+                icon: 'rectangle',
+                status: 'available',
+                disabled: (state) => state.matches('Sketch no face'),
+                title: 'Corner rectangle',
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Rectangle tool' })
+                    ? ['Esc', 'R']
+                    : 'R',
+                description: 'Start drawing a rectangle',
+                links: [],
+                isActive: (state) =>
+                  state.matches({ Sketch: 'Rectangle tool' }),
+              },
+              {
+                id: 'center-rectangle',
+                onClick: ({ modelingState, modelingSend }) =>
+                  modelingSend({
+                    type: 'change tool',
+                    data: {
+                      tool: !modelingState.matches({
+                        Sketch: 'Center Rectangle tool',
+                      })
+                        ? 'center rectangle'
+                        : 'none',
+                    },
+                  }),
+                icon: 'rectangle',
+                status: 'available',
+                disabled: (state) => state.matches('Sketch no face'),
+                title: 'Center rectangle',
+                description: 'Start drawing a rectangle from its center',
+                links: [],
+                hotkey: (state) =>
+                  state.matches({ Sketch: 'Center Rectangle tool' })
+                    ? ['Alt+R', 'Esc']
+                    : 'Alt+R',
+                isActive: (state) =>
+                  state.matches({ Sketch: 'Center Rectangle tool' }),
+              },
+            ],
+          },
+          {
+            id: 'polygon',
+            onClick: () => console.error('Polygon not yet implemented'),
+            icon: 'polygon',
+            status: 'kcl-only',
+            title: 'Polygon',
+            showTitle: false,
+            description: 'Draw a polygon with a specified number of sides',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-sketch-polygon'
+                ),
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'mirror',
+            onClick: () => console.error('Mirror not yet implemented'),
+            icon: 'mirror',
+            status: 'kcl-only',
+            title: 'Mirror',
+            showTitle: false,
+            description: 'Mirror sketch entities about a line or axis',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-transform-mirror2d'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'constraints',
+            array: [
+              {
+                id: 'constraint-length',
+                disabled: (state, wasmInstance) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({
+                      type: 'Constrain length',
+                      data: {
+                        selection: state.context.selectionRanges,
+                        // dummy data is okay for checking if the constrain is possible
+                        length: {
+                          valueAst: createLiteral(1, wasmInstance),
+                          valueText: '1',
+                          valueCalculated: '1',
+                        },
+                      },
+                    })
+                  ),
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: {
+                      name: 'Constrain length',
+                      groupId: 'modeling',
+                    },
+                  }),
+                icon: 'dimension',
+                status: 'available',
+                title: 'Length',
+                showTitle: false,
+                description: 'Constrain the length of a straight segment',
+                links: [],
+              },
+              {
+                id: 'constraint-angle',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain angle' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain angle' }),
+                status: 'available',
+                title: 'Angle',
+                showTitle: false,
+                description: 'Constrain the angle between two segments',
+                links: [],
+              },
+              {
+                id: 'constraint-vertical',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Make segment vertical' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Make segment vertical' }),
+                status: 'available',
+                title: 'Vertical',
+                showTitle: false,
+                description:
+                  'Constrain a straight segment to be vertical relative to the sketch',
+                links: [],
+              },
+              {
+                id: 'constraint-horizontal',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Make segment horizontal' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Make segment horizontal' }),
+                status: 'available',
+                title: 'Horizontal',
+                showTitle: false,
+                description:
+                  'Constrain a straight segment to be horizontal relative to the sketch',
+                links: [],
+              },
+              {
+                id: 'constraint-parallel',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain parallel' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain parallel' }),
+                status: 'available',
+                title: 'Parallel',
+                showTitle: false,
+                description: 'Constrain two segments to be parallel',
+                links: [],
+              },
+              {
+                id: 'constraint-equal-length',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain equal length' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain equal length' }),
+                status: 'available',
+                title: 'Equal length',
+                showTitle: false,
+                description: 'Constrain two segments to be equal length',
+                links: [],
+              },
+              {
+                id: 'constraint-horizontal-distance',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain horizontal distance' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain horizontal distance' }),
+                status: 'available',
+                title: 'Horizontal distance',
+                showTitle: false,
+                description:
+                  'Constrain the horizontal distance between two points',
+                links: [],
+              },
+              {
+                id: 'constraint-vertical-distance',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain vertical distance' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain vertical distance' }),
+                status: 'available',
+                title: 'Vertical distance',
+                showTitle: false,
+                description:
+                  'Constrain the vertical distance between two points',
+                links: [],
+              },
+              {
+                id: 'constraint-absolute-x',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain ABS X' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain ABS X' }),
+                status: 'available',
+                title: 'Absolute X',
+                showTitle: false,
+                description: 'Constrain the x-coordinate of a point',
+                links: [],
+              },
+              {
+                id: 'constraint-absolute-y',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain ABS Y' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain ABS Y' }),
+                status: 'available',
+                title: 'Absolute Y',
+                showTitle: false,
+                description: 'Constrain the y-coordinate of a point',
+                links: [],
+              },
+              {
+                id: 'constraint-perpendicular-distance',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain perpendicular distance' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain perpendicular distance' }),
+                status: 'available',
+                title: 'Perpendicular distance',
+                showTitle: false,
+                description:
+                  'Constrain the perpendicular distance between two segments',
+                links: [],
+              },
+              {
+                id: 'constraint-align-horizontal',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain horizontally align' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain horizontally align' }),
+                status: 'available',
+                title: 'Horizontally align',
+                showTitle: false,
+                description:
+                  'Align the ends of two or more segments horizontally',
+                links: [],
+              },
+              {
+                id: 'constraint-align-vertical',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain vertically align' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain vertically align' }),
+                status: 'available',
+                title: 'Vertically align',
+                showTitle: false,
+                description:
+                  'Align the ends of two or more segments vertically',
+                links: [],
+              },
+              {
+                id: 'snap-to-x',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain snap to X' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain snap to X' }),
+                status: 'available',
+                title: 'Snap to X',
+                showTitle: false,
+                description: 'Snap a point to an x-coordinate',
+                links: [],
+              },
+              {
+                id: 'snap-to-y',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain snap to Y' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain snap to Y' }),
+                status: 'available',
+                title: 'Snap to Y',
+                showTitle: false,
+                description: 'Snap a point to a y-coordinate',
+                links: [],
+              },
+              {
+                id: 'constraint-remove',
+                disabled: (state) =>
+                  !(
+                    state.matches({ Sketch: 'SketchIdle' }) &&
+                    state.can({ type: 'Constrain remove constraints' })
+                  ),
+                onClick: ({ modelingSend }) =>
+                  modelingSend({ type: 'Constrain remove constraints' }),
+                status: 'available',
+                title: 'Remove constraints',
+                showTitle: false,
+                description: 'Remove all constraints from the segment',
+                links: [],
+              },
+            ],
+          },
+        ],
+      },
+      sketchSolve: {
+        check: (state) => state.matches('sketchSolveMode'),
+        items: [
+          {
+            id: 'sketch-exit',
+            onClick: ({ modelingSend }) =>
+              modelingSend({
+                type: 'Exit sketch',
+              }),
+            icon: 'arrowShortLeft',
+            status: 'available',
+            title: 'Exit sketch',
+            showTitle: true,
+            description: 'Exit the current sketch',
+            links: [],
+          },
+          'break',
+          {
+            id: 'line',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'lineTool' },
+                  }),
+            icon: 'line',
+            status: 'available',
+            title: 'Line',
+            hotkey: 'L',
+            description: 'Start drawing straight lines',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'lineTool',
+          },
+          {
+            id: 'point',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'pointTool' },
+                  }),
+            icon: 'oneDot',
+            status: 'available',
+            title: 'Point',
+            hotkey: 'P',
+            description: 'Start drawing straight points',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'pointTool',
+          },
+          {
+            id: 'center-arc',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'centerArcTool' },
+                  }),
+            icon: 'arcCenter',
+            status: 'available',
+            title: 'Center Arc',
+            hotkey: 'A',
+            description: 'Draw an arc by center and two endpoints',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'centerArcTool',
+          },
+          {
+            id: 'rectangles',
+            array: [
+              {
+                id: 'corner-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'cornerRectTool' },
+                      }),
+                icon: 'rectangle',
+                status: 'available',
+                title: 'Corner Rectangle',
+                hotkey: 'Shift+R',
+                description: 'Start drawing a rectangle',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'cornerRectTool',
+              },
+              {
+                id: 'center-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'centerRectTool' },
+                      }),
+                icon: 'rectangleCenter',
+                status: 'available',
+                title: 'Center Rectangle',
+                hotkey: 'Alt+R',
+                description: 'Start drawing a rectangle from its center',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'centerRectTool',
+              },
+            ],
+          },
+          'break',
+          {
+            id: 'coincident',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'coincident',
+              }),
+            icon: 'coincident',
+            status: 'available',
+            title: 'Coincident',
+            hotkey: 'C',
+            description: 'Constrain points or curves to be coincident',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Parallel',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'Parallel',
+              }),
+            icon: 'parallel',
+            status: 'available',
+            title: 'Parallel',
+            hotkey: 'Shift+P',
+            description: 'Constrain lines or curves to be parallel',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Perpendicular',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'Perpendicular',
+              }),
+            icon: 'perpendicular',
+            status: 'available',
+            title: 'Perpendicular',
+            hotkey: 'R',
+            description: 'Constrain lines or curves to be perpendicular',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'equalLength',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'LinesEqualLength',
+              }),
+            icon: 'equal',
+            status: 'available',
+            title: 'Equal Length',
+            hotkey: 'E',
+            description: 'Constrain lines to have equal length',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'vertical',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'Vertical',
+              }),
+            icon: 'vertical',
+            status: 'available',
+            title: 'Vertical',
+            hotkey: 'V',
+            description: 'Constrain lines to be vertical',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Horizontal',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'Horizontal',
+              }),
+            icon: 'horizontal',
+            status: 'available',
+            title: 'Horizontal',
+            hotkey: 'H',
+            description: 'Constrain lines to be horizontal',
+            links: [],
+            isActive: (state) => false,
+          },
+          {
+            id: 'Dimension',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'Dimension',
               }),
             icon: 'dimension',
             status: 'available',
-            title: 'Length',
-            showTitle: false,
-            description: 'Constrain the length of a straight segment',
-            links: [],
-          },
-          {
-            id: 'constraint-angle',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain angle' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain angle' }),
-            status: 'available',
-            title: 'Angle',
-            showTitle: false,
-            description: 'Constrain the angle between two segments',
-            links: [],
-          },
-          {
-            id: 'constraint-vertical',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Make segment vertical' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Make segment vertical' }),
-            status: 'available',
-            title: 'Vertical',
-            showTitle: false,
+            title: 'Dimension',
+            hotkey: 'D',
             description:
-              'Constrain a straight segment to be vertical relative to the sketch',
+              'Constrain distance between points, length of lines, or radius of arcs',
             links: [],
+            isActive: (state) => false,
           },
           {
-            id: 'constraint-horizontal',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Make segment horizontal' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Make segment horizontal' }),
+            id: 'HorizontalDistance',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'HorizontalDistance',
+              }),
+            icon: 'horizontalDimension',
             status: 'available',
-            title: 'Horizontal',
-            showTitle: false,
-            description:
-              'Constrain a straight segment to be horizontal relative to the sketch',
+            title: 'Horizontal Distance',
+            hotkey: 'Shift+D',
+            description: 'Constrain horizontal distance between two points',
             links: [],
+            isActive: (state) => false,
           },
           {
-            id: 'constraint-parallel',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain parallel' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain parallel' }),
+            id: 'VerticalDistance',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'VerticalDistance',
+              }),
+            icon: 'verticalDimension',
             status: 'available',
-            title: 'Parallel',
-            showTitle: false,
-            description: 'Constrain two segments to be parallel',
+            title: 'Vertical Distance',
+            hotkey: 'Shift+V',
+            description: 'Constrain vertical distance between two points',
             links: [],
+            isActive: (state) => false,
           },
           {
-            id: 'constraint-equal-length',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain equal length' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain equal length' }),
+            id: 'construction',
+            onClick: ({ modelingSend, isActive }) =>
+              modelingSend({
+                type: 'construction',
+              }),
+            icon: 'construction',
             status: 'available',
-            title: 'Equal length',
-            showTitle: false,
-            description: 'Constrain two segments to be equal length',
+            title: 'Construction',
+            description: 'Toggle construction geometry on selected segments',
             links: [],
-          },
-          {
-            id: 'constraint-horizontal-distance',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain horizontal distance' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain horizontal distance' }),
-            status: 'available',
-            title: 'Horizontal distance',
-            showTitle: false,
-            description: 'Constrain the horizontal distance between two points',
-            links: [],
-          },
-          {
-            id: 'constraint-vertical-distance',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain vertical distance' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain vertical distance' }),
-            status: 'available',
-            title: 'Vertical distance',
-            showTitle: false,
-            description: 'Constrain the vertical distance between two points',
-            links: [],
-          },
-          {
-            id: 'constraint-absolute-x',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain ABS X' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain ABS X' }),
-            status: 'available',
-            title: 'Absolute X',
-            showTitle: false,
-            description: 'Constrain the x-coordinate of a point',
-            links: [],
-          },
-          {
-            id: 'constraint-absolute-y',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain ABS Y' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain ABS Y' }),
-            status: 'available',
-            title: 'Absolute Y',
-            showTitle: false,
-            description: 'Constrain the y-coordinate of a point',
-            links: [],
-          },
-          {
-            id: 'constraint-perpendicular-distance',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain perpendicular distance' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain perpendicular distance' }),
-            status: 'available',
-            title: 'Perpendicular distance',
-            showTitle: false,
-            description:
-              'Constrain the perpendicular distance between two segments',
-            links: [],
-          },
-          {
-            id: 'constraint-align-horizontal',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain horizontally align' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain horizontally align' }),
-            status: 'available',
-            title: 'Horizontally align',
-            showTitle: false,
-            description: 'Align the ends of two or more segments horizontally',
-            links: [],
-          },
-          {
-            id: 'constraint-align-vertical',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain vertically align' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain vertically align' }),
-            status: 'available',
-            title: 'Vertically align',
-            showTitle: false,
-            description: 'Align the ends of two or more segments vertically',
-            links: [],
-          },
-          {
-            id: 'snap-to-x',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain snap to X' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain snap to X' }),
-            status: 'available',
-            title: 'Snap to X',
-            showTitle: false,
-            description: 'Snap a point to an x-coordinate',
-            links: [],
-          },
-          {
-            id: 'snap-to-y',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain snap to Y' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain snap to Y' }),
-            status: 'available',
-            title: 'Snap to Y',
-            showTitle: false,
-            description: 'Snap a point to a y-coordinate',
-            links: [],
-          },
-          {
-            id: 'constraint-remove',
-            disabled: (state) =>
-              !(
-                state.matches({ Sketch: 'SketchIdle' }) &&
-                state.can({ type: 'Constrain remove constraints' })
-              ),
-            onClick: ({ modelingSend }) =>
-              modelingSend({ type: 'Constrain remove constraints' }),
-            status: 'available',
-            title: 'Remove constraints',
-            showTitle: false,
-            description: 'Remove all constraints from the segment',
-            links: [],
+            isActive: (state) => false,
           },
         ],
       },
-    ],
-  },
-  sketchSolve: {
-    check: (state) => state.matches('sketchSolveMode'),
-    items: [
-      {
-        id: 'sketch-exit',
-        onClick: ({ modelingSend }) =>
-          modelingSend({
-            type: 'Exit sketch',
-          }),
-        icon: 'arrowShortLeft',
-        status: 'available',
-        title: 'Exit sketch',
-        showTitle: true,
-        description: 'Exit the current sketch',
-        links: [],
-      },
-      'break',
-      {
-        id: 'line',
-        onClick: ({ modelingSend, isActive }) =>
-          isActive
-            ? modelingSend({
-                type: 'unequip tool',
-              })
-            : modelingSend({
-                type: 'equip tool',
-                data: { tool: 'lineTool' },
-              }),
-        icon: 'line',
-        status: 'available',
-        title: 'Line',
-        hotkey: 'L',
-        description: 'Start drawing straight lines',
-        links: [],
-        isActive: (state) =>
-          state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'lineTool',
-      },
-      {
-        id: 'point',
-        onClick: ({ modelingSend, isActive }) =>
-          isActive
-            ? modelingSend({
-                type: 'unequip tool',
-              })
-            : modelingSend({
-                type: 'equip tool',
-                data: { tool: 'pointTool' },
-              }),
-        icon: 'oneDot',
-        status: 'available',
-        title: 'Point',
-        hotkey: 'P',
-        description: 'Start drawing straight points',
-        links: [],
-        isActive: (state) =>
-          state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'pointTool',
-      },
-      {
-        id: 'center-arc',
-        onClick: ({ modelingSend, isActive }) =>
-          isActive
-            ? modelingSend({
-                type: 'unequip tool',
-              })
-            : modelingSend({
-                type: 'equip tool',
-                data: { tool: 'centerArcTool' },
-              }),
-        icon: 'arcCenter',
-        status: 'available',
-        title: 'Center Arc',
-        hotkey: 'A',
-        description: 'Draw an arc by center and two endpoints',
-        links: [],
-        isActive: (state) =>
-          state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'centerArcTool',
-      },
-      {
-        id: 'rectangles',
-        array: [
-          {
-            id: 'corner-rectangle',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'cornerRectTool' },
-                  }),
-            icon: 'rectangle',
-            status: 'available',
-            title: 'Corner Rectangle',
-            hotkey: 'Shift+R',
-            description: 'Start drawing a rectangle',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'cornerRectTool',
-          },
-          {
-            id: 'center-rectangle',
-            onClick: ({ modelingSend, isActive }) =>
-              isActive
-                ? modelingSend({
-                    type: 'unequip tool',
-                  })
-                : modelingSend({
-                    type: 'equip tool',
-                    data: { tool: 'centerRectTool' },
-                  }),
-            icon: 'rectangleCenter',
-            status: 'available',
-            title: 'Center Rectangle',
-            hotkey: 'Alt+R',
-            description: 'Start drawing a rectangle from its center',
-            links: [],
-            isActive: (state) =>
-              state.matches('sketchSolveMode') &&
-              state.context.sketchSolveToolName === 'centerRectTool',
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'coincident',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'coincident',
-          }),
-        icon: 'coincident',
-        status: 'available',
-        title: 'Coincident',
-        hotkey: 'C',
-        description: 'Constrain points or curves to be coincident',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Parallel',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Parallel',
-          }),
-        icon: 'parallel',
-        status: 'available',
-        title: 'Parallel',
-        hotkey: 'Shift+P',
-        description: 'Constrain lines or curves to be parallel',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Perpendicular',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Perpendicular',
-          }),
-        icon: 'perpendicular',
-        status: 'available',
-        title: 'Perpendicular',
-        hotkey: 'R',
-        description: 'Constrain lines or curves to be perpendicular',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'equalLength',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'LinesEqualLength',
-          }),
-        icon: 'equal',
-        status: 'available',
-        title: 'Equal Length',
-        hotkey: 'E',
-        description: 'Constrain lines to have equal length',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'vertical',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Vertical',
-          }),
-        icon: 'vertical',
-        status: 'available',
-        title: 'Vertical',
-        hotkey: 'V',
-        description: 'Constrain lines to be vertical',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Horizontal',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Horizontal',
-          }),
-        icon: 'horizontal',
-        status: 'available',
-        title: 'Horizontal',
-        hotkey: 'H',
-        description: 'Constrain lines to be horizontal',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Distance',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Distance',
-          }),
-        icon: 'dimension',
-        status: 'available',
-        title: 'Distance',
-        hotkey: 'D',
-        description: 'Constrain distance between points or lines',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'HorizontalDistance',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'HorizontalDistance',
-          }),
-        icon: 'horizontalDimension',
-        status: 'available',
-        title: 'Horizontal Distance',
-        hotkey: 'Shift+D',
-        description: 'Constrain horizontal distance between two points',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'VerticalDistance',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'VerticalDistance',
-          }),
-        icon: 'verticalDimension',
-        status: 'available',
-        title: 'Vertical Distance',
-        hotkey: 'Shift+V',
-        description: 'Constrain vertical distance between two points',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'construction',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'construction',
-          }),
-        icon: 'construction',
-        status: 'available',
-        title: 'Construction',
-        description: 'Toggle construction geometry on selected segments',
-        links: [],
-        isActive: (state) => false,
-      },
-    ],
-  },
+    }),
+    [commandBarActor]
+  )
 }
 
 /**
@@ -1572,7 +1616,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
  * This ensures a single source of truth for tool-to-icon mappings.
  * Extracts tool names by parsing the isActive function which references state.context.sketchSolveToolName.
  */
-export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
+export function getSketchSolveToolIconMap(
+  toolbarConfig: Record<ToolbarModeName, ToolbarMode>
+): Record<string, CustomIconName> {
   const map: Record<string, CustomIconName> = {}
   const items = toolbarConfig.sketchSolve.items
   collectItems(items, map)

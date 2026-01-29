@@ -15,15 +15,14 @@ use crate::{
         normalize_to_solver_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
-    front::{ArcCtor, LineCtor, Point2d, PointCtor},
+    front::{ArcCtor, LineCtor, ObjectId, Point2d, PointCtor},
     std::Args,
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, CodeRef, SketchConstraintArtifact},
     front::{
-        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Perpendicular,
-        Vertical,
+        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Vertical,
     },
 };
 
@@ -64,6 +63,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         },
     };
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: exec_state.next_object_id(),
         kind: UnsolvedSegmentKind::Point {
             position: [at_x, at_y],
@@ -204,6 +204,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let end_object_id = exec_state.next_object_id();
     let line_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: line_object_id,
         kind: UnsolvedSegmentKind::Line {
             start: [start_x, start_y],
@@ -416,6 +417,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let center_object_id = exec_state.next_object_id();
     let arc_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
         object_id: arc_object_id,
         kind: UnsolvedSegmentKind::Arc {
             start: [UnsolvedExpr::Unknown(start_x), UnsolvedExpr::Unknown(start_y)],
@@ -1168,6 +1170,126 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             vec![args.source_range],
         ))),
     }
+}
+
+/// Helper function to create a radius or diameter constraint from an arc segment.
+/// Used by both radius() and diameter() functions.
+fn create_arc_radius_constraint(
+    segment: KclValue,
+    constraint_kind: fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
+    source_range: crate::SourceRange,
+) -> Result<SketchConstraint, KclError> {
+    // Create a dummy constraint to get its name for error messages
+    let dummy_constraint = constraint_kind([
+        ConstrainablePoint2d {
+            vars: crate::front::Point2d {
+                x: SketchVarId(0),
+                y: SketchVarId(0),
+            },
+            object_id: ObjectId(0),
+        },
+        ConstrainablePoint2d {
+            vars: crate::front::Point2d {
+                x: SketchVarId(0),
+                y: SketchVarId(0),
+            },
+            object_id: ObjectId(0),
+        },
+    ]);
+    let function_name = dummy_constraint.name();
+
+    let KclValue::Segment { value: seg } = segment else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() argument must be a segment", function_name),
+            vec![source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &seg.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "segment must be unsolved".to_owned(),
+            vec![source_range],
+        )));
+    };
+    match &unsolved.kind {
+        UnsolvedSegmentKind::Arc {
+            center,
+            start,
+            center_object_id,
+            start_object_id,
+            ..
+        } => {
+            // Extract center and start point coordinates
+            match (&center[0], &center[1], &start[0], &start[1]) {
+                (
+                    UnsolvedExpr::Unknown(center_x),
+                    UnsolvedExpr::Unknown(center_y),
+                    UnsolvedExpr::Unknown(start_x),
+                    UnsolvedExpr::Unknown(start_y),
+                ) => {
+                    // All coordinates are sketch vars. Create constraint.
+                    let sketch_constraint = SketchConstraint {
+                        kind: constraint_kind([
+                            ConstrainablePoint2d {
+                                vars: crate::front::Point2d {
+                                    x: *center_x,
+                                    y: *center_y,
+                                },
+                                object_id: *center_object_id,
+                            },
+                            ConstrainablePoint2d {
+                                vars: crate::front::Point2d {
+                                    x: *start_x,
+                                    y: *start_y,
+                                },
+                                object_id: *start_object_id,
+                            },
+                        ]),
+                        meta: vec![source_range.into()],
+                    };
+                    Ok(sketch_constraint)
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "unimplemented: {}() arc segment must have all sketch vars in all coordinates",
+                        function_name
+                    ),
+                    vec![source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{}() argument must be an arc segment", function_name),
+            vec![source_range],
+        ))),
+    }
+}
+
+pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segment: KclValue =
+        args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+
+    create_arc_radius_constraint(
+        segment,
+        |points| SketchConstraintKind::Radius { points },
+        args.source_range,
+    )
+    .map(|constraint| KclValue::SketchConstraint {
+        value: Box::new(constraint),
+    })
+}
+
+pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let segment: KclValue =
+        args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+
+    create_arc_radius_constraint(
+        segment,
+        |points| SketchConstraintKind::Diameter { points },
+        args.source_range,
+    )
+    .map(|constraint| KclValue::SketchConstraint {
+        value: Box::new(constraint),
+    })
 }
 
 pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

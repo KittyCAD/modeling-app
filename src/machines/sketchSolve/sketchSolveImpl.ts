@@ -77,7 +77,7 @@ export type SketchSolveMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
