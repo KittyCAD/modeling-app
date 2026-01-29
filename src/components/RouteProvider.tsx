@@ -19,14 +19,12 @@ import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useSignals } from '@preact/signals-react/runtime'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
-  const { engineCommandManager, kclManager, sceneInfra, settingsActor } =
-    useSingletons()
+  const { kclManager, settingsActor } = useSingletons()
   useSignals()
   useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
@@ -92,27 +90,21 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
           const lastWrittenCode = kclManager.lastWrite?.code
           if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
-            // Nothing written out yet by ourselves, or it's not the same as the current file content
-            // -> this must be an external change -> re-execute.
-            kclManager.updateCodeEditor(code)
-
-            toast('Reloading file from disk')
-            // If we can use emojis this looks nice:
-            // toast('Reloading file from disk', { icon: '📁' })
-
-            await kclManager.executeCode()
-
-            // Only reset camera if we're not in sketch mode, in sketch mode we always want to keep ortho camera
             const isInSketchMode =
               kclManager.modelingState?.matches('Sketch') ||
               kclManager.modelingState?.matches('sketchSolveMode')
-            if (!isInSketchMode) {
-              await resetCameraPosition({
-                sceneInfra,
-                engineCommandManager,
-                settingsActor,
-              })
-            }
+
+            // Nothing written out yet by ourselves, or it's not the same as the current file content
+            // -> this must be an external change -> re-execute.
+            kclManager.updateCodeEditor(code, {
+              shouldExecute: !isInSketchMode,
+              shouldResetCamera: !isInSketchMode,
+              // We explicitly do not write to the file here since we are loading from
+              // the file system and not the editor.
+              shouldWriteToDisk: false,
+            })
+
+            toast('Reloading file from disk', { icon: '📁' })
           }
         }
       } else {
@@ -151,7 +143,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   )
 
   useFileSystemWatcher(
-    async (eventType: string, path: string) => {
+    async (eventType: string) => {
       // If there is a projectPath but it no longer exists it means
       // it was externally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in

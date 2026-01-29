@@ -115,7 +115,7 @@ const Toolbar_ = memo(
         // eslint-disable-next-line @typescript-eslint/unbound-method
         commandBarActor.send,
         sketchPathId,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         kclManager.editorView.hasFocus,
       ]
     )
@@ -239,12 +239,12 @@ const Toolbar_ = memo(
         data-current-mode={currentMode}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
       >
         <ul
           ref={toolbarButtonsRef}
           className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center '
+            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
           }
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
@@ -330,7 +330,7 @@ const Toolbar_ = memo(
                       }
                       name={selectedIcon.title}
                       // aria-description is still in ARIA 1.3 draft.
-                      // eslint-disable-next-line jsx-a11y/aria-props
+
                       aria-description={selectedIcon.description}
                       onClick={() =>
                         selectedIcon.onClick(selectedIcon.callbackProps)
@@ -397,7 +397,7 @@ const Toolbar_ = memo(
                   }
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
+
                   aria-description={itemConfig.description}
                   aria-pressed={itemConfig.isActive}
                   disabled={
