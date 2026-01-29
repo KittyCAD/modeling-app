@@ -33,6 +33,9 @@ export default defineConfig([
   ]),
   {
     files: ['**/*.ts', '**/*.tsx'],
+    linterOptions: {
+      reportUnusedDisableDirectives: false,
+    },
     extends: fixupConfigRules(
       compat.extends(
         'plugin:css-modules/recommended',

@@ -636,7 +636,7 @@ export function useOnModelingCmdGroupReadyOnce(
       callback()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [isReadyOnce, ...deps])
+  }, [isReadyOnce, callback, ...deps])
 }
 
 /**
