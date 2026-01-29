@@ -70,7 +70,6 @@ const SignIn = () => {
         })
         .catch(reportRejection)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const {
