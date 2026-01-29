@@ -1089,7 +1089,7 @@ description: Artifact commands mug.kcl
           "r": 0.60784316,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -1106,7 +1106,7 @@ description: Artifact commands mug.kcl
           "r": 0.60784316,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,

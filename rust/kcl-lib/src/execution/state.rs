@@ -97,6 +97,8 @@ pub struct ModuleArtifactState {
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    /// Map from artifact ID to object ID in the scene.
+    pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
 }
@@ -357,8 +359,13 @@ impl ExecState {
             id.0,
             self.mod_local.artifacts.scene_objects.len()
         );
+        let artifact_id = obj.artifact_id;
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
         id
     }
 
@@ -379,7 +386,21 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub fn set_scene_object(&mut self, object: Object) {
         let id = object.id;
+        let artifact_id = object.artifact_id;
         self.mod_local.artifacts.scene_objects[id.0] = object;
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn scene_object_id_by_artifact_id(&self, artifact_id: ArtifactId) -> Option<ObjectId> {
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .get(&artifact_id)
+            .cloned()
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -715,6 +736,8 @@ impl ModuleArtifactState {
                 .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
         }
         self.source_range_to_object.extend(other.source_range_to_object);
+        self.artifact_id_to_scene_object
+            .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
     }
 
