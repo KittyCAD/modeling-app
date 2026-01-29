@@ -38,6 +38,18 @@ export fn coincident(@points: [Segment; 2]) {}
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn distance(@points: [Segment; 2]) {}
 
+/// Constrain the radius of an arc segment.
+/// Accepts a single arc segment and constrains the distance from its center to its start point.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn radius(@points: Segment) {}
+
+/// Constrain the diameter of an arc or circle segment.
+/// Accepts a single arc or circle segment and constrains the distance from its center to its start point.
+/// Note: Diameter uses the same solver constraint as radius (distance between two points),
+/// but is stored as a separate constraint type for proper UI display.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn diameter(@points: Segment) {}
+
 /// Constrain the horizontal distance between two points.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn horizontalDistance(@points: [Segment; 2]) {}

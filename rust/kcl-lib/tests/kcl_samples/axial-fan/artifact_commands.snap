@@ -2365,7 +2365,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2826,7 +2826,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.9529412,
           "g": 0.8862745,
           "b": 0.84705883,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3456,7 +3456,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.9529412,
           "g": 0.8862745,
           "b": 0.84705883,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3682,7 +3682,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.007843138,
           "g": 0.105882354,
           "b": 0.33333334,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3915,7 +3915,7 @@ description: Artifact commands axial-fan.kcl
           "r": 0.85882354,
           "g": 0.78431374,
           "b": 0.61960787,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

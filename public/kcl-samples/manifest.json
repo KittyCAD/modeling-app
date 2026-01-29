@@ -1361,6 +1361,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "snowman/main.kcl",
+    "multipleFiles": false,
+    "title": "Snowman (stylized)",
+    "description": "Three stacked spheres with simple facial features and a top hat standing on a small platform",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Fasteners"
     ],
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",

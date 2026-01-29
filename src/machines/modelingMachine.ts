@@ -362,7 +362,7 @@ export type ModelingMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
@@ -1189,7 +1189,7 @@ export const modelingMachine = setup({
     }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -1236,7 +1236,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       deleteSegmentsOrProfiles({
         pathToNodes: event.data,
         sketchDetails,
@@ -5581,7 +5581,7 @@ export const modelingMachine = setup({
         Horizontal: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
-        Distance: {
+        Dimension: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         HorizontalDistance: {

@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -95,6 +96,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {

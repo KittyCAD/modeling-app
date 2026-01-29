@@ -106,7 +106,7 @@ async fn inner_appearance(
             r: rgb.red,
             g: rgb.green,
             b: rgb.blue,
-            a: 100.0,
+            a: 1.0,
         };
 
         exec_state
