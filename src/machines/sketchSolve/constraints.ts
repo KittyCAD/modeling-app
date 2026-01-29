@@ -1,4 +1,8 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+  ApiObjectKind,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   Group,
   Vector3,
@@ -463,115 +467,108 @@ export class ConstraintUtils {
     objects: Array<ApiObject>,
     sceneInfra: SceneInfra,
     callbacks: EditingCallbacks
-  ): void {
+  ) {
     this.callbacks = callbacks
-
     const constraintObject = objects[constraintId]
-    if (constraintObject?.kind.type === 'Constraint') {
-      const constraintType = constraintObject.kind.constraint.type
-      if (
-        constraintType === 'Distance' ||
-        constraintType === 'HorizontalDistance' ||
-        constraintType === 'VerticalDistance'
-      ) {
-        const distance = constraintObject.kind.constraint.distance
+    
+    if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
+      const distance = constraintObject.kind.constraint.distance
 
-        if (!sceneInfra) {
-          console.warn('SceneInfra not available for constraint editing')
-          return
-        }
-        const sketchSolveGroup =
-          sceneInfra.scene.getObjectByName('sketchSolveGroup')
-        const constraintGroup = sketchSolveGroup?.getObjectByName(
-          constraintId.toString()
-        )
-        if (!constraintGroup) {
-          console.warn(`Constraint group ${constraintId} not found in scene`)
-          return
-        }
-        const label = constraintGroup.children.find(
-          (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-        ) as Sprite | undefined
-        if (!label) {
-          console.warn(`Label not found in constraint group ${constraintId}`)
-          return
-        }
+      if (!sceneInfra) {
+        console.warn('SceneInfra not available for constraint editing')
+        return
+      }
+      const sketchSolveGroup =
+        sceneInfra.scene.getObjectByName('sketchSolveGroup')
+      const constraintGroup = sketchSolveGroup?.getObjectByName(
+        constraintId.toString()
+      )
+      if (!constraintGroup) {
+        console.warn(`Constraint group ${constraintId} not found in scene`)
+        return
+      }
+      const label = constraintGroup.children.find(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+      ) as Sprite | undefined
+      if (!label) {
+        console.warn(`Label not found in constraint group ${constraintId}`)
+        return
+      }
 
-        const worldPosition = new Vector3()
-        label.getWorldPosition(worldPosition)
-        const screenPosition = worldPosition.clone()
-        screenPosition.project(sceneInfra.camControls.camera)
+      const worldPosition = new Vector3()
+      label.getWorldPosition(worldPosition)
+      const screenPosition = worldPosition.clone()
+      screenPosition.project(sceneInfra.camControls.camera)
 
-        const x =
-          (screenPosition.x * 0.5 + 0.5) *
-          sceneInfra.renderer.domElement.clientWidth
-        const y =
-          (-screenPosition.y * 0.5 + 0.5) *
-          sceneInfra.renderer.domElement.clientHeight
+      const x =
+        (screenPosition.x * 0.5 + 0.5) *
+        sceneInfra.renderer.domElement.clientWidth
+      const y =
+        (-screenPosition.y * 0.5 + 0.5) *
+        sceneInfra.renderer.domElement.clientHeight
 
-        const initialValue = parseFloat(distance.value.toFixed(3)).toString()
+      const initialValue = parseFloat(distance.value.toFixed(3)).toString()
 
-        if (!this.editingView || !this.editingContainer) {
-          const theme = getResolvedTheme(sceneInfra.theme)
-          this.editingContainer = document.createElement('div')
-          this.editingContainer.className = styles.container
-          const view = new EditorView({
-            state: EditorState.create({
-              doc: initialValue,
-              extensions: [
-                editorTheme[theme],
-                keymap.of([
-                  {
-                    key: 'Enter',
-                    run: (editorView) => {
-                      const value = editorView.state.doc.toString().trim()
-                      if (value) {
-                        this.callbacks?.submit?.(value)
-                        return true
-                      }
-                      return false
-                    },
-                  },
-                  {
-                    key: 'Escape',
-                    run: () => {
-                      this.callbacks?.cancel()
+      if (!this.editingView || !this.editingContainer) {
+        const theme = getResolvedTheme(sceneInfra.theme)
+        this.editingContainer = document.createElement('div')
+        this.editingContainer.className = styles.container
+        const view = new EditorView({
+          state: EditorState.create({
+            doc: initialValue,
+            extensions: [
+              editorTheme[theme],
+              keymap.of([
+                {
+                  key: 'Enter',
+                  run: (editorView) => {
+                    const value = editorView.state.doc.toString().trim()
+                    if (value) {
+                      this.callbacks?.submit?.(value)
                       return true
-                    },
+                    }
+                    return false
                   },
-                ]),
-                EditorView.lineWrapping,
-              ],
-            }),
-            parent: this.editingContainer,
-          })
-          this.editingView = view
+                },
+                {
+                  key: 'Escape',
+                  run: () => {
+                    this.callbacks?.cancel()
+                    return true
+                  },
+                },
+              ]),
+              EditorView.lineWrapping,
+            ],
+          }),
+          parent: this.editingContainer,
+        })
+        this.editingView = view
 
-          const canvasContainer = sceneInfra.renderer.domElement.parentElement
-          if (canvasContainer) {
-            canvasContainer.appendChild(this.editingContainer)
-          }
-        } else {
-          // Update existing editor content
-          this.editingView.dispatch({
-            changes: {
-              from: 0,
-              to: this.editingView.state.doc.length,
-              insert: initialValue,
-            },
-          })
+        const canvasContainer = sceneInfra.renderer.domElement.parentElement
+        if (canvasContainer) {
+          canvasContainer.appendChild(this.editingContainer)
         }
-
-        // Position the container
-        this.editingContainer.style.left = `${x}px`
-        this.editingContainer.style.top = `${y}px`
-
-        // Focus and select all
-        this.editingView.focus()
+      } else {
+        // Update existing editor content
         this.editingView.dispatch({
-          selection: { anchor: 0, head: this.editingView.state.doc.length },
+          changes: {
+            from: 0,
+            to: this.editingView.state.doc.length,
+            insert: initialValue,
+          },
         })
       }
+
+      // Position the container
+      this.editingContainer.style.left = `${x}px`
+      this.editingContainer.style.top = `${y}px`
+
+      // Focus and select all
+      this.editingView.focus()
+      this.editingView.dispatch({
+        selection: { anchor: 0, head: this.editingView.state.doc.length },
+      })
     }
   }
 }
@@ -595,44 +592,36 @@ function createArrowGeometry(): BufferGeometry {
 }
 
 function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
-  if (obj.kind.type !== 'Constraint') {
+  if (!isDistanceConstraint(obj.kind)) {
     return null
   }
 
   const constraint = obj.kind.constraint
+  const [p1Id, p2Id] = constraint.points
+  const p1Obj = objects[p1Id]
+  const p2Obj = objects[p2Id]
+
   if (
-    constraint.type === 'Distance' ||
-    constraint.type === 'HorizontalDistance' ||
-    constraint.type === 'VerticalDistance'
+    p1Obj?.kind.type !== 'Segment' ||
+    p1Obj.kind.segment.type !== 'Point' ||
+    p2Obj?.kind.type !== 'Segment' ||
+    p2Obj.kind.segment.type !== 'Point'
   ) {
-    const [p1Id, p2Id] = constraint.points
-    const p1Obj = objects[p1Id]
-    const p2Obj = objects[p2Id]
-
-    if (
-      p1Obj?.kind.type !== 'Segment' ||
-      p1Obj.kind.segment.type !== 'Point' ||
-      p2Obj?.kind.type !== 'Segment' ||
-      p2Obj.kind.segment.type !== 'Point'
-    ) {
-      return null
-    }
-
-    const p1 = new Vector3(
-      p1Obj.kind.segment.position.x.value,
-      p1Obj.kind.segment.position.y.value,
-      0
-    )
-    const p2 = new Vector3(
-      p2Obj.kind.segment.position.x.value,
-      p2Obj.kind.segment.position.y.value,
-      0
-    )
-
-    return { p1, p2, distance: constraint.distance }
+    return null
   }
 
-  return null
+  const p1 = new Vector3(
+    p1Obj.kind.segment.position.x.value,
+    p1Obj.kind.segment.position.y.value,
+    0
+  )
+  const p2 = new Vector3(
+    p2Obj.kind.segment.position.x.value,
+    p2Obj.kind.segment.position.y.value,
+    0
+  )
+
+  return { p1, p2, distance: constraint.distance }
 }
 
 /**
@@ -645,17 +634,8 @@ export function updateConstraintValue(
   newExpressionString: string,
   wasmInstance: ModuleType
 ): { modifiedAst: Program } | Error {
-  if (constraintObject.kind.type !== 'Constraint') {
-    return new Error('Object is not a constraint')
-  }
-
-  const constraintType = constraintObject.kind.constraint.type
-  if (
-    constraintType !== 'Distance' &&
-    constraintType !== 'HorizontalDistance' &&
-    constraintType !== 'VerticalDistance'
-  ) {
-    return new Error('Constraint type does not have a distance value')
+  if (!isDistanceConstraint(constraintObject.kind)) {
+    return new Error('Object is not a distance constraint')
   }
 
   const source = constraintObject.source
@@ -707,4 +687,19 @@ export function updateConstraintValue(
   nodeResult.node.right = exprStatement.expression as BinaryPart
 
   return { modifiedAst }
+}
+
+function isDistanceConstraint(kind: ApiObjectKind): kind is {
+  type: 'Constraint'
+  constraint: Extract<
+    ApiConstraint,
+    { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
+  >
+} {
+  return (
+    kind.type === 'Constraint' &&
+    (kind.constraint.type === 'Distance' ||
+      kind.constraint.type === 'HorizontalDistance' ||
+      kind.constraint.type === 'VerticalDistance')
+  )
 }
