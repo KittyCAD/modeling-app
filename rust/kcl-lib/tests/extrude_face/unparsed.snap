@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing extrude_face.kcl
 ---
-// Sketch grey trianglular prism.
+// Sketch grey triangular prism.
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1, tag = $a)

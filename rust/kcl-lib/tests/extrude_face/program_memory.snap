@@ -34,10 +34,10 @@ description: Variables in memory after executing extrude_face.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 143,
-            "end": 145,
+            "commentStart": 142,
+            "end": 144,
             "moduleId": 0,
-            "start": 143,
+            "start": 142,
             "type": "TagDeclarator",
             "value": "a"
           },
@@ -58,10 +58,10 @@ description: Variables in memory after executing extrude_face.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 176,
-            "end": 178,
+            "commentStart": 175,
+            "end": 177,
             "moduleId": 0,
-            "start": 176,
+            "start": 175,
             "type": "TagDeclarator",
             "value": "b"
           },
@@ -82,10 +82,10 @@ description: Variables in memory after executing extrude_face.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 197,
-            "end": 199,
+            "commentStart": 196,
+            "end": 198,
             "moduleId": 0,
-            "start": 197,
+            "start": 196,
             "type": "TagDeclarator",
             "value": "c"
           },
@@ -208,10 +208,10 @@ description: Variables in memory after executing extrude_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 143,
-            "end": 145,
+            "commentStart": 142,
+            "end": 144,
             "moduleId": 0,
-            "start": 143,
+            "start": 142,
             "type": "TagDeclarator",
             "value": "a"
           },
@@ -222,10 +222,10 @@ description: Variables in memory after executing extrude_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 176,
-            "end": 178,
+            "commentStart": 175,
+            "end": 177,
             "moduleId": 0,
-            "start": 176,
+            "start": 175,
             "type": "TagDeclarator",
             "value": "b"
           },
@@ -236,10 +236,10 @@ description: Variables in memory after executing extrude_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 197,
-            "end": 199,
+            "commentStart": 196,
+            "end": 198,
             "moduleId": 0,
-            "start": 197,
+            "start": 196,
             "type": "TagDeclarator",
             "value": "c"
           },
@@ -260,10 +260,10 @@ description: Variables in memory after executing extrude_face.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 143,
-              "end": 145,
+              "commentStart": 142,
+              "end": 144,
               "moduleId": 0,
-              "start": 143,
+              "start": 142,
               "type": "TagDeclarator",
               "value": "a"
             },
@@ -284,10 +284,10 @@ description: Variables in memory after executing extrude_face.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 176,
-              "end": 178,
+              "commentStart": 175,
+              "end": 177,
               "moduleId": 0,
-              "start": 176,
+              "start": 175,
               "type": "TagDeclarator",
               "value": "b"
             },
@@ -308,10 +308,10 @@ description: Variables in memory after executing extrude_face.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 197,
-              "end": 199,
+              "commentStart": 196,
+              "end": 198,
               "moduleId": 0,
-              "start": 197,
+              "start": 196,
               "type": "TagDeclarator",
               "value": "c"
             },

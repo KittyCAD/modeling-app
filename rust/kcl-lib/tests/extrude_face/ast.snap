@@ -70,7 +70,7 @@ description: Result of parsing extrude_face.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Sketch grey trianglular prism."
+          "// Sketch grey triangular prism."
         ],
         "start": 0,
         "type": "VariableDeclaration",
