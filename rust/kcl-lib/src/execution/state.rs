@@ -128,6 +128,8 @@ pub(super) struct ModuleState {
     pub inside_stdlib: bool,
     /// The source range where we entered the standard library.
     pub stdlib_entry_source_range: Option<SourceRange>,
+    /// The source range where we entered an imported module, if any.
+    pub import_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -519,6 +521,10 @@ impl ExecState {
         self.mod_local.pipe_value.as_ref()
     }
 
+    pub fn import_entry_source_range(&self) -> Option<SourceRange> {
+        self.mod_local.import_entry_source_range
+    }
+
     pub(crate) fn error_with_outputs(
         &self,
         error: KclError,
@@ -602,7 +608,6 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
             &programs,
-            &self.global.module_infos,
         );
 
         let artifact_graph = graph_result?;
@@ -779,6 +784,7 @@ impl ModuleState {
             being_declared: Default::default(),
             sketch_block: Default::default(),
             stdlib_entry_source_range: Default::default(),
+            import_entry_source_range: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,

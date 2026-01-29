@@ -162,6 +162,7 @@ impl ExecutorContext {
             exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
+        local_state.import_entry_source_range = exec_state.mod_local.import_entry_source_range;
         match preserve_mem {
             PreserveMem::Always => {
                 #[cfg(feature = "artifact-graph")]
@@ -796,9 +797,17 @@ impl ExecutorContext {
         preserve_mem: PreserveMem,
     ) -> Result<ModuleExecutionOutcome, KclError> {
         exec_state.global.mod_loader.enter_module(path);
+        let prev_import_entry_source_range = exec_state.mod_local.import_entry_source_range;
+        let next_import_entry_source_range = if source_range.is_top_level_module() && module_id != ModuleId::default() {
+            prev_import_entry_source_range.or(Some(source_range))
+        } else {
+            prev_import_entry_source_range
+        };
+        exec_state.mod_local.import_entry_source_range = next_import_entry_source_range;
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
+        exec_state.mod_local.import_entry_source_range = prev_import_entry_source_range;
         exec_state.global.mod_loader.leave_module(path, source_range)?;
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
@@ -1199,7 +1208,12 @@ impl Node<SketchBlock> {
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
                 plane_id: plane_artifact_id,
-                code_ref: CodeRef::placeholder(range),
+                code_ref: CodeRef::placeholder(
+                    exec_state
+                        .mod_local
+                        .import_entry_source_range
+                        .unwrap_or(range),
+                ),
                 sketch_id,
             }));
 

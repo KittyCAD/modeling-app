@@ -922,7 +922,11 @@ async fn inner_start_sketch_on(
                     exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
                         id: ArtifactId::from(id),
                         plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
+                        code_ref: CodeRef::placeholder(
+                            exec_state
+                                .import_entry_source_range()
+                                .unwrap_or(args.source_range),
+                        ),
                     }));
                 }
 
@@ -1003,7 +1007,11 @@ async fn inner_start_sketch_on(
                     exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
                         id: ArtifactId::from(id),
                         plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
+                        code_ref: CodeRef::placeholder(
+                            exec_state
+                                .import_entry_source_range()
+                                .unwrap_or(args.source_range),
+                        ),
                     }));
                 }
 
@@ -1018,7 +1026,11 @@ async fn inner_start_sketch_on(
                     exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
                         id: ArtifactId::from(id),
                         face_id: face.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
+                        code_ref: CodeRef::placeholder(
+                            exec_state
+                                .import_entry_source_range()
+                                .unwrap_or(args.source_range),
+                        ),
                     }));
                 }
 

@@ -46,23 +46,27 @@ impl<'a> ModelingCmdMeta<'a> {
     }
 
     pub fn from_args(exec_state: &ExecState, args: &'a Args) -> Self {
+        let source_range = exec_state
+            .mod_local
+            .import_entry_source_range
+            .or(exec_state.mod_local.stdlib_entry_source_range)
+            .unwrap_or(args.source_range);
         ModelingCmdMeta {
             ctx: &args.ctx,
-            source_range: exec_state
-                .mod_local
-                .stdlib_entry_source_range
-                .unwrap_or(args.source_range),
+            source_range,
             id: None,
         }
     }
 
     pub fn from_args_id(exec_state: &ExecState, args: &'a Args, id: Uuid) -> Self {
+        let source_range = exec_state
+            .mod_local
+            .import_entry_source_range
+            .or(exec_state.mod_local.stdlib_entry_source_range)
+            .unwrap_or(args.source_range);
         ModelingCmdMeta {
             ctx: &args.ctx,
-            source_range: exec_state
-                .mod_local
-                .stdlib_entry_source_range
-                .unwrap_or(args.source_range),
+            source_range,
             id: Some(id),
         }
     }
