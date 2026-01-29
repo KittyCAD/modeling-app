@@ -639,7 +639,7 @@ impl ArtifactGraph {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct ImportCodeRef {
     node_path: NodePath,
     range: SourceRange,
