@@ -84,39 +84,39 @@ export type SketchSolveMachineEvent =
         | 'construction'
     }
   | {
-    type: 'update selected ids'
-    data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
-  }
+      type: 'update selected ids'
+      data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
+    }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
-    type: 'update sketch outcome'
-    data: {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-      /**
-       * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
-       */
-      debounceEditorUpdate?: boolean
-      /**
-       * If false, skip persisting to disk (useful for high-frequency drag updates)
-       */
-      writeToDisk?: boolean
+      type: 'update sketch outcome'
+      data: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        /**
+         * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
+         */
+        debounceEditorUpdate?: boolean
+        /**
+         * If false, skip persisting to disk (useful for high-frequency drag updates)
+         */
+        writeToDisk?: boolean
+      }
     }
-  }
   | { type: 'delete selected' }
   | {
-    type: 'set draft entities'
-    data: {
-      segmentIds: Array<number>
-      constraintIds: Array<number>
+      type: 'set draft entities'
+      data: {
+        segmentIds: Array<number>
+        constraintIds: Array<number>
+      }
     }
-  }
   | { type: 'clear draft entities' }
   | { type: 'delete draft entities' }
   | {
-    type: 'start editing constraint'
-    data: { constraintId: number }
-  }
+      type: 'start editing constraint'
+      data: { constraintId: number }
+    }
   | { type: 'stop editing constraint' }
 
 type ToolActorRef =
@@ -614,11 +614,11 @@ export function initializeIntersectionPlane({ context }: SolveActionArgs) {
 export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   // Clear hover callbacks to prevent interference with tool operations
   context.sceneInfra.setCallbacks({
-    onMouseEnter: () => { },
-    onMouseLeave: () => { },
-    onAreaSelectStart: () => { },
-    onAreaSelect: () => { },
-    onAreaSelectEnd: () => { },
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
+    onAreaSelectStart: () => {},
+    onAreaSelect: () => {},
+    onAreaSelectEnd: () => {},
   })
 
   // Clear any currently hovered line segment meshes
