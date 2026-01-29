@@ -30,6 +30,12 @@ import { EditorView, keymap } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { editorTheme } from '@src/editor/plugins/theme'
 import styles from './ConstraintEditor.module.css'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { BinaryExpression, BinaryPart, Program } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { err } from '@src/lib/trap'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -44,10 +50,17 @@ const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detect
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
+export type EditingCallbacks = {
+  cancel: () => void
+  submit: (value: string) => void
+}
+
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
   private editingView: EditorView | null = null
   private editingContainer: HTMLDivElement | null = null
+
+  private callbacks: EditingCallbacks | undefined
 
   // TODO if these are disposed they need to be recreated
   private readonly materials = {
@@ -434,128 +447,130 @@ export class ConstraintUtils {
     }
   }
 
+  public stopEditingInput() {
+    if (this.editingView) {
+      this.editingView.destroy()
+      this.editingView = null
+    }
+    if (this.editingContainer) {
+      this.editingContainer.remove()
+      this.editingContainer = null
+    }
+  }
+
   public updateEditingInput(
-    constraintId: number | undefined,
+    constraintId: number,
     objects: Array<ApiObject>,
-    sceneInfra: SceneInfra | undefined
+    sceneInfra: SceneInfra,
+    callbacks: EditingCallbacks
   ): void {
-    if (constraintId === undefined) {
-      if (this.editingView) {
-        this.editingView.destroy()
-        this.editingView = null
-      }
-      if (this.editingContainer) {
-        this.editingContainer.remove()
-        this.editingContainer = null
-      }
-    } else {
-      const constraintObject = objects[constraintId]
-      if (constraintObject?.kind.type === 'Constraint') {
-        const constraintType = constraintObject.kind.constraint.type
-        if (
-          constraintType === 'Distance' ||
-          constraintType === 'HorizontalDistance' ||
-          constraintType === 'VerticalDistance'
-        ) {
-          const distance = constraintObject.kind.constraint.distance
+    this.callbacks = callbacks
 
-          if (!sceneInfra) {
-            console.warn('SceneInfra not available for constraint editing')
-            return
-          }
-          const sketchSolveGroup =
-            sceneInfra.scene.getObjectByName('sketchSolveGroup')
-          const constraintGroup = sketchSolveGroup?.getObjectByName(
-            constraintId.toString()
-          )
-          if (!constraintGroup) {
-            console.warn(`Constraint group ${constraintId} not found in scene`)
-            return
-          }
-          const label = constraintGroup.children.find(
-            (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-          ) as Sprite | undefined
-          if (!label) {
-            console.warn(`Label not found in constraint group ${constraintId}`)
-            return
-          }
+    const constraintObject = objects[constraintId]
+    if (constraintObject?.kind.type === 'Constraint') {
+      const constraintType = constraintObject.kind.constraint.type
+      if (
+        constraintType === 'Distance' ||
+        constraintType === 'HorizontalDistance' ||
+        constraintType === 'VerticalDistance'
+      ) {
+        const distance = constraintObject.kind.constraint.distance
 
-          const worldPosition = new Vector3()
-          label.getWorldPosition(worldPosition)
-          const screenPosition = worldPosition.clone()
-          screenPosition.project(sceneInfra.camControls.camera)
+        if (!sceneInfra) {
+          console.warn('SceneInfra not available for constraint editing')
+          return
+        }
+        const sketchSolveGroup =
+          sceneInfra.scene.getObjectByName('sketchSolveGroup')
+        const constraintGroup = sketchSolveGroup?.getObjectByName(
+          constraintId.toString()
+        )
+        if (!constraintGroup) {
+          console.warn(`Constraint group ${constraintId} not found in scene`)
+          return
+        }
+        const label = constraintGroup.children.find(
+          (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+        ) as Sprite | undefined
+        if (!label) {
+          console.warn(`Label not found in constraint group ${constraintId}`)
+          return
+        }
 
-          const x =
-            (screenPosition.x * 0.5 + 0.5) *
-            sceneInfra.renderer.domElement.clientWidth
-          const y =
-            (-screenPosition.y * 0.5 + 0.5) *
-            sceneInfra.renderer.domElement.clientHeight
+        const worldPosition = new Vector3()
+        label.getWorldPosition(worldPosition)
+        const screenPosition = worldPosition.clone()
+        screenPosition.project(sceneInfra.camControls.camera)
 
-          const initialValue = parseFloat(distance.value.toFixed(3)).toString()
+        const x =
+          (screenPosition.x * 0.5 + 0.5) *
+          sceneInfra.renderer.domElement.clientWidth
+        const y =
+          (-screenPosition.y * 0.5 + 0.5) *
+          sceneInfra.renderer.domElement.clientHeight
 
-          if (!this.editingView || !this.editingContainer) {
-            const theme = getResolvedTheme(sceneInfra.theme)
-            this.editingContainer = document.createElement('div')
-            this.editingContainer.className = styles.container
-            const view = new EditorView({
-              state: EditorState.create({
-                doc: initialValue,
-                extensions: [
-                  editorTheme[theme],
-                  keymap.of([
-                    {
-                      key: 'Enter',
-                      run: () => {
-                        // TODO: Handle submit - update constraint value
-                        console.log(
-                          'Submit:',
-                          this.editingView?.state.doc.toString()
-                        )
+        const initialValue = parseFloat(distance.value.toFixed(3)).toString()
+
+        if (!this.editingView || !this.editingContainer) {
+          const theme = getResolvedTheme(sceneInfra.theme)
+          this.editingContainer = document.createElement('div')
+          this.editingContainer.className = styles.container
+          const view = new EditorView({
+            state: EditorState.create({
+              doc: initialValue,
+              extensions: [
+                editorTheme[theme],
+                keymap.of([
+                  {
+                    key: 'Enter',
+                    run: (editorView) => {
+                      const value = editorView.state.doc.toString().trim()
+                      if (value) {
+                        this.callbacks?.submit?.(value)
                         return true
-                      },
+                      }
+                      return false
                     },
-                    {
-                      key: 'Escape',
-                      run: () => {
-                        // TODO: Handle cancel - send 'stop editing constraint' event
-                        console.log('Cancel editing')
-                        return true
-                      },
+                  },
+                  {
+                    key: 'Escape',
+                    run: () => {
+                      this.callbacks?.cancel()
+                      return true
                     },
-                  ]),
-                  EditorView.lineWrapping,
-                ],
-              }),
-              parent: this.editingContainer,
-            })
-            this.editingView = view
+                  },
+                ]),
+                EditorView.lineWrapping,
+              ],
+            }),
+            parent: this.editingContainer,
+          })
+          this.editingView = view
 
-            const canvasContainer = sceneInfra.renderer.domElement.parentElement
-            if (canvasContainer) {
-              canvasContainer.appendChild(this.editingContainer)
-            }
-          } else {
-            // Update existing editor content
-            this.editingView.dispatch({
-              changes: {
-                from: 0,
-                to: this.editingView.state.doc.length,
-                insert: initialValue,
-              },
-            })
+          const canvasContainer = sceneInfra.renderer.domElement.parentElement
+          if (canvasContainer) {
+            canvasContainer.appendChild(this.editingContainer)
           }
-
-          // Position the container
-          this.editingContainer.style.left = `${x}px`
-          this.editingContainer.style.top = `${y}px`
-
-          // Focus and select all
-          this.editingView.focus()
+        } else {
+          // Update existing editor content
           this.editingView.dispatch({
-            selection: { anchor: 0, head: this.editingView.state.doc.length },
+            changes: {
+              from: 0,
+              to: this.editingView.state.doc.length,
+              insert: initialValue,
+            },
           })
         }
+
+        // Position the container
+        this.editingContainer.style.left = `${x}px`
+        this.editingContainer.style.top = `${y}px`
+
+        // Focus and select all
+        this.editingView.focus()
+        this.editingView.dispatch({
+          selection: { anchor: 0, head: this.editingView.state.doc.length },
+        })
       }
     }
   }
@@ -618,4 +633,78 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
   }
 
   return null
+}
+
+/**
+ * Updates a distance constraint value in the AST by replacing the right side
+ * of the constraint's BinaryExpression with a new expression (literal or var reference)
+ */
+export function updateConstraintValue(
+  constraintObject: ApiObject,
+  ast: Program,
+  newExpressionString: string,
+  wasmInstance: ModuleType
+): { modifiedAst: Program } | Error {
+  if (constraintObject.kind.type !== 'Constraint') {
+    return new Error('Object is not a constraint')
+  }
+
+  const constraintType = constraintObject.kind.constraint.type
+  if (
+    constraintType !== 'Distance' &&
+    constraintType !== 'HorizontalDistance' &&
+    constraintType !== 'VerticalDistance'
+  ) {
+    return new Error('Constraint type does not have a distance value')
+  }
+
+  const source = constraintObject.source
+  let sourceRange: [number, number, number] | undefined
+
+  if (source.type === 'Simple') {
+    sourceRange = source.range
+  } else if (source.type === 'BackTrace' && source.ranges.length > 0) {
+    sourceRange = source.ranges[0]
+  }
+
+  if (!sourceRange) {
+    return new Error('No source range found for constraint')
+  }
+
+  const parseResult = parse(newExpressionString, wasmInstance)
+  if (err(parseResult) || !resultIsOk(parseResult)) {
+    return new Error(
+      `Failed to parse expression: ${err(parseResult) ? parseResult.message : 'Parse failed'}`
+    )
+  }
+
+  const exprStatement = parseResult.program.body[0]
+  if (exprStatement?.type !== 'ExpressionStatement') {
+    return new Error('Invalid expression')
+  }
+
+  // Get the path to the BinaryExpression (sketch2::distance(...) == value)
+  const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+  const modifiedAst = structuredClone(ast)
+
+  const nodeResult = getNodeFromPath<BinaryExpression>(
+    modifiedAst,
+    pathToNode,
+    wasmInstance,
+    'BinaryExpression'
+  )
+  if (err(nodeResult)) {
+    return nodeResult
+  }
+
+  if (nodeResult.node.type !== 'BinaryExpression') {
+    return new Error(
+      `Expected BinaryExpression, got ${nodeResult.node.type} at constraint location`
+    )
+  }
+
+  // Replace the right side (the distance value) with the new expression
+  nodeResult.node.right = exprStatement.expression as BinaryPart
+
+  return { modifiedAst }
 }

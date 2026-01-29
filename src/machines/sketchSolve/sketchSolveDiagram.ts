@@ -48,6 +48,8 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { constraintUtils } from '@src/machines/sketchSolve/segments'
+import { updateConstraintValue } from '@src/machines/sketchSolve/constraints'
+import { err } from '@src/lib/trap'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -637,14 +639,63 @@ export const sketchSolveMachine = setup({
             return event.data.constraintId
           },
         }),
-        ({ event, context }) => {
+        ({ event, context, self }) => {
           assertEvent(event, 'start editing constraint')
           const objects =
             context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
           constraintUtils.updateEditingInput(
             event.data.constraintId,
             objects,
-            context.sceneInfra
+            context.sceneInfra,
+            {
+              submit: async (value: string) => {
+                // Close the editor first to prevent re-entry
+                self.send({ type: 'stop editing constraint' })
+
+                // Get fresh objects from context to ensure we have current source ranges
+                const freshObjects =
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph
+                    .objects || []
+                const constraintObject = freshObjects[event.data.constraintId]
+                if (!constraintObject) {
+                  console.warn(
+                    'Constraint object not found:',
+                    event.data.constraintId
+                  )
+                  return
+                }
+
+                // Update the constraint value in the AST
+                console.log('Updating constraint to value:', value)
+                const result = updateConstraintValue(
+                  constraintObject,
+                  context.kclManager.astSignal.value,
+                  value,
+                  await context.kclManager.wasmInstancePromise
+                )
+                if (err(result)) {
+                  console.error('Failed to update constraint value:', result)
+                } else {
+                  // Recast the modified AST to code
+                  const { recast } = await import('@src/lang/wasm')
+                  const newCode = recast(
+                    result.modifiedAst,
+                    await context.kclManager.wasmInstancePromise
+                  )
+                  if (err(newCode)) {
+                    console.error('Failed to recast AST:', newCode)
+                  } else {
+                    console.log('Updating code editor with new code')
+                    context.kclManager.updateCodeEditor(newCode, {
+                      shouldExecute: true,
+                    })
+                  }
+                }
+              },
+              cancel: () => {
+                self.send({ type: 'stop editing constraint' })
+              },
+            }
           )
         },
       ],
@@ -654,14 +705,8 @@ export const sketchSolveMachine = setup({
         assign({
           editingConstraintId: undefined,
         }),
-        ({ context }) => {
-          const objects =
-            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-          constraintUtils.updateEditingInput(
-            undefined,
-            objects,
-            context.sceneInfra
-          )
+        () => {
+          constraintUtils.stopEditingInput()
         },
       ],
     },
