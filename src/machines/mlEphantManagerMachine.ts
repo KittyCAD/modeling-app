@@ -61,6 +61,7 @@ export enum MlEphantManagerTransitions {
   Cancel = 'cancel',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
+  BackendShutdown = 'backend-shutdown',
 }
 
 export type MlEphantManagerEvents =
@@ -109,6 +110,9 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.AbruptClose
       closeReason?: string
     }
+  | {
+      type: MlEphantManagerTransitions.BackendShutdown
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -142,6 +146,8 @@ export interface MlEphantManagerContext {
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  awaitingResponse: boolean
+  pendingBackendShutdown: boolean
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
@@ -163,6 +169,8 @@ export const mlEphantDefaultContext = (args: {
   lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
+  awaitingResponse: false,
+  pendingBackendShutdown: false,
 })
 
 function isString(x: unknown): x is string {
@@ -171,6 +179,23 @@ function isString(x: unknown): x is string {
 
 function isPresent<T>(x: undefined | T): x is T {
   return x !== null && x !== undefined
+}
+
+type BackendShutdownMessage = Extract<
+  MlCopilotServerMessage,
+  { backend_shutdown: { reason?: string } }
+>
+
+function isBackendShutdownMessage(
+  response: unknown
+): response is BackendShutdownMessage {
+  if (typeof response !== 'object' || response === null) return false
+  const candidate = response as { backend_shutdown?: { reason?: string } }
+  return typeof candidate.backend_shutdown === 'object'
+}
+
+function isResponseComplete(response: MlCopilotServerMessage): boolean {
+  return 'end_of_stream' in response || 'error' in response
 }
 
 export const MlEphantConversationToMarkdown = (
@@ -314,6 +339,26 @@ export const mlEphantManagerMachine = setup({
         closeReason: event.closeReason,
       }
     }),
+    handleBackendShutdown: assign(({ context }) => {
+      if (context.awaitingResponse) {
+        return { pendingBackendShutdown: true }
+      }
+      return {}
+    }),
+    disconnectIfIdle: ({ context }) => {
+      if (!context.awaitingResponse) {
+        context.ws?.close()
+      }
+    },
+    disconnectIfPendingBackendShutdown: ({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.ResponseReceive)
+      if (
+        context.pendingBackendShutdown &&
+        isResponseComplete(event.response)
+      ) {
+        context.ws?.close()
+      }
+    },
     cacheSetup: assign({
       conversationId: ({ event }) => {
         assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
@@ -398,6 +443,15 @@ export const mlEphantManagerMachine = setup({
               } catch (e: unknown) {
                 return console.error(e)
               }
+            }
+
+            if (isBackendShutdownMessage(response)) {
+              if (theRefParentSend) {
+                theRefParentSend({
+                  type: MlEphantManagerTransitions.BackendShutdown,
+                })
+              }
+              return
             }
 
             if (!isMlCopilotServerMessage(response))
@@ -619,6 +673,8 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               conversation: undefined,
               conversationId: undefined,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
             }),
             'cacheSetup',
           ],
@@ -648,7 +704,14 @@ export const mlEphantManagerMachine = setup({
         src: MlEphantManagerStates.Setup,
         onDone: {
           target: MlEphantManagerStates.Ready,
-          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
+          actions: [
+            assign(({ event }) => ({
+              ...event.output,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
+            })),
+            'clearCacheSetup',
+          ],
         },
         onError: {
           target: MlEphantManagerStates.Setup,
@@ -687,10 +750,18 @@ export const mlEphantManagerMachine = setup({
           target: MlEphantManagerTransitions.AbruptClose,
           actions: ['handleAbruptClose'],
         },
+        [MlEphantManagerTransitions.BackendShutdown]: {
+          actions: ['handleBackendShutdown', 'disconnectIfIdle'],
+        },
       },
     },
     [MlEphantManagerStates.Ready]: {
       type: 'parallel',
+      on: {
+        [MlEphantManagerTransitions.BackendShutdown]: {
+          actions: ['handleBackendShutdown', 'disconnectIfIdle'],
+        },
+      },
       states: {
         [MlEphantManagerStates.Response]: {
           initial: S.Await,
@@ -718,12 +789,14 @@ export const mlEphantManagerMachine = setup({
               always: {
                 target: S.Await,
                 actions: [
+                  'disconnectIfPendingBackendShutdown',
                   assign(({ event, context }) => {
                     assertEvent(event, [
                       MlEphantManagerTransitions.ResponseReceive,
                     ])
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
+                    const responseComplete = isResponseComplete(event.response)
 
                     const conversation: Conversation = {
                       exchanges: Array.from(
@@ -743,6 +816,10 @@ export const mlEphantManagerMachine = setup({
                       return {
                         conversation,
                         lastMessageId,
+                        awaitingResponse: false,
+                        pendingBackendShutdown: responseComplete
+                          ? false
+                          : context.pendingBackendShutdown,
                       }
                     }
 
@@ -787,6 +864,12 @@ export const mlEphantManagerMachine = setup({
                       conversation,
                       lastMessageId,
                       lastMessageType,
+                      awaitingResponse: responseComplete
+                        ? false
+                        : context.awaitingResponse,
+                      pendingBackendShutdown: responseComplete
+                        ? false
+                        : context.pendingBackendShutdown,
                     }
                   }),
                 ],
@@ -825,7 +908,13 @@ export const mlEphantManagerMachine = setup({
                 src: MlEphantManagerTransitions.MessageSend,
                 onDone: {
                   target: S.Await,
-                  actions: [assign(({ event }) => event.output)],
+                  actions: [
+                    assign(({ event, context }) => ({
+                      ...event.output,
+                      awaitingResponse: true,
+                      pendingBackendShutdown: context.pendingBackendShutdown,
+                    })),
+                  ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
               },
@@ -875,6 +964,8 @@ export const mlEphantManagerMachine = setup({
               cachedSetup: undefined,
               lastMessageId: undefined,
               lastMessageType: undefined,
+              awaitingResponse: false,
+              pendingBackendShutdown: false,
             })
           },
           (args) => {

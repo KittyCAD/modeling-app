@@ -115,7 +115,7 @@ const Toolbar_ = memo(
         // eslint-disable-next-line @typescript-eslint/unbound-method
         commandBarActor.send,
         sketchPathId,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         kclManager.editorView.hasFocus,
       ]
     )
@@ -330,7 +330,7 @@ const Toolbar_ = memo(
                       }
                       name={selectedIcon.title}
                       // aria-description is still in ARIA 1.3 draft.
-                      // eslint-disable-next-line jsx-a11y/aria-props
+
                       aria-description={selectedIcon.description}
                       onClick={() =>
                         selectedIcon.onClick(selectedIcon.callbackProps)
@@ -397,7 +397,7 @@ const Toolbar_ = memo(
                   }
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
+
                   aria-description={itemConfig.description}
                   aria-pressed={itemConfig.isActive}
                   disabled={
