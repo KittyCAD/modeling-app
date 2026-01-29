@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -127,6 +128,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -210,6 +212,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -293,6 +296,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 6,
                 "kind": {
                   "point": {
@@ -342,6 +346,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 18,
                 "kind": {
                   "point": {
