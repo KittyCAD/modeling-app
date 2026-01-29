@@ -56,6 +56,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_datum(
     face: TagIdentifier,
     name: String,
