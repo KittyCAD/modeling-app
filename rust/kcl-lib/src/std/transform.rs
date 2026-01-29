@@ -768,13 +768,17 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_hide_pipe_sketch_ok() {
-        let ast = r#"sketch = startSketchOn(XY)
-    |> circle(
-        center = [0, 0],
-        radius = 1,
-    )
-    |> hide()
+    async fn test_hide_pipe_helix() {
+        let ast = r#"helixPath = helix(
+  axis = Z,
+  radius = springRadius,
+  length = springLength,
+  revolutions = springRevolutions,
+  angleStart = 360,
+  ccw = false,
+)
+
+hide(helixPath)
 "#;
         parse_execute(ast).await.unwrap();
     }
