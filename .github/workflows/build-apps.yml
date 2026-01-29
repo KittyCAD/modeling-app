@@ -5,11 +5,12 @@ on:
   push:
     branches:
       - main
+      - pierremtb/dynamic-csp-desktop-codesign
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_RELEASE: true
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
@@ -110,7 +111,6 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
-          npm run files:set-version
           npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v6
@@ -222,6 +222,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          CSC_FOR_PULL_REQUEST: true
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
