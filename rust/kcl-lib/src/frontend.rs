@@ -5750,17 +5750,17 @@ sketch2::distance([line1.start, line1.end]) == x
         // - startSketchOn(XY) Plane 1
         // - sketch on=XY Plane 1
         // - Sketch block 16
-        // - sketch on=XY Plane 1
+        // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 24, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 23, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //
         // - startSketchOn(XY) Plane 1
         // - sketch on=XY Plane 1
         // - Sketch block 16
-        // - sketch on=XY Plane 1
+        // - sketch on=XY cached
         // - Sketch block 5
         let scene_delta = frontend
             .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
@@ -5768,7 +5768,7 @@ sketch2::distance([line1.start, line1.end]) == x
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            24,
+            23,
             "{:#?}",
             scene_delta.new_graph.objects
         );
