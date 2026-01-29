@@ -28,9 +28,11 @@ const mockElectron = {
   exists: vi.fn(),
   writeFile: vi.fn(),
   readFile: vi.fn(),
+  platform: 'linux',
   os: {
     isMac: false,
     isWindows: false,
+    isLinux: true,
   },
   process: {
     env: {},
