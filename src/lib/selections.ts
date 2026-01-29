@@ -1172,7 +1172,11 @@ export async function selectionBodyFace(
       systemDeps.wasmInstance,
       ['ImportStatement']
     )
-    if (!err(maybeImportNode)) {
+    if (
+      !err(maybeImportNode) &&
+      maybeImportNode.node &&
+      maybeImportNode.node.type === 'ImportStatement'
+    ) {
       if (maybeImportNode.node.path.type === 'Kcl') {
         showSketchOnImportToast(maybeImportNode.node.path.filename)
       } else if (maybeImportNode.node.path.type === 'Foreign') {
