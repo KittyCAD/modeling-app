@@ -24,6 +24,9 @@ import type {
 import {
   baseUnitToNumericSuffix,
   distanceBetweenPoint2DExpr,
+  parse,
+  recast,
+  resultIsOk,
 } from '@src/lang/wasm'
 import {
   type SketchSolveMachineEvent,
@@ -753,27 +756,28 @@ export const sketchSolveMachine = setup({
                   return
                 }
 
-                // Update the constraint value in the AST
-                console.log('Updating constraint to value:', value)
+                // Note: after dragging some segments, context.kclManager.ast seems to
+                // be updated so we parse code to get an up to date ast...
+                const wasmInstance = await context.kclManager.wasmInstancePromise
+                const parseResult = parse(context.kclManager.code, wasmInstance)
+                if (err(parseResult) || !resultIsOk(parseResult)) {
+                  console.error('Failed to parse current code')
+                  return
+                }
+
                 const result = updateConstraintValue(
                   constraintObject,
-                  context.kclManager.astSignal.value,
+                  parseResult.program,
                   value,
-                  await context.kclManager.wasmInstancePromise
+                  wasmInstance
                 )
                 if (err(result)) {
                   console.error('Failed to update constraint value:', result)
                 } else {
-                  // Recast the modified AST to code
-                  const { recast } = await import('@src/lang/wasm')
-                  const newCode = recast(
-                    result.modifiedAst,
-                    await context.kclManager.wasmInstancePromise
-                  )
+                  const newCode = recast(result.modifiedAst, wasmInstance)
                   if (err(newCode)) {
                     console.error('Failed to recast AST:', newCode)
                   } else {
-                    console.log('Updating code editor with new code')
                     context.kclManager.updateCodeEditor(newCode, {
                       shouldExecute: true,
                     })
