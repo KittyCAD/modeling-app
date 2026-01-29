@@ -26,6 +26,10 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { EditorView, keymap } from '@codemirror/view'
+import { EditorState } from '@codemirror/state'
+import { editorTheme } from '@src/editor/plugins/theme'
+import styles from './ConstraintEditor.module.css'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -42,7 +46,8 @@ export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
-  private editingInputElement: HTMLInputElement | null = null
+  private editingView: EditorView | null = null
+  private editingContainer: HTMLDivElement | null = null
 
   // TODO if these are disposed they need to be recreated
   private readonly materials = {
@@ -435,9 +440,13 @@ export class ConstraintUtils {
     sceneInfra: SceneInfra | undefined
   ): void {
     if (constraintId === undefined) {
-      if (this.editingInputElement) {
-        this.editingInputElement.remove()
-        this.editingInputElement = null
+      if (this.editingView) {
+        this.editingView.destroy()
+        this.editingView = null
+      }
+      if (this.editingContainer) {
+        this.editingContainer.remove()
+        this.editingContainer = null
       }
     } else {
       const constraintObject = objects[constraintId]
@@ -483,25 +492,69 @@ export class ConstraintUtils {
             (-screenPosition.y * 0.5 + 0.5) *
             sceneInfra.renderer.domElement.clientHeight
 
-          // Create or update the input element
-          if (!this.editingInputElement) {
-            this.editingInputElement = createEditingInput()
+          const initialValue = parseFloat(distance.value.toFixed(3)).toString()
+
+          if (!this.editingView || !this.editingContainer) {
+            const theme = getResolvedTheme(sceneInfra.theme)
+            this.editingContainer = document.createElement('div')
+            this.editingContainer.className = styles.container
+            const view = new EditorView({
+              state: EditorState.create({
+                doc: initialValue,
+                extensions: [
+                  editorTheme[theme],
+                  keymap.of([
+                    {
+                      key: 'Enter',
+                      run: () => {
+                        // TODO: Handle submit - update constraint value
+                        console.log(
+                          'Submit:',
+                          this.editingView?.state.doc.toString()
+                        )
+                        return true
+                      },
+                    },
+                    {
+                      key: 'Escape',
+                      run: () => {
+                        // TODO: Handle cancel - send 'stop editing constraint' event
+                        console.log('Cancel editing')
+                        return true
+                      },
+                    },
+                  ]),
+                  EditorView.lineWrapping,
+                ],
+              }),
+              parent: this.editingContainer,
+            })
+            this.editingView = view
 
             const canvasContainer = sceneInfra.renderer.domElement.parentElement
             if (canvasContainer) {
-              canvasContainer.appendChild(this.editingInputElement)
+              canvasContainer.appendChild(this.editingContainer)
             }
+          } else {
+            // Update existing editor content
+            this.editingView.dispatch({
+              changes: {
+                from: 0,
+                to: this.editingView.state.doc.length,
+                insert: initialValue,
+              },
+            })
           }
 
-          this.editingInputElement.style.left = `${x}px`
-          this.editingInputElement.style.top = `${y}px`
-          this.editingInputElement.style.transform = 'translate(-50%, -50%)'
-          this.editingInputElement.value = parseFloat(
-            distance.value.toFixed(3)
-          ).toString()
+          // Position the container
+          this.editingContainer.style.left = `${x}px`
+          this.editingContainer.style.top = `${y}px`
 
-          this.editingInputElement.focus()
-          this.editingInputElement.select()
+          // Focus and select all
+          this.editingView.focus()
+          this.editingView.dispatch({
+            selection: { anchor: 0, head: this.editingView.state.doc.length },
+          })
         }
       }
     }
@@ -565,20 +618,4 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
   }
 
   return null
-}
-
-function createEditingInput() {
-  const input = document.createElement('input')
-  input.type = 'text'
-  input.style.position = 'absolute'
-  input.style.zIndex = '1000'
-  input.style.padding = '4px 8px'
-  input.style.fontSize = '14px'
-  input.style.border = '2px solid #4a9eff'
-  input.style.borderRadius = '4px'
-  input.style.outline = 'none'
-  input.style.background = 'white'
-  input.style.color = 'black'
-
-  return input
 }

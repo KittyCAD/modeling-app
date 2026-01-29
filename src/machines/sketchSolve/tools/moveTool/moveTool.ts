@@ -41,7 +41,6 @@ import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import {
   buildSegmentCtorFromObject,
-  SketchSolveContext,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
