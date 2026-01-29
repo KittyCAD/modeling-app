@@ -470,7 +470,7 @@ export class ConstraintUtils {
   ) {
     this.callbacks = callbacks
     const constraintObject = objects[constraintId]
-    
+
     if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
       const distance = constraintObject.kind.constraint.distance
 
