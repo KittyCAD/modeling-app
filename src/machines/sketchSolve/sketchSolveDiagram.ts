@@ -386,7 +386,10 @@ export const sketchSolveMachine = setup({
             if (result) {
               self.send({
                 type: 'update sketch outcome',
-                data: result,
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                },
               })
             }
             return

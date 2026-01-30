@@ -811,6 +811,12 @@ impl SketchApi for FrontendState {
                 Constraint::Vertical(vertical) => {
                     self.add_vertical(sketch, vertical, &mut new_ast).await?;
                 }
+                Constraint::Diameter(diameter) => {
+                    self.add_diameter(sketch, diameter, &mut new_ast).await?;
+                }
+                Constraint::Radius(radius) => {
+                    self.add_radius(sketch, radius, &mut new_ast).await?;
+                }
             }
         }
 
