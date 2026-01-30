@@ -473,17 +473,19 @@ function HomeHeader({
         </div>
       </div>
       <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-      { hasAttachedLocalFs && <>
-          Loaded from{' '}
-          <Link
-            data-testid="project-directory-settings-link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-            className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-          >
-            {settings.app.projectDirectory.current}
-          </Link>
-          .
-          </>} 
+        {hasAttachedLocalFs && (
+          <>
+            Loaded from{' '}
+            <Link
+              data-testid="project-directory-settings-link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+            >
+              {settings.app.projectDirectory.current}
+            </Link>
+            .
+          </>
+        )}
       </p>
       {!readWriteProjectDir.value && (
         <section>
@@ -547,9 +549,8 @@ function ProjectGrid({
                 />
               ))}
             </ul>
-          ) : (
-            hasAttachedLocalFs ?
-            (<p
+          ) : hasAttachedLocalFs ? (
+            <p
               data-testid="projects-none"
               className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
             >
@@ -557,8 +558,14 @@ function ProjectGrid({
               {projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
-            </p>)
-            : ( <button onClick={attachLocalFs} data-testid="project-root-not-loaded">Load your projects directory</button> )
+            </p>
+          ) : (
+            <button
+              onClick={attachLocalFs}
+              data-testid="project-root-not-loaded"
+            >
+              Load your projects directory
+            </button>
           )}
         </>
       )}
