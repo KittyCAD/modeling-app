@@ -97,7 +97,6 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Filter to only include face selections
   let vars:
     | undefined
     | {
@@ -107,40 +106,39 @@ export function addExtrude({
   const faceSelections = sketches.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
   )
-
-  if (faceSelections.length > 0) {
-    // Handle the face selection case (vs. regular sketches below)
-    const tagsExprs: Expr[] = []
-    for (const faceSelection of faceSelections) {
-      const tagResult = modifyAstWithTagsForSelection(
-        modifiedAst,
-        faceSelection,
-        artifactGraph,
-        wasmInstance
-      )
-      if (err(tagResult)) {
-        console.warn('Failed to add tag for face selection', tagResult)
-        continue
-      }
-
-      // Update the AST with the tagged version
-      modifiedAst = tagResult.modifiedAst
-
-      // Create expression from the first tag (faces have one tag)
-      tagsExprs.push(createLocalName(tagResult.tags[0]))
+  // Handle the face selection case (vs. regular sketches below)
+  const tagsExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
     }
 
-    if (tagsExprs.length === 0) {
-      return new Error(
-        'No valid face expressions could be generated from selection'
-      )
-    }
+    // Update the AST with the tagged version
+    modifiedAst = tagResult.modifiedAst
 
-    vars = { exprs: tagsExprs }
-  } else {
+    // Create expression from the first tag (faces have one tag)
+    tagsExprs.push(createLocalName(tagResult.tags[0]))
+  }
+
+  vars = { exprs: tagsExprs }
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
     // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
     const res = getVariableExprsFromSelection(
-      sketches,
+      nonFaceSelections,
       modifiedAst,
       wasmInstance,
       mNodeToEdit
@@ -148,7 +146,8 @@ export function addExtrude({
     if (err(res)) {
       return res
     }
-    vars = res
+    vars.exprs.push(...res.exprs)
+    vars.pathIfPipe = res.pathIfPipe
   }
 
   // Extra labeled args expressions

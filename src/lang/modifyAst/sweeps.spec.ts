@@ -237,6 +237,62 @@ extrude002 = extrude(seg01, length = 3)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a multi-profile extrude call on a profile and a cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+profile002 = rectangle(
+  sketch001,
+  corner = [2, 2],
+  width = 2,
+  height = 2,
+)
+extrude001 = extrude(profile002, length = 1)
+`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const profile = [...artifactGraph.values()].find(
+        (a) => a.type === 'solid2d'
+      )
+      const endCap = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'cap'
+      )
+      console.log({ profile, endCap })
+      expect(profile).toBeDefined()
+      expect(endCap).toBeDefined()
+      const sketches = createSelectionFromArtifacts(
+        [profile!, endCap!],
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const res = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(res)) throw res
+      const newCode = recast(res.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+profile002 = rectangle(
+  sketch001,
+  corner = [2, 2],
+  width = 2,
+  height = 2,
+)
+extrude001 = extrude(profile002, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude([capEnd001, profile001], length = 1)`)
+      await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 3)
+    })
+
     it('should add an extrude call with symmetric true', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
