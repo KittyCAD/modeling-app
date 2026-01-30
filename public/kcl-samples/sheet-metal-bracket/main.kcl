@@ -1,3 +1,35 @@
+// @settings(defaultLengthUnit = mm)
+
+// fudge = 1.5
+// thickness = 2
+// length = 20
+// angle = 75deg
+
+// fn tubeProfile(@sketch) {
+// return rectangle(
+// sketch,
+// width = 10,
+// height = 10,
+// center = [0, 0],
+// )
+// }
+
+// lowerSection = startSketchOn(XY)
+// |> tubeProfile()
+// |> extrude(length = length)
+
+// You can even extrude faces that result from sweeps and other objects!
+
+// trajectory = startSketchOn(XZ)
+// |> startProfile(at = [0, length])
+// |> yLine(length = thickness)
+// |> tangentialArc(angle = angle, radius = (7 + 2 * thickness) / 2 * fudge, tag = $arc)
+// |> angledLine(angle = tangentToEnd(arc), length = thickness)
+
+// bentSection = startSketchOn(offsetPlane(XY, offset = 20))
+// |> tubeProfile()
+// |> sweep(path = trajectory, tagEnd = $bentEnd)
+
 // Sheet Metal Bracket
 // A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.
 // Categories: Construction, Manufacturing
@@ -40,9 +72,8 @@ bracketProfile = startSketchOn(XZ)
   |> xLine(length = flangeLength)
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
-  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
-  |> xLine(endAbsolute = 0, tag = $seg02)
-  |> xLine(length = segLen(seg02))
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle, tag = $seg02)
+  |> line(endAbsolute = [-segEnd(seg02)[0], segEnd(seg02)[1]])
   |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> angledLine(angle = -bendAngle, length = segLen(seg01))
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
@@ -51,9 +82,8 @@ bracketProfile = startSketchOn(XZ)
   |> xLine(length = -flangeLength, tag = $seg04)
   |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> angledLine(angle = 180deg - bendAngle, length = segLen(seg01))
-  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
-  |> xLine(endAbsolute = 0, tag = $seg05)
-  |> xLine(length = -segLen(seg05))
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle, tag = $seg05)
+  |> line(endAbsolute = [-segEnd(seg05)[0], segEnd(seg05)[1]], tag = $holeFace)
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> angledLine(angle = bendAngle - 180deg, length = segLen(seg01))
   |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
@@ -84,7 +114,7 @@ rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
   |> extrude(length = -thickness)
 
 // Provision the top flange with holes to mount an object
-topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
+topFlangeBoltPattern = startSketchOn(bracketProfile, face = holeFace)
   |> circle(
        center = [
          -componentBoltPatternX / 2,
@@ -97,6 +127,6 @@ topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
   |> extrude(length = -thickness)
 
 // Place a hole at the center of the component bolt pattern to reduce mass
-centeredHole = startSketchOn(bracketProfile, face = seg05)
+centeredHole = startSketchOn(bracketProfile, face = holeFace)
   |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
   |> extrude(length = -thickness)

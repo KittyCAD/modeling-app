@@ -33,11 +33,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
-import {
-  isCursorInSketchCommandRange,
-  isTopLevelModule,
-  topLevelRange,
-} from '@src/lang/util'
+import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -55,7 +51,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
-  getModuleId,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -70,10 +65,10 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -1171,27 +1166,26 @@ export async function selectionBodyFace(
   const faceId = planeOrFaceId
   const extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
   if (!err(extrusion)) {
-    if (!isTopLevelModule(extrusion.codeRef.range)) {
-      const moduleId = getModuleId(extrusion.codeRef.range)
-      const importDetails = execState.filenames[moduleId]
-      if (!importDetails) {
-        toast.error("can't sketch on this face")
-        return
-      }
-      if (importDetails?.type === 'Local') {
-        // importDetails has OS specific separators from the rust side!
-        const fileNameWithExtension = getStringAfterLastSeparator(
-          importDetails.value
-        )
-        showSketchOnImportToast(fileNameWithExtension)
-      } else if (
-        importDetails?.type === 'Main' ||
-        importDetails?.type === 'Std'
-      ) {
+    const maybeImportNode = getNodeFromPath<ImportStatement>(
+      ast,
+      extrusion.codeRef.pathToNode,
+      systemDeps.wasmInstance,
+      ['ImportStatement']
+    )
+    if (
+      !err(maybeImportNode) &&
+      maybeImportNode.node &&
+      maybeImportNode.node.type === 'ImportStatement'
+    ) {
+      if (maybeImportNode.node.path.type === 'Kcl') {
+        showSketchOnImportToast(maybeImportNode.node.path.filename)
+      } else if (maybeImportNode.node.path.type === 'Foreign') {
+        showSketchOnImportToast(maybeImportNode.node.path.path)
+      } else if (maybeImportNode.node.path.type === 'Std') {
         toast.error("can't sketch on this face")
       } else {
         // force tsc error if more cases are added
-        const _exhaustiveCheck: never = importDetails
+        const _exhaustiveCheck: never = maybeImportNode.node.path
       }
     }
   }
