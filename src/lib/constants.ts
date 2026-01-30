@@ -104,6 +104,9 @@ export function packRgbToColor(rgb: number[]): number {
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
 
+/** The default KCL leader scale expression */
+export const KCL_DEFAULT_LEADER_SCALE = `1.0`
+
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
 
