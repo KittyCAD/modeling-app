@@ -15,6 +15,9 @@ import {
 import { use } from 'react'
 import { useSingletons } from '@src/lib/boot'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
+import { sendSelectionEvent } from '@src/lib/featureTree'
 
 type SolidArtifact = Artifact & { type: 'compositeSold' | 'sweep' }
 
@@ -22,9 +25,6 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
-  // If there are parse errors we show the last successful operations
-  // and overlay a message on top of the pane
-
   const bodies = execState?.artifactGraph
     ? getBodiesFromArtifactGraph(execState.artifactGraph)
     : undefined
@@ -79,12 +79,25 @@ function BodyItem({
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
   useSignals()
   const { kclManager } = useSingletons()
+  const { send: modelingSend } = useModelingContext()
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
+  const isSelected =
+    kclManager.editorState.selection.main.from >= sourceRange[0] &&
+    kclManager.editorState.selection.main.to <= sourceRange[1]
+  const onSelect = () =>
+    sendSelectionEvent({
+      sourceRange,
+      kclManager,
+      modelingSend,
+    })
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">
       <RowItemWithIconMenuAndToggle
         icon="body"
+        onClick={onSelect}
+        isSelected={isSelected}
         Toggle={
           <VisibilityToggle
             visible={hideOperation === undefined}
