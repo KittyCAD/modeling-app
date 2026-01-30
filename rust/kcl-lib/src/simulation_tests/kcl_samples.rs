@@ -12,6 +12,8 @@ use walkdir::WalkDir;
 
 use super::Test;
 
+const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
+
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
     static ref INPUTS_DIR: PathBuf = Path::new("../../public/kcl-samples").to_path_buf();
@@ -262,7 +264,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 
     let lines: Vec<&str> = content.lines().collect();
 
-    if lines.len() < 2 {
+    if lines.len() < 3 {
         return None;
     }
 
@@ -324,7 +326,8 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
-                        ext == "kcl"
+                        let ext = ext.to_str().unwrap().to_lowercase();
+                        ALLOWED_FILETYPES.contains(&ext.as_str())
                     } else {
                         false
                     }
