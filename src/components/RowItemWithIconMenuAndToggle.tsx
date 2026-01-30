@@ -10,6 +10,7 @@ export function RowItemWithIconMenuAndToggle({
   Tooltip,
   Toggle,
   menuItems,
+  isSelected,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: CustomIconName
@@ -20,12 +21,13 @@ export function RowItemWithIconMenuAndToggle({
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   // The button element has onContextMenu already but the type is too narrow
   onContextMenu?: (e: MouseEvent) => void
+  isSelected?: boolean
 }) {
   const menuRef = useRef(null)
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/visibilityToggle my-0 py-0.5 px-1 ${props.disabled ? 'opacity-50 cursor-not-allowed' : 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25'}`}
+      className={`flex select-none items-center group/visibilityToggle my-0 py-0.5 px-1 ${props.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isSelected ? 'bg-primary/25 hover:bg-primary/25' : ''} hover:bg-2'}`}
       data-testid="feature-tree-operation-item"
     >
       <button

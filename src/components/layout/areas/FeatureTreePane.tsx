@@ -367,6 +367,7 @@ const OperationItemWrapper = memo(
     errors?: Diagnostic[]
     onContextMenu?: (e: MouseEvent) => void
     Tooltip?: ReactNode
+    isSelected?: boolean
   } & OpValueProps) => {
     return (
       <RowItemWithIconMenuAndToggle
@@ -457,6 +458,15 @@ const OperationItem = ({
   const ast = kclManager.astSignal.value
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
+  const sourceRange =
+    'sourceRange' in item && sourceRangeFromRust(item.sourceRange)
+  const isSelected = useMemo(() => {
+    const selected =
+      sourceRange &&
+      kclManager.editorState.selection.main.from >= sourceRange[0] &&
+      kclManager.editorState.selection.main.to <= sourceRange[1]
+    return selected
+  }, [kclManager.editorState.selection, sourceRange])
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])
@@ -858,6 +868,7 @@ const OperationItem = ({
         void selectOperation()
       }}
       onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      isSelected={isSelected}
       errors={errors}
       disabled={!enabled}
       visibilityToggle={
