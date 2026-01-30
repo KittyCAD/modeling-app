@@ -321,6 +321,10 @@ impl TagIdentifier {
             self.info.push((*oe, ot.clone()));
         }
     }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        self.get_cur_info().map(|info| info.geometry.clone())
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -368,8 +372,8 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch the tag is on.
-    pub sketch: uuid::Uuid,
+    /// The geometry the tag is on.
+    pub geometry: Geometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -575,22 +579,24 @@ impl ExecutorContext {
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+            .commands_ws(kittycad::modeling::CommandsWsParams {
+                api_call_id: None,
+                fps: None,
+                order_independent_transparency: None,
+                post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                pool: None,
+                pr: None,
+                unlocked_framerate: None,
+                webrtc: Some(false),
+                video_res_width: None,
+                video_res_height: None,
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =

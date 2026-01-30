@@ -9,7 +9,7 @@ Extend a 2-dimensional sketch through a third dimension in order to create new 3
 
 ```kcl
 extrude(
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Face | TaggedFace; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,
@@ -20,6 +20,7 @@ extrude(
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
   method?: string,
+  hideSeams?: bool,
   bodyType?: string,
 ): [Solid; 1+]
 ```
@@ -36,7 +37,7 @@ can change this behavior by using the `method` parameter. See
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | Which sketch or sketches should be extruded. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | Which sketch or sketches should be extruded. | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. Incompatible with `to`. | No |
 | `to` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Reference to extrude to. Incompatible with `length` and `twistAngle`. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
@@ -47,6 +48,7 @@ can change this behavior by using the `method` parameter. See
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
 | `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center. | No |
 | `method` | [`string`](/docs/kcl-std/types/std-types-string) | The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`. | No |
+| `hideSeams` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether or not to hide the seams between the original and resulting object. Only used if a face is extruded and method = MERGE | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
@@ -315,6 +317,150 @@ extrude(openProfile, length = 2, bodyType = SURFACE)
 </model-viewer>
 
 ```kcl
+// Extrude a face from an extruded object
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-5, 0])
+  |> xLine(length = 1)
+  |> yLine(length = -1)
+  |> line(end = [-1, -1], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)
+extrude(
+       seg01,
+       length = 2,
+       method = MERGE,
+       hideSeams = false,
+     )
+  // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+  |> appearance(color = "#ff0000")
+
+// Extrude a face from an extruded object to create a new object
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> yLine(length = -1.0)
+  |> xLine(length = 1.0, tag = $seg02)
+  |> yLine(length = 1.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)
+extrude(
+       seg02,
+       length = 2,
+       method = NEW,
+       hideSeams = false,
+     )
+  // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+  |> appearance(color = "#00ff00")
+
+// Extrude a face from an extruded object and merge the result
+sketch003 = startSketchOn(XY)
+profile003 = startProfile(sketch003, at = [1, 0])
+  |> yLine(length = -1.0)
+  |> xLine(length = 1.0, tag = $seg03)
+  |> yLine(length = 1.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)
+extrude(
+       seg03,
+       length = 2,
+       method = MERGE,
+       hideSeams = true,
+     )
+  |> appearance(color = "#0000ff")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Create a yellow extruded triangle.
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1, tag = $a)
+  |> xLine(length = 1, tag = $b)
+  |> close(tag = $c)
+cube = extrude(profile001, length = 1)
+  |> appearance(color = "#ffaa00")
+
+// Extrude a red box from one of the triangle's side faces.
+box = extrude(
+       c,
+       length = 4,
+       hideSeams = false,
+       method = NEW,
+     )
+  |> appearance(color = "#ff0000")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// You can even extrude faces from sweeps!
+// In this example, the sweep is blue,
+// and the extrusion from its end face is yellow
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-1.0, 1.0])
+  |> yLine(length = -2.0)
+  |> xLine(length = 2.0)
+  |> yLine(length = 2.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch003 = startSketchOn(XZ)
+profile002 = startProfile(sketch003, at = [0, 0])
+  |> yLine(length = 2.0)
+  |> tangentialArc(end = [-2.0, 2.0])
+  |> xLine(length = -2.0)
+  |> tangentialArc(end = [-2, 2.0])
+  |> yLine(length = 2)
+sweep001 = sweep(profile001, path = profile002, tagEnd = $endSweep)
+  |> appearance(color = "#0000FF")
+extrude(endSweep, length = 2, method = NEW)
+  |> appearance(color = "#FFFF00")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
 // Surface extrude of a closed profile
 closedProfile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -328,10 +474,10 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude11.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
