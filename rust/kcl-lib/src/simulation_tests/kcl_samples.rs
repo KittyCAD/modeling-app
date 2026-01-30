@@ -264,17 +264,18 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 
     let lines: Vec<&str> = content.lines().collect();
 
-    if lines.len() < 3 {
+    if lines.len() < 2 {
         return None;
     }
 
     // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
-    let categories = if let Some(categories_line) = lines[2]
-        .trim_start_matches(COMMENT_PREFIX)
-        .trim()
-        .strip_prefix("Categories: ")
+    let categories = if let Some(third_line) = lines.get(2)
+        && let Some(categories_line) = third_line
+            .trim_start_matches(COMMENT_PREFIX)
+            .trim()
+            .strip_prefix("Categories: ")
     {
         categories_line.split(',').map(|s| s.trim().to_string()).collect()
     } else {
