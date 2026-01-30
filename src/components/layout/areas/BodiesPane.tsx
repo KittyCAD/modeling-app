@@ -1,10 +1,6 @@
-import type { ChangeSpec } from '@codemirror/state'
 import type { PropsOf } from '@headlessui/react/dist/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Program } from '@src/lang/wasm'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useSignals } from '@preact/signals-react/runtime'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import {
@@ -14,17 +10,17 @@ import {
 import {
   getHideOpByArtifactId,
   getToggleHiddenTransaction,
-  getVariableNameFromNodePath,
   type HideOperation,
 } from '@src/lib/operations'
-import { kclManager } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
 import { use } from 'react'
+import { useSingletons } from '@src/lib/boot'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 
 type SolidArtifact = Artifact & { type: 'compositeSold' | 'sweep' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
+  const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
@@ -82,26 +78,32 @@ function BodyItem({
   hideOperation,
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
   useSignals()
+  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
 
   return (
-    <li className="flex px-1 py-0.5 group/visibilityToggle">
-      <CustomIcon name="body" className="w-6 h-6" />
-      <span className="flex-1">{label}</span>
-      <VisibilityToggle
-        visible={hideOperation === undefined}
-        onVisibilityChange={() => {
-          kclManager.dispatch(
-            getToggleHiddenTransaction({
-              targetPathsToNode: [artifact.codeRef.pathToNode],
-              hideOperation,
-              program: kclManager.astSignal.value,
-              code: kclManager.codeSignal.value,
-              wasmInstance,
-            })
-          )
-        }}
-      />
+    <li className="px-1 py-0.5 group/visibilityToggle">
+      <RowItemWithIconMenuAndToggle
+        icon="body"
+        Toggle={
+          <VisibilityToggle
+            visible={hideOperation === undefined}
+            onVisibilityChange={() => {
+              kclManager.dispatch(
+                getToggleHiddenTransaction({
+                  targetPathsToNode: [artifact.codeRef.pathToNode],
+                  hideOperation,
+                  program: kclManager.astSignal.value,
+                  code: kclManager.codeSignal.value,
+                  wasmInstance,
+                })
+              )
+            }}
+          />
+        }
+      >
+        {label}
+      </RowItemWithIconMenuAndToggle>
     </li>
   )
 }

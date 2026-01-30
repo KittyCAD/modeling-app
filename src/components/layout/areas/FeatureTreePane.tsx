@@ -1,6 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { ComponentProps } from 'react'
-import { use, useCallback, useMemo, useRef, memo } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
+import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -13,7 +13,7 @@ import {
   isOffsetPlane,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { getArtifactFromRange, getArtifactOfTypes, getArtifactsOfTypes, getPathsFromArtifact, getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
   getHideOpByArtifactId,
@@ -59,6 +59,9 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import type { VisibilityToggleProps } from '@src/components/VisibilityToggle'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<
@@ -190,9 +193,10 @@ export const FeatureTreePaneContents = memo(() => {
             )}
             {parseErrors.length > 0 && (
               <div
-                className={`absolute inset-0 rounded-lg p-2 ${operationList.length &&
+                className={`absolute inset-0 rounded-lg p-2 ${
+                  operationList.length &&
                   `bg-destroy-10/40 dark:bg-destroy-80/40`
-                  }`}
+                }`}
               >
                 <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
                   <p className="flex-1">
@@ -210,9 +214,11 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             )}
             {operationList.map((opOrList) => {
-              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${'name' in opOrList ? opOrList.name : 'anonymous'
-                }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
-                }`
+              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${
+                'name' in opOrList ? opOrList.name : 'anonymous'
+              }-${
+                'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
+              }`
 
               return isArray(opOrList) ? (
                 <OperationItemGroup
@@ -300,8 +306,9 @@ function OperationItemGroup({
       <Disclosure.Panel as="ul" className="border-b b-4">
         <div className="border-l b-4 ml-4">
           {items.map((op) => {
-            const key = `${op.type}-${'name' in op ? op.name : 'anonymous'
-              }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
+            const key = `${op.type}-${
+              'name' in op ? op.name : 'anonymous'
+            }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
             return (
               <OperationItem
                 key={key}
@@ -344,37 +351,23 @@ const OperationItemWrapper = memo(
     errors,
     customSuffix,
     className,
-    selectable = true,
-    greyedOut = false,
+    Tooltip,
     ...props
-  }: React.HTMLAttributes<HTMLButtonElement> & {
+  }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
     visibilityToggle?: VisibilityToggleProps
     customSuffix?: React.JSX.Element
     menuItems?: ComponentProps<typeof ContextMenu>['items']
     errors?: Diagnostic[]
-    selectable?: boolean
-    greyedOut?: boolean
     onContextMenu?: (e: MouseEvent) => void
+    Tooltip?: ReactNode
   } & OpValueProps) => {
-    const menuRef = useRef<HTMLDivElement>(null)
-
     return (
-      <div
-        ref={menuRef}
-        className={`flex select-none items-center group/visibilityToggle my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-        data-testid="feature-tree-operation-item"
-      >
-        <button
-          {...props}
-          className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
-        >
-          <CustomIcon
-            name={icon}
-            className="w-6 h-6 block self-start"
-            aria-hidden
-          />
-          <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+      <RowItemWithIconMenuAndToggle
+        {...props}
+        icon={icon}
+        LabelSecondary={
+          <>
             {variableName && valueDetail ? (
               <>
                 <span className="text-sm">{variableName}</span>
@@ -385,41 +378,23 @@ const OperationItemWrapper = memo(
                   {getOperationCalculatedDisplay(valueDetail.calculated)}
                 </code>
               </>
-            ) : (
-              <span className="text-sm">{variableName ?? name}</span>
-            )}
-            {customSuffix && customSuffix}
-          </div>
-          {errors && errors.length > 0 && (
+            ) : null}
+            {customSuffix ?? null}
+          </>
+        }
+        Warning={
+          errors && errors.length > 0 ? (
             <em className="text-destroy-80 text-xs">has error</em>
-          )}
-          {valueDetail || variableName ? (
-            <Tooltip
-              delay={500}
-              position="bottom-left"
-              wrapperClassName="left-0 right-0"
-              contentClassName="text-sm max-w-full"
-            >
-              <VariableTooltipContents
-                variableName={variableName}
-                valueDetail={valueDetail}
-                name={name}
-                type={type}
-              />
-            </Tooltip>
-          ) : null}
-        </button>
-        {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
-        {menuItems && (
-          <ContextMenu
-            menuTargetElement={menuRef}
-            items={menuItems}
-            callback={(e) => {
-              props.onContextMenu?.(e)
-            }}
-          />
-        )}
-      </div>
+          ) : null
+        }
+        Tooltip={Tooltip}
+        Toggle={
+          visibilityToggle ? <VisibilityToggle {...visibilityToggle} /> : null
+        }
+        menuItems={menuItems}
+      >
+        {variableName ?? name}
+      </RowItemWithIconMenuAndToggle>
     )
   }
 )
@@ -497,6 +472,7 @@ const OperationItem = ({
 
   const selectOperation = useCallback(
     async (providedSourceRange?: SourceRange) => {
+      debugger
       if (sketchNoFace) {
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
@@ -697,135 +673,135 @@ const OperationItem = ({
         : []),
       ...(isOffsetPlane(item)
         ? [
-          <ContextMenuItem onClick={startSketchOnOffsetPlane}>
-            Start Sketch
-          </ContextMenuItem>,
-        ]
+            <ContextMenuItem onClick={startSketchOnOffsetPlane}>
+              Start Sketch
+            </ContextMenuItem>,
+          ]
         : []),
       ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
         ? [
-          <ContextMenuItem
-            onClick={() => {
-              const exportDxf = async () => {
-                if (item.type !== 'StdLibCall') return
-                const result = await exportSketchToDxf(item, {
-                  engineCommandManager,
-                  kclManager,
-                  toast,
-                  uuidv4,
-                  base64Decode,
-                  browserSaveFile,
-                })
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
 
-                if (err(result)) {
-                  // Additional error logging for debugging purposes
-                  // Main error handling (toasts) is already done in exportSketchToDxf
-                  console.error('DXF export failed:', result.message)
-                } else {
-                  console.log('DXF export completed successfully')
+                  if (err(result)) {
+                    // Additional error logging for debugging purposes
+                    // Main error handling (toasts) is already done in exportSketchToDxf
+                    console.error('DXF export failed:', result.message)
+                  } else {
+                    console.log('DXF export completed successfully')
+                  }
                 }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
+        ? [
+            <ContextMenuItem
+              disabled={
+                item.type !== 'VariableDeclaration' &&
+                item.type !== 'SketchSolve' &&
+                stdLibMap[item.name]?.prepareToEdit === undefined
               }
-              void exportDxf()
-            }}
-            data-testid="context-menu-export-dxf"
-          >
-            Export to DXF
-          </ContextMenuItem>,
-        ]
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
+            </ContextMenuItem>,
+          ]
         : []),
       ...(item.type === 'StdLibCall' ||
-        item.type === 'VariableDeclaration' ||
-        item.type === 'SketchSolve'
+      (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
         ? [
-          <ContextMenuItem
-            disabled={
-              item.type !== 'VariableDeclaration' &&
-              item.type !== 'SketchSolve' &&
-              stdLibMap[item.name]?.prepareToEdit === undefined
-            }
-            onClick={enterEditFlow}
-            hotkey="Double click"
-          >
-            Edit
-          </ContextMenuItem>,
-        ]
-        : []),
-      ...(item.type === 'StdLibCall' ||
-        (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
-        ? [
-          <ContextMenuItem
-            disabled={
-              !(
-                (item.type === 'GroupBegin' &&
-                  item.group.type === 'FunctionCall') ||
-                (item.type === 'StdLibCall' &&
-                  stdLibMap[item.name]?.supportsAppearance)
-              )
-            }
-            onClick={enterAppearanceFlow}
-            data-testid="context-menu-set-appearance"
-          >
-            Set appearance
-          </ContextMenuItem>,
-        ]
+            <ContextMenuItem
+              disabled={
+                !(
+                  (item.type === 'GroupBegin' &&
+                    item.group.type === 'FunctionCall') ||
+                  (item.type === 'StdLibCall' &&
+                    stdLibMap[item.name]?.supportsAppearance)
+                )
+              }
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
+            </ContextMenuItem>,
+          ]
         : []),
       ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
         ? [
-          <ContextMenuItem
-            onClick={enterTranslateFlow}
-            data-testid="context-menu-set-translate"
-            disabled={
-              item.type !== 'GroupBegin' &&
-              !stdLibMap[item.name]?.supportsTransform
-            }
-          >
-            Translate
-          </ContextMenuItem>,
-          <ContextMenuItem
-            onClick={enterRotateFlow}
-            data-testid="context-menu-set-rotate"
-            disabled={
-              item.type !== 'GroupBegin' &&
-              !stdLibMap[item.name]?.supportsTransform
-            }
-          >
-            Rotate
-          </ContextMenuItem>,
-          <ContextMenuItem
-            onClick={enterScaleFlow}
-            data-testid="context-menu-set-scale"
-            disabled={
-              item.type !== 'GroupBegin' &&
-              !stdLibMap[item.name]?.supportsTransform
-            }
-          >
-            Scale
-          </ContextMenuItem>,
-          <ContextMenuItem
-            onClick={enterCloneFlow}
-            data-testid="context-menu-clone"
-            disabled={
-              item.type !== 'GroupBegin' &&
-              !stdLibMap[item.name]?.supportsTransform
-            }
-          >
-            Clone
-          </ContextMenuItem>,
-        ]
+            <ContextMenuItem
+              onClick={enterTranslateFlow}
+              data-testid="context-menu-set-translate"
+              disabled={
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
+              }
+            >
+              Translate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterRotateFlow}
+              data-testid="context-menu-set-rotate"
+              disabled={
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
+              }
+            >
+              Rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterScaleFlow}
+              data-testid="context-menu-set-scale"
+              disabled={
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
+              }
+            >
+              Scale
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterCloneFlow}
+              data-testid="context-menu-clone"
+              disabled={
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
+              }
+            >
+              Clone
+            </ContextMenuItem>,
+          ]
         : []),
       ...(item.type === 'StdLibCall' ||
-        item.type === 'GroupBegin' ||
-        item.type === 'VariableDeclaration' ||
-        item.type === 'SketchSolve'
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
         ? [
-          <ContextMenuItem
-            onClick={deleteOperation}
-            hotkey="Delete"
-            data-testid="context-menu-delete"
-          >
-            Delete
-          </ContextMenuItem>,
-        ]
+            <ContextMenuItem
+              onClick={deleteOperation}
+              hotkey="Delete"
+              data-testid="context-menu-delete"
+            >
+              Delete
+            </ContextMenuItem>,
+          ]
         : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -840,21 +816,36 @@ const OperationItem = ({
       : undefined
   const hideOperation = operationArtifact
     ? getHideOpByArtifactId(
-      kclManager.execState?.operations ?? [],
-      operationArtifact.id
-    )
+        kclManager.execState?.operations ?? [],
+        operationArtifact.id
+      )
     : undefined
 
   return (
     <OperationItemWrapper
-      selectable={enabled}
       icon={getOperationIcon(item)}
       name={name}
       type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      Tooltip={
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          <VariableTooltipContents
+            variableName={variableName}
+            valueDetail={valueDetail}
+            name={name}
+            type={item.type}
+          />
+        </Tooltip>
+      }
       menuItems={menuItems}
       onClick={() => {
+        console.log('FRANK CLICK')
         void selectOperation()
       }}
       onContextMenu={() => {
@@ -862,46 +853,29 @@ const OperationItem = ({
       }}
       onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
-      greyedOut={!enabled}
+      disabled={!enabled}
       visibilityToggle={
-        item.type === 'StdLibCall' && (item.name === 'helix' || item.name === 'startSketchOn')
+        item.type === 'StdLibCall' && item.name === 'helix'
           ? {
-            visible: hideOperation === undefined,
-            onVisibilityChange: () => {
-              debugger
-              let targetPathsToNode: PathToNode[] = []
-              if (operationArtifact?.type === 'startSketchOnFace' || operationArtifact?.type === 'startSketchOnPlane' || operationArtifact?.type === 'plane' || operationArtifact?.type === 'planeOfFace') {
-                const plane = getPlaneFromArtifact(operationArtifact, kclManager.artifactGraph)
-                console.log('DID WE FUCKING ERROR')
-                if (err(plane)) return plane
-                const paths = getArtifactsOfTypes(
-                  { keys: plane.pathIds, types: ['path'] },
-                  kclManager.artifactGraph
-                )
-                targetPathsToNode = paths.values().map(p => pathToNodeFromRustNodePath(p.codeRef.nodePath)).toArray()
-
-              } else {
+              visible: hideOperation === undefined,
+              onVisibilityChange: () => {
+                let targetPathsToNode: PathToNode[] = []
                 targetPathsToNode = [pathToNodeFromRustNodePath(item.nodePath)]
-              }
 
-              console.log('FRANK COME ON', {
-                targetPathsToNode,
-                plane: getPlaneFromArtifact(operationArtifact, kclManager.artifactGraph),
-                item,
-                operationArtifact,
-              })
-              if (err(targetPathsToNode)) { return }
-              kclManager.dispatch(
-                getToggleHiddenTransaction({
-                  targetPathsToNode,
-                  hideOperation,
-                  program: kclManager.astSignal.value,
-                  code: kclManager.codeSignal.value,
-                  wasmInstance,
-                })
-              )
-            },
-          }
+                if (err(targetPathsToNode)) {
+                  return
+                }
+                kclManager.dispatch(
+                  getToggleHiddenTransaction({
+                    targetPathsToNode,
+                    hideOperation,
+                    program: kclManager.astSignal.value,
+                    code: kclManager.codeSignal.value,
+                    wasmInstance,
+                  })
+                )
+              },
+            }
           : undefined
       }
     />
@@ -1011,7 +985,6 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={true}
           onClick={() => onClickPlane(plane.id)}
           menuItems={[
             <ContextMenuItem
