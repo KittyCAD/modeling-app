@@ -257,6 +257,14 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
+  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
   selectSurface = async (operation: 'flip-surface' | 'delete-face') => {
     await this.page
       .getByRole('button', { name: 'caret down surface: open menu' })

@@ -452,10 +452,9 @@ openSketch = startSketchOn(XY)
 
     await homePage.goToModelingScene()
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
       scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
       0.63,
       0.5,

@@ -222,6 +222,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
           "type": "extrudeArc"
         },
         {
@@ -1070,6 +1077,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
                 "type": "extrudePlane"
               },
               {
@@ -2015,6 +2029,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
                 "type": "extrudePlane"
               },
               {
@@ -3127,6 +3148,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": null,
                       "type": "extrudePlane"
                     },
                     {
@@ -4759,6 +4787,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
               "type": "extrudeArc"
             },
             {
@@ -5588,6 +5623,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
               "type": "extrudePlane"
             },
             {
@@ -6640,6 +6682,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
                     "type": "extrudePlane"
                   },
                   {

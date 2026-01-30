@@ -11,6 +11,7 @@ on:
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -104,13 +105,17 @@ jobs:
           npm run files:flip-to-staging
           npm run files:set-windows-codesign-config
 
-      - name: Set release version and windows codesign config
+      - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
-        env:
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
+
+      - name: Set windows codesign config
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
+        run: |
           npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v6
@@ -174,7 +179,7 @@ jobs:
       - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           echo "${{secrets.SM_SERVICE_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
           cat /c/Certificate_pkcs12.p12
@@ -189,7 +194,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -207,13 +212,13 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_STAGING == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
         run: npm run tronb:package:dev
 
       - name: Build the app (release)
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -222,6 +227,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          CSC_FOR_PULL_REQUEST: ${{ env.FORCE_RELEASE_BUILD }}
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
