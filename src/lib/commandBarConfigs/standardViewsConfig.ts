@@ -1,8 +1,8 @@
-import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { Command } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { AxisNames } from '@src/lib/constants'
-import { reportRejection } from '../trap'
-import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
+import { reportRejection } from '@src/lib/trap'
+import { engineStreamZoomToFit } from '@src/lib/utils'
 
 export function createStandardViewsCommands(
   engineCommandManager: ConnectionManager
