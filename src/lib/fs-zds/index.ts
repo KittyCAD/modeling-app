@@ -9,26 +9,6 @@ declare global {
   }
 }
 
-function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
-  return (
-    typeof x === 'object' &&
-    x !== null &&
-    'detach' in x &&
-    'attach' in x &&
-    'getPath' in x &&
-    'copyFile' in x &&
-    'cp' in x &&
-    'readFile' in x &&
-    'existsSync' in x &&
-    'rename' in x &&
-    'writeFile' in x &&
-    'readdir' in x &&
-    'stat' in x &&
-    'mkdir' in x &&
-    'rm' in x
-  )
-}
-
 export enum StorageName {
   NoopFS = 'noopfs',
   OPFS = 'opfs',
@@ -62,20 +42,10 @@ export const moduleFsViaWindow = async (backing: StorageBacking) => {
 }
 
 export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
-  if (isAnFsBacking(_impl)) {
-    await _impl.detach()
-  }
-
   const impl = await moduleFsViaObject(backing)
 
   // Do not destroy the reference, but instead, reassign some of its properties.
   Object.assign(_impl, impl)
-
-  // ts can't know if this is actually an fs backing even right after the
-  // assignment, because _impl may have other properties.
-  if (isAnFsBacking(_impl)) {
-    await _impl.attach()
-  }
 
   // Do not return the object to be potentially misused by consumers.
   // If you want it, use `moduleFsViaObject` instead.

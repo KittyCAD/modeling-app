@@ -22,13 +22,18 @@ const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
 
+let localRootFileSystemHandle: FileSystemDirectoryHandle = undefined
+const attach = async () => {
+  localRootFileSystemHandle = window.showDirectoryPicker({ mode: 'readwrite' })
+}
+
 // NOTE TO SELF OR ANYONE ELSE IN CASE: RETURN PROMISE.REJECT IN FAILURE CASES!
 
 const walk = async (
   targetPath: string,
   onTargetNode?: (part: string) => void
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
-  let current = await navigator.storage.getDirectory()
+  let current = await localRootFileSystemHandle
   let cwd = ''
   let looped = true
   let currentChanged = true
@@ -265,7 +270,7 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   const parts = targetPath.split(path.sep)
 
   if (options?.recursive === true) {
-    let current = navigator.storage.getDirectory()
+    let current = await localRootFileSystemHandle
     for (const part of parts) {
       // Indicative we're at /
       if (part === '') continue
@@ -416,7 +421,7 @@ const impl: IZooDesignStudioFS = {
   mkdir,
   rm,
   detach: async () => {},
-  attach: async () => {},
+  attach,
 }
 
 export default {

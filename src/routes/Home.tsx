@@ -1,5 +1,6 @@
+import fsZds from '@src/lib/fs-zds'
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -79,6 +80,7 @@ const Home = () => {
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const [hasAttachedLocalFs, setHasAttachedLocalFs] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
@@ -96,6 +98,15 @@ const Home = () => {
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
+
+  const attachLocalFs = useCallback(() => {
+    setHasAttachedLocalFs(true)
+    void fsZds.attach().then(() => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+    })
   }, [])
 
   const location = useLocation()
@@ -222,6 +233,7 @@ const Home = () => {
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"
+          hasAttachedLocalFs={hasAttachedLocalFs}
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -366,6 +378,8 @@ const Home = () => {
           </ul>
         </aside>
         <ProjectGrid
+          attachLocalFs={attachLocalFs}
+          hasAttachedLocalFs={hasAttachedLocalFs}
           searchResults={searchResults}
           projects={projects}
           query={query}
@@ -386,6 +400,7 @@ const Home = () => {
 }
 
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
+  hasAttachedLocalFs: boolean
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
@@ -394,6 +409,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
 }
 
 function HomeHeader({
+  hasAttachedLocalFs,
   setQuery,
   sort,
   setSearchParams,
@@ -457,15 +473,17 @@ function HomeHeader({
         </div>
       </div>
       <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-        Loaded from{' '}
-        <Link
-          data-testid="project-directory-settings-link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-          className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-        >
-          {settings.app.projectDirectory.current}
-        </Link>
-        .
+      { hasAttachedLocalFs && <>
+          Loaded from{' '}
+          <Link
+            data-testid="project-directory-settings-link"
+            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+            className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+          >
+            {settings.app.projectDirectory.current}
+          </Link>
+          .
+          </>} 
       </p>
       {!readWriteProjectDir.value && (
         <section>
@@ -488,6 +506,8 @@ function HomeHeader({
 }
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
+  attachLocalFs: () => void
+  hasAttachedLocalFs: boolean
   searchResults: Project[]
   projects: Project[]
   query: string
@@ -499,6 +519,8 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
 }
 
 function ProjectGrid({
+  attachLocalFs,
+  hasAttachedLocalFs,
   searchResults,
   projects,
   query,
@@ -526,7 +548,8 @@ function ProjectGrid({
               ))}
             </ul>
           ) : (
-            <p
+            hasAttachedLocalFs ?
+            (<p
               data-testid="projects-none"
               className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
             >
@@ -534,7 +557,8 @@ function ProjectGrid({
               {projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
-            </p>
+            </p>)
+            : ( <button onClick={attachLocalFs} data-testid="project-root-not-loaded">Load your projects directory</button> )
           )}
         </>
       )}
