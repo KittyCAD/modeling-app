@@ -1189,8 +1189,13 @@ export function getVariableExprsFromSelection(
     }
 
     // No variable case
-    exprs.push(createPipeSubstitution())
-    pathIfPipe = s.codeRef.pathToNode
+    if (s.codeRef.pathToNode.length > 0) {
+      exprs.push(createPipeSubstitution())
+      pathIfPipe = s.codeRef.pathToNode
+      continue
+    }
+
+    console.warn('No match for selection, likely a bug (or bad selection)', s)
   }
 
   if (exprs.length === 0) {
