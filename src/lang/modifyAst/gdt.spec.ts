@@ -380,6 +380,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
+      const leaderScale = await getKclCommandValue(
+        '1.2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const fontScale = await getKclCommandValue(
         '1.5',
         instanceInThisFile,
@@ -394,6 +399,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         precision,
         framePosition,
         framePlane,
+        leaderScale,
         fontPointSize,
         fontScale,
         wasmInstance: instanceInThisFile,
@@ -412,6 +418,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('framePosition = [10, 20]')
       expect(newCode).toContain('framePlane = XY')
       expect(newCode).toContain('fontPointSize = 36')
+      expect(newCode).toContain('leaderScale = 1.2')
       expect(newCode).toContain('fontScale = 1.5')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -787,6 +794,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
       const framePlane = 'XZ'
+      const leaderScale = await getKclCommandValue(
+        '1.1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const fontPointSize = await getKclCommandValue(
         '48',
         instanceInThisFile,
@@ -805,6 +817,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         name,
         framePosition,
         framePlane,
+        leaderScale,
         fontPointSize,
         fontScale,
         wasmInstance: instanceInThisFile,
@@ -822,6 +835,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('name = "A"')
       expect(newCode).toContain('framePosition = [5, 0]')
       expect(newCode).toContain('framePlane = XZ')
+      expect(newCode).toContain('leaderScale = 1.1')
       expect(newCode).toContain('fontPointSize = 48')
       expect(newCode).toContain('fontScale = 2')
     })
