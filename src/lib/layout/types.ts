@@ -113,7 +113,7 @@ export type PaneLayout = BaseLayout &
     onExpandSize?: number
   }
 export interface Closeable {
-  onClose: () => void
+  onClose: (idOverride?: string) => void
 }
 export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple
