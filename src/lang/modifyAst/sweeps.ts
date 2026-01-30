@@ -102,32 +102,25 @@ export function addExtrude({
     | {
         exprs: Expr[]
         pathIfPipe?: PathToNode
-      }
+      } = { exprs: [] }
   const faceSelections = sketches.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
   )
   // Handle the face selection case (vs. regular sketches below)
-  const tagsExprs: Expr[] = []
   for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
+    const res = modifyAstWithTagsForSelection(
       modifiedAst,
       faceSelection,
       artifactGraph,
       wasmInstance
     )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
+    if (err(res)) {
+      return res
     }
-
-    // Update the AST with the tagged version
-    modifiedAst = tagResult.modifiedAst
-
-    // Create expression from the first tag (faces have one tag)
-    tagsExprs.push(createLocalName(tagResult.tags[0]))
+    modifiedAst = res.modifiedAst
+    const expr = createLocalName(res.tags[0])
+    vars.exprs.push(expr)
   }
-
-  vars = { exprs: tagsExprs }
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
@@ -146,8 +139,8 @@ export function addExtrude({
     if (err(res)) {
       return res
     }
-    vars.exprs.push(...res.exprs)
     vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   // Extra labeled args expressions
