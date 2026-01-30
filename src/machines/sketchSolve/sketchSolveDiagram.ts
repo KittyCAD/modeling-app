@@ -735,27 +735,7 @@ export const sketchSolveMachine = setup({
             context.sceneInfra,
             {
               submit: async (value: string) => {
-                // Close the editor first to prevent re-entry
                 self.send({ type: 'stop editing constraint' })
-
-                // Use the latest context snapshot, not the stale closure
-                // capture — the user may have dragged points since opening
-                // the editor, which updates sketchExecOutcome.
-                const currentContext = self.getSnapshot().context
-                const freshObjects =
-                  currentContext.sketchExecOutcome?.sceneGraphDelta.new_graph
-                    .objects || []
-                const constraintObject = freshObjects[event.data.constraintId]
-                if (
-                  !constraintObject ||
-                  constraintObject.kind.type !== 'Constraint'
-                ) {
-                  console.warn(
-                    'Constraint object not found:',
-                    event.data.constraintId
-                  )
-                  return
-                }
 
                 try {
                   const result = await context.rustContext.editConstraint(

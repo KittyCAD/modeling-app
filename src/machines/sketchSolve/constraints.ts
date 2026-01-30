@@ -52,7 +52,7 @@ const debug_hit_areas = false
 
 export type EditingCallbacks = {
   cancel: () => void
-  submit: (value: string) => void
+  submit: (value: string) => void | Promise<void>
 }
 
 export class ConstraintUtils {
@@ -464,7 +464,6 @@ export class ConstraintUtils {
     sceneInfra: SceneInfra,
     callbacks: EditingCallbacks
   ) {
-    this.callbacks = callbacks
     const constraintObject = objects[constraintId]
 
     if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
@@ -520,7 +519,7 @@ export class ConstraintUtils {
                   run: (editorView) => {
                     const value = editorView.state.doc.toString().trim()
                     if (value) {
-                      this.callbacks?.submit?.(value)
+                      void callbacks.submit(value)
                       return true
                     }
                     return false
@@ -529,7 +528,7 @@ export class ConstraintUtils {
                 {
                   key: 'Escape',
                   run: () => {
-                    this.callbacks?.cancel()
+                    callbacks.cancel()
                     return true
                   },
                 },

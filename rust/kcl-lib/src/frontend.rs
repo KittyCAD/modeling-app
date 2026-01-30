@@ -738,6 +738,15 @@ impl SketchApi for FrontendState {
         value_expression: String,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {constraint_id:?}"),
+        })?;
+        if !matches!(&object.kind, ObjectKind::Constraint { .. }) {
+            return Err(Error {
+                msg: format!("Object is not a constraint: {constraint_id:?}"),
+            });
+        }
+
         let mut new_ast = self.program.ast.clone();
 
         // Parse the expression string into an AST node.
