@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[3342, 3380, 0]"]
+    2["Path<br>[3342, 3380, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     3["Segment<br>[3446, 3520, 0]"]
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -28,7 +28,7 @@ flowchart LR
     14[Solid2d]
   end
   subgraph path48 [Path]
-    48["Path<br>[5141, 5269, 0]"]
+    48["Path<br>[5141, 5269, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     49["Segment<br>[5141, 5269, 0]"]
       %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -36,7 +36,7 @@ flowchart LR
   end
   1["Plane<br>[3309, 3326, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  15["Sweep Extrusion<br>[4446, 4498, 0]"]
+  15["Sweep Extrusion<br>[4446, 4498, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16[Wall]
     %% face_code_ref=Missing NodePath
@@ -82,17 +82,17 @@ flowchart LR
   45["SweepEdge Adjacent"]
   46["SweepEdge Opposite"]
   47["SweepEdge Adjacent"]
-  51["Sweep Extrusion<br>[5547, 5594, 0]"]
+  51["Sweep Extrusion<br>[5547, 5594, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   52[Wall]
     %% face_code_ref=Missing NodePath
   53["SweepEdge Opposite"]
   54["SweepEdge Adjacent"]
-  55["Sweep Extrusion<br>[5547, 5594, 0]"]
+  55["Sweep Extrusion<br>[5547, 5594, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  56["Sweep Extrusion<br>[5547, 5594, 0]"]
+  56["Sweep Extrusion<br>[5547, 5594, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  57["EdgeCut Fillet<br>[5887, 6212, 0]"]
+  57["EdgeCut Fillet<br>[5887, 6248, 0]"]
     %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   58["StartSketchOnFace<br>[5071, 5126, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]

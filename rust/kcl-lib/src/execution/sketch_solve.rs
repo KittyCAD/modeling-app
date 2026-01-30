@@ -24,12 +24,18 @@ use crate::{execution::Metadata, front::ObjectKind};
 /// is converted to a set to avoid quadratic runtime.
 pub(super) struct FreedomAnalysis {
     pub underconstrained: AHashSet<u32>,
+    /// Number of constraints that were analyzed. If 0, all variables should be considered Free.
+    pub num_constraints: usize,
 }
 
-impl From<kcl_ezpz::FreedomAnalysis> for FreedomAnalysis {
-    fn from(analysis: kcl_ezpz::FreedomAnalysis) -> Self {
+impl FreedomAnalysis {
+    pub(super) fn from_ezpz_analysis(analysis: kcl_ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
+        let underconstrained_vec: Vec<u32> = analysis.into_underconstrained();
+        let underconstrained = AHashSet::from_iter(underconstrained_vec.iter().copied());
+
         FreedomAnalysis {
-            underconstrained: AHashSet::from_iter(analysis.into_underconstrained()),
+            underconstrained,
+            num_constraints,
         }
     }
 }
@@ -184,6 +190,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, analysis, &srs)?;
             let position = [position_x, position_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Point {
                     position,
@@ -199,6 +206,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             ctor,
             start_object_id,
             end_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -211,6 +219,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Line {
                     start,
@@ -220,6 +229,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     end_object_id: *end_object_id,
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -232,6 +242,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            construction,
         } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
@@ -249,6 +260,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let end = [end_x, end_y];
             let center = [center_x, center_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Arc {
                     start,
@@ -261,6 +273,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    construction: *construction,
                 },
                 meta: segment.meta,
             })
@@ -290,7 +303,13 @@ fn substitute_sketch_var_in_unsolved_expr(
                 Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
-                if analysis.underconstrained.contains(&solver_var_id) {
+                // Special case: if there are 0 constraints, ALL variables are underconstrained (Free)
+                let is_underconstrained = if analysis.num_constraints == 0 {
+                    true
+                } else {
+                    analysis.underconstrained.contains(&solver_var_id)
+                };
+                if is_underconstrained {
                     Some(Freedom::Free)
                 } else {
                     Some(Freedom::Fixed)
@@ -359,6 +378,14 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
             variable_set.insert(*id as usize);
         }
         kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
@@ -482,6 +509,7 @@ pub(super) fn create_segment_scene_objects(
                 ctor,
                 freedom,
             } => {
+                let final_freedom = freedom.unwrap_or(Freedom::Free);
                 let point2d = TyF64::to_point2d(position).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", position),
@@ -498,7 +526,7 @@ pub(super) fn create_segment_scene_objects(
                                 position: ctor.position.clone(),
                             }),
                             owner: None,
-                            freedom: freedom.unwrap_or(Freedom::Free),
+                            freedom: final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -517,7 +545,10 @@ pub(super) fn create_segment_scene_objects(
                 end_object_id,
                 start_freedom,
                 end_freedom,
+                construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -532,7 +563,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: start_freedom.unwrap_or(Freedom::Free),
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -558,7 +589,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: end_freedom.unwrap_or(Freedom::Free),
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -579,6 +610,7 @@ pub(super) fn create_segment_scene_objects(
                             end: end_point_object_id,
                             ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),
@@ -599,7 +631,11 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                construction,
             } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let end_final_freedom = end_freedom.unwrap_or(Freedom::Free);
+                let center_final_freedom = center_freedom.unwrap_or(Freedom::Free);
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -614,7 +650,7 @@ pub(super) fn create_segment_scene_objects(
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: start_freedom.unwrap_or(Freedom::Free),
+                            freedom: start_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -640,7 +676,7 @@ pub(super) fn create_segment_scene_objects(
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: end_freedom.unwrap_or(Freedom::Free),
+                            freedom: end_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -666,7 +702,7 @@ pub(super) fn create_segment_scene_objects(
                             position: center_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
-                            freedom: center_freedom.unwrap_or(Freedom::Free),
+                            freedom: center_final_freedom,
                             constraints: Vec::new(),
                         }),
                     },
@@ -688,6 +724,7 @@ pub(super) fn create_segment_scene_objects(
                             center: center_point_object_id,
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
+                            construction: *construction,
                         }),
                     },
                     label: Default::default(),

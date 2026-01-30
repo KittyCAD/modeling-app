@@ -410,6 +410,27 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
+    "multipleFiles": true,
+    "title": "A Dog House for a Great Dane",
+    "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
+    "files": [
+      "2x4.kcl",
+      "back-frame.kcl",
+      "dimensions.kcl",
+      "dog-bone-sign.kcl",
+      "door.kcl",
+      "floor.kcl",
+      "frame.kcl",
+      "front-wall.kcl",
+      "left-wall.kcl",
+      "main.kcl",
+      "right-wall.kcl",
+      "roof.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Computer Hardware",
       "Maker"
@@ -1285,14 +1306,10 @@
   },
   {
     "file": "main.kcl",
-    "categories": [
-      "Construction",
-      "Manufacturing"
-    ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "Sheet Metal Bracket",
-    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
+    "title": "@settings(defaultLengthUnit = mm)",
+    "description": "",
     "files": [
       "main.kcl"
     ]
@@ -1333,6 +1350,19 @@
     "multipleFiles": false,
     "title": "Artemis SLS Rocket",
     "description": "Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "snowman/main.kcl",
+    "multipleFiles": false,
+    "title": "Snowman (stylized)",
+    "description": "Three stacked spheres with simple facial features and a top hat standing on a small platform",
     "files": [
       "main.kcl"
     ]

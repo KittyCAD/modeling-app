@@ -481,7 +481,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 25
+            "index": 23
           }
         ]
       },
@@ -553,7 +553,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 26
+            "index": 24
           }
         ]
       },
@@ -773,7 +773,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "seg05",
+            "value": "holeFace",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
@@ -884,7 +884,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "seg05",
+            "value": "holeFace",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []

@@ -53,9 +53,11 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  SPLIT: 'split',
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -71,6 +73,9 @@ export const KCL_DEFAULT_INSTANCES = `3`
 
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
+
+/** The default KCL scale arg value that means no scale */
+export const KCL_DEFAULT_SCALE = `1`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
@@ -98,6 +103,9 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+
+/** The default KCL leader scale expression */
+export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`

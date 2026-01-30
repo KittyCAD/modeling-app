@@ -42,8 +42,6 @@ import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
-
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -119,6 +117,8 @@ import {
   type TransactionSpecNoChanges,
 } from '@src/editor/HistoryView'
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -249,6 +249,7 @@ export class KclManager extends EventTarget {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
+  livePathsToWatch = signal<string[]>([])
 
   private _execState: ExecState = emptyExecState()
   private _variables = signal<VariableMap>({})
@@ -550,7 +551,7 @@ export class KclManager extends EventTarget {
       if (shouldWriteToFile) {
         // Need to close over `this._currentFilePath`'s value before deferrment,
         // otherwise the deferred write could have a changed value after rapid navigation
-        void this.deferredWriteToFile({ newCode, path: this._currentFilePath })
+        void this.writeToFile(newCode, this._currentFilePath)
       }
 
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
@@ -616,12 +617,6 @@ export class KclManager extends EventTarget {
       }
     },
     300
-  )
-
-  private deferredWriteToFile = deferredCallback(
-    ({ newCode, path }: { newCode: string; path: string | null }) =>
-      this.writeToFile(newCode, path),
-    1_000
   )
 
   private createEditorExtensions() {
@@ -876,7 +871,7 @@ export class KclManager extends EventTarget {
       .map((file) => {
         return file.value
       })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+    this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -886,6 +881,7 @@ export class KclManager extends EventTarget {
           ast,
           sourceCode: this.code,
           instance: await this._wasmInstancePromise,
+          rustContext: this.singletons.rustContext,
         })
       )
       if (this._sceneEntitiesManager) {
@@ -953,6 +949,13 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+
+    // Update project thumbnail after successful execution
+    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      createThumbnailPNGOnDesktop({
+        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+      })
+    }
   }
 
   /**
@@ -1444,6 +1447,7 @@ export class KclManager extends EventTarget {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
+
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -1799,8 +1803,9 @@ export class KclManager extends EventTarget {
           time: Date.now(),
         }
         this.timeoutWriter = setTimeout(() => {
-          if (!this._currentFilePath)
+          if (!path) {
             return reject(new Error('currentFilePath not set'))
+          }
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true

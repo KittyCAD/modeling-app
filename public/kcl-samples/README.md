@@ -20,7 +20,14 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 ## Snapshot and export
 
-When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
+When you submit a PR to add or modify KCL samples, you need to run a few commands to generate the required artifacts. Note: You must have a ZOO_API_TOKEN set in your env for this to work.
+
+```
+cd rust
+just overwrite-sim-test-sample samplename
+```
+
+ex. `just overwrite-sim-test-sample angle-gauge`
 
 ---
 #### [angle-gauge](angle-gauge/main.kcl) ([screenshot](screenshots/angle-gauge.png))
@@ -81,6 +88,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![dining-table](screenshots/dining-table.png)](dining-table/main.kcl)
 #### [dodecahedron](dodecahedron/main.kcl) ([screenshot](screenshots/dodecahedron.png))
 [![dodecahedron](screenshots/dodecahedron.png)](dodecahedron/main.kcl)
+#### [dog-house-great-dane](dog-house-great-dane/main.kcl) ([screenshot](screenshots/dog-house-great-dane.png))
+[![dog-house-great-dane](screenshots/dog-house-great-dane.png)](dog-house-great-dane/main.kcl)
 #### [enclosure](enclosure/main.kcl) ([screenshot](screenshots/enclosure.png))
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
 #### [end-effector-gripper-fingers](end-effector-gripper-fingers/main.kcl) ([screenshot](screenshots/end-effector-gripper-fingers.png))
@@ -217,6 +226,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![single-impeller-blade](screenshots/single-impeller-blade.png)](single-impeller-blade/main.kcl)
 #### [sls](sls/main.kcl) ([screenshot](screenshots/sls.png))
 [![sls](screenshots/sls.png)](sls/main.kcl)
+#### [snowman](snowman/main.kcl) ([screenshot](screenshots/snowman.png))
+[![snowman](screenshots/snowman.png)](snowman/main.kcl)
 #### [socket-head-cap-screw](socket-head-cap-screw/main.kcl) ([screenshot](screenshots/socket-head-cap-screw.png))
 [![socket-head-cap-screw](screenshots/socket-head-cap-screw.png)](socket-head-cap-screw/main.kcl)
 #### [sphere](sphere/main.kcl) ([screenshot](screenshots/sphere.png))

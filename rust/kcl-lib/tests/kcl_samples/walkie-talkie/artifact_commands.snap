@@ -333,7 +333,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1222,7 +1222,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.15294118,
           "g": 0.48235294,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9626,7 +9626,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.8156863,
           "g": 1.0,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -9835,7 +9835,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.6862745,
           "g": 0.7490196,
           "b": 0.21176471,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10215,7 +10215,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10512,7 +10512,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10809,7 +10809,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -11133,7 +11133,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -11459,7 +11459,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.8156863,
           "g": 1.0,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,

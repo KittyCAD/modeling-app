@@ -12,7 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
+        ExecState, HideableGeometry, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
@@ -43,6 +43,16 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let scale_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::count(), exec_state)?;
     let scale_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::count(), exec_state)?;
     let factor: Option<TyF64> = args.get_kw_arg_opt("factor", &RuntimeType::count(), exec_state)?;
+    for scale_dim in [&scale_x, &scale_y, &scale_z, &factor] {
+        if let Some(num) = scale_dim
+            && num.n == 0.0
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot scale by 0".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    }
     let (scale_x, scale_y, scale_z) = match (scale_x, scale_y, scale_z, factor) {
         (None, None, None, Some(factor)) => (Some(factor.clone()), Some(factor.clone()), Some(factor)),
         // Ensure at least one scale value is provided.
@@ -459,6 +469,46 @@ async fn inner_rotate(
     Ok(objects)
 }
 
+/// Hide solids, sketches, or imported objects.
+pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let objects = args.get_unlabeled_kw_arg(
+        "objects",
+        &RuntimeType::Union(vec![
+            RuntimeType::solids(),
+            RuntimeType::helices(),
+            RuntimeType::imported(),
+        ]),
+        exec_state,
+    )?;
+
+    let objects = hide_inner(objects, true, exec_state, args).await?;
+    Ok(objects.into())
+}
+
+async fn hide_inner(
+    objects: HideableGeometry,
+    hidden: bool,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<HideableGeometry, KclError> {
+    let mut objects = objects.clone();
+    for object_id in objects.ids(&args.ctx).await? {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(object_id)
+                        .hidden(hidden)
+                        .build(),
+                ),
+            )
+            .await?;
+    }
+
+    Ok(objects)
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
@@ -705,6 +755,42 @@ sweepSketch = startSketchOn(XY)
         assert_eq!(
             result.unwrap_err().message(),
             r#"Expected `x`, `y`, `z` or `factor` to be provided."#.to_string()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_pipe_solid_ok() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> hide()
+"#;
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_helix() {
+        let ast = r#"helixPath = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 3,
+  angleStart = 360,
+  ccw = false,
+)
+
+hide(helixPath)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_no_objects() {
+        let ast = r#"hidden = hide()"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().message(),
+            r#"This function expects an unlabeled first parameter, but you haven't passed it one."#.to_string()
         );
     }
 }

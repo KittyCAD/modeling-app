@@ -1664,13 +1664,13 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
-    (arg) => ('error' in arg ? undefined : arg)
-  )
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1680,6 +1680,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     precision,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1725,13 +1726,13 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   // Extract optional parameters
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
-    'error' in arg ? undefined : arg
-  )
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1740,6 +1741,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     name,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1789,6 +1791,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
     prepareToEdit: prepareToEditFillet,
+  },
+  flipSurface: {
+    label: 'Flip Surface',
+    icon: 'flipSurface',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   'gdt::datum': {
     label: 'Datum',
@@ -1899,6 +1907,58 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  'sketch2::coincident': {
+    label: 'Coincident Constraint',
+    icon: 'coincident',
+  },
+  'sketch2::concentric': {
+    label: 'Concentric Constraint',
+    icon: 'concentric',
+  },
+  'sketch2::distance': {
+    label: 'Distance Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  'sketch2::equalLength': {
+    label: 'Equal Length Constraint',
+    icon: 'equal',
+  },
+  'sketch2::fixed': {
+    label: 'Fixed Constraint',
+    icon: 'fix',
+  },
+  'sketch2::horizontal': {
+    label: 'Horizontal Constraint',
+    icon: 'horizontal',
+  },
+  'sketch2::midpoint': {
+    label: 'Midpoint Constraint',
+    icon: 'midpoint',
+  },
+  'sketch2::normal': {
+    label: 'Normal Constraint',
+    icon: 'normal',
+  },
+  'sketch2::parallel': {
+    label: 'Parallel Constraint',
+    icon: 'parallel',
+  },
+  'sketch2::perpendicular': {
+    label: 'Perpendicular Constraint',
+    icon: 'perpendicular',
+  },
+  'sketch2::symmetric': {
+    label: 'Symmetric Constraint',
+    icon: 'symmetry',
+  },
+  'sketch2::tangent': {
+    label: 'Tangent Constraint',
+    icon: 'tangent',
+  },
+  'sketch2::vertical': {
+    label: 'Vertical Constraint',
+    icon: 'vertical',
+  },
   'hole::hole': {
     label: 'Hole',
     icon: 'hole',
@@ -1910,6 +1970,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Solve Sketch',
     icon: 'sketch',
     prepareToEdit: prepareToEditSketchSolve,
+  },
+  split: {
+    label: 'Split',
+    icon: 'split',
+    supportsAppearance: true,
+    supportsTransform: true,
+    // prepareToEdit: prepareToEditSplit, // TODO: add once merge can be edited
   },
   startSketchOn: {
     label: 'Sketch',

@@ -710,3 +710,28 @@ export function promiseFactory<T = void>() {
 export function stripQuotes(str: string | null | undefined): string {
   return str?.replace(/^["']|["']$/g, '') || ''
 }
+
+/**
+ * Type predicate to check if an object has a specific property.
+ * Uses runtime checks without type assertions.
+ */
+export function hasProperty<K extends string>(
+  obj: unknown,
+  key: K
+): obj is Record<K, unknown> {
+  return typeof obj === 'object' && obj !== null && key in obj
+}
+
+/**
+ * Type guard to check if a value is a Record with string keys.
+ * More strict than a simple object check - excludes arrays and ensures
+ * the object has Object.prototype as its prototype.
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !isArray(value) &&
+    Object.getPrototypeOf(value) === Object.prototype
+  )
+}
