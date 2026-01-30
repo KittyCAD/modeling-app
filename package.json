@@ -82,7 +82,7 @@
   },
   "scripts": {
     "prepare": "husky",
-    "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable && . ./scripts/load-rust-env.sh && (cd rust && (rustup show active-toolchain || rustup toolchain install))",
+    "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable && . ./scripts/load-rust-env.sh && (cd rust && (rustup show active-toolchain || rustup toolchain install) && rustup target add wasm32-unknown-unknown)",
     "install:rust:windows": "powershell -Command \"if (-not (Test-Path $env:USERPROFILE\\.cargo\\bin\\cargo.exe)) { winget install Rustlang.Rustup }\"",
     "install:wasm-pack:cargo": "cargo install wasm-pack",
     "install:tools:windows": "winget install jqlang.jq MikeFarah.yq GitHub.cli",
