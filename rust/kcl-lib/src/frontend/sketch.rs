@@ -97,7 +97,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        constraint: Constraint,
+        value_expression: String,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 }
 

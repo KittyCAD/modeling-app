@@ -1329,6 +1329,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]

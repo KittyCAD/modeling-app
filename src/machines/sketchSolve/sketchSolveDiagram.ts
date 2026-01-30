@@ -24,9 +24,6 @@ import type {
 import {
   baseUnitToNumericSuffix,
   distanceBetweenPoint2DExpr,
-  parse,
-  recast,
-  resultIsOk,
 } from '@src/lang/wasm'
 import {
   type SketchSolveMachineEvent,
@@ -51,8 +48,6 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { constraintUtils } from '@src/machines/sketchSolve/segments'
-import { updateConstraintValue } from '@src/machines/sketchSolve/constraints'
-import { err } from '@src/lib/trap'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -743,12 +738,18 @@ export const sketchSolveMachine = setup({
                 // Close the editor first to prevent re-entry
                 self.send({ type: 'stop editing constraint' })
 
-                // Get fresh objects from context to ensure we have current source ranges
+                // Use the latest context snapshot, not the stale closure
+                // capture — the user may have dragged points since opening
+                // the editor, which updates sketchExecOutcome.
+                const currentContext = self.getSnapshot().context
                 const freshObjects =
-                  context.sketchExecOutcome?.sceneGraphDelta.new_graph
+                  currentContext.sketchExecOutcome?.sceneGraphDelta.new_graph
                     .objects || []
                 const constraintObject = freshObjects[event.data.constraintId]
-                if (!constraintObject) {
+                if (
+                  !constraintObject ||
+                  constraintObject.kind.type !== 'Constraint'
+                ) {
                   console.warn(
                     'Constraint object not found:',
                     event.data.constraintId
@@ -756,33 +757,22 @@ export const sketchSolveMachine = setup({
                   return
                 }
 
-                // Note: after dragging some segments, context.kclManager.ast seems to
-                // be updated so we parse code to get an up to date ast...
-                const wasmInstance =
-                  await context.kclManager.wasmInstancePromise
-                const parseResult = parse(context.kclManager.code, wasmInstance)
-                if (err(parseResult) || !resultIsOk(parseResult)) {
-                  console.error('Failed to parse current code')
-                  return
-                }
-
-                const result = updateConstraintValue(
-                  constraintObject,
-                  parseResult.program,
-                  value,
-                  wasmInstance
-                )
-                if (err(result)) {
-                  console.error('Failed to update constraint value:', result)
-                } else {
-                  const newCode = recast(result.modifiedAst, wasmInstance)
-                  if (err(newCode)) {
-                    console.error('Failed to recast AST:', newCode)
-                  } else {
-                    context.kclManager.updateCodeEditor(newCode, {
-                      shouldExecute: true,
+                try {
+                  const result = await context.rustContext.editConstraint(
+                    0,
+                    context.sketchId,
+                    event.data.constraintId,
+                    value,
+                    await jsAppSettings(context.rustContext.settingsActor)
+                  )
+                  if (result) {
+                    self.send({
+                      type: 'update sketch outcome',
+                      data: result,
                     })
                   }
+                } catch (e) {
+                  console.error('Failed to edit constraint:', e)
                 }
               },
               cancel: () => {

@@ -34,12 +34,6 @@ import { EditorView, keymap } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { editorTheme } from '@src/editor/plugins/theme'
 import styles from './ConstraintEditor.module.css'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type { BinaryExpression, BinaryPart, Program } from '@src/lang/wasm'
-import { parse, resultIsOk } from '@src/lang/wasm'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { err } from '@src/lib/trap'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -624,71 +618,6 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
   )
 
   return { p1, p2, distance: constraint.distance }
-}
-
-/**
- * Updates a distance constraint value in the AST by replacing the right side
- * of the constraint's BinaryExpression with a new expression (literal or var reference)
- */
-export function updateConstraintValue(
-  constraintObject: ApiObject,
-  ast: Program,
-  newExpressionString: string,
-  wasmInstance: ModuleType
-): { modifiedAst: Program } | Error {
-  if (!isDistanceConstraint(constraintObject.kind)) {
-    return new Error('Object is not a distance constraint')
-  }
-
-  const source = constraintObject.source
-  let sourceRange: [number, number, number] | undefined
-
-  if (source.type === 'Simple') {
-    sourceRange = source.range
-  } else if (source.type === 'BackTrace' && source.ranges.length > 0) {
-    sourceRange = source.ranges[0]
-  }
-
-  if (!sourceRange) {
-    return new Error('No source range found for constraint')
-  }
-
-  const parseResult = parse(newExpressionString, wasmInstance)
-  if (err(parseResult) || !resultIsOk(parseResult)) {
-    return new Error(
-      `Failed to parse expression: ${err(parseResult) ? parseResult.message : 'Parse failed'}`
-    )
-  }
-
-  const exprStatement = parseResult.program.body[0]
-  if (exprStatement?.type !== 'ExpressionStatement') {
-    return new Error('Invalid expression')
-  }
-
-  // Get the path to the BinaryExpression (sketch2::distance(...) == value)
-  const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-  const modifiedAst = structuredClone(ast)
-
-  const nodeResult = getNodeFromPath<BinaryExpression>(
-    modifiedAst,
-    pathToNode,
-    wasmInstance,
-    'BinaryExpression'
-  )
-  if (err(nodeResult)) {
-    return nodeResult
-  }
-
-  if (nodeResult.node.type !== 'BinaryExpression') {
-    return new Error(
-      `Expected BinaryExpression, got ${nodeResult.node.type} at constraint location`
-    )
-  }
-
-  // Replace the right side (the distance value) with the new expression
-  nodeResult.node.right = exprStatement.expression as BinaryPart
-
-  return { modifiedAst }
 }
 
 function isDistanceConstraint(kind: ApiObjectKind): kind is {
