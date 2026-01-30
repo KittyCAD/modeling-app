@@ -751,7 +751,7 @@ function getLayoutMigrations(): LayoutMigrationMap {
                     },
                     {
                       id: 'bodies-list',
-                      label: 'Bodies List',
+                      label: 'Bodies',
                       type: LayoutType.Simple,
                       areaType: AreaType.Bodies,
                     },
