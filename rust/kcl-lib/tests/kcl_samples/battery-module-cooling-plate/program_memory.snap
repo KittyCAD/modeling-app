@@ -8472,13 +8472,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
         }
       ],
       "sketch": {
