@@ -410,11 +410,16 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
     "multipleFiles": true,
     "title": "A Dog House for a Great Dane",
     "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
     "files": [
+      "1528A31_strap-hinge.stp",
+      "1614A11_swinging-bar-latch.stp",
       "2x4.kcl",
       "back-frame.kcl",
       "dimensions.kcl",
@@ -936,6 +941,21 @@
     "description": "A parametric vertical or steep-access ladder commonly used on ships, in engine rooms, or in industrial environments. It features two bent side rails and evenly spaced cylindrical rungs for compact, reinforced access.",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "1120t74-pipe.step",
+    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/mcmaster-parts/1120t74-pipe.step",
+    "multipleFiles": true,
+    "title": "ISO-10303-21;",
+    "description": "HEADER;",
+    "files": [
+      "1120t74-pipe.step",
+      "68095k348-flange.step",
+      "91251a404-bolt.step",
+      "9472k188-gasket.step",
+      "95479a127-hex-nut.step",
+      "98017a257-washer.step"
     ]
   },
   {
