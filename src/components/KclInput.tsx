@@ -11,7 +11,9 @@ import { getResolvedTheme } from '@src/lib/theme'
 import { useSingletons } from '@src/lib/boot'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import { varMentions } from '@src/lib/varCompletionExtension'
 import styles from '@src/components/KclInput.module.css'
+import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
 
 export function KclInput(props: {
   initialValue: string
@@ -21,7 +23,7 @@ export function KclInput(props: {
   onCancel: () => void
   style?: React.CSSProperties
 }) {
-  const { useSettings, rustContext} = useSingletons()
+  const { useSettings, rustContext, kclManager } = useSingletons()
   const settings = useSettings()
   const wasmInstance = use(rustContext.wasmInstancePromise)
 
@@ -47,7 +49,13 @@ export function KclInput(props: {
           compartments.theme.of(
             editorTheme[getResolvedTheme(settings.app.theme.current)]
           ),
-          compartments.varMentions.of([]),
+          compartments.varMentions.of(
+            varMentions(
+              Object.keys(kclManager.variablesSignal.value).map((key) => ({
+                label: key,
+              }))
+            )
+          ),
           compartments.setValue.of([]),
           compartments.kclLsp.of([]),
           compartments.kclAutocomplete.of([]),
