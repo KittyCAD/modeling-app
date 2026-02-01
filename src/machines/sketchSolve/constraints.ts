@@ -34,6 +34,9 @@ import { EditorView, keymap } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { editorTheme } from '@src/editor/plugins/theme'
 import styles from './ConstraintEditor.module.css'
+import { modelingMachine } from '../modelingMachine'
+import { SnapshotFrom, StateFrom } from 'xstate'
+import { sketchSolveMachine } from './sketchSolveDiagram'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,
@@ -457,115 +460,6 @@ export class ConstraintUtils {
       this.editingContainer = null
     }
   }
-
-  public updateEditingInput(
-    constraintId: number,
-    objects: Array<ApiObject>,
-    sceneInfra: SceneInfra,
-    callbacks: EditingCallbacks
-  ) {
-    const constraintObject = objects[constraintId]
-
-    if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
-      const distance = constraintObject.kind.constraint.distance
-
-      if (!sceneInfra) {
-        console.warn('SceneInfra not available for constraint editing')
-        return
-      }
-      const sketchSolveGroup =
-        sceneInfra.scene.getObjectByName('sketchSolveGroup')
-      const constraintGroup = sketchSolveGroup?.getObjectByName(
-        constraintId.toString()
-      )
-      if (!constraintGroup) {
-        console.warn(`Constraint group ${constraintId} not found in scene`)
-        return
-      }
-      const label = constraintGroup.children.find(
-        (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
-      ) as Sprite | undefined
-      if (!label) {
-        console.warn(`Label not found in constraint group ${constraintId}`)
-        return
-      }
-
-      const worldPosition = new Vector3()
-      label.getWorldPosition(worldPosition)
-      const screenPosition = worldPosition.clone()
-      screenPosition.project(sceneInfra.camControls.camera)
-
-      const x =
-        (screenPosition.x * 0.5 + 0.5) *
-        sceneInfra.renderer.domElement.clientWidth
-      const y =
-        (-screenPosition.y * 0.5 + 0.5) *
-        sceneInfra.renderer.domElement.clientHeight
-
-      const initialValue = parseFloat(distance.value.toFixed(3)).toString()
-
-      if (!this.editingView || !this.editingContainer) {
-        const theme = getResolvedTheme(sceneInfra.theme)
-        this.editingContainer = document.createElement('div')
-        this.editingContainer.className = styles.container
-        const view = new EditorView({
-          state: EditorState.create({
-            doc: initialValue,
-            extensions: [
-              editorTheme[theme],
-              keymap.of([
-                {
-                  key: 'Enter',
-                  run: (editorView) => {
-                    const value = editorView.state.doc.toString().trim()
-                    if (value) {
-                      void callbacks.submit(value)
-                      return true
-                    }
-                    return false
-                  },
-                },
-                {
-                  key: 'Escape',
-                  run: () => {
-                    callbacks.cancel()
-                    return true
-                  },
-                },
-              ]),
-              EditorView.lineWrapping,
-            ],
-          }),
-          parent: this.editingContainer,
-        })
-        this.editingView = view
-
-        const canvasContainer = sceneInfra.renderer.domElement.parentElement
-        if (canvasContainer) {
-          canvasContainer.appendChild(this.editingContainer)
-        }
-      } else {
-        // Update existing editor content
-        this.editingView.dispatch({
-          changes: {
-            from: 0,
-            to: this.editingView.state.doc.length,
-            insert: initialValue,
-          },
-        })
-      }
-
-      // Position the container
-      this.editingContainer.style.left = `${x}px`
-      this.editingContainer.style.top = `${y}px`
-
-      // Focus and select all
-      this.editingView.focus()
-      this.editingView.dispatch({
-        selection: { anchor: 0, head: this.editingView.state.doc.length },
-      })
-    }
-  }
 }
 
 // Arrow with tip at origin, pointing +Y, base extends into -Y
@@ -619,7 +513,7 @@ function getEndPoints(obj: ApiObject, objects: Array<ApiObject>) {
   return { p1, p2, distance: constraint.distance }
 }
 
-function isDistanceConstraint(kind: ApiObjectKind): kind is {
+export function isDistanceConstraint(kind: ApiObjectKind): kind is {
   type: 'Constraint'
   constraint: Extract<
     ApiConstraint,
@@ -632,4 +526,59 @@ function isDistanceConstraint(kind: ApiObjectKind): kind is {
       kind.constraint.type === 'HorizontalDistance' ||
       kind.constraint.type === 'VerticalDistance')
   )
+}
+
+export function calculateDimensionLabelScreenPosition(
+  constraintId: number,
+  modelingState: StateFrom<typeof modelingMachine>,
+  sceneInfra: SceneInfra
+): [number, number] | undefined {
+  const constraintObject = getConstraintObject(constraintId, modelingState)
+  if (!constraintObject) {
+    console.warn(`Constraint object not found`)
+    return
+  }
+
+  const sketchSolveGroup = sceneInfra.scene.getObjectByName('sketchSolveGroup')
+  const constraintGroup = sketchSolveGroup?.getObjectByName(
+    constraintId.toString()
+  )
+  if (!constraintGroup) {
+    console.warn(`Constraint group ${constraintId} not found in scene`)
+    return
+  }
+  const label = constraintGroup.children.find(
+    (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+  ) as Sprite | undefined
+  if (!label) {
+    console.warn(`Label not found in constraint group ${constraintId}`)
+    return
+  }
+  const worldPosition = new Vector3()
+  label.getWorldPosition(worldPosition)
+  const screenPosition = worldPosition.clone()
+  screenPosition.project(sceneInfra.camControls.camera)
+
+  const x =
+    (screenPosition.x * 0.5 + 0.5) * sceneInfra.renderer.domElement.clientWidth
+  const y =
+    (-screenPosition.y * 0.5 + 0.5) *
+    sceneInfra.renderer.domElement.clientHeight
+
+  return [x, y]
+}
+
+export function getConstraintObject(
+  constraintId: number,
+  modelingState: StateFrom<typeof modelingMachine>
+): ApiObject | undefined {
+  const snapshot = modelingState.children.sketchSolveMachine?.getSnapshot() as
+    | SnapshotFrom<typeof sketchSolveMachine>
+    | undefined
+  const objects =
+    snapshot?.context?.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ||
+    []
+
+  const constraintObject = objects[constraintId]
+  return constraintObject
 }

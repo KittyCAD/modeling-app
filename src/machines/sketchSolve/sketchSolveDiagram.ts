@@ -725,42 +725,6 @@ export const sketchSolveMachine = setup({
             return event.data.constraintId
           },
         }),
-        ({ event, context, self }) => {
-          assertEvent(event, 'start editing constraint')
-          const objects =
-            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-          constraintUtils.updateEditingInput(
-            event.data.constraintId,
-            objects,
-            context.sceneInfra,
-            {
-              submit: async (value: string) => {
-                self.send({ type: 'stop editing constraint' })
-
-                try {
-                  const result = await context.rustContext.editConstraint(
-                    0,
-                    context.sketchId,
-                    event.data.constraintId,
-                    value,
-                    await jsAppSettings(context.rustContext.settingsActor)
-                  )
-                  if (result) {
-                    self.send({
-                      type: 'update sketch outcome',
-                      data: result,
-                    })
-                  }
-                } catch (e) {
-                  console.error('Failed to edit constraint:', e)
-                }
-              },
-              cancel: () => {
-                self.send({ type: 'stop editing constraint' })
-              },
-            }
-          )
-        },
       ],
     },
     'stop editing constraint': {
