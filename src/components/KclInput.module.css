@@ -22,6 +22,10 @@
   caret-color: currentColor;
 }
 
+.error {
+  @apply border-destroy-80;
+}
+
 /* Light theme */
 .container {
   @apply bg-chalkboard-10;

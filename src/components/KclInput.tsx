@@ -5,10 +5,12 @@ import {
 } from '@codemirror/autocomplete'
 import { EditorView, keymap } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
-import { useEffect, useRef } from 'react'
+import { use, useEffect, useRef } from 'react'
 import { editorTheme } from '@src/editor/plugins/theme'
 import { getResolvedTheme } from '@src/lib/theme'
 import { useSingletons } from '@src/lib/boot'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 import styles from '@src/components/KclInput.module.css'
 
 export function KclInput(props: {
@@ -19,8 +21,9 @@ export function KclInput(props: {
   onCancel: () => void
   style?: React.CSSProperties
 }) {
-  const { useSettings } = useSingletons()
+  const { useSettings, rustContext} = useSingletons()
   const settings = useSettings()
+  const wasmInstance = use(rustContext.wasmInstancePromise)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<EditorView | null>(null)
@@ -72,6 +75,22 @@ export function KclInput(props: {
             ...completionKeymap,
           ]),
           compartments.keymap.of([]),
+          EditorView.updateListener.of((update) => {
+            if (!update.docChanged) return
+            const value = update.state.doc.toString().trim()
+            if (!value) {
+              containerRef.current?.classList.remove(styles.error)
+              return
+            }
+            const code = `${DUMMY_VARIABLE_NAME} = ${value}`
+            const result = parse(code, wasmInstance)
+            if (err(result) || !resultIsOk(result)) {
+              console.log("err", result)
+              containerRef.current?.classList.add(styles.error)
+            } else {
+              containerRef.current?.classList.remove(styles.error)
+            }
+          }),
         ],
       }),
       parent: containerRef.current,
