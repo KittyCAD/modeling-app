@@ -13,13 +13,13 @@ import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { authActor, useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import { useSingletons } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -28,6 +28,7 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
+  const { authActor, useSettings } = useSingletons()
   // Only create the native file menus on desktop
   if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
@@ -53,6 +54,25 @@ const SignIn = () => {
     setSelectedEnvironment(requestedEnvironmentFormatted)
   }
 
+  const commitEnvironmentChange = (requestedEnvironment: string) => {
+    const electron = window.electron
+    if (!electron) return
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    void (async () => {
+      const persistedEnvironment = await readEnvironmentFile(electron).catch(
+        () => ''
+      )
+      if (requestedEnvironmentFormatted === persistedEnvironment) {
+        return
+      }
+      await writeEnvironmentFile(electron, requestedEnvironmentFormatted).catch(
+        reportRejection
+      )
+      window.location.reload()
+    })()
+  }
+
   useEffect(() => {
     if (window.electron && !didReadFromDiskCacheForEnvironment) {
       const electron = window.electron
@@ -69,7 +89,6 @@ const SignIn = () => {
         })
         .catch(reportRejection)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const {
@@ -93,7 +112,8 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
-    updateEnvironment(selectedEnvironment)
+    const requestedEnvironment = selectedEnvironment.trim()
+    updateEnvironment(requestedEnvironment)
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -111,11 +131,9 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile(electron, '')
       return
     }
 
-    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -187,6 +205,7 @@ const SignIn = () => {
                       <AdvancedSignInOptions
                         selectedEnvironment={selectedEnvironment}
                         setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                        onEnvironmentCommit={commitEnvironmentChange}
                       />
                     )}
                   </>

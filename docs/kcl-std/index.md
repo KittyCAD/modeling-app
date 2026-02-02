@@ -19,6 +19,7 @@ layout: manual
 * [**std::array**](/docs/kcl-std/modules/std-array)
   * [`concat`](/docs/kcl-std/functions/std-array-concat)
   * [`count`](/docs/kcl-std/functions/std-array-count)
+  * [`flatten`](/docs/kcl-std/functions/std-array-flatten)
   * [`map`](/docs/kcl-std/functions/std-array-map)
   * [`pop`](/docs/kcl-std/functions/std-array-pop)
   * [`push`](/docs/kcl-std/functions/std-array-push)

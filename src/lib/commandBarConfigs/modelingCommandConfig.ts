@@ -31,6 +31,8 @@ import {
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
   type KclPreludeExtrudeMethod,
+  KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_LEADER_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -347,6 +349,7 @@ export type ModelingCommandSchema = {
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
+    leaderScale?: KclCommandValue
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
@@ -356,6 +359,7 @@ export type ModelingCommandSchema = {
     name: string
     framePosition?: KclCommandValue
     framePlane?: string
+    leaderScale?: KclCommandValue
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
@@ -1806,22 +1810,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       x: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       y: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       z: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       factor: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       global: {
@@ -2099,6 +2103,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         required: false,
       },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
       fontPointSize: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
@@ -2172,6 +2181,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'XZ Plane', value: KCL_PLANE_XZ },
           { name: 'YZ Plane', value: KCL_PLANE_YZ },
         ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
       fontPointSize: {

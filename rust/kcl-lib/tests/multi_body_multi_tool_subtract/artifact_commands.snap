@@ -220,7 +220,7 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
           "r": 0.6156863,
           "g": 0.8117647,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -457,7 +457,7 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
           "r": 0.6156863,
           "g": 0.8117647,
           "b": 0.92941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

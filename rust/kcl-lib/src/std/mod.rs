@@ -26,6 +26,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub(crate) mod sketch2;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -276,6 +277,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::array::concat(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::concat"),
         ),
+        ("array", "flatten") => (
+            |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::array::flatten"),
+        ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::clone"),
@@ -503,6 +508,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch2", "distance") => (
             |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
+        ),
+        ("sketch2", "radius") => (
+            |e, a| Box::pin(crate::std::constraints::radius(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::radius"),
+        ),
+        ("sketch2", "diameter") => (
+            |e, a| Box::pin(crate::std::constraints::diameter(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::diameter"),
         ),
         ("sketch2", "horizontalDistance") => (
             |e, a| Box::pin(crate::std::constraints::horizontal_distance(e, a).map(|r| r.map(KclValue::continue_))),

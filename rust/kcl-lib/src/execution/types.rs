@@ -72,6 +72,22 @@ impl RuntimeType {
         )
     }
 
+    /// `[Face; 1+]`
+    pub fn faces() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Face)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
+    /// `[TaggedFace; 1+]`
+    pub fn tagged_faces() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::TaggedFace)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     /// `[Solid; 1+]`
     pub fn solids() -> Self {
         RuntimeType::Array(
@@ -1035,6 +1051,19 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
+impl From<UnitLength> for NumericSuffix {
+    fn from(value: UnitLength) -> Self {
+        match value {
+            UnitLength::Millimeters => NumericSuffix::Mm,
+            UnitLength::Centimeters => NumericSuffix::Cm,
+            UnitLength::Meters => NumericSuffix::M,
+            UnitLength::Inches => NumericSuffix::Inch,
+            UnitLength::Feet => NumericSuffix::Ft,
+            UnitLength::Yards => NumericSuffix::Yd,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
 pub struct NumericSuffixTypeConvertError;
 
@@ -1044,12 +1073,7 @@ impl TryFrom<NumericType> for NumericSuffix {
     fn try_from(value: NumericType) -> Result<Self, Self::Error> {
         match value {
             NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
-            NumericType::Known(UnitType::Length(UnitLength::Millimeters)) => Ok(NumericSuffix::Mm),
-            NumericType::Known(UnitType::Length(UnitLength::Centimeters)) => Ok(NumericSuffix::Cm),
-            NumericType::Known(UnitType::Length(UnitLength::Meters)) => Ok(NumericSuffix::M),
-            NumericType::Known(UnitType::Length(UnitLength::Inches)) => Ok(NumericSuffix::Inch),
-            NumericType::Known(UnitType::Length(UnitLength::Feet)) => Ok(NumericSuffix::Ft),
-            NumericType::Known(UnitType::Length(UnitLength::Yards)) => Ok(NumericSuffix::Yd),
+            NumericType::Known(UnitType::Length(unit_length)) => Ok(NumericSuffix::from(unit_length)),
             NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
             NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
             NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),

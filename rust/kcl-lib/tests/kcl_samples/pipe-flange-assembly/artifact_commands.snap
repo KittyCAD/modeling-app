@@ -307,7 +307,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.8156863,
           "g": 0.79607844,
           "b": 0.24313726,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1073,7 +1073,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.7294118,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1837,7 +1837,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.7294118,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2229,7 +2229,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.93333334,
           "g": 0.30980393,
           "b": 0.30980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2967,7 +2967,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.3019608,
           "g": 0.8156863,
           "b": 0.2627451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -3412,7 +3412,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.30588236,
           "g": 0.8745098,
           "b": 0.8352941,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3770,7 +3770,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.63529414,
           "g": 0.30588236,
           "b": 0.8156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4134,7 +4134,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.63529414,
           "g": 0.30588236,
           "b": 0.8156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

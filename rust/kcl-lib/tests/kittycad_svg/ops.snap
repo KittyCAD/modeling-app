@@ -75,7 +75,7 @@ description: Operations executed kittycad_svg.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 284
+            "index": 280
           }
         ]
       },
