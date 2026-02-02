@@ -486,12 +486,11 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 async fn hide_inner(
-    objects: HideableGeometry,
+    mut objects: HideableGeometry,
     hidden: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<HideableGeometry, KclError> {
-    let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
