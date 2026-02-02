@@ -10,6 +10,7 @@ import {
 import {
   getHideOpByArtifactId,
   onHide,
+  onUnhide,
   type HideOperation,
 } from '@src/lib/operations'
 import { useSingletons } from '@src/lib/boot'
@@ -17,6 +18,9 @@ import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMen
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { sendSelectionEvent } from '@src/lib/featureTree'
+import { useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { err } from '@src/lib/trap'
 
 type SolidArtifact = Artifact & { type: 'compositeSold' | 'sweep' }
 
@@ -77,7 +81,11 @@ function BodyItem({
   hideOperation,
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
   useSignals()
-  const { kclManager } = useSingletons()
+  const { kclManager, rustContext } = useSingletons()
+  const systemDeps = useMemo(
+    () => ({ kclManager, rustContext }),
+    [kclManager, rustContext]
+  )
   const { actor: modelingActor, send: modelingSend } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
@@ -108,6 +116,20 @@ function BodyItem({
                   artifactGraph: kclManager.artifactGraph,
                   modelingActor,
                 })
+              } else {
+                onUnhide({
+                  hideOperation,
+                  targetArtifact: artifact,
+                  systemDeps,
+                })
+                  .then((result) => {
+                    if (err(result)) {
+                      toast.error(result.message || 'Error while unhiding')
+                    }
+                  })
+                  .catch((e) => {
+                    toast.error(e.message || 'Error while unhiding')
+                  })
               }
             }}
           />

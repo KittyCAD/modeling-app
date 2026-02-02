@@ -1,6 +1,5 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -54,6 +53,7 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeExtrudeMethod,
+  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -62,6 +62,12 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { findUniqueName } from '@src/lang/create'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ActorRefFrom } from 'xstate'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import { KclManager } from '@src/lang/KclManager'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2886,4 +2892,63 @@ export function onHide(props: {
       variableName,
     },
   })
+}
+
+export async function onUnhide(props: {
+  hideOperation: HideOperation
+  targetArtifact: Artifact
+  systemDeps: {
+    kclManager: KclManager
+    rustContext: RustContext
+  }
+}) {
+  if (props.hideOperation.unlabeledArg === null) {
+    return new Error('Missing unlabeled arg for hide operation')
+  }
+  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+
+  if (
+    props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    'codeRef' in props.targetArtifact
+  ) {
+    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    // Multi-item case: remove that target artifact's name
+    const termToDelete = getVariableNameFromNodePath(
+      pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
+      modifiedAst,
+      wasmInstance
+    )
+    if (!termToDelete) {
+      return new Error(
+        'Variable name to delete not found while trying to unhide'
+      )
+    }
+
+    const deleteResult = deleteTermFromUnlabeledArgumentArray(
+      props.systemDeps.kclManager.ast,
+      pathToNode,
+      wasmInstance,
+      termToDelete
+    )
+    if (err(deleteResult)) {
+      return deleteResult
+    }
+    modifiedAst = deleteResult
+  } else {
+    // Single item case: Delete the node
+    const result = deleteTopLevelStatement(modifiedAst, pathToNode)
+    if (err(result)) {
+      return result
+    }
+  }
+
+  return updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    props.systemDeps,
+    {
+      focusPath: [],
+    }
+  )
 }
