@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from '@xstate/react'
-import type { SnapshotFrom, StateFrom } from 'xstate'
+import type { SnapshotFrom } from 'xstate'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -12,7 +12,6 @@ const shouldAlwaysShowOverlays = () =>
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
-  DISTANCE_CONSTRAINT_LABEL,
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
@@ -46,11 +45,8 @@ import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { KclInput } from '@src/components/KclInput'
-import { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { Sprite } from 'three'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
@@ -269,6 +265,7 @@ const EditingDimensionInput = () => {
 
     // Stop listening when editingConstraintId becomes undefined (we're no longer editing) and on unmount
     return removeListener
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingConstraintId])
 
   const sketchSolveActor = state.children.sketchSolveMachine

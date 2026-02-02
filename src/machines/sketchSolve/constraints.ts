@@ -28,15 +28,12 @@ import {
   DISTANCE_CONSTRAINT_HIT_AREA,
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
+import type { SnapshotFrom, StateFrom } from 'xstate'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { EditorView, keymap } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
-import { editorTheme } from '@src/editor/plugins/theme'
-import styles from './ConstraintEditor.module.css'
-import { modelingMachine } from '../modelingMachine'
-import { SnapshotFrom, StateFrom } from 'xstate'
-import { sketchSolveMachine } from './sketchSolveDiagram'
+import type { EditorView } from '@codemirror/view'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 
 const CONSTRAINT_COLOR = {
   [Themes.Dark]: 0x121212,

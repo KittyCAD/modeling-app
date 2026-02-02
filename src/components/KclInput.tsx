@@ -12,14 +12,14 @@ import { useSingletons } from '@src/lib/boot'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { varMentions } from '@src/lib/varCompletionExtension'
-import styles from '@src/components/KclInput.module.css'
+import styles from './KclInput.module.css'
 import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
 
 export function KclInput(props: {
   initialValue: string
   x: number
   y: number
-  onSubmit: (value: string) => void
+  onSubmit: (value: string) => void | Promise<void>
   onCancel: () => void
   style?: React.CSSProperties
 }) {
@@ -66,7 +66,7 @@ export function KclInput(props: {
               run: (editorView) => {
                 const value = editorView.state.doc.toString().trim()
                 if (value) {
-                  props.onSubmit(value)
+                  void props.onSubmit(value)
                   return true
                 }
                 return false
