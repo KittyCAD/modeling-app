@@ -93,7 +93,7 @@ export function KclInput(props: {
             const code = `${DUMMY_VARIABLE_NAME} = ${value}`
             const result = parse(code, wasmInstance)
             if (err(result) || !resultIsOk(result)) {
-              console.log("err", result)
+              console.log('err', result)
               containerRef.current?.classList.add(styles.error)
             } else {
               containerRef.current?.classList.remove(styles.error)
@@ -110,7 +110,19 @@ export function KclInput(props: {
     })
     editorRef.current = editor
 
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button === 1) {
+        // Allow middle mouse for panning camera, don't cancel
+        return
+      }
+      if (!containerRef.current?.contains(e.target as Node)) {
+        props.onCancel()
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+
     return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
       editor.destroy()
       editorRef.current = null
     }
