@@ -22,7 +22,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
 
-type SolidArtifact = Artifact & { type: 'compositeSold' | 'sweep' }
+type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
