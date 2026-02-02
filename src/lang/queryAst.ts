@@ -13,6 +13,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
+  getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -1111,36 +1112,32 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
+    let pathToNode = s.codeRef.pathToNode
     if (lastChildLookup && s.artifact && artifactGraph) {
-      const children = findAllChildrenAndOrderByPlaceInCode(
-        s.artifact,
-        artifactGraph
-      )
-      const lastChildVariable = getLastVariable(
-        children,
-        ast,
-        wasmInstance,
-        artifactTypeFilter,
-        nodeToEdit
-      )
-      if (!lastChildVariable) {
-        continue
+      const body = getUnconsumedBodyFromArtifact(s.artifact, artifactGraph)
+      if (body && 'codeRef' in body) {
+        const path =
+          body.codeRef.pathToNode ??
+          getNodePathFromSourceRange(ast, body.codeRef.range)
+        const isSameAsNodeToEdit =
+          nodeToEdit &&
+          stringifyPathToNode(path) === stringifyPathToNode(nodeToEdit)
+        if (path && path.length > 1 && !isSameAsNodeToEdit) {
+          pathToNode = path
+        }
       }
-
-      variable = lastChildVariable.variableDeclaration
-    } else {
-      const directLookup = getNodeFromPath<VariableDeclaration>(
-        ast,
-        s.codeRef.pathToNode,
-        wasmInstance,
-        'VariableDeclaration'
-      )
-      if (err(directLookup)) {
-        continue
-      }
-
-      variable = directLookup
     }
+    const node = getNodeFromPath<VariableDeclaration>(
+      ast,
+      pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(node)) {
+      continue
+    }
+
+    variable = node
 
     if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
@@ -1536,6 +1533,73 @@ export const getPathNormalisedForTruncatedAst = (
   nodePathWithCorrectedIndexForTruncatedAst[1][0] =
     Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) - minIndex
   return nodePathWithCorrectedIndexForTruncatedAst
+}
+
+export function getUnconsumedBodyFromArtifact(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Artifact | undefined {
+  let result: string | undefined
+  const stack: string[] = [artifact.id]
+  const bodies = getBodiesFromArtifactGraph(artifactGraph)
+
+  const pushToSomething = (
+    resultId: string,
+    childrenIdOrIds: string | string[] | null | undefined
+  ) => {
+    if (bodies.has(resultId)) {
+      result = resultId
+      console.log('getUnconsumedBodyFromArtifact found body', resultId)
+      return
+    }
+
+    if (isArray(childrenIdOrIds)) {
+      if (childrenIdOrIds.length) {
+        stack.push(...childrenIdOrIds)
+      }
+    } else {
+      if (childrenIdOrIds) {
+        stack.push(childrenIdOrIds)
+      }
+    }
+  }
+
+  while (result === undefined && stack.length > 0) {
+    const currentId = stack.pop()!
+    const current = artifactGraph.get(currentId)
+    if (current?.type === 'path') {
+      pushToSomething(currentId, current.sweepId)
+      pushToSomething(currentId, current.segIds)
+    } else if (current?.type === 'sweep' && current.method === 'merge') {
+      pushToSomething(currentId, current.surfaceIds)
+      const path = artifactGraph.get(current.pathId)
+      if (path && path.type === 'path' && path.compositeSolidId) {
+        pushToSomething(currentId, path.compositeSolidId)
+      }
+    } else if (current?.type === 'wall' || current?.type === 'cap') {
+      pushToSomething(currentId, current?.pathIds)
+    } else if (current?.type === 'segment') {
+      pushToSomething(currentId, current.edgeCutId)
+      pushToSomething(currentId, current.surfaceId)
+    } else if (current?.type === 'edgeCut') {
+      pushToSomething(currentId, current.surfaceId)
+    } else if (current?.type === 'startSketchOnPlane') {
+      pushToSomething(currentId, current.planeId)
+    } else if (current?.type === 'plane') {
+      pushToSomething(currentId, current.pathIds)
+    } else if (current?.type === 'compositeSolid') {
+      pushToSomething(currentId, current.solidIds)
+      pushToSomething(currentId, current.toolIds)
+    }
+  }
+
+  const artifactFound = result ? artifactGraph.get(result) : undefined
+  console.log(
+    'getUnconsumedBodyFromArtifact artifactFound',
+    result,
+    artifactFound
+  )
+  return artifactFound
 }
 
 /** returns all children of a given artifact, and sorts them DESC by start sourceRange
