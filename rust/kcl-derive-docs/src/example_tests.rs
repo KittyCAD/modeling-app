@@ -50,6 +50,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-array-count-0",
     "std-array-concat-0",
     "std-array-concat-1",
+    "std-array-flatten-0",
+    "std-array-flatten-1",
     "std-array-map-0",
     "std-array-map-1",
     "std-array-pop-0",
