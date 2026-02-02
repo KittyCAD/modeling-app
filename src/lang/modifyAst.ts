@@ -751,8 +751,6 @@ export function deleteTermFromUnlabeledArgumentArray(
     return new Error('Unlabeled argument is not an array, cannot edit it')
   }
 
-  debugger
-
   // Remove any literal array members that match the term to be deleted
   nodeToEdit.node.unlabeled.elements =
     nodeToEdit.node.unlabeled.elements.filter(
