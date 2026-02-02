@@ -74,5 +74,43 @@ describe('mlEphantManagerMachine', () => {
       // and that all code paths have been taken via the test.
       expect(output.length).toBeGreaterThan(0)
     })
+
+    // Motivated by https://github.com/KittyCAD/modeling-app/issues/9912
+    it('error is a end-of-stream signal as well, showing the full response', async () => {
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            deltasAggregated: '',
+            request: {
+              type: 'user',
+              content: 'make me a sandwich',
+            },
+            responses: [
+              {
+                reasoning: {
+                  type: 'text',
+                  content: 'jordan was here',
+                },
+              },
+              {
+                error: {
+                  detail: 'interrupted',
+                },
+              },
+              {
+                end_of_stream: {
+                  whole_response: '// whole_response',
+                },
+              },
+            ],
+          },
+        ],
+      }
+      const output = MlEphantConversationToMarkdown(conversation)
+
+      expect(output).toContain('jordan was here')
+      expect(output).toContain('interrupted')
+      expect(output).toContain('whole_response')
+    })
   })
 })
