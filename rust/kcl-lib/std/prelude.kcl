@@ -505,6 +505,68 @@ export fn offsetPlane(
 ///        roughness = 50
 ///    )
 /// ```
+/// 
+/// ```kcl
+/// // Clone an array of sketches and solids 
+/// exampleSketch = startSketchOn(XY)
+///  |> startProfile(at = [0, 0])
+///  |> line(end = [10, 0])
+///  |> line(end = [0, 10])
+///  |> line(end = [-10, 0])
+///  |> close()
+///
+/// exampleSolid = startSketchOn(XY)
+///   |> startProfile(at = [-15, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///   |> extrude(length = 5)
+/// 
+/// 
+/// inputArray = [ exampleSketch, exampleSolid]
+/// outputArray = clone(inputArray)
+/// 
+/// outputArray[0]
+/// |> translate(xyz = [10, 10, 10])
+/// |> extrude(length = 5)
+/// 
+/// clonedSolid = outputArray[1]
+/// |> translate(xyz = [-10, -10, -10])
+///
+/// ```
+///
+/// // Clone an array that includes an imported geometry, solid and sketch.
+/// ```kcl
+/// import "tests/inputs/cube.sldprt" as cube
+/// 
+/// geom = cube
+/// |> translate(xyz = [1000, 50 , 50])
+/// 
+/// // Clone a basic sketch and move it and extrude it.
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+/// 
+/// exampleSolid = startSketchOn(XY)
+///   |> startProfile(at = [-15, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///   |> extrude(length = 5)
+/// 
+/// 
+/// inputArray = [ exampleSketch, exampleSolid, geom ]
+/// outputArray = clone(inputArray)
+/// 
+/// outputArray[0]
+/// |> translate(xyz = [10, 10, 10])
+/// |> extrude(length = 5)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
