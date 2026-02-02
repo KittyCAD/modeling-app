@@ -66,7 +66,7 @@ import {
   deleteTermFromUnlabeledArgumentArray,
   deleteTopLevelStatement,
 } from '@src/lang/modifyAst'
-import { KclManager } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
