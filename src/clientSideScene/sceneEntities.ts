@@ -228,7 +228,7 @@ export class SceneEntities {
     this.sceneInfra.camControls.cameraChange.add(() => {
       this.onCamChange().catch(reportRejection)
     })
-    this.sceneInfra.baseUnitChange.add(() => {
+    this.sceneInfra.baseUnitMultiplierSignal.subscribe(() => {
       this.onCamChange().catch(reportRejection)
     })
   }

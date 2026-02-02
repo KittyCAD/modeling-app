@@ -33,7 +33,7 @@ import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
-import { Signal } from '@src/lib/signal'
+import { signal } from '@preact/signals-core'
 import { Themes } from '@src/lib/theme'
 import { getAngle, getLength } from '@src/lib/utils'
 import type {
@@ -104,10 +104,9 @@ export class SceneInfra {
   readonly camControls: CameraControls
   private readonly wasmInstancePromise: Promise<ModuleType>
   isFovAnimationInProgress = false
-  private _baseUnitMultiplier = 1
+  public readonly baseUnitMultiplierSignal = signal(1)
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
-  public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -149,19 +148,18 @@ export class SceneInfra {
 
   set baseUnit(unit: BaseUnit) {
     const newBaseUnitMultiplier = baseUnitTomm(unit)
-    if (newBaseUnitMultiplier !== this._baseUnitMultiplier) {
-      this._baseUnitMultiplier = baseUnitTomm(unit)
+    if (newBaseUnitMultiplier !== this.baseUnitMultiplierSignal.value) {
       this.scene.scale.set(
-        this._baseUnitMultiplier,
-        this._baseUnitMultiplier,
-        this._baseUnitMultiplier
+        newBaseUnitMultiplier,
+        newBaseUnitMultiplier,
+        newBaseUnitMultiplier
       )
-      this.baseUnitChange.dispatch()
+      this.baseUnitMultiplierSignal.value = newBaseUnitMultiplier
     }
   }
 
   get baseUnitMultiplier() {
-    return this._baseUnitMultiplier
+    return this.baseUnitMultiplierSignal.value
   }
 
   /**
@@ -175,7 +173,7 @@ export class SceneInfra {
     // one [mm] in screen space (pixels) multiplied by baseUnitMultiplier
     return (
       (((1 / worldViewportWidth) * viewportSize.x) / window.devicePixelRatio) *
-      this._baseUnitMultiplier
+      this.baseUnitMultiplier
     )
   }
 
@@ -443,7 +441,7 @@ export class SceneInfra {
       (this.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
         : perspScale(this.camControls.camera, meshOrGroup)) /
-      this._baseUnitMultiplier
+      this.baseUnitMultiplier
     return factor
   }
 
@@ -486,8 +484,8 @@ export class SceneInfra {
     }
     const twoD = new Vector2(
       // I think the intersection plane doesn't get scale when nearly everything else does, maybe that should change
-      transformedPoint.x / this._baseUnitMultiplier,
-      transformedPoint.y / this._baseUnitMultiplier
+      transformedPoint.x / this.baseUnitMultiplier,
+      transformedPoint.y / this.baseUnitMultiplier
     ) // z should be 0
     const planePositionCorrected = new Vector3(
       ...planePosition
@@ -496,7 +494,7 @@ export class SceneInfra {
 
     return {
       twoD,
-      threeD: intersectPoint.divideScalar(this._baseUnitMultiplier),
+      threeD: intersectPoint.divideScalar(this.baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
   }

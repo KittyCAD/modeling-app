@@ -55,7 +55,7 @@ export function UnitsMenu() {
   useEffect(() => {
     const unsubscribers = [
       sceneInfra.camControls.cameraChange.add(onCameraChange),
-      sceneInfra.baseUnitChange.add(onCameraChange),
+      sceneInfra.baseUnitMultiplierSignal.subscribe(onCameraChange),
     ]
     onCameraChange()
     return () => {
@@ -63,17 +63,12 @@ export function UnitsMenu() {
     }
   }, [
     onCameraChange,
-    sceneInfra.baseUnitChange,
+    sceneInfra.baseUnitMultiplierSignal,
     sceneInfra.camControls.cameraChange,
   ])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [
-    kclManager.fileSettings,
-    sceneInfra.baseUnitChange,
-    sceneInfra.camControls.cameraChange,
-  ])
+  }, [kclManager.fileSettings])
 
   return (
     <Popover className="relative pointer-events-auto flex">
