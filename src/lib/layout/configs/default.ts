@@ -74,7 +74,7 @@ export const defaultLayoutConfig: Layout = {
           children: [
             {
               id: 'operations-list',
-              label: 'Operations List',
+              label: 'Feature Tree',
               type: LayoutType.Simple,
               areaType: AreaType.FeatureTree,
             },
