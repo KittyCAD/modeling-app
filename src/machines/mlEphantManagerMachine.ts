@@ -242,9 +242,6 @@ export const MlEphantConversationToMarkdown = (
           for (const step of response.reasoning.steps) {
             reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
           }
-
-          // Kind of a catch-all, but not exactly, because some types don't have
-          // `content` property.
         }
       }
       if ('error' in response) {
