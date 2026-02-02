@@ -2008,6 +2008,8 @@ async fn inner_bezier_curve(
         }
     };
 
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
+
     let current_path = Path::Bezier {
         base: BasePath {
             from: from.ignore_units(),
@@ -2026,6 +2028,9 @@ async fn inner_bezier_curve(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
