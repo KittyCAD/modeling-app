@@ -1,7 +1,10 @@
 import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { toUtf16 } from '@src/lang/errors'
+import { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { modelingMachine } from '@src/machines/modelingMachine'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
@@ -10,10 +13,10 @@ import {
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useState } from 'react'
-import type { SnapshotFrom } from 'xstate'
+import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const EditingConstraintInput = () => {
-  const { sceneInfra, rustContext } = useSingletons()
+  const { sceneInfra, rustContext, kclManager } = useSingletons()
   const { state } = useModelingContext()
   const editingConstraintId = useSelector(
     state.children.sketchSolveMachine,
@@ -92,21 +95,48 @@ export const EditingConstraintInput = () => {
     sketchSolveActor?.send({ type: 'stop editing constraint' })
   }, [sketchSolveActor])
 
-  let initialDimension = ''
-  const constraintObject =
-    editingConstraintId && getConstraintObject(editingConstraintId, state)
-  if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
-    const distance = constraintObject.kind.constraint.distance
-    initialDimension = parseFloat(distance.value.toFixed(3)).toString()
-  }
-
   return editingConstraintId !== undefined ? (
     <KclInput
-      initialValue={initialDimension}
+      initialValue={getInitialDimension(editingConstraintId, state, kclManager)}
       x={position[0]}
       y={position[1]}
       onSubmit={onEditSubmit}
       onCancel={onEditCancel}
     />
   ) : null
+}
+
+function getInitialDimension(
+  editingConstraintId: number,
+  state: StateFrom<typeof modelingMachine>,
+  kclManager: KclManager
+) {
+  let initialDimension = ''
+  const constraintObject =
+    editingConstraintId && getConstraintObject(editingConstraintId, state)
+  if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
+
+    // Try to get the actual expression
+    const code = kclManager.code
+    const source = constraintObject.source
+    const range = source.type === 'Simple' ? source.range : source.ranges?.[0]
+    if (range && range[1] <= new TextEncoder().encode(code).length) {
+      const fullExpr = code.slice(
+        toUtf16(range[0], code),
+        toUtf16(range[1] + 1, code)
+      )
+      // The source range covers e.g. "distance([p1, p2]) == 2 + 0.1",
+      // extract the right-hand side of "=="
+      const eqIndex = fullExpr.indexOf('==')
+      if (eqIndex !== -1 && fullExpr.includes('distance')) {
+        initialDimension = fullExpr.slice(eqIndex + 2).trim()
+      }
+    }
+    // Fallback to evaluated dimension value if source extraction fails
+    if (!initialDimension) {
+      const distance = constraintObject.kind.constraint.distance
+      initialDimension = parseFloat(distance.value.toFixed(3)).toString()
+    }
+  }
+  return initialDimension
 }
