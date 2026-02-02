@@ -231,35 +231,43 @@ export const MlEphantConversationToMarkdown = (
             )
             reason += `${contentWithoutCode}\n\n`
           }
-        }
-        if ('error' in response.reasoning) {
+        } else if ('error' in response.reasoning) {
           reason += `**${response.reasoning.error}**\n\n`
-        }
 
-        // We will ignore code. It adds a lot of noise. We can look at honeycomb
-        // with the api call id if we really want it.
-        if ('code' in response.reasoning) {
+          // We will ignore code. It adds a lot of noise. We can look at honeycomb
+          // with the api call id if we really want it.
+        } else if ('code' in response.reasoning) {
           reason += '~~Code redacted~~\n\n'
-        }
-
-        if ('steps' in response.reasoning) {
+        } else if ('steps' in response.reasoning) {
           for (const step of response.reasoning.steps) {
             reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
           }
+
+          // Kind of a catch-all, but not exactly, because some types don't have
+          // `content` property.
         }
       }
-      if ('end_of_stream' in response) {
-        const time = ms(
-          new Date(response.end_of_stream.completed_at ?? 0).getTime() -
-            new Date(response.end_of_stream.started_at ?? 0).getTime(),
-          { long: true }
-        )
-        entry += `## Zookeeper (${time}):\n\n`
+      if ('error' in response) {
+        reason += `**${response.error.detail}**\n\n`
+      }
+
+      // An error signals end of stream as well.
+      if ('error' in response || 'end_of_stream' in response) {
+        let time = 0
+        if ('end_of_stream' in response) {
+          time =
+            new Date(response.end_of_stream.completed_at ?? 0).getTime() -
+            new Date(response.end_of_stream.started_at ?? 0).getTime()
+        }
+
+        entry += `## Zookeeper (${time === 0 ? 'unknown' : ms(time, { long: true })}):\n\n`
         entry += reason + '\n'
         entry += new Array(80).fill('-').join('') + '\n\n'
-        entry += response.end_of_stream.whole_response ?? '' + '\n'
 
-        meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+        if ('end_of_stream' in response) {
+          entry += response.end_of_stream.whole_response ?? '' + '\n'
+          meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+        }
       }
     }
     agg += entry + '\n\n'
