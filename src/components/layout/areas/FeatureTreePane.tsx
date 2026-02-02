@@ -2,7 +2,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import type { ComponentProps, ReactNode } from 'react'
 import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
@@ -22,7 +22,7 @@ import {
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
-  getToggleHiddenTransaction,
+  onHide,
   groupOperationTypeStreaks,
   stdLibMap,
 } from '@src/lib/operations'
@@ -34,12 +34,7 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import {
-  base64Decode,
-  PathToNode,
-  pathToNodeFromRustNodePath,
-  type SourceRange,
-} from '@src/lang/wasm'
+import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -123,7 +118,11 @@ export const FeatureTreePaneContents = memo(() => {
     sceneInfra,
     setLayout,
   } = useSingletons()
-  const { send: modelingSend, state: modelingState } = useModelingContext()
+  const {
+    send: modelingSend,
+    state: modelingState,
+    actor: modelingActor,
+  } = useModelingContext()
   const systemDeps: SystemDeps = {
     kclManager,
     sceneInfra,
@@ -233,6 +232,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
+                  modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
@@ -243,6 +243,7 @@ export const FeatureTreePaneContents = memo(() => {
                   code={operationsCode}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
+                  modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={selectOperation}
                 />
@@ -294,6 +295,7 @@ function OperationItemGroup({
   code,
   sketchNoFace,
   systemDeps,
+  modelingActor,
   engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
@@ -322,6 +324,7 @@ function OperationItemGroup({
                 code={code}
                 sketchNoFace={sketchNoFace}
                 systemDeps={systemDeps}
+                modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
               />
@@ -438,6 +441,7 @@ interface OperationProps {
   sketchNoFace: boolean
   systemDeps: SystemDeps
   engineCommandManager: Singletons['engineCommandManager']
+  modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
 }
 /**
@@ -450,6 +454,7 @@ const OperationItem = ({
   sketchNoFace,
   onSelect,
   systemDeps,
+  modelingActor,
   engineCommandManager,
 }: OperationProps) => {
   const { getLayout, setLayout } = useSingletons()
@@ -488,7 +493,6 @@ const OperationItem = ({
 
   const selectOperation = useCallback(
     async (providedSourceRange?: SourceRange) => {
-      debugger
       if (sketchNoFace) {
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
@@ -876,21 +880,15 @@ const OperationItem = ({
           ? {
               visible: hideOperation === undefined,
               onVisibilityChange: () => {
-                let targetPathsToNode: PathToNode[] = []
-                targetPathsToNode = [pathToNodeFromRustNodePath(item.nodePath)]
-
-                if (err(targetPathsToNode)) {
-                  return
-                }
-                kclManager.dispatch(
-                  getToggleHiddenTransaction({
-                    targetPathsToNode,
-                    hideOperation,
-                    program: kclManager.astSignal.value,
-                    code: kclManager.codeSignal.value,
-                    wasmInstance,
+                selectOperation()
+                  .then(() => {
+                    onHide({
+                      ast: kclManager.ast,
+                      artifactGraph: kclManager.artifactGraph,
+                      modelingActor,
+                    })
                   })
-                )
+                  .catch(reportRejection)
               },
             }
           : undefined
@@ -952,6 +950,20 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
     [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
   )
 
+  const visibilityToggle = useCallback(
+    (plane: (typeof planes)[number]) => ({
+      visible: modelingState.context.defaultPlaneVisibility[plane.key],
+      onVisibilityChange: () => {
+        send({
+          type: 'Toggle default plane visibility',
+          planeId: plane.id,
+          planeKey: plane.key,
+        })
+      },
+    }),
+    [modelingState.context.defaultPlaneVisibility, send]
+  )
+
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
@@ -979,20 +991,6 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
       ),
     },
   ] as const
-
-  const visibilityToggle = useCallback(
-    (plane: (typeof planes)[number]) => ({
-      visible: modelingState.context.defaultPlaneVisibility[plane.key],
-      onVisibilityChange: () => {
-        send({
-          type: 'Toggle default plane visibility',
-          planeId: plane.id,
-          planeKey: plane.key,
-        })
-      },
-    }),
-    [modelingState.context.defaultPlaneVisibility]
-  )
 
   return (
     <div className="mb-2">
