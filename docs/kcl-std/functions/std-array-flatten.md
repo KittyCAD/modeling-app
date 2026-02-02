@@ -11,8 +11,8 @@ Flatten an array by one level.
 flatten(@array: [any]): [any]
 ```
 
-Returns a new array where any nested arrays or tuples are expanded
-into the top-level array. This only flattens one level deep.
+Returns a new array where any nested arrays are expanded into the top-level
+array. This only flattens one level deep.
 
 ### Arguments
 

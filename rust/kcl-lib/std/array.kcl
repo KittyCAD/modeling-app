@@ -204,8 +204,8 @@ export fn concat(
 
 /// Flatten an array by one level.
 ///
-/// Returns a new array where any nested arrays or tuples are expanded
-/// into the top-level array. This only flattens one level deep.
+/// Returns a new array where any nested arrays are expanded into the top-level
+/// array. This only flattens one level deep.
 ///
 /// ```kcl
 /// arr = [1, [2, 3], 4]
