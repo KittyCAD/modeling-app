@@ -84,6 +84,12 @@ reqwest = { version = "0.12", default-features = false, features = [
   "stream",
   "rustls-tls",
 ] }
+rustls = { version = "0.23", default-features = false, features = [
+  "logging",
+  "std",
+  "tls12",
+  "aws_lc_rs",
+] }
 rgba_simple = "0.10.0"
 rmp-serde = { workspace = true }
 ropey = "1.6.1"
