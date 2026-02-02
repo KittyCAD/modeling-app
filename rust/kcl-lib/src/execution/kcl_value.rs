@@ -945,9 +945,9 @@ impl From<GeometryWithImportedGeometry> for KclValue {
 
 impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
     fn from(mut values: Vec<GeometryWithImportedGeometry>) -> Self {
-        if values.len() == 1 && 
-            let Some(v) = values.pop()
-            {
+        if values.len() == 1
+            && let Some(v) = values.pop()
+        {
             KclValue::from(v)
         } else {
             KclValue::HomArray {
@@ -961,8 +961,6 @@ impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
         }
     }
 }
-    
-
 
 #[cfg(test)]
 mod tests {
