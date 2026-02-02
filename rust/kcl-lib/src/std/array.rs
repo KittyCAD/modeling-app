@@ -7,7 +7,7 @@ use crate::{
         ControlFlowKind, ExecState,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclValue},
-        types::{PrimitiveType, RuntimeType},
+        types::RuntimeType,
     },
 };
 
@@ -182,22 +182,6 @@ pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
 }
 
-pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
-    let mut flattened = Vec::new();
-
-    for elem in array {
-        match elem {
-            KclValue::HomArray { value, .. } => flattened.extend(value),
-            KclValue::Tuple { value, .. } => flattened.extend(value),
-            _ => flattened.push(elem),
-        }
-    }
-
-    let ty = infer_flattened_type(&flattened);
-    Ok(KclValue::HomArray { value: flattened, ty })
-}
-
 fn inner_concat(
     left: &[KclValue],
     left_el_ty: &RuntimeType,
@@ -229,31 +213,37 @@ fn inner_concat(
     KclValue::HomArray { value: new, ty }
 }
 
-fn infer_flattened_type(values: &[KclValue]) -> RuntimeType {
-    let mut ty: Option<RuntimeType> = None;
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
 
-    for value in values {
-        let Some(next) = value.principal_type() else {
-            return RuntimeType::any();
-        };
-
-        ty = Some(match ty {
-            None => next,
-            Some(current) => {
-                if next.subtype(&current) {
-                    current
-                } else if current.subtype(&next) {
-                    next
-                } else {
-                    RuntimeType::any()
-                }
-            }
-        });
-
-        if matches!(ty, Some(RuntimeType::Primitive(PrimitiveType::Any))) {
-            break;
+    let (array, original_ty) = match array_value {
+        KclValue::HomArray { value, ty, .. } => (value, ty),
+        KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+        _ => (vec![array_value], RuntimeType::any()),
+    };
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
         }
     }
 
-    ty.unwrap_or_else(RuntimeType::any)
+    let ty = infer_flattened_type(original_ty, &flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
+/// Infer the type of a flattened array based on the original type and the
+/// types of the flattened values. Currently, we preserve the original type only
+/// if all flattened values have the same type as the original element type.
+/// Otherwise, we fall back to `any`.
+fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> RuntimeType {
+    for value in values {
+        if !value.has_type(&original_ty) {
+            return RuntimeType::any();
+        };
+    }
+
+    original_ty
 }
