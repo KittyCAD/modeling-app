@@ -22,6 +22,11 @@
   caret-color: currentColor;
 }
 
+.container :global(.cm-line) {
+  display: block;
+  padding: 0 6px 0 6px;
+}
+
 .error {
   @apply border-destroy-80;
 }
