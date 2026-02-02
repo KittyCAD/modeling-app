@@ -9,7 +9,6 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import React, {
   createContext,
-  use,
   useContext,
   useEffect,
   useMemo,
@@ -75,7 +74,6 @@ type LspContext = {
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { kclManager, useToken } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -176,7 +174,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady, wasmInstance])
+  }, [kclLspClient, isKclLspReady])
 
   useEffect(() => {
     // New code to just update the CodeMirror extensions directly.

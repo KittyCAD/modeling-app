@@ -34,8 +34,7 @@ import {
   type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
-  PathToNode,
-  CodeRef,
+  type PathToNode,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -58,8 +57,11 @@ import {
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { Transaction } from 'electron'
-import { TransactionSpec } from '@codemirror/state'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { findUniqueName } from '@src/lang/create'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2866,36 +2868,22 @@ export function getHideOpByArtifactId(
   return found as HideOperation | undefined
 }
 
-export function getToggleHiddenTransaction({
-  targetPathsToNode,
-  hideOperation,
-  program,
-  code,
-  wasmInstance,
-}: {
-  targetPathsToNode: PathToNode[]
-  hideOperation?: HideOperation
-  program: Program
-  code: string
-  wasmInstance: ModuleType
-}): TransactionSpec {
-  const variableNames =
-    !hideOperation &&
-    targetPathsToNode.map((p) =>
-      getVariableNameFromNodePath(p, program, wasmInstance)
-    )
-  const changes: TransactionSpec['changes'] = hideOperation
-    ? {
-        from: hideOperation.sourceRange[0],
-        to: hideOperation.sourceRange[1],
-        insert: '',
-      }
-    : variableNames
-      ? {
-          from: code.length,
-          insert: `\nhide(${variableNames.join(', ')})`,
-        }
-      : undefined
+export function onHide(props: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+}) {
+  const variableName = findUniqueName(
+    props.ast,
+    KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN
+  )
+  const selection = props.modelingActor.getSnapshot().context.selectionRanges
 
-  return { changes }
+  props.modelingActor.send({
+    type: 'Hide',
+    data: {
+      objects: selection,
+      variableName,
+    },
+  })
 }

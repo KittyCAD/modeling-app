@@ -1,6 +1,7 @@
-import { ReactNode, ComponentProps, useRef } from 'react'
+import type { ReactNode, ComponentProps } from 'react'
+import { useRef } from 'react'
 import { ContextMenu } from '@src/components/ContextMenu'
-import { CustomIconName, CustomIcon } from '@src/components/CustomIcon'
+import { type CustomIconName, CustomIcon } from '@src/components/CustomIcon'
 
 export function RowItemWithIconMenuAndToggle({
   icon,

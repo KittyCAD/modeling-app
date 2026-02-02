@@ -425,3 +425,55 @@ export function addAppearance({
     pathToNode,
   }
 }
+
+export function addHide({
+  ast,
+  artifactGraph,
+  objects,
+  variableName,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  variableName: string
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled arguments
+  // Map the selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = false
+  debugger
+  const vars = getVariableExprsFromSelection(
+    objects,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    lastChildLookup,
+    artifactGraph
+  )
+
+  if (err(vars)) {
+    return vars
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('hide', objectsExpr, [])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const declaration = createVariableDeclaration(variableName, call)
+  modifiedAst.body.push(declaration)
+  const toFirstKwarg = false
+  const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}

@@ -9,10 +9,9 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   getHideOpByArtifactId,
-  getToggleHiddenTransaction,
+  onHide,
   type HideOperation,
 } from '@src/lib/operations'
-import { use } from 'react'
 import { useSingletons } from '@src/lib/boot'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -79,8 +78,8 @@ function BodyItem({
 }: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
   useSignals()
   const { kclManager } = useSingletons()
-  const { send: modelingSend } = useModelingContext()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { actor: modelingActor, send: modelingSend } = useModelingContext()
+
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
   const isSelected =
     kclManager.editorState.selection.main.from >= sourceRange[0] &&
@@ -102,15 +101,14 @@ function BodyItem({
           <VisibilityToggle
             visible={hideOperation === undefined}
             onVisibilityChange={() => {
-              kclManager.dispatch(
-                getToggleHiddenTransaction({
-                  targetPathsToNode: [artifact.codeRef.pathToNode],
-                  hideOperation,
-                  program: kclManager.astSignal.value,
-                  code: kclManager.codeSignal.value,
-                  wasmInstance,
+              onSelect()
+              if (hideOperation === undefined) {
+                onHide({
+                  ast: kclManager.ast,
+                  artifactGraph: kclManager.artifactGraph,
+                  modelingActor,
                 })
-              )
+              }
             }}
           />
         }
