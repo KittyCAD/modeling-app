@@ -115,7 +115,6 @@ function getInitialDimension(
   const constraintObject =
     editingConstraintId && getConstraintObject(editingConstraintId, state)
   if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
-
     // Try to get the actual expression
     const code = kclManager.code
     const source = constraintObject.source
