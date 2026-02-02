@@ -202,6 +202,35 @@ export fn concat(
   items: [any],
 ): [any] {}
 
+/// Flatten an array by one level.
+///
+/// Returns a new array where any nested arrays or tuples are expanded
+/// into the top-level array. This only flattens one level deep.
+///
+/// ```kcl
+/// arr = [1, [2, 3], 4]
+/// flat = flatten(arr)
+/// assert(flat[0], isEqualTo = 1)
+/// assert(flat[1], isEqualTo = 2)
+/// assert(flat[2], isEqualTo = 3)
+/// assert(flat[3], isEqualTo = 4)
+/// ```
+///
+/// ```kcl
+/// arr = [[1, 2], [3, [4]]]
+/// flat = flatten(arr)
+/// // Only one level of flattening occurs.
+/// assert(flat[0], isEqualTo = 1)
+/// assert(flat[1], isEqualTo = 2)
+/// assert(flat[2], isEqualTo = 3)
+/// assert(flat[3][0], isEqualTo = 4)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn flatten(
+  /// The array to flatten by one level.
+  @array: [any],
+): [any] {}
+
 /// Find the number of elements in an array.
 /// ```kcl
 /// arr1 = [10, 20, 30]

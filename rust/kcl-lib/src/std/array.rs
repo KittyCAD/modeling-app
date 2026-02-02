@@ -7,7 +7,7 @@ use crate::{
         ControlFlowKind, ExecState,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclValue},
-        types::RuntimeType,
+        types::{PrimitiveType, RuntimeType},
     },
 };
 
@@ -182,6 +182,22 @@ pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
 }
 
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
+
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
+        }
+    }
+
+    let ty = infer_flattened_type(&flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
 fn inner_concat(
     left: &[KclValue],
     left_el_ty: &RuntimeType,
@@ -211,4 +227,33 @@ fn inner_concat(
         RuntimeType::any()
     };
     KclValue::HomArray { value: new, ty }
+}
+
+fn infer_flattened_type(values: &[KclValue]) -> RuntimeType {
+    let mut ty: Option<RuntimeType> = None;
+
+    for value in values {
+        let Some(next) = value.principal_type() else {
+            return RuntimeType::any();
+        };
+
+        ty = Some(match ty {
+            None => next,
+            Some(current) => {
+                if next.subtype(&current) {
+                    current
+                } else if current.subtype(&next) {
+                    next
+                } else {
+                    RuntimeType::any()
+                }
+            }
+        });
+
+        if matches!(ty, Some(RuntimeType::Primitive(PrimitiveType::Any))) {
+            break;
+        }
+    }
+
+    ty.unwrap_or_else(RuntimeType::any)
 }
