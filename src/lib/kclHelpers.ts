@@ -140,7 +140,6 @@ export async function stringToKclExpression(
     allowArrays?: boolean
   }
 ) {
-  debugger
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
     providedRustContext,

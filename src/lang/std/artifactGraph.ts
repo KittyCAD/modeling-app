@@ -694,13 +694,11 @@ export function getPathsFromArtifact({
   ast: Program
 }): PathToNode[] | Error {
   const plane = getPlaneFromArtifact(artifact, artifactGraph)
-  console.log('DID WE FUCKING ERROR')
   if (err(plane)) return plane
   const paths = getArtifactsOfTypes(
     { keys: plane.pathIds, types: ['path'] },
     artifactGraph
   )
-  console.log('what the fuck are the paths', paths)
   let nodePaths = [...paths.values()]
     .map((path) => path.codeRef.pathToNode)
     .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
@@ -855,11 +853,6 @@ export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
     },
     artifactGraph
   )
-
-  // TODO: This simply filtered list doesn't coerce to the corresponding object IDs
-  // engine-side. Maybe we don't need to do that here, and instead we coerce
-  // in a `toggleEngineVisibility` function (which will be ported to Rust shortly)?
-  console.log('filtered to bodies', artifacts)
 
   return artifacts
 }

@@ -762,7 +762,6 @@ export class KclManager extends EventTarget {
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
     this.artifactGraph = execStateArtifactGraph
-    console.log('artifactGraph', this.artifactGraph)
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
 
     // Push the artifact graph into the editor state so annotations/decorations update
