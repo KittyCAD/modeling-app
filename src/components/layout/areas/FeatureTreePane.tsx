@@ -25,6 +25,7 @@ import {
   onHide,
   groupOperationTypeStreaks,
   stdLibMap,
+  onUnhide,
 } from '@src/lib/operations'
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
@@ -882,11 +883,29 @@ const OperationItem = ({
               onVisibilityChange: () => {
                 selectOperation()
                   .then(() => {
-                    onHide({
-                      ast: kclManager.ast,
-                      artifactGraph: kclManager.artifactGraph,
-                      modelingActor,
-                    })
+                    if (hideOperation === undefined) {
+                      onHide({
+                        ast: kclManager.ast,
+                        artifactGraph: kclManager.artifactGraph,
+                        modelingActor,
+                      })
+                    } else if (operationArtifact !== undefined) {
+                      onUnhide({
+                        hideOperation,
+                        targetArtifact: operationArtifact,
+                        systemDeps,
+                      })
+                        .then((result) => {
+                          if (err(result)) {
+                            toast.error(
+                              result.message || 'Error while unhiding'
+                            )
+                          }
+                        })
+                        .catch((e) => {
+                          toast.error(e.message || 'Error while unhiding')
+                        })
+                    }
                   })
                   .catch(reportRejection)
               },
