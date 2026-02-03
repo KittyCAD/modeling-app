@@ -1,10 +1,10 @@
 import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { toUtf16 } from '@src/lang/errors'
-import { KclManager } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
