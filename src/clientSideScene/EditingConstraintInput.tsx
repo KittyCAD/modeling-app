@@ -112,7 +112,7 @@ function getInitialDimension(
   const constraintObject =
     editingConstraintId && getConstraintObject(editingConstraintId, state)
   if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
-    initialDimension = constraintObject.kind.constraint.source_expr
+    initialDimension = constraintObject.kind.constraint.source.expr
   }
   return initialDimension
 }

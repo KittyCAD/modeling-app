@@ -2449,11 +2449,14 @@ impl Node<BinaryExpression> {
                     } else {
                         &self.left
                     };
-                    let _source_expr = {
+                    let _source = {
                         use crate::unparser::ExprContext;
                         let mut buf = String::new();
                         number_binary_part.recast(&mut buf, &Default::default(), 0, ExprContext::Other);
-                        buf
+                        crate::frontend::sketch::ConstraintSource {
+                            expr: buf,
+                            is_literal: matches!(number_binary_part, BinaryPart::Literal(_)),
+                        }
                     };
 
                     match &constraint.kind {
@@ -2489,7 +2492,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
-                                    source_expr: _source_expr,
+                                    source: _source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 exec_state.add_scene_object(
@@ -2672,7 +2675,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
-                                    source_expr: _source_expr,
+                                    source: _source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 exec_state.add_scene_object(
@@ -2723,7 +2726,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
-                                    source_expr: _source_expr,
+                                    source: _source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 exec_state.add_scene_object(

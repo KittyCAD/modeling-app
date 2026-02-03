@@ -307,7 +307,14 @@ pub struct Coincident {
 pub struct Distance {
     pub points: Vec<ObjectId>,
     pub distance: Number,
-    pub source_expr: String,
+    pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ConstraintSource {
+    pub expr: String,
+    pub is_literal: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
