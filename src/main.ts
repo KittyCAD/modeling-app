@@ -59,6 +59,8 @@ import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import { parseDeepLink } from '@src/mainUtils/deepLink'
+import { writeEnvironmentValueSync } from '@src/mainUtils/environment'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import {
@@ -147,6 +149,17 @@ const deviceFlowSessions = new DeviceFlowSessionStore<
   BrowserWindow,
   DeviceFlowHandle
 >()
+
+const writeEnvironmentFromDeepLink = (environment: string) => {
+  try {
+    writeEnvironmentValueSync({
+      appDataPath: app.getPath('appData'),
+      environment,
+    })
+  } catch (error) {
+    console.error('Failed to persist environment from deep link', error)
+  }
+}
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -368,23 +381,23 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+  let filteredPath = ''
+  if (pathIsCustomProtocolLink) {
+    const deepLink = parseDeepLink(pathToOpen)
+    if (deepLink.environment) {
+      writeEnvironmentFromDeepLink(deepLink.environment)
+    }
+    filteredPath = deepLink.filteredPath
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    const filteredPath = pathToOpen
-      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
-      : ''
     const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
     newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
       // TODO: fix the replace %3 thing
-      const urlNoProtocol = pathToOpen
-        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
-        .replaceAll('%3D', '')
-        .replaceAll('%3', '')
-      const filteredPath = decodeURI(urlNoProtocol)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
@@ -1103,10 +1116,7 @@ function registerStartupListeners() {
    * macOS: react to open-url requests (including Deep Link on second instances)
    */
   startupOpenUrls = []
-  const onOpenUrl = function (
-    event: { preventDefault: () => void },
-    url: string
-  ) {
+  const onOpenUrl = (event: { preventDefault: () => void }, url: string) => {
     event.preventDefault()
 
     // If we have a mainWindow, lets open another window.
@@ -1117,7 +1127,7 @@ function registerStartupListeners() {
     }
   }
 
-  app.on('will-finish-launching', function () {
+  app.on('will-finish-launching', () => {
     app.on('open-url', onOpenUrl)
   })
 }

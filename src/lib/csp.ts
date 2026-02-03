@@ -1,16 +1,12 @@
 import fs from 'fs'
 import { fileURLToPath } from 'node:url'
-import os from 'os'
 import path from 'path'
-// @ts-ignore: TS1343
-import * as packageJSON from '@root/package.json'
 import { net, app, session } from 'electron'
 
 import {
-  STAGING_BUILD_SUFFIX,
-  getAppFolderNameFromBuild,
-} from '@src/lib/appFolderName'
-import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
+  getEnvironmentFilePath,
+  isStagingOrDebugBuild,
+} from '@src/mainUtils/environment'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -39,19 +35,6 @@ const uniqueSources = (sources: Array<string | undefined>) => {
   return result
 }
 
-const getEnvironmentFolderName = () => {
-  return getAppFolderNameFromBuild({
-    packageName: packageJSON.name,
-    packageVersion: packageJSON.version,
-    platform: os.platform(),
-  })
-}
-
-const isStagingOrDebugBuild =
-  packageJSON.name.includes(STAGING_BUILD_SUFFIX) ||
-  packageJSON.version === '0.0.0' ||
-  packageJSON.version === 'dev'
-
 const getTestSettingsPathForCsp = () => {
   if (process.env.NODE_ENV !== 'test') return undefined
   // @ts-ignore app.testProperty is assigned at runtime.
@@ -63,19 +46,10 @@ const getTestSettingsPathForCsp = () => {
 }
 
 const getEnvironmentFilePathForCsp = async () => {
-  const testSettingsPath = getTestSettingsPathForCsp()
-  const appConfig = app.getPath('appData')
-  const fullPath = testSettingsPath
-    ? path.resolve(testSettingsPath, '..')
-    : path.join(appConfig, getEnvironmentFolderName())
-  try {
-    await fs.promises.stat(fullPath)
-  } catch (error: any) {
-    if (error?.code === 'ENOENT') {
-      await fs.promises.mkdir(fullPath, { recursive: true })
-    }
-  }
-  return path.join(fullPath, ENVIRONMENT_FILE_NAME)
+  return getEnvironmentFilePath({
+    appDataPath: app.getPath('appData'),
+    testSettingsPath: getTestSettingsPathForCsp(),
+  })
 }
 
 const readEnvironmentDomainForCsp = async () => {
