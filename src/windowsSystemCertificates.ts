@@ -1,12 +1,5 @@
 import tls from 'node:tls'
 
-const getSystemCerts = (): string[] => {
-  const tlsAny = tls as typeof tls & {
-    getCACertificates: (type?: string) => string[]
-  }
-  return tlsAny.getCACertificates('system')
-}
-
 let patched = false
 
 export const configureWindowsSystemCertificates = (): void => {
@@ -18,7 +11,7 @@ export const configureWindowsSystemCertificates = (): void => {
     return
   }
 
-  const systemCerts = getSystemCerts()
+  const systemCerts = tls.getCACertificates('system')
   if (systemCerts.length === 0) {
     return
   }
