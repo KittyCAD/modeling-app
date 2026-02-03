@@ -1516,31 +1516,25 @@ sketch(on = YZ) {
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                 trim_termination_coords,
                 intersecting_seg_id,
-                trim_spawn_segment_coincident_with_another_segment_point_id,
+                other_segment_point_id,
             } = result.left_side
             {
                 assert!((trim_termination_coords.x - (-2.380259288059525)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.5040925592307945).abs() < 1e-5);
                 assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(7));
-                assert_eq!(
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    crate::frontend::api::ObjectId(5)
-                );
+                assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(5));
             }
 
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                 trim_termination_coords,
                 intersecting_seg_id,
-                trim_spawn_segment_coincident_with_another_segment_point_id,
+                other_segment_point_id,
             } = result.right_side
             {
                 assert!((trim_termination_coords.x - 1.6587744607636377).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.784726710328238).abs() < 1e-5);
                 assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
-                assert_eq!(
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    crate::frontend::api::ObjectId(9)
-                );
+                assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(9));
             }
         }
 
@@ -1696,31 +1690,25 @@ sketch(on = YZ) {
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                 trim_termination_coords,
                 intersecting_seg_id,
-                trim_spawn_segment_coincident_with_another_segment_point_id,
+                other_segment_point_id,
             } = result.left_side
             {
                 assert!((trim_termination_coords.x - (-0.36700307305406205)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.966675365647721).abs() < 1e-5);
                 assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(9));
-                assert_eq!(
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    crate::frontend::api::ObjectId(6)
-                );
+                assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(6));
             }
 
             if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                 trim_termination_coords,
                 intersecting_seg_id,
-                trim_spawn_segment_coincident_with_another_segment_point_id,
+                other_segment_point_id,
             } = result.right_side
             {
                 assert!((trim_termination_coords.x - (-4.178878101257838)).abs() < 1e-5);
                 assert!((trim_termination_coords.y - 2.447749604872991).abs() < 1e-5);
                 assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(12));
-                assert_eq!(
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    crate::frontend::api::ObjectId(11)
-                );
+                assert_eq!(other_segment_point_id, crate::frontend::api::ObjectId(11));
             }
         }
 

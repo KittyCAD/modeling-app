@@ -76,7 +76,7 @@ pub enum TrimTermination {
     TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
         trim_termination_coords: Coords2d,
         intersecting_seg_id: ObjectId,
-        trim_spawn_segment_coincident_with_another_segment_point_id: ObjectId,
+        other_segment_point_id: ObjectId,
     },
 }
 
@@ -1683,7 +1683,7 @@ fn find_termination_in_direction(
             intersecting_seg_id: closest_candidate
                 .segment_id
                 .ok_or_else(|| "Missing segment_id for coincident".to_string())?,
-            trim_spawn_segment_coincident_with_another_segment_point_id: closest_candidate
+            other_segment_point_id: closest_candidate
                 .point_id
                 .ok_or_else(|| "Missing point_id for coincident".to_string())?,
         })
@@ -1843,6 +1843,7 @@ where
 
 /// Result of executing trim flow
 // #[allow(dead_code)] // Only used in non-WASM builds
+#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -2550,9 +2551,8 @@ pub fn trim_strategy(
         ) {
             let point_id = match side {
                 TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
+                    other_segment_point_id, ..
+                } => *other_segment_point_id,
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id);
@@ -2737,9 +2737,8 @@ pub fn trim_strategy(
         ) {
             let point_id = match left_side {
                 TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
+                    other_segment_point_id, ..
+                } => *other_segment_point_id,
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, left_intersecting_seg_id);
@@ -2755,9 +2754,8 @@ pub fn trim_strategy(
         ) {
             let point_id = match right_side {
                 TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
+                    other_segment_point_id, ..
+                } => *other_segment_point_id,
                 _ => return Err("Logic error".to_string()),
             };
             let mut data = find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id);
@@ -3913,13 +3911,10 @@ pub async fn execute_trim_operations_simple(
                 };
                 let left_coincident_segments = match &**left_side {
                     TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                        trim_spawn_segment_coincident_with_another_segment_point_id,
+                        other_segment_point_id,
                         ..
                     } => {
-                        vec![
-                            left_side_endpoint_point_id,
-                            *trim_spawn_segment_coincident_with_another_segment_point_id,
-                        ]
+                        vec![left_side_endpoint_point_id, *other_segment_point_id]
                     }
                     _ => {
                         vec![left_side_endpoint_point_id, left_intersecting_seg_id]
@@ -4037,14 +4032,11 @@ pub async fn execute_trim_operations_simple(
                 let right_coincident_segments = if let Some(point_id) = intersection_point_id {
                     vec![new_segment_start_point_id, point_id]
                 } else if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    other_segment_point_id,
                     ..
                 } = &**right_side
                 {
-                    vec![
-                        new_segment_start_point_id,
-                        *trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ]
+                    vec![new_segment_start_point_id, *other_segment_point_id]
                 } else {
                     vec![new_segment_start_point_id, right_intersecting_seg_id]
                 };
@@ -4057,12 +4049,11 @@ pub async fn execute_trim_operations_simple(
                 let mut points_constrained_to_new_segment_end = std::collections::HashSet::new();
 
                 if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    other_segment_point_id,
                     ..
                 } = &**right_side
                 {
-                    points_constrained_to_new_segment_start
-                        .insert(trim_spawn_segment_coincident_with_another_segment_point_id);
+                    points_constrained_to_new_segment_start.insert(other_segment_point_id);
                 }
 
                 for constraint_to_migrate in constraints_to_migrate.iter() {
