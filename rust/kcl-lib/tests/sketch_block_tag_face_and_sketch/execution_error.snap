@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_tag_face_and_sketch.kcl
+---
+KCL Argument error
+
+  × argument: face requires a value with type `TaggedFace`, but found a
+  │ segment (with type `Segment`).
+    ╭─[17:9]
+ 16 │ 
+ 17 │ face1 = startSketchOn(solid1, face = s.line1)
+    ·         ──────────────────┬──────────────────┬
+    ·                           │                  ╰── tests/sketch_block_tag_face_and_sketch/input.kcl
+    ·                           ╰── tests/sketch_block_tag_face_and_sketch/input.kcl
+    ╰────
+  ╰─▶ KCL Argument error
+      
+        × argument: face requires a value with type `TaggedFace`, but found a
+        │ segment (with type `Segment`).
+          ╭─[17:38]
+       16 │
+       17 │ face1 = startSketchOn(solid1, face = s.line1)
+          ·                                      ───┬───
+          ·                                         ╰── tests/
+      sketch_block_tag_face_and_sketch/input.kcl
+          ╰────
