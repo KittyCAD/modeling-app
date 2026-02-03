@@ -14,7 +14,8 @@ describe('MlEphantConversation', () => {
 
     let latestConversation: Conversation | undefined = { exchanges: [] }
 
-    const handleProcess = vi.fn((prompt: string) => {
+    const handleProcess = vi.fn(
+      (prompt: string, _mode: MlCopilotMode, _files: File[]) => {
       latestConversation = {
         exchanges: [
           {
@@ -27,7 +28,8 @@ describe('MlEphantConversation', () => {
           },
         ],
       }
-    })
+      }
+    )
 
     const renderConversation = (
       conversation?: Conversation,
@@ -64,7 +66,7 @@ describe('MlEphantConversation', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, mode)
+      expect(handleProcess).toHaveBeenCalledWith(promptText, mode, [])
 
       act(() => {
         rerender(renderConversation(latestConversation))

@@ -5,6 +5,7 @@ import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
   MlCopilotMode,
+  MlCopilotFile,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
@@ -95,6 +96,7 @@ export type MlEphantManagerEvents =
       selections: Selections
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
+      additionalFiles?: File[]
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -196,6 +198,22 @@ function isBackendShutdownMessage(
 
 function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
+}
+
+function resolveAttachmentMimeType(file: File): string {
+  if (file.type) return file.type
+  const name = file.name.toLowerCase()
+  if (name.endsWith('.md') || name.endsWith('.markdown')) return 'text/markdown'
+  if (name.endsWith('.pdf')) return 'application/pdf'
+  return 'application/octet-stream'
+}
+
+async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+  return {
+    name: file.name,
+    mimetype: resolveAttachmentMimeType(file),
+    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+  }
 }
 
 export const MlEphantConversationToMarkdown = (
@@ -618,6 +636,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
+      const additionalFiles =
+        event.additionalFiles && event.additionalFiles.length > 0
+          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+          : undefined
+
       const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
         type: 'user',
         content: requestData.body.prompt ?? '',
@@ -625,6 +648,7 @@ export const mlEphantManagerMachine = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
+        ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
       context.ws.send(JSON.stringify(request))
