@@ -1,3 +1,5 @@
+use std::f64::consts::TAU;
+
 use crate::{
     frontend::{
         api::{Object, ObjectId, ObjectKind},
@@ -339,10 +341,10 @@ pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: 
     let normalize_angle = |angle: f64| -> f64 {
         let mut normalized = angle;
         while normalized < 0.0 {
-            normalized += 2.0 * std::f64::consts::PI;
+            normalized += TAU;
         }
-        while normalized >= 2.0 * std::f64::consts::PI {
-            normalized -= 2.0 * std::f64::consts::PI;
+        while normalized >= TAU {
+            normalized -= TAU;
         }
         normalized
     };
@@ -469,10 +471,10 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
     let normalize_angle = |angle: f64| -> f64 {
         let mut normalized = angle;
         while normalized < 0.0 {
-            normalized += 2.0 * std::f64::consts::PI;
+            normalized += TAU;
         }
-        while normalized >= 2.0 * std::f64::consts::PI {
-            normalized -= 2.0 * std::f64::consts::PI;
+        while normalized >= TAU {
+            normalized -= TAU;
         }
         normalized
     };
@@ -486,7 +488,7 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
         normalized_end - normalized_start
     } else {
         // Wrap around
-        2.0 * std::f64::consts::PI - normalized_start + normalized_end
+        TAU - normalized_start + normalized_end
     };
 
     if arc_length < EPSILON_PARALLEL {
@@ -502,10 +504,10 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             // Point is not on the arc, return closest endpoint
             let dist_to_start = (normalized_point - normalized_start)
                 .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_start).abs());
+                .min(TAU - (normalized_point - normalized_start).abs());
             let dist_to_end = (normalized_point - normalized_end)
                 .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_end).abs());
+                .min(TAU - (normalized_point - normalized_end).abs());
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     } else {
@@ -514,16 +516,16 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             if normalized_point >= normalized_start {
                 normalized_point - normalized_start
             } else {
-                2.0 * std::f64::consts::PI - normalized_start + normalized_point
+                TAU - normalized_start + normalized_point
             }
         } else {
             // Point is not on the arc
             let dist_to_start = (normalized_point - normalized_start)
                 .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_start).abs());
+                .min(TAU - (normalized_point - normalized_start).abs());
             let dist_to_end = (normalized_point - normalized_end)
                 .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_end).abs());
+                .min(TAU - (normalized_point - normalized_end).abs());
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     };

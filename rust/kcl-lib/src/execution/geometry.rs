@@ -1,3 +1,4 @@
+use std::f64::consts::TAU;
 use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
@@ -1640,7 +1641,7 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
+            Self::Circle { radius, .. } => Some(TAU * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1651,7 +1652,7 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                Some(2.0 * std::f64::consts::PI * radius)
+                Some(TAU * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
