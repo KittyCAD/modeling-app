@@ -2172,6 +2172,12 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     ))
 }
 
+/// Same as `char::is_ascii_digit`, but accepts an owned `char` instead of a
+/// shared reference.
+fn is_char_ascii_digit(c: char) -> bool {
+    c.is_ascii_digit()
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -2184,8 +2190,8 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
     if var_name
         && (path_string.starts_with("_")
-            || path_string.contains('-')
-            || path_string.chars().filter(|c| *c == '.').count() > 1)
+            || path_string.starts_with(is_char_ascii_digit)
+            || !path_string.chars().all(|c| c.is_alphanumeric() || c == '_'))
     {
         return Err(ErrMode::Cut(
             CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
@@ -2193,19 +2199,6 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     }
 
     let path = if path_string.ends_with(".kcl") {
-        if path_string
-            .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    path_range,
-                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
-                )
-                .into(),
-            ));
-        }
-
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
