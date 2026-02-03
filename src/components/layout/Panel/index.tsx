@@ -37,20 +37,20 @@ export const LayoutPanelHeader = ({
         <span data-testid={id + '-header'}>{title}</span>
       </div>
       {Menu instanceof Function ? <Menu /> : Menu}
-      <ActionButton
-        Element="button"
-        iconStart={{
-          icon: 'close',
-          iconClassName: '!text-current',
-          bgClassName: 'bg-transparent dark:bg-transparent',
-        }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
-        onClick={() =>
-          onClose?.() || console.error(`No onClose defined for panel ${id}`)
-        }
-      >
-        <Tooltip position="bottom-right">Close</Tooltip>
-      </ActionButton>
+      {onClose && (
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'close',
+            iconClassName: '!text-current',
+            bgClassName: 'bg-transparent dark:bg-transparent',
+          }}
+          className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
+          onClick={onClose}
+        >
+          <Tooltip position="bottom-right">Close</Tooltip>
+        </ActionButton>
+      )}
     </div>
   )
 }
