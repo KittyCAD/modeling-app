@@ -16,18 +16,18 @@ describe('MlEphantConversation', () => {
 
     const handleProcess = vi.fn(
       (prompt: string, _mode: MlCopilotMode, _files: File[]) => {
-      latestConversation = {
-        exchanges: [
-          {
-            request: {
-              type: 'user',
-              content: prompt,
+        latestConversation = {
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: prompt,
+              },
+              responses: [],
+              deltasAggregated: '',
             },
-            responses: [],
-            deltasAggregated: '',
-          },
-        ],
-      }
+          ],
+        }
       }
     )
 

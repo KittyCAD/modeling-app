@@ -305,7 +305,11 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
-      onProcess={(request: string, mode: MlCopilotMode, attachments: File[]) => {
+      onProcess={(
+        request: string,
+        mode: MlCopilotMode,
+        attachments: File[]
+      ) => {
         onProcess(request, mode, attachments).catch(reportRejection)
       }}
       onClickClearChat={onClickClearChat}
