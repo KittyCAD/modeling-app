@@ -242,6 +242,7 @@ export const MlEphantConversationInput = (
   const [value, setValue] = useState<string>('')
   const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
   const [attachments, setAttachments] = useState<File[]>([])
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -360,13 +361,83 @@ export const MlEphantConversationInput = (
     setAttachments((current) => current.filter((_, i) => i !== index))
   }
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (props.disabled) return
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDraggingOver(true)
+    }
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Only set to false if we're leaving the container (not entering a child)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX
+    const y = e.clientY
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      setIsDraggingOver(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDraggingOver(false)
+    if (props.disabled) return
+
+    const files = Array.from(e.dataTransfer.files)
+    if (!files.length) return
+
+    const supported = files.filter(isSupportedAttachment)
+    if (supported.length !== files.length) {
+      toast.error('Only PDF, Markdown, and image files are supported.')
+    }
+    appendAttachments(supported)
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const files = Array.from(e.clipboardData.files)
+    if (!files.length) return
+    if (props.disabled) return
+
+    // Prevent default only if we have files to handle
+    e.preventDefault()
+
+    const supported = files.filter(isSupportedAttachment)
+    if (supported.length !== files.length) {
+      toast.error('Only PDF, Markdown, and image files are supported.')
+    }
+    appendAttachments(supported)
+  }
+
   const selectionsContext:
     | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
     | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
 
   return (
     <div className="flex flex-col p-4 gap-2">
-      <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
+      <div
+        className={`p-2 border b-4 focus-within:b-default flex flex-col gap-2 relative ${isDraggingOver ? 'border-ml-green border-dashed' : ''}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDraggingOver && (
+          <div className="absolute inset-0 bg-ml-green/10 flex items-center justify-center pointer-events-none z-10 rounded">
+            <span className="text-sm text-ml-green font-medium">
+              Drop files to attach
+            </span>
+          </div>
+        )}
         <input
           ref={fileInputRef}
           type="file"
@@ -396,6 +467,7 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
+          onPaste={handlePaste}
           className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
