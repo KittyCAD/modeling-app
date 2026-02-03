@@ -16,8 +16,7 @@ import {
   CanvasTexture,
   Color,
   PlaneGeometry,
-  type Object3D,
-  Texture,
+  type Texture,
 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -30,6 +29,11 @@ import {
   DISTANCE_CONSTRAINT_HIT_AREA,
   SEGMENT_WIDTH_PX,
 } from '@src/clientSideScene/sceneConstants'
+import {
+  packRgbToColor,
+  SKETCH_SELECTION_COLOR,
+  SKETCH_SELECTION_RGB,
+} from '@src/lib/constants'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -72,17 +76,42 @@ export class ConstraintUtils {
 
   private callbacks: EditingCallbacks | undefined
 
+  private static readonly HOVER_COLOR = packRgbToColor(
+    SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
+  )
+
   // TODO if these are disposed they need to be recreated
   private readonly materials = {
-    arrow: new MeshBasicMaterial({
-      color: 0xff0000,
-      side: DoubleSide,
-    }),
-    line: new LineMaterial({
-      color: 0xff0000,
-      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
-      worldUnits: false,
-    }),
+    default: {
+      arrow: new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide }),
+      line: new LineMaterial({
+        color: 0xff0000,
+        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+        worldUnits: false,
+      }),
+    },
+    hovered: {
+      arrow: new MeshBasicMaterial({
+        color: SKETCH_SELECTION_COLOR,
+        side: DoubleSide,
+      }),
+      line: new LineMaterial({
+        color: SKETCH_SELECTION_COLOR,
+        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+        worldUnits: false,
+      }),
+    },
+    selected: {
+      arrow: new MeshBasicMaterial({
+        color: ConstraintUtils.HOVER_COLOR,
+        side: DoubleSide,
+      }),
+      line: new LineMaterial({
+        color: ConstraintUtils.HOVER_COLOR,
+        linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+        worldUnits: false,
+      }),
+    },
     hitArea: new MeshBasicMaterial({
       color: 0x00ff00,
       transparent: true,
@@ -106,36 +135,36 @@ export class ConstraintUtils {
 
       const leadGeom1 = new LineGeometry()
       leadGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine1 = new Line2(leadGeom1, this.materials.line)
+      const leadLine1 = new Line2(leadGeom1, this.materials.default.line)
       leadLine1.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine1)
 
       const leadGeom2 = new LineGeometry()
       leadGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const leadLine2 = new Line2(leadGeom2, this.materials.line)
+      const leadLine2 = new Line2(leadGeom2, this.materials.default.line)
       leadLine2.userData.type = DISTANCE_CONSTRAINT_LEADER_LINE
       group.add(leadLine2)
 
       const lineGeom1 = new LineGeometry()
       lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
-      const line1 = new Line2(lineGeom1, this.materials.line)
+      const line1 = new Line2(lineGeom1, this.materials.default.line)
       line1.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line1)
 
       const lineGeom2 = new LineGeometry()
       lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
-      const line2 = new Line2(lineGeom2, this.materials.line)
+      const line2 = new Line2(lineGeom2, this.materials.default.line)
       line2.userData.type = DISTANCE_CONSTRAINT_BODY
       group.add(line2)
 
       this.arrowGeometry = this.arrowGeometry || createArrowGeometry()
 
       // Arrow tip is at origin, so position directly at start/end
-      const arrow1 = new Mesh(this.arrowGeometry, this.materials.arrow)
+      const arrow1 = new Mesh(this.arrowGeometry, this.materials.default.arrow)
       arrow1.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow1)
 
-      const arrow2 = new Mesh(this.arrowGeometry, this.materials.arrow)
+      const arrow2 = new Mesh(this.arrowGeometry, this.materials.default.arrow)
       arrow2.userData.type = DISTANCE_CONSTRAINT_ARROW
       group.add(arrow2)
 
@@ -204,7 +233,9 @@ export class ConstraintUtils {
     obj: ApiObject,
     objects: Array<ApiObject>,
     scale: number,
-    sceneInfra: SceneInfra
+    sceneInfra: SceneInfra,
+    selectedIds: number[],
+    hoveredId: number | null
   ) {
     const points = getEndPoints(obj, objects)
     if (points) {
@@ -253,9 +284,36 @@ export class ConstraintUtils {
 
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
-      this.materials.line.color.set(constraintColor)
-      this.materials.line.linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
-      this.materials.arrow.color.set(constraintColor)
+
+      // Pick material set based on hover/selected state
+      const isSelected = selectedIds.includes(obj.id)
+      console.log('hoveredid', hoveredId)
+      const isHovered = hoveredId === obj.id
+      const matSet = isHovered
+        ? this.materials.hovered
+        : isSelected
+          ? this.materials.selected
+          : this.materials.default
+
+      // Update default materials with theme color
+      this.materials.default.line.color.set(constraintColor)
+      this.materials.default.arrow.color.set(constraintColor)
+      const linewidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+      this.materials.default.line.linewidth = linewidth
+      this.materials.hovered.line.linewidth = linewidth
+      this.materials.selected.line.linewidth = linewidth
+
+      // Swap materials on lines and arrows
+      for (const child of group.children) {
+        if (child instanceof Line2) {
+          child.material = matSet.line
+        } else if (
+          child instanceof Mesh &&
+          child.userData.type === DISTANCE_CONSTRAINT_ARROW
+        ) {
+          child.material = matSet.arrow
+        }
+      }
 
       // Leader lines
       const extension = perp

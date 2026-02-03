@@ -184,6 +184,10 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update hovered id': assign(({ event }) => {
+      assertEvent(event, 'update hovered id')
+      return { hoveredId: event.data.hoveredId }
+    }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
     'camera scale change': onCameraScaleChange,
@@ -226,6 +230,7 @@ export const sketchSolveMachine = setup({
       sketchSolveToolName: null,
       selectedIds: [],
       duringAreaSelectIds: [],
+      hoveredId: null,
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         kclSource: {
@@ -686,6 +691,9 @@ export const sketchSolveMachine = setup({
     },
     'update selected ids': {
       actions: ['update selected ids', 'refresh selection styling'],
+    },
+    'update hovered id': {
+      actions: ['update hovered id', 'refresh selection styling'],
     },
     'delete selected': {
       actions: async ({ self, context }) => {

@@ -87,6 +87,10 @@ export type SketchSolveMachineEvent =
       type: 'update selected ids'
       data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
     }
+  | {
+      type: 'update hovered id'
+      data: { hoveredId: number | null }
+    }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
       type: 'update sketch outcome'
@@ -132,6 +136,7 @@ export type SketchSolveContext = {
   pendingToolName?: EquipTool
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
+  hoveredId: number | null
   sketchExecOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -486,6 +491,12 @@ export function updateSceneGraphFromDelta({
     if (obj.kind.type === 'Sketch') {
       return
     }
+
+    // Combine selectedIds and duringAreaSelectIds for highlighting
+    const allSelectedIds = Array.from(
+      new Set([...selectedIds, ...duringAreaSelectIds])
+    )
+
     // Render constraints
     if (obj.kind.type === 'Constraint') {
       let constraintGroup = context.sceneInfra.scene.getObjectByName(
@@ -509,7 +520,9 @@ export function updateSceneGraphFromDelta({
           obj,
           objects,
           factor,
-          context.sceneInfra
+          context.sceneInfra,
+          selectedIds,
+          context.hoveredId
         )
       }
       return
@@ -550,11 +563,6 @@ export function updateSceneGraphFromDelta({
     if (!ctor) {
       return
     }
-
-    // Combine selectedIds and duringAreaSelectIds for highlighting
-    const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
-    )
 
     // Get draft entity IDs from context
     const draftEntityIds = context.draftEntities
@@ -725,7 +733,24 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     : undefined
 
   sceneGraphDelta.new_graph.objects.forEach((obj) => {
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+    if (obj.kind.type === 'Constraint') {
+      const constraintGroup = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      ) as Group | null
+      if (constraintGroup) {
+        constraintUtils.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra,
+          allSelectedIds,
+          context.hoveredId
+        )
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
@@ -800,7 +825,9 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
         obj,
         objects,
         scaleFactor,
-        context.sceneInfra
+        context.sceneInfra,
+        context.selectedIds,
+        context.hoveredId
       )
     }
   })

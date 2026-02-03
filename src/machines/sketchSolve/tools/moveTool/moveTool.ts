@@ -357,6 +357,7 @@ export function createOnMouseEnterCallback({
   getSelectedIds,
   setLastHoveredMesh,
   getDraftEntityIds,
+  onUpdateHoveredId,
 }: {
   updateSegmentHover: (
     mesh: Mesh,
@@ -367,6 +368,7 @@ export function createOnMouseEnterCallback({
   getSelectedIds: () => Array<number>
   setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -379,6 +381,12 @@ export function createOnMouseEnterCallback({
       return
     }
     if (!selected) return
+
+    // Constraint hit area hover
+    if (selected.parent?.userData.type === CONSTRAINT_TYPE) {
+      onUpdateHoveredId(selected.parent.userData.object_id)
+      return
+    }
 
     // Only highlight segment meshes (lines or arcs), not points or other objects
     const mesh = selected
@@ -413,6 +421,7 @@ export function createOnMouseLeaveCallback({
   getLastHoveredMesh,
   setLastHoveredMesh,
   getDraftEntityIds,
+  onUpdateHoveredId,
 }: {
   updateSegmentHover: (
     mesh: Mesh,
@@ -424,6 +433,7 @@ export function createOnMouseLeaveCallback({
   getLastHoveredMesh: () => Mesh | null
   setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -435,6 +445,9 @@ export function createOnMouseLeaveCallback({
     if (isAreaSelectActive) {
       return
     }
+
+    // Clear constraint hover
+    onUpdateHoveredId(null)
 
     // Clear hover state for the previously hovered mesh
     const hoveredMesh = getLastHoveredMesh()
@@ -501,6 +514,7 @@ export function createOnClickCallback({
     ) {
       // Double clicking on Constraint
       onEditConstraint(entityUnderCursorId)
+      return
     }
 
     if (entityUnderCursorId !== null) {
@@ -1502,6 +1516,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
           ? [...snapshot.context.draftEntities.segmentIds]
           : undefined
       },
+      onUpdateHoveredId: (hoveredId: number | null) => {
+        self.send({ type: 'update hovered id', data: { hoveredId } })
+      },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
       updateSegmentHover,
@@ -1522,6 +1539,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return snapshot.context.draftEntities
           ? [...snapshot.context.draftEntities.segmentIds]
           : undefined
+      },
+      onUpdateHoveredId: (hoveredId: number | null) => {
+        self.send({ type: 'update hovered id', data: { hoveredId } })
       },
     }),
     onAreaSelectStart: ({ startPoint }) => {

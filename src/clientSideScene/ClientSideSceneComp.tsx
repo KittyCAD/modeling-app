@@ -85,14 +85,6 @@ export const ClientSideScene = ({
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
-  const editingConstraintId = useSelector(
-    state.children.sketchSolveMachine,
-    (snapshot) =>
-      (snapshot as SnapshotFrom<typeof sketchSolveMachine>)?.context
-        ?.editingConstraintId
-  )
-  console.log('editing', editingConstraintId)
-
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
   useEffect(() => {
