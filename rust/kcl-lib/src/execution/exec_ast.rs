@@ -483,6 +483,32 @@ impl ExecutorContext {
                             .add(var_name.clone(), rhs.clone(), source_range)?;
                     }
 
+                    if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
+                        && let KclValue::Segment { value } = &rhs
+                    {
+                        // Add segment to mapping so that we can tag it when
+                        // sending to the engine.
+                        let segment_object_id = match &value.repr {
+                            SegmentRepr::Unsolved { segment } => segment.object_id,
+                            SegmentRepr::Solved { segment } => segment.object_id,
+                        };
+                        sketch_block_state
+                            .segment_tags
+                            .entry(segment_object_id)
+                            .or_insert_with(|| {
+                                let id_node = &variable_declaration.declaration.id;
+                                Node::new(
+                                    TagDeclarator {
+                                        name: id_node.name.clone(),
+                                        digest: None,
+                                    },
+                                    id_node.start,
+                                    id_node.end,
+                                    id_node.module_id,
+                                )
+                            });
+                    }
+
                     // Track operations, for the feature tree.
                     // Don't track these operations if the KCL code being executed is in the stdlib,
                     // because users shouldn't know about stdlib internals -- it's useless noise, to them.
@@ -1245,6 +1271,8 @@ impl Node<SketchBlock> {
                 self,
             ));
         };
+        #[cfg(feature = "artifact-graph")]
+        let mut sketch_block_state = sketch_block_state;
 
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
@@ -1441,7 +1469,6 @@ impl Node<SketchBlock> {
             };
             sketch.segments.extend(segment_object_ids);
             // Update the sketch scene object with constraints.
-            let mut sketch_block_state = sketch_block_state;
             sketch
                 .constraints
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
@@ -1460,6 +1487,7 @@ impl Node<SketchBlock> {
                 &sketch_surface,
                 sketch_engine_id,
                 &mut solved_segments,
+                &sketch_block_state.segment_tags,
                 ctx,
                 exec_state,
                 range,

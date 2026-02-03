@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Point2d as KPoint2d};
 use uuid::Uuid;
@@ -10,6 +11,8 @@ use crate::{
         BasePath, GeoMeta, ModelingCmdMeta, Path, ProfileClosed, Segment, SegmentKind, SketchSurface,
         types::{ArrayLen, RuntimeType},
     },
+    front::ObjectId,
+    parsing::ast::types::TagNode,
     std::{
         Args, CircularDirection,
         args::TyF64,
@@ -23,6 +26,7 @@ pub(crate) async fn create_segments_in_engine(
     sketch_surface: &SketchSurface,
     sketch_engine_id: Uuid,
     segments: &mut [Segment],
+    segment_tags: &IndexMap<ObjectId, TagNode>,
     ctx: &ExecutorContext,
     exec_state: &mut ExecState,
     range: SourceRange,
@@ -107,6 +111,8 @@ pub(crate) async fn create_segments_in_engine(
             return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
         }
 
+        let tag = segment_tags.get(&segment.object_id).cloned();
+
         match &segment.kind {
             SegmentKind::Point { .. } => {
                 debug_assert!(false, "Points should have been skipped earlier");
@@ -115,7 +121,7 @@ pub(crate) async fn create_segments_in_engine(
             SegmentKind::Line { end, .. } => {
                 let sketch = straight_line(
                     segment.id,
-                    StraightLineParams::absolute(end.clone(), sketch.clone(), None),
+                    StraightLineParams::absolute(end.clone(), sketch.clone(), tag),
                     exec_state,
                     ctx,
                     range,
@@ -163,7 +169,7 @@ pub(crate) async fn create_segments_in_engine(
                     TyF64::new(start_radians, NumericType::radians()),
                     TyF64::new(end_radians, NumericType::radians()),
                     TyF64::new(radius_in_center_unit, center_ty),
-                    None,
+                    tag,
                     ctx,
                     range,
                 )
