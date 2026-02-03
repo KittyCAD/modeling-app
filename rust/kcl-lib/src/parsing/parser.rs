@@ -5263,10 +5263,26 @@ e
     }
 
     #[test]
-    fn import_kcl_with_spaces_in_name() {
+    fn import_kcl_with_spaces_in_name_with_alias() {
         let code = r#"import "my file.kcl" as myFile"#;
         let (_, errs) = assert_no_err(code);
         assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
+    fn import_kcl_with_spaces_in_name_without_alias() {
+        assert_err_contains(
+            r#"import "my file.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+        );
+    }
+
+    #[test]
+    fn import_kcl_starting_with_name_starting_with_number_without_alias() {
+        assert_err_contains(
+            r#"import "0th.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+        );
     }
 
     #[test]
