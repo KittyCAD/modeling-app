@@ -748,9 +748,6 @@ export const sketchSolveMachine = setup({
         assign({
           editingConstraintId: undefined,
         }),
-        () => {
-          constraintUtils.stopEditingInput()
-        },
       ],
     },
   },

@@ -71,10 +71,6 @@ export type EditingCallbacks = {
 
 export class ConstraintUtils {
   private arrowGeometry: BufferGeometry | undefined
-  private editingView: EditorView | null = null
-  private editingContainer: HTMLDivElement | null = null
-
-  private callbacks: EditingCallbacks | undefined
 
   private static readonly HOVER_COLOR = packRgbToColor(
     SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
@@ -287,7 +283,6 @@ export class ConstraintUtils {
 
       // Pick material set based on hover/selected state
       const isSelected = selectedIds.includes(obj.id)
-      console.log('hoveredid', hoveredId)
       const isHovered = hoveredId === obj.id
       const matSet = isHovered
         ? this.materials.hovered
@@ -372,9 +367,9 @@ export class ConstraintUtils {
       const angle = Math.atan2(dir.y, dir.x)
       const arrows = group.children.filter(
         (child) => child.userData.type === DISTANCE_CONSTRAINT_ARROW
-      )
-      const arrow1 = arrows[0] as Line2
-      const arrow2 = arrows[1] as Line2
+      ) as Mesh[]
+      const arrow1 = arrows[0]
+      const arrow2 = arrows[1]
 
       // Arrow tip is at origin, so position directly at start/end
       arrow1.position.copy(start)
@@ -496,6 +491,11 @@ export class ConstraintUtils {
           const totalWidth = iconWidth + textMetrics.width
           const contentX = (canvas.width - totalWidth) / 2
 
+          // Draw dimension text
+          ctx.textAlign = 'left'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(dimensionLabel, contentX + iconWidth, canvas.height / 2)
+
           // Draw function icon if expression is not a literal
           if (showFnIcon) {
             ctx.save()
@@ -504,13 +504,6 @@ export class ConstraintUtils {
             ctx.fill(new Path2D(FUNCTION_ICON_PATH))
             ctx.restore()
           }
-
-          // Draw dimension text
-          ctx.font = '24px sans-serif'
-          ctx.textAlign = 'left'
-          ctx.textBaseline = 'middle'
-          ctx.fillStyle = fillColor
-          ctx.fillText(dimensionLabel, contentX + iconWidth, canvas.height / 2)
 
           label.userData.textWidth = totalWidth
           label.userData.textHeight = 24 // Font size approximation
@@ -544,17 +537,6 @@ export class ConstraintUtils {
           1
         )
       }
-    }
-  }
-
-  public stopEditingInput() {
-    if (this.editingView) {
-      this.editingView.destroy()
-      this.editingView = null
-    }
-    if (this.editingContainer) {
-      this.editingContainer.remove()
-      this.editingContainer = null
     }
   }
 }
