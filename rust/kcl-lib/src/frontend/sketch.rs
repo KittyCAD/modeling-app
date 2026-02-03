@@ -307,6 +307,7 @@ pub struct Coincident {
 pub struct Distance {
     pub points: Vec<ObjectId>,
     pub distance: Number,
+    pub source_expr: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
