@@ -11,6 +11,7 @@ on:
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,8 +28,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
 
@@ -52,13 +53,15 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Build WASM condition
+      - name: Build Wasm condition
         id: wasm
+        env:
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
+          EVENT_NAME: ${{ github.event_name }}
+          RUST_CHANGES: ${{ steps.filter.outputs.rust }}
         run: |
-          set -euox pipefail
-          # Build wasm if this is a push to main or tag, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build Wasm with pushes to main, Rust changes, or cache misses
+          if [[ "${EVENT_NAME}" == 'push' || "${RUST_CHANGES}" == 'true' || "${DOWNLOAD_OUTCOME}" == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -107,16 +110,27 @@ jobs:
           npm run files:flip-to-staging
           npm run files:set-windows-codesign-config
 
-      - name: Set release version and windows codesign config
+      - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
+        run: |
+          export VERSION=${GITHUB_REF_NAME#v}
+          npm run files:set-version
+
+      - name: Set dummy release version (forced release build) and disable updater
+        if: ${{ env.FORCE_RELEASE_BUILD == 'true' }}
+        run: |
+          export VERSION=255.255.0
+          npm run files:set-version
+          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
+
+      - name: Set windows codesign config
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' }}
         env:
           AZURE_TRUSTED_SIGNING_ENDPOINT: ${{ secrets.AZURE_TRUSTED_SIGNING_ENDPOINT }}
           AZURE_TRUSTED_SIGNING_ACCOUNT_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
           AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_CERT_PROFILE_NAME }}
           AZURE_TRUSTED_SIGNING_PUBLISHER_NAME: ${{ secrets.AZURE_TRUSTED_SIGNING_PUBLISHER_NAME }}
         run: |
-          export VERSION=${GITHUB_REF_NAME#v}
-          npm run files:set-version
           npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v6
@@ -147,7 +161,7 @@ jobs:
             platform: macos
           - os: namespace-profile-windows-4-cores
             platform: windows
-          - os: ubuntu-22.04
+          - os: namespace-profile-ubuntu-2-cores
             platform: linux
     runs-on: ${{ matrix.os }}
     name: build-apps (${{ matrix.platform }})
@@ -174,13 +188,13 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm' # Set this to npm, npm or pnpm.
+          node-version-file: .nvmrc
+          cache: npm # Set this to npm, npm or pnpm.
 
       - run: npm install
 
       - name: Configure Azure Trusted Signing env (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           echo "AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> "$GITHUB_ENV"
           echo "AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> "$GITHUB_ENV"
@@ -188,13 +202,13 @@ jobs:
         shell: bash
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_STAGING == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
         run: npm run tronb:package:dev
 
       - name: Build the app (release)
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -203,6 +217,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          CSC_FOR_PULL_REQUEST: ${{ env.FORCE_RELEASE_BUILD }}
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 

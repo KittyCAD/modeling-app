@@ -174,9 +174,9 @@ gripper = subtract(
        [gripBaseBracket],
        tools = [
          union([
-  union([mountingHole01, mountingHole02]),
-  union([cutOuter, cutInner])
-])
+           union([mountingHole01, mountingHole02]),
+           union([cutOuter, cutInner])
+         ])
        ],
      )
   |> appearance(color = "#0f0f0f")

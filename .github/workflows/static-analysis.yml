@@ -17,31 +17,31 @@ permissions:
 
 jobs:
   npm-fmt-check:
-    runs-on: 'ubuntu-22.04'
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
       - run: npm run fmt:check
 
-  npm-build-wasm:
+  build-wasm:
     uses: ./.github/workflows/build-wasm.yml
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-tsc:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts
@@ -64,14 +64,14 @@ jobs:
 
   npm-lint:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts
@@ -94,14 +94,14 @@ jobs:
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts

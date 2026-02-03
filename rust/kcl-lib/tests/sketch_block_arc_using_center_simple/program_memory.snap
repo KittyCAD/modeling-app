@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
           "repr": {
             "Solved": {
               "segment": {
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -112,7 +113,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     "center_object_id": 4,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed"
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 }
               }
