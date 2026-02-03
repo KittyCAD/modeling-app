@@ -5270,6 +5270,13 @@ e
     }
 
     #[test]
+    fn import_kcl_with_spaces_in_name() {
+        let code = r#"import "my file.kcl" as myFile"#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs.is_empty(), "found: {errs:#?}");
+    }
+
+    #[test]
     fn std_fn_decl() {
         let code = r#"/// Compute the cosine of a number (in radians).
 ///
