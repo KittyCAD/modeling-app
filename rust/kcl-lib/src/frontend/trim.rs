@@ -45,15 +45,15 @@ pub enum TrimDirection {
 // A trim spawn is the intersection point of the trim line (drawn by the user) and a segment.
 // We travel in both directions along the segment from the trim spawn to determine how to implement the trim.
 
-/// Result of finding the next trim spawn (intersection)
+/// Item from advancing to the next trim spawn (intersection).
 #[derive(Debug, Clone)]
-pub enum NextTrimResult {
-    TrimSpawn {
+pub enum NextTrimSpawn {
+    Spawn {
         trim_spawn_seg_id: ObjectId,
         trim_spawn_coords: Coords2d,
         next_index: usize,
     },
-    NoTrimSpawn {
+    NoSpawn {
         next_index: usize,
     },
 }
@@ -736,7 +736,7 @@ pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objec
 ///
 /// Loops through polyline segments starting from startIndex and checks for intersections
 /// with all scene segments (both Line and Arc). Returns the first intersection found.
-pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[Object]) -> NextTrimResult {
+pub fn get_next_trim_spawn(points: &[Coords2d], start_index: usize, objects: &[Object]) -> NextTrimSpawn {
     // Loop through polyline segments starting from startIndex
     for i in start_index..points.len().saturating_sub(1) {
         let p1 = points[i];
@@ -760,7 +760,7 @@ pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[
                     // Get segment ID from object
                     let seg_id = obj.id;
 
-                    return NextTrimResult::TrimSpawn {
+                    return NextTrimSpawn::Spawn {
                         trim_spawn_seg_id: seg_id,
                         trim_spawn_coords: intersection,
                         next_index: i, // Return current index to re-check same polyline segment
@@ -781,7 +781,7 @@ pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[
                     // Get segment ID from object
                     let seg_id = obj.id;
 
-                    return NextTrimResult::TrimSpawn {
+                    return NextTrimSpawn::Spawn {
                         trim_spawn_seg_id: seg_id,
                         trim_spawn_coords: intersection,
                         next_index: i, // Return current index to re-check same polyline segment
@@ -792,7 +792,7 @@ pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[
     }
 
     // No intersection found
-    NextTrimResult::NoTrimSpawn {
+    NextTrimSpawn::NoSpawn {
         next_index: points.len().saturating_sub(1),
     }
 }
@@ -1737,10 +1737,10 @@ where
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_result = get_next_trim_coords(points, start_index, &current_scene_graph_delta.new_graph.objects);
+        let next_trim_spawn = get_next_trim_spawn(points, start_index, &current_scene_graph_delta.new_graph.objects);
 
-        match &next_trim_result {
-            NextTrimResult::NoTrimSpawn { next_index } => {
+        match &next_trim_spawn {
+            NextTrimSpawn::NoSpawn { next_index } => {
                 let old_start_index = start_index;
                 start_index = *next_index;
 
@@ -1755,7 +1755,7 @@ where
                 }
                 continue;
             }
-            NextTrimResult::TrimSpawn {
+            NextTrimSpawn::Spawn {
                 trim_spawn_seg_id,
                 next_index,
                 ..
@@ -1995,10 +1995,10 @@ pub async fn execute_trim_loop_with_context(
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_result = get_next_trim_coords(points, start_index, &current_scene_graph_delta.new_graph.objects);
+        let next_trim_spawn = get_next_trim_spawn(points, start_index, &current_scene_graph_delta.new_graph.objects);
 
-        match &next_trim_result {
-            NextTrimResult::NoTrimSpawn { next_index } => {
+        match &next_trim_spawn {
+            NextTrimSpawn::NoSpawn { next_index } => {
                 let old_start_index = start_index;
                 start_index = *next_index;
                 if start_index <= old_start_index {
@@ -2009,7 +2009,7 @@ pub async fn execute_trim_loop_with_context(
                 }
                 continue;
             }
-            NextTrimResult::TrimSpawn {
+            NextTrimSpawn::Spawn {
                 trim_spawn_seg_id,
                 next_index,
                 ..
@@ -4802,7 +4802,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_next_trim_coords_line_intersection() {
+    fn test_get_next_trim_spawn_line_intersection() {
         use serde_json::json;
 
         // Create a simple line segment object
@@ -4884,22 +4884,22 @@ mod tests {
         // Trim line that intersects: from [0, 10] to [10, 0]
         let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 0.0 }];
 
-        let result = get_next_trim_coords(&points, 0, &objects);
+        let result = get_next_trim_spawn(&points, 0, &objects);
 
         match result {
-            NextTrimResult::TrimSpawn { trim_spawn_coords, .. } => {
+            NextTrimSpawn::Spawn { trim_spawn_coords, .. } => {
                 // Should intersect at [5, 5]
                 assert!((trim_spawn_coords.x - 5.0).abs() < 1e-5);
                 assert!((trim_spawn_coords.y - 5.0).abs() < 1e-5);
             }
-            NextTrimResult::NoTrimSpawn { .. } => {
-                panic!("Expected intersection but got NoTrimSpawn");
+            NextTrimSpawn::NoSpawn { .. } => {
+                panic!("Expected intersection but got NoSpawn");
             }
         }
     }
 
     #[test]
-    fn test_get_next_trim_coords_no_intersection() {
+    fn test_get_next_trim_spawn_no_intersection() {
         use serde_json::json;
 
         // Create a line segment that won't intersect
@@ -4980,14 +4980,14 @@ mod tests {
         // Trim line that doesn't intersect: from [0, 10] to [10, 10]
         let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 10.0 }];
 
-        let result = get_next_trim_coords(&points, 0, &objects);
+        let result = get_next_trim_spawn(&points, 0, &objects);
 
         match result {
-            NextTrimResult::NoTrimSpawn { .. } => {
+            NextTrimSpawn::NoSpawn { .. } => {
                 // Expected
             }
-            NextTrimResult::TrimSpawn { .. } => {
-                panic!("Expected no intersection but got TrimSpawn");
+            NextTrimSpawn::Spawn { .. } => {
+                panic!("Expected no intersection but got Spawn");
             }
         }
     }
