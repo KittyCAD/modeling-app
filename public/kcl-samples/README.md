@@ -298,6 +298,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![truss-structure](screenshots/truss-structure.png)](truss-structure/main.kcl)
 #### [tube-manifold](tube-manifold/main.kcl) ([screenshot](screenshots/tube-manifold.png))
 [![tube-manifold](screenshots/tube-manifold.png)](tube-manifold/main.kcl)
+#### [twisted-wire-sculpture](twisted-wire-sculpture/main.kcl) ([screenshot](screenshots/twisted-wire-sculpture.png))
+[![twisted-wire-sculpture](screenshots/twisted-wire-sculpture.png)](twisted-wire-sculpture/main.kcl)
 #### [utility-sink](utility-sink/main.kcl) ([screenshot](screenshots/utility-sink.png))
 [![utility-sink](screenshots/utility-sink.png)](utility-sink/main.kcl)
 #### [v-block](v-block/main.kcl) ([screenshot](screenshots/v-block.png))

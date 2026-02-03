@@ -1874,6 +1874,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "twisted-wire-sculpture/main.kcl",
+    "multipleFiles": false,
+    "title": "Twisted wires",
+    "description": "Strange sculpture inspired by hot wire cutting.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
