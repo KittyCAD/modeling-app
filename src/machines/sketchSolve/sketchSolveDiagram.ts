@@ -116,6 +116,10 @@ async function addAxisDistanceConstraint(
       type: constraintType,
       distance: { value: distance, units },
       points: segmentsToConstrain,
+      source: {
+        expr: distance.toString(),
+        is_literal: true,
+      },
     },
     await jsAppSettings(context.rustContext.settingsActor)
   )
@@ -448,6 +452,10 @@ export const sketchSolveMachine = setup({
             type: 'Distance',
             distance: { value: distance, units },
             points: pointsForDistance,
+            source: {
+              expr: distance.toString(),
+              is_literal: true,
+            },
           },
           await jsAppSettings(context.rustContext.settingsActor)
         )
