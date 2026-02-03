@@ -334,7 +334,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
+            &ModelingCmd::from(mcmd::EdgeLinesVisible::builder().hidden(!visible).build()),
         )
         .await?;
 
@@ -597,7 +597,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.take_batch().await.clone()
+            self.take_batch().await
         };
 
         self.run_batch(all_requests, source_range).await
@@ -617,14 +617,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             plane_id,
             source_range,
-            &ModelingCmd::from(mcmd::MakePlane {
-                clobber: false,
-                origin: info.origin.into(),
-                size: LengthUnit(default_size),
-                x_axis: info.x_axis.into(),
-                y_axis: info.y_axis.into(),
-                hide: Some(true),
-            }),
+            &ModelingCmd::from(
+                mcmd::MakePlane::builder()
+                    .clobber(false)
+                    .origin(info.origin.into())
+                    .size(LengthUnit(default_size))
+                    .x_axis(info.x_axis.into())
+                    .y_axis(info.y_axis.into())
+                    .hide(true)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -633,7 +635,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             self.batch_modeling_cmd(
                 id_generator.next_uuid(),
                 source_range,
-                &ModelingCmd::from(mcmd::PlaneSetColor { color, plane_id }),
+                &ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane_id).build()),
             )
             .await?;
         }
@@ -646,6 +648,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
+        let plane_opacity = 0.1;
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
@@ -654,7 +657,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.7,
                     g: 0.28,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -664,7 +667,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.7,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -674,7 +677,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.28,
                     b: 0.7,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
@@ -806,10 +809,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden,
-                object_id: *GRID_OBJECT_ID,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(hidden)
+                    .object_id(*GRID_OBJECT_ID)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -824,10 +829,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden,
-                object_id: *GRID_SCALE_TEXT_OBJECT_ID,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(hidden)
+                    .object_id(*GRID_SCALE_TEXT_OBJECT_ID)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -905,7 +912,7 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         token
     } else {
         return Err(anyhow::anyhow!(
-            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+            "No API token found in environment variables. Use ZOO_API_TOKEN"
         ));
     };
 
@@ -943,11 +950,13 @@ impl GridScaleBehavior {
     fn into_modeling_cmd(self) -> ModelingCmd {
         const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
         match self {
-            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale {}),
-            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(mcmd::SetGridScale {
-                value: NUMBER_OF_GRID_COLUMNS,
-                units: unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters),
-            }),
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale::builder().build()),
+            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(
+                mcmd::SetGridScale::builder()
+                    .value(NUMBER_OF_GRID_COLUMNS)
+                    .units(unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters))
+                    .build(),
+            ),
         }
     }
 }

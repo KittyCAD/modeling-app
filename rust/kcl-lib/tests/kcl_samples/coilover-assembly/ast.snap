@@ -97,8 +97,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Bottom Coilover Part"
         ],
         "start": 0,
@@ -128,8 +126,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Coilover Spring"
         ],
         "start": 0,
@@ -269,8 +265,6 @@ description: Result of parsing coilover-assembly.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Top Coilover Part"
         ],
         "start": 0,
@@ -296,6 +290,7 @@ description: Result of parsing coilover-assembly.kcl
         "preComments": [
           "// Coilover Assembly",
           "// Consist of a lower and upper body combination with eye-end mounts at the top and bottom. 200 mm-long helical spring (44 mm OD, and wire diameter of 6 mm) captured between upper and lower seats; Internal piston rod running through the spring. Integrated bump-stop beneath the upper seat to limit compression stroke. The assembly provides adjustable ride height and damping when installed between chassis and wheel hub.",
+          "// Categories: Automotive",
           "",
           "",
           "// Set units"
@@ -341,7 +336,44 @@ description: Result of parsing coilover-assembly.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

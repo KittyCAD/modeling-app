@@ -27,7 +27,8 @@ fixed amount from an existing plane.
 This lint rule triggers when a startSketchOn's provided plane is recognized as
 being merely offset from a built-in plane. It's much more readable to
 use offsetPlane where possible.
-"
+",
+    crate::lint::rule::FindingFamily::Simplify
 );
 
 pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {

@@ -2,6 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_file_not_exist_error.kcl
 ---
-{
-  "rust/kcl-lib/tests/import_file_not_exist_error/input.kcl": []
-}
+{}

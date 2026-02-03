@@ -16,8 +16,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -38,7 +37,10 @@ const ProjectSidebarMenu = ({
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
-      <AppLogoLink project={project} file={file} />
+      <div className="relative group/home cursor-pointer">
+        <AppLogoLink project={project} file={file} />
+        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+      </div>
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
       ) : (
@@ -61,9 +63,10 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (
@@ -87,9 +90,6 @@ function AppLogoLink({
   )
 }
 
-const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state.context.commands
-
 function ProjectMenuPopover({
   project,
   file,
@@ -97,11 +97,14 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const { commandBarActor, engineCommandManager, kclManager } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const machineManager = useContext(MachineManagerContext)
+  const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+    state.context.commands
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
@@ -135,7 +138,7 @@ function ProjectMenuPopover({
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_PROJECT
               : PATHS.HOME + PATHS.SETTINGS_PROJECT
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         'break',
@@ -230,6 +233,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       commandBarActor.send,
       engineCommandManager,
       onProjectClose,

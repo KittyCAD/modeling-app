@@ -3,8 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands multi-axis-robot.kcl
 ---
 {
-  "public/kcl-samples/multi-axis-robot/globals.kcl": [],
-  "public/kcl-samples/multi-axis-robot/main.kcl": [],
   "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
     {
       "cmdId": "[uuid]",
@@ -563,7 +561,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -643,15 +642,20 @@ description: Artifact commands multi-axis-robot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.8,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.8,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -660,15 +664,20 @@ description: Artifact commands multi-axis-robot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.8,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.8,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -677,15 +686,20 @@ description: Artifact commands multi-axis-robot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.8,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.8,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -694,15 +708,20 @@ description: Artifact commands multi-axis-robot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.8,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.8,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -800,7 +819,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 76.19999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -956,7 +976,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1002,7 +1023,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.45882353,
           "g": 0.25490198,
           "b": 0.0627451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -1205,7 +1226,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -63.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1334,7 +1356,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1490,7 +1513,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1667,7 +1691,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1724,7 +1749,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1781,7 +1807,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1838,7 +1865,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1895,7 +1923,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1952,7 +1981,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2009,7 +2039,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2066,7 +2097,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2216,7 +2248,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2273,7 +2306,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2330,7 +2364,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2387,7 +2422,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2516,7 +2552,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2562,7 +2599,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.27058825,
           "g": 0.27058825,
           "b": 0.27058825,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -2765,7 +2802,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 63.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2894,7 +2932,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3071,7 +3110,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3128,7 +3168,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3185,7 +3226,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3242,7 +3284,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3299,7 +3342,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3356,7 +3400,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3413,7 +3458,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3470,7 +3516,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3599,7 +3646,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -3728,7 +3776,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -3857,7 +3906,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -0.254,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4088,7 +4138,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -4319,7 +4370,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -4365,7 +4417,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4382,7 +4434,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4399,7 +4451,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4416,7 +4468,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.39607844,
           "g": 0.44705883,
           "b": 0.7019608,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4560,7 +4612,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 35.559999999999995,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4633,7 +4686,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.30980393,
           "g": 0.49019608,
           "b": 0.32941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -4826,7 +4879,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4955,7 +5009,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5132,7 +5187,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 5.08,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5189,7 +5245,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 5.08,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5246,7 +5303,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 5.08,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5303,7 +5361,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 5.08,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5432,7 +5491,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5505,7 +5565,7 @@ description: Artifact commands multi-axis-robot.kcl
           "r": 0.30980393,
           "g": 0.49019608,
           "b": 0.32941177,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -5647,7 +5707,8 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5683,19 +5744,5 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

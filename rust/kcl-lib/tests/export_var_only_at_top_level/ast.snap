@@ -89,6 +89,14 @@ description: Result of parsing export_var_only_at_top_level.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "main",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",

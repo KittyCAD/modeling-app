@@ -6,9 +6,6 @@ description: Result of unparsing user_reported_union_2_bug.kcl
 // https://github.com/KittyCAD/modeling-app/issues/7310
 // and https://github.com/KittyCAD/engine/issues/3539
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Define dimensions

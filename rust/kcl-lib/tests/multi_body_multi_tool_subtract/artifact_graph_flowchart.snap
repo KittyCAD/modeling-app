@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart multi_body_multi_tool_subtract.kcl
+extension: md
+snapshot_kind: binary
+---

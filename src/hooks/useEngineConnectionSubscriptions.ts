@@ -9,26 +9,26 @@ import {
   selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
-import {
-  editorManager,
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import { engineStreamActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { EngineStreamState } from '@src/machines/engineStreamMachine'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const {
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+  } = context
   const stateRef = useRef(state)
   stateRef.current = state
 
-  const engineStreamState = engineStreamActor.getSnapshot()
-
   useEffect(() => {
     if (!engineCommandManager) return
-    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -40,15 +40,15 @@ export function useEngineConnectionSubscriptions() {
             kclManager.artifactGraph
           )
           if (codeRefs) {
-            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
+            kclManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
         } else if (
-          !editorManager.highlightRange ||
-          (editorManager.highlightRange[0] &&
-            editorManager.highlightRange[0][0] !== 0 &&
-            editorManager.highlightRange[0][1] !== 0)
+          !kclManager.highlightRange ||
+          (kclManager.highlightRange[0] &&
+            kclManager.highlightRange[0][0] !== 0 &&
+            kclManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([defaultSourceRange()])
+          kclManager.setHighlightRange([defaultSourceRange()])
         }
       },
     })
@@ -57,7 +57,10 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
-          const event = await getEventForSelectWithPoint(engineEvent)
+          const event = await getEventForSelectWithPoint(engineEvent, {
+            rustContext,
+            artifactGraph: kclManager.artifactGraph,
+          })
           event && send(event)
         })().catch(reportRejection)
       },
@@ -66,58 +69,113 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
+  }, [
+    context?.sketchEnginePathId,
+    kclManager,
+    send,
+    engineCommandManager,
+    rustContext,
+  ])
 
   useEffect(() => {
     if (!engineCommandManager) return
-    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
-            ;(async () => {
-              let planeOrFaceId = data.entity_id
-              if (!planeOrFaceId) return
-
-              if (context.store.useNewSketchMode?.current) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch solve plane',
-                  data: planeOrFaceId,
-                })
-                return
+            void selectSketchPlane(
+              data.entity_id,
+              context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
               }
-
-              const defaultSketchPlaneSelected =
-                selectDefaultSketchPlane(planeOrFaceId)
-              if (
-                !err(defaultSketchPlaneSelected) &&
-                defaultSketchPlaneSelected
-              ) {
-                return
-              }
-
-              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              const offsetPlaneSelected =
-                await selectOffsetSketchPlane(artifact)
-              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
-                return
-              }
-
-              const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
-              if (sweepFaceSelected) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: sweepFaceSelected,
-                })
-              }
-              return
-            })().catch(reportRejection)
+            )
           }
         : () => {},
     })
     return unSub
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineStreamState, state])
+  }, [
+    context.store.useNewSketchMode,
+    state,
+    kclManager,
+    sceneInfra,
+    rustContext,
+    engineCommandManager,
+    sceneEntitiesManager,
+  ])
+
+  // Re-apply plane visibility when planes are (re)created on the Rust side
+  useEffect(() => {
+    const unsubscribe = rustContext.planesCreated.add(() => {
+      const vis = stateRef.current.context.defaultPlaneVisibility
+      void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
+      void kclManager.setPlaneVisibilityByKey('xz', vis.xz)
+      void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
+    })
+    return unsubscribe
+  }, [kclManager, rustContext])
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useNewSketchMode: boolean | undefined,
+  systemDeps?: {
+    kclManager: KclManager
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+  }
+) {
+  try {
+    if (!systemDeps) return
+    if (!planeOrFaceId) return
+
+    if (useNewSketchMode) {
+      systemDeps.sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(
+      planeOrFaceId,
+      systemDeps
+    )
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = systemDeps.kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(
+      artifact,
+      systemDeps
+    )
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      systemDeps.kclManager.artifactGraph,
+      systemDeps.kclManager.ast,
+      systemDeps.kclManager.execState,
+      {
+        ...systemDeps,
+        wasmInstance: await systemDeps.kclManager.wasmInstancePromise,
+      }
+    )
+    if (sweepFaceSelected) {
+      systemDeps.sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }

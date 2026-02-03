@@ -4,7 +4,7 @@
 // Additionally this serves as a nice minimal example.
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Open the application', () => {
+test.describe('Open the application', { tag: '@desktop' }, () => {
   test('see the project view', async ({ page, context }) => {
     await expect(page.getByTestId('home-section')).toBeVisible()
   })

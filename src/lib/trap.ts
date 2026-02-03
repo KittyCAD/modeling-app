@@ -73,7 +73,7 @@ export function report(
  * Report a promise rejection.  The type of reason is `any` so that it matches
  * Promise.prototype.catch.
  */
-export function reportRejection(reason: any) {
+export function reportRejection(reason: any): undefined {
   report((reason ?? 'Unknown promise rejection').toString())
 }
 

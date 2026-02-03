@@ -3,7 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getRemoveConstraintsTransforms,
   transformAstSketchLines,
@@ -11,11 +11,16 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export function removeConstrainingValuesInfo(pathToNodes: Array<PathToNode>):
+export function removeConstrainingValuesInfo(
+  pathToNodes: Array<PathToNode>,
+  kclManager: KclManager,
+  wasmInstance: ModuleType
+):
   | {
       transforms: TransformInfo[]
       enabled: boolean
@@ -23,7 +28,7 @@ export function removeConstrainingValuesInfo(pathToNodes: Array<PathToNode>):
     }
   | Error {
   const _nodes = pathToNodes.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
     if (tmp instanceof Error) return tmp
     return tmp.node
   })
@@ -50,7 +55,8 @@ export function removeConstrainingValuesInfo(pathToNodes: Array<PathToNode>):
 
   const transforms = getRemoveConstraintsTransforms(
     updatedSelectionRanges,
-    kclManager.ast
+    kclManager.ast,
+    wasmInstance
   )
   if (err(transforms)) return transforms
 
@@ -61,9 +67,13 @@ export function removeConstrainingValuesInfo(pathToNodes: Array<PathToNode>):
 export function applyRemoveConstrainingValues({
   selectionRanges,
   pathToNodes,
+  kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   pathToNodes?: Array<PathToNode>
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -75,7 +85,11 @@ export function applyRemoveConstrainingValues({
     selectionRanges.graphSelections.map(({ codeRef }) => {
       return codeRef.pathToNode
     })
-  const constraint = removeConstrainingValuesInfo(pathToNodes)
+  const constraint = removeConstrainingValuesInfo(
+    pathToNodes,
+    kclManager,
+    wasmInstance
+  )
   if (err(constraint)) return constraint
   const { transforms, updatedSelectionRanges } = constraint
 
@@ -85,5 +99,6 @@ export function applyRemoveConstrainingValues({
     transformInfos: transforms,
     memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance,
   })
 }

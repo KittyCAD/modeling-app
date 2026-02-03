@@ -1,5 +1,4 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -11,12 +10,14 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 export class ToolbarFixture {
   public page: Page
 
+  locator!: Locator
   projectName!: Locator
   fileName!: Locator
   extrudeButton!: Locator
@@ -25,10 +26,16 @@ export class ToolbarFixture {
   filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  holeButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  splitButton!: Locator
+  translateButton!: Locator
   patternCircularButton!: Locator
+  patternLinearButton!: Locator
+  gdtFlatnessButton!: Locator
+  gdtDatumButton!: Locator
   startSketchBtn!: Locator
   insertButton!: Locator
   lineBtn!: Locator
@@ -37,17 +44,19 @@ export class ToolbarFixture {
   rectangleBtn!: Locator
   lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
+  debugPaneBtn!: Locator
   fileTreeBtn!: Locator
   createFileBtn!: Locator
   fileCreateToast!: Locator
   filePane!: Locator
   treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
-  featureTreeId = 'feature-tree' as const
+  featureTreeId = DefaultLayoutPaneID.FeatureTree
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  experimentalFeaturesMenu!: Locator
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
@@ -60,6 +69,7 @@ export class ToolbarFixture {
   constructor(page: Page) {
     this.page = page
 
+    this.locator = page.getByTestId('toolbar')
     this.projectName = page.getByTestId('app-header-project-name')
     this.fileName = page.getByTestId('app-header-file-name')
     this.extrudeButton = page.getByTestId('extrude')
@@ -68,10 +78,16 @@ export class ToolbarFixture {
     this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.holeButton = page.getByTestId('hole')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.splitButton = page.getByTestId('split')
+    this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
+    this.patternLinearButton = page.getByTestId('pattern-linear-3d')
+    this.gdtFlatnessButton = page.getByTestId('gdt-flatness')
+    this.gdtDatumButton = page.getByTestId('gdt-datum')
     this.startSketchBtn = page.getByTestId('sketch')
     this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
@@ -80,6 +96,7 @@ export class ToolbarFixture {
     this.rectangleBtn = page.getByTestId('corner-rectangle')
     this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
+    this.debugPaneBtn = page.locator('[id="debug-button-holder"]')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('file-rename-field')
@@ -96,6 +113,10 @@ export class ToolbarFixture {
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
+    this.experimentalFeaturesMenu = page.getByTestId(
+      'experimental-features-menu'
+    )
+
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
     this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
@@ -109,6 +130,27 @@ export class ToolbarFixture {
 
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
+
+  selectDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    const isFtOpen = await this.checkIfFeatureTreePaneIsOpen()
+    if (!isFtOpen) {
+      await this.openFeatureTreePane()
+    }
+    await this.page.getByRole('button', { name: plane }).click()
+    if (!isFtOpen) {
+      await this.closeFeatureTreePane()
+    }
+    await this.page.waitForTimeout(1000)
+  }
+
+  startSketchOnDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    await this.startSketchPlaneSelection()
+    await this.selectDefaultPlane(plane)
+  }
 
   waitUntilSketchingReady = async () => {
     await expect(this.gizmoDisabled).toBeVisible()
@@ -124,12 +166,8 @@ export class ToolbarFixture {
 
   exitSketch = async () => {
     await this.exitSketchBtn.click()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(this.startSketchBtn).toBeVisible()
+    await expect(this.startSketchBtn).not.toBeDisabled()
   }
 
   editSketch = async (operationIndex = 0) => {
@@ -187,6 +225,14 @@ export class ToolbarFixture {
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
   }
+  ensureFolderOpen = async (folder: Locator, open: boolean) => {
+    const expanded = await folder.getAttribute('aria-expanded')
+    const isOpen = expanded === 'true'
+    if (isOpen !== open) {
+      await folder.click()
+    }
+  }
+
   selectTangentialArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(
@@ -208,6 +254,22 @@ export class ToolbarFixture {
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectSurface = async (operation: 'flip-surface') => {
+    await this.page
+      .getByRole('button', { name: 'caret down surface: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
@@ -237,13 +299,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarId) {
+  async closePane(paneId: DefaultLayoutPaneID) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarId) {
+  async openPane(paneId: DefaultLayoutPaneID) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarId) {
+  async checkIfPaneIsOpen(paneId: DefaultLayoutPaneID) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
@@ -330,7 +392,7 @@ export class ToolbarFixture {
   }
 
   async fireTtcPrompt(prompt: string) {
-    await this.openPane('text-to-cad')
+    await this.openPane(DefaultLayoutPaneID.TTC)
     await expect(
       this.page.getByTestId('ml-ephant-conversation-input')
     ).toBeVisible()

@@ -33,6 +33,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'development',
+        VERCEL_ENV: undefined,
         isDesktop: false,
       })
       expect(actual).toBe(expected)
@@ -42,6 +43,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'development',
+        VERCEL_ENV: undefined,
         isDesktop: true,
       })
       expect(actual).toBe(expected)
@@ -51,6 +53,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'development',
+        VERCEL_ENV: undefined,
         isDesktop: true,
       })
       expect(actual).toBe(expected)
@@ -60,15 +63,27 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'not-development',
+        VERCEL_ENV: undefined,
         isDesktop: true,
       })
       expect(actual).toBe(expected)
     })
-    it('should return dev', () => {
+    it('should return dev for local development', () => {
       const expected = 'dev'
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'development',
+        VERCEL_ENV: undefined,
+        isDesktop: false,
+      })
+      expect(actual).toBe(expected)
+    })
+    it('should return dev for Vercel previews', () => {
+      const expected = 'dev'
+      const actual = getAppVersion({
+        isTestEnvironment: false,
+        NODE_ENV: 'production',
+        VERCEL_ENV: 'preview',
         isDesktop: false,
       })
       expect(actual).toBe(expected)
@@ -78,6 +93,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'not-development',
+        VERCEL_ENV: undefined,
         isDesktop: false,
       })
       expect(actual).toBe(expected)
@@ -87,6 +103,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'production',
+        VERCEL_ENV: undefined,
         isDesktop: false,
       })
       expect(actual).toBe(expected)

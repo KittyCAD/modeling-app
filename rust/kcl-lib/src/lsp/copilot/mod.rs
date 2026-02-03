@@ -188,6 +188,7 @@ impl Backend {
             nwo: None,
             // We haven't implemented streaming yet.
             stream: false,
+            model_version: None,
         };
 
         let resp = self
@@ -222,7 +223,7 @@ impl Backend {
         let offset = crate::lsp::util::position_to_offset(pos.into(), &rope).unwrap_or_default();
 
         Ok(DocParams {
-            uri: uri.to_string(),
+            uri,
             pos,
             language: params.doc.language_id.to_string(),
             prefix: crate::lsp::util::get_text_before(offset, &rope).unwrap_or_default(),

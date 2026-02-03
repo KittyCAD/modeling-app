@@ -1,23 +1,39 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
-import {
-  authActor,
-  commandBarActor,
-  editorManager,
-  settingsActor,
-} from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
+import type { authMachine } from '@src/machines/authMachine'
+import type { ActorRefFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
-export function modelingMenuCallbackMostActions(
-  settings: SettingsType,
-  navigate: NavigateFunction,
+export function modelingMenuCallbackMostActions({
+  settings,
+  navigate,
+  filePath,
+  engineCommandManager,
+  sceneInfra,
+  authActor,
+  commandBarActor,
+  kclManager,
+  settingsActor,
+}: {
+  settings: SettingsType
+  navigate: NavigateFunction
   filePath: string
-) {
+  engineCommandManager: ConnectionManager
+  sceneInfra: SceneInfra
+  authActor: ActorRefFrom<typeof authMachine>
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
+  settingsActor: SettingsActorType
+}) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
@@ -40,29 +56,38 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Rename project',
+          argDefaultValues: {
+            oldName: currentProject?.name,
+            newName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Delete project',
+          argDefaultValues: {
+            name: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(filePath + PATHS.SETTINGS_USER)
+      void navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
-      navigate(filePath + PATHS.SETTINGS_PROJECT)
+      void navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -78,10 +103,8 @@ export function modelingMenuCallbackMostActions(
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
@@ -105,11 +128,6 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
-    } else if (data.menuLabel === 'Edit.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-      })
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -126,13 +144,13 @@ export function modelingMenuCallbackMostActions(
         // Cleaner, but can't import 'electron' to this file:
         // webContents.getFocusedWebContents()?.undo()
       } else {
-        editorManager.undo()
+        kclManager.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
       if (activeFocusIsInput()) {
         document.execCommand('redo')
       } else {
-        editorManager.redo()
+        kclManager.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
@@ -262,24 +280,6 @@ export function modelingMenuCallbackMostActions(
           groupId: 'code',
           name: 'Insert',
         },
-      })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'existingProject',
-            projectName: currentProject?.name,
-          },
-        },
-      })
-    } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
       })
     }
   }

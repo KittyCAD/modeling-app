@@ -56,13 +56,17 @@ macro_rules! eprint {
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
+pub mod collections;
 mod coredump;
 mod docs;
 mod engine;
 mod errors;
 mod execution;
 mod fmt;
+mod frontend;
 mod fs;
+#[cfg(feature = "artifact-graph")]
+pub(crate) mod id;
 pub mod lint;
 mod log;
 mod lsp;
@@ -90,8 +94,8 @@ pub use errors::{
     ReportWithOutputs,
 };
 pub use execution::{
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
-    typed_path::TypedPath,
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
+    clear_mem_cache, transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
@@ -112,7 +116,8 @@ pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
-        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
+        annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
 }
@@ -136,7 +141,9 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
+    pub use crate::std::utils::{
+        TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm, untyped_point_to_unit,
+    };
 }
 
 pub mod pretty {
@@ -146,10 +153,27 @@ pub mod pretty {
     };
 }
 
+pub mod front {
+    pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
+    pub use crate::frontend::{
+        FrontendState,
+        api::{
+            Error, Expr, Face, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId,
+            Result, SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
+        },
+        sketch::{
+            Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
+            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment,
+            SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, TangentArcCtor, Vertical,
+        },
+    };
+}
+
 #[cfg(feature = "cli")]
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
+use crate::exec::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
 
@@ -236,6 +260,13 @@ impl Program {
         })
     }
 
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_experimental_features(warning_level)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
     pub fn is_empty_or_only_settings(&self) -> bool {
         self.ast.is_empty_or_only_settings()
     }
@@ -248,8 +279,11 @@ impl Program {
         self.ast.lint(rule)
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
-        NodePath::from_range(&self.ast, cached_body_items, range)
+        let module_infos = indexmap::IndexMap::new();
+        let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
+        NodePath::from_range(&programs, cached_body_items, range)
     }
 
     pub fn recast(&self) -> String {

@@ -12,7 +12,6 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import { BillingDialog } from '@kittycad/react-shared'
-import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -28,22 +27,11 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import {
-  authActor,
-  billingActor,
-  codeManager,
-  commandBarActor,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -68,6 +56,10 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
+import { useSingletons } from '@src/lib/boot'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -77,14 +69,24 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  useQueryParamEffects()
+  const {
+    authActor,
+    billingActor,
+    commandBarActor,
+    kclManager,
+    useSettings,
+    useToken,
+    systemIOActor,
+    settingsActor,
+  } = useSingletons()
+  useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -126,19 +128,28 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Rename project',
+          argDefaultValues: {
+            oldName: currentProject?.name,
+            newName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Delete project',
+          argDefaultValues: {
+            name: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
@@ -150,13 +161,13 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -172,26 +183,12 @@ const Home = () => {
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#themeColor`)
     } else if (data.menuLabel === 'File.Add file to project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           name: 'add-kcl-file-to-project',
           groupId: 'application',
-        },
-      })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'newProject',
-            newProjectName: settings.projects.defaultProjectName.current,
-          },
         },
       })
     }
@@ -202,14 +199,16 @@ const Home = () => {
   useEffect(() => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
-  }, [])
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
   useHotkeys(
     isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(PATHS.HOME + PATHS.SETTINGS),
+    () => {
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
+    },
     {
       splitKey: '|',
     }
@@ -226,6 +225,7 @@ const Home = () => {
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
+          data-testid="home-header"
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -233,7 +233,10 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
+        <aside
+          data-testid="home-sidebar"
+          className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
+        >
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -243,8 +246,8 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      codeManager,
                       kclManager,
+                      systemIOActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
@@ -259,7 +262,7 @@ const Home = () => {
                 </ActionButton>
                 <ActionButton
                   Element="button"
-                  onClick={onDismissOnboardingInvite}
+                  onClick={() => onDismissOnboardingInvite(settingsActor)}
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
@@ -301,42 +304,6 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'Text-to-CAD',
-                      argDefaultValues: {
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
-                      },
-                    },
-                  })
-                }
-                className={sidebarButtonClasses}
-                iconStart={{
-                  icon: 'sparkles',
-                  bgClassName: '!bg-transparent rounded-sm',
-                }}
-                data-testid="home-text-to-cad"
-              >
-                Generate with Text-to-CAD
-                <Tooltip position="bottom-left">
-                  <div className="text-sm flex flex-col max-w-xs">
-                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-                      <CustomIcon name="beaker" className="w-4 h-4" />
-                      <span>Experimental</span>
-                    </div>
-                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
-                  </div>
-                </Tooltip>
-              </ActionButton>
-            </li>
-            <li className="contents">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  commandBarActor.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
@@ -363,7 +330,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>
@@ -408,6 +375,7 @@ const Home = () => {
           projects={projects}
           query={query}
           sort={sort}
+          handleRenameProject={handleRenameProject(systemIOActor)}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -426,7 +394,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
 }
 
@@ -529,6 +497,10 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: Project[]
   query: string
   sort: string
+  handleRenameProject: (
+    e: FormEvent<HTMLFormElement>,
+    project: Project
+  ) => Promise<void>
 }
 
 function ProjectGrid({
@@ -536,8 +508,10 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  handleRenameProject,
   ...rest
 }: ProjectGridProps) {
+  const { systemIOActor } = useSingletons()
   const state = useSystemIOState()
 
   return (
@@ -553,7 +527,7 @@ function ProjectGrid({
                   key={project.name}
                   project={project}
                   handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
             </ul>
@@ -585,35 +559,43 @@ function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-async function handleRenameProject(
-  e: FormEvent<HTMLFormElement>,
-  project: Project
+function handleRenameProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  const { newProjectName } = Object.fromEntries(
-    new FormData(e.target as HTMLFormElement)
-  )
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+    const { newProjectName } = Object.fromEntries(
+      new FormData(e.target as HTMLFormElement)
+    )
 
-  if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-    toast.error('Project names cannot start with a dot (.)')
-    return
-  }
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
 
-  if (newProjectName !== project.name) {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        requestedProjectName: String(newProjectName),
-        projectName: project.name,
-      },
-    })
+    if (newProjectName !== project.name) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+          redirect: false,
+        },
+      })
+    }
   }
 }
 
-async function handleDeleteProject(project: Project) {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.deleteProject,
-    data: { requestedProjectName: project.name },
-  })
+function handleDeleteProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+) {
+  return async function (project: Project) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.deleteProject,
+      data: {
+        requestedProjectName: String(project.name),
+      },
+    })
+  }
 }
 
 export default Home

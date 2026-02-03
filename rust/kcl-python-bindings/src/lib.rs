@@ -1,7 +1,7 @@
 #![allow(clippy::useless_conversion)]
 use anyhow::Result;
 use kcl_lib::{
-    lint::{checks, Discovered},
+    lint::{checks, Discovered, FindingFamily},
     ExecutorContext,
 };
 use kittycad_modeling_cmds::{
@@ -25,7 +25,7 @@ fn tokio() -> &'static tokio::runtime::Runtime {
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
-    let report = error.clone().into_miette_report_with_outputs(code).unwrap();
+    let report = error.into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
@@ -33,7 +33,7 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
     let report = kcl_lib::Report {
         kcl_source: input.to_string(),
-        error: error.clone(),
+        error,
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);
@@ -193,6 +193,7 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -216,6 +217,7 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -239,6 +241,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -265,6 +268,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -310,7 +314,9 @@ async fn import_and_snapshot_views(
         .spawn(async move {
             let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
             import(&ctx, filepaths, format).await?;
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -331,7 +337,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
         .send_modeling_cmd(
             Uuid::new_v4().into(),
             Default::default(),
-            &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles { files, format }),
+            &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles::builder().files(files).format(format).build()),
         )
         .await?;
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
@@ -376,7 +382,10 @@ async fn execute_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -443,7 +452,10 @@ async fn execute_code_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -468,7 +480,7 @@ async fn take_snaps(
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         } else {
-            let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric { padding: 0.0 });
+            let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric::builder().padding(0.0).build());
             ctx.engine
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
@@ -480,16 +492,29 @@ async fn take_snaps(
 }
 
 async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
+    // Set orthographic projection
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::DefaultCameraSetOrthographic(
+                kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build(),
+            ),
+        )
+        .await?;
+
     // Zoom to fit.
     ctx.engine
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
-                object_ids: Default::default(),
-                padding,
-                animated: false,
-            }),
+            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(
+                kittycad_modeling_cmds::ZoomToFit::builder()
+                    .padding(padding)
+                    .animated(false)
+                    .object_ids(Default::default())
+                    .build(),
+            ),
         )
         .await?;
 
@@ -499,9 +524,11 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(kittycad_modeling_cmds::TakeSnapshot {
-                format: image_format.into(),
-            }),
+            &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(
+                kittycad_modeling_cmds::TakeSnapshot::builder()
+                    .format(image_format.into())
+                    .build(),
+            ),
         )
         .await?;
 
@@ -549,12 +576,17 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                        entity_ids: vec![],
-                        format: get_output_format(&export_format, units.into()),
-                    }),
+                    &kittycad_modeling_cmds::ModelingCmd::Export(
+                        kittycad_modeling_cmds::Export::builder()
+                            .entity_ids(vec![])
+                            .format(get_output_format(&export_format, units.into()))
+                            .build(),
+                    ),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -597,12 +629,17 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                        entity_ids: vec![],
-                        format: get_output_format(&export_format, units.into()),
-                    }),
+                    &kittycad_modeling_cmds::ModelingCmd::Export(
+                        kittycad_modeling_cmds::Export::builder()
+                            .entity_ids(vec![])
+                            .format(get_output_format(&export_format, units.into()))
+                            .build(),
+                    ),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -652,6 +689,59 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
     Ok(lints)
 }
 
+/// Result from linting and fixing automatically.
+/// Shows the new code after applying fixes,
+/// and any lints that couldn't be automatically applied.
+#[derive(Serialize, Debug, Clone)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+pub struct FixedLints {
+    /// Code after suggestions have been applied.
+    pub new_code: String,
+    /// Any lints that didn't have suggestions or couldn't be applied.
+    pub unfixed_lints: Vec<Discovered>,
+}
+
+#[pymethods]
+impl FixedLints {
+    #[getter]
+    fn unfixed_lints(&self) -> PyResult<Vec<Discovered>> {
+        Ok(self.unfixed_lints.clone())
+    }
+
+    #[getter]
+    fn new_code(&self) -> PyResult<String> {
+        Ok(self.new_code.clone())
+    }
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix_all(code: String) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) =
+        kcl_lib::lint::lint_and_fix_all(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions,
+/// and are in the list of families to fix.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_families(code, &families_to_fix)
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
 /// The kcl python module.
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -665,6 +755,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
+    m.add_class::<FindingFamily>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;
@@ -697,6 +788,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }

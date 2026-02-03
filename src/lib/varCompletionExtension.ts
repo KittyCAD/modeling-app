@@ -21,5 +21,3 @@ export function varMentions(data: Completion[] = []): Extension {
     ],
   })
 }
-
-export const varMentionsView: Extension = [varMentions()]

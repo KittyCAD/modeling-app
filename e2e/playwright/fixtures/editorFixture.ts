@@ -10,7 +10,7 @@ import {
 
 interface EditorState {
   activeLines: Array<string>
-  highlightedCode: string
+  highlightedCode?: string
   diagnostics: Array<string>
 }
 
@@ -168,9 +168,11 @@ export class EditorFixture {
         }
         return state
       })
-      .toEqual({
+      .toMatchObject({
         activeLines: expectedState.activeLines.map(sansWhitespace),
-        highlightedCode: sansWhitespace(expectedState.highlightedCode),
+        ...(typeof expectedState.highlightedCode !== 'undefined'
+          ? { highlightedCode: sansWhitespace(expectedState.highlightedCode) }
+          : {}),
         diagnostics: expectedState.diagnostics.map(sansWhitespace),
       })
   }
@@ -206,18 +208,17 @@ export class EditorFixture {
       nextLineCount = await this.lines.count()
     } while (nextLineCount !== currLineCount)
   }
-  scrollToText(text: string, placeCursor?: boolean) {
+  async scrollToText(text: string, placeCursor?: boolean) {
+    if (!(await this.checkIfPaneIsOpen())) {
+      await this.openPane()
+    }
+    await expect(this.codeContent).not.toBeEmpty()
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
-        const editorView = window.editorManager.getEditorView()
-        // error TS2339: Property 'docView' does not exist on type 'EditorView'.
-        // Except it does so :shrug:
-        // @ts-ignore
-        const index = editorView?.docView.view.state.doc
-          .toString()
-          .indexOf(args.text)
-        editorView?.focus()
-        editorView?.dispatch({
+        const editorView = window.kclManager.editorView
+        const index = editorView.state.doc.toString().indexOf(args.text)
+        editorView.focus()
+        editorView.dispatch({
           selection: window.EditorSelection.create([
             window.EditorSelection.cursor(index),
           ]),

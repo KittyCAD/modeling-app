@@ -1,8 +1,9 @@
 import {
   withAPIBaseURL,
   withSiteBaseURL,
-  withWebSocketURL,
+  withKittycadWebSocketURL,
 } from '@src/lib/withBaseURL'
+import { expect, describe, it } from 'vitest'
 
 describe('withBaseURL', () => {
   /**
@@ -63,20 +64,20 @@ describe('withBaseURL', () => {
     })
   })
 
-  describe('withWebSocketURL', () => {
+  describe('withKittycadWebSocketURL', () => {
     it('should return url', () => {
       const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
-      const actual = withWebSocketURL('')
+      const actual = withKittycadWebSocketURL('')
       expect(actual).toBe(expected)
     })
     it('should return url with /docs', () => {
       const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands?'
-      const actual = withWebSocketURL('?')
+      const actual = withKittycadWebSocketURL('?')
       expect(actual).toBe(expected)
     })
     it('should ensure url does not have ending slash', () => {
       const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
-      const actual = withWebSocketURL('')
+      const actual = withKittycadWebSocketURL('')
       expect(actual).toBe(expected)
       const expectedEndsWith = expected[expected.length - 1]
       const actualEndsWith = actual[actual.length - 1]

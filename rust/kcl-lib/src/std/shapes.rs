@@ -17,7 +17,7 @@ use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch, SketchSurface,
         types::{RuntimeType, adjust_length},
     },
     parsing::ast::types::TagNode,
@@ -34,6 +34,15 @@ use crate::{
 pub enum SketchOrSurface {
     SketchSurface(SketchSurface),
     Sketch(Box<Sketch>),
+}
+
+impl SketchOrSurface {
+    pub fn into_sketch_surface(self) -> SketchSurface {
+        match self {
+            SketchOrSurface::SketchSurface(surface) => surface,
+            SketchOrSurface::Sketch(sketch) => sketch.on,
+        }
+    }
 }
 
 /// Sketch a rectangle.
@@ -60,10 +69,7 @@ async fn inner_rectangle(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_or_surface {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(s) => s.on,
-    };
+    let sketch_surface = sketch_or_surface.into_sketch_surface();
 
     // Find the corner in the negative quadrant
     let (ty, corner) = match (center, corner) {
@@ -89,8 +95,15 @@ async fn inner_rectangle(
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
 
     // Start the sketch then draw the 4 lines.
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, corner_t, None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        corner_t,
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
     let sketch_id = sketch.id;
     let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
     let ids = [
@@ -102,30 +115,31 @@ async fn inner_rectangle(
     for (id, delta) in ids.iter().copied().zip(deltas) {
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
-                ModelingCmd::from(mcmd::ExtendPath {
-                    label: Default::default(),
-                    path: sketch.id.into(),
-                    segment: PathSegment::Line {
-                        end: KPoint2d::from(untyped_point_to_mm(delta, units))
-                            .with_z(0.0)
-                            .map(LengthUnit),
-                        relative: true,
-                    },
-                }),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(untyped_point_to_mm(delta, units))
+                                .with_z(0.0)
+                                .map(LengthUnit),
+                            relative: true,
+                        })
+                        .build(),
+                ),
             )
             .await?;
     }
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, sketch_id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, sketch_id),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(sketch.id).build()),
         )
         .await?;
 
     // Update the sketch in KCL memory.
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     fn add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
         [a[0] + b[0], a[1] + b[1]]
     }
@@ -155,7 +169,7 @@ async fn inner_rectangle(
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
     let diameter: Option<TyF64> = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
@@ -166,19 +180,22 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
+const POINT_ZERO_ZERO: [TyF64; 2] = [
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+];
+
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
     diameter: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_or_surface {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(s) => s.on,
-    };
+    let sketch_surface = sketch_or_surface.into_sketch_surface();
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
@@ -187,7 +204,8 @@ async fn inner_circle(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -196,18 +214,19 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Arc {
-                    start: angle_start,
-                    end: angle_end,
-                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                    radius: LengthUnit(radius.to_mm()),
-                    relative: false,
-                },
-            }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Arc {
+                        start: angle_start,
+                        end: angle_end,
+                        center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                        radius: LengthUnit(radius.to_mm()),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -228,7 +247,7 @@ async fn inner_circle(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
@@ -237,8 +256,8 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 
@@ -282,14 +301,18 @@ async fn inner_circle_three_point(
     // It can be the distance to any of the 3 points - they all lay on the circumference.
     let radius = distance(center, p2);
 
-    let sketch_surface = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
-    };
+    let sketch_surface = sketch_surface_or_group.into_sketch_surface();
 
     let from = [TyF64::new(center[0] + radius, ty), TyF64::new(center[1], ty)];
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        from.clone(),
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -298,18 +321,19 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Arc {
-                    start: angle_start,
-                    end: angle_end,
-                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
-                    radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
-                    relative: false,
-                },
-            }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Arc {
+                        start: angle_start,
+                        end: angle_end,
+                        center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                        radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -331,7 +355,7 @@ async fn inner_circle_three_point(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
@@ -340,8 +364,8 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 
@@ -440,7 +464,8 @@ async fn inner_polygon(
         point_to_typed(vertices[0], units),
         None,
         exec_state,
-        args.clone(),
+        &args.ctx,
+        args.source_range,
     )
     .await?;
 
@@ -451,17 +476,18 @@ async fn inner_polygon(
 
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
-                ModelingCmd::from(mcmd::ExtendPath {
-                    label: Default::default(),
-                    path: sketch.id.into(),
-                    segment: PathSegment::Line {
-                        end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
-                            .with_z(0.0)
-                            .map(LengthUnit),
-                        relative: false,
-                    },
-                }),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
+                                .with_z(0.0)
+                                .map(LengthUnit),
+                            relative: false,
+                        })
+                        .build(),
+                ),
             )
             .await?;
 
@@ -487,17 +513,18 @@ async fn inner_polygon(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, close_id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
-                        .with_z(0.0)
-                        .map(LengthUnit),
-                    relative: false,
-                },
-            }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, close_id),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -515,11 +542,12 @@ async fn inner_polygon(
     };
 
     sketch.paths.push(current_path);
+    sketch.is_closed = ProfileClosed::Explicitly;
 
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
-            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(sketch.id).build()),
         )
         .await?;
 
@@ -563,10 +591,7 @@ async fn inner_ellipse(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
-    };
+    let sketch_surface = sketch_surface_or_group.into_sketch_surface();
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
@@ -594,7 +619,8 @@ async fn inner_ellipse(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -604,18 +630,19 @@ async fn inner_ellipse(
     let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Ellipse {
-                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                    major_axis: axis,
-                    minor_radius: LengthUnit(minor_radius.to_mm()),
-                    start_angle: Angle::from_degrees(angle_start.to_degrees()),
-                    end_angle: Angle::from_degrees(angle_end.to_degrees()),
-                },
-            }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Ellipse {
+                        center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                        major_axis: axis,
+                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        start_angle: Angle::from_degrees(angle_start.to_degrees()),
+                        end_angle: Angle::from_degrees(angle_end.to_degrees()),
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -637,7 +664,7 @@ async fn inner_ellipse(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
@@ -646,8 +673,8 @@ async fn inner_ellipse(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 

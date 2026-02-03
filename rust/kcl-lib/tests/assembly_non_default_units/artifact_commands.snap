@@ -3,8 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands assembly_non_default_units.kcl
 ---
 {
-  "rust/kcl-lib/tests/assembly_non_default_units/globals.kcl": [],
-  "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [],
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
     {
       "cmdId": "[uuid]",
@@ -210,19 +208,5 @@ description: Artifact commands assembly_non_default_units.kcl
         "path_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -27,12 +27,13 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
-import { initPromiseNode } from '@src/lang/wasmUtilsNode'
+import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -42,11 +43,26 @@ import {
   enableMenu,
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+// Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
+// https://github.com/electron/electron/issues/41551#issuecomment-3590685943
+// Only applied to tests to avoid interfering with users who may be using Wayland
+if (
+  os.platform() === 'linux' &&
+  process.env.NODE_ENV === 'test' &&
+  process.env.CI === 'true'
+) {
+  app.commandLine.appendSwitch('ignore-gpu-blocklist')
+  app.commandLine.appendSwitch('ozone-platform', 'x11')
+}
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
 
 let mainWindow: BrowserWindow | null = null
+/** All Electron windows will share this WASM module */
+const initPromise = initialiseWasmNode()
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
 // as seen on https://github.com/microsoft/vscode/issues/55347
@@ -69,9 +85,9 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
-  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
-process.env.VITE_KITTYCAD_BASE_DOMAIN ??= viteEnv.VITE_KITTYCAD_BASE_DOMAIN
+process.env.VITE_KITTYCAD_WEBSOCKET_URL ??= viteEnv.VITE_KITTYCAD_WEBSOCKET_URL
+process.env.VITE_MLEPHANT_WEBSOCKET_URL ??= viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
+process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -92,7 +108,7 @@ if (process.defaultApp) {
 // Global app listeners
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
-// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+// electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
 if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
@@ -210,7 +226,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         .catch(reportRejection)
     } else {
       // otherwise we're trying to open a local file from the command line
-      getProjectPathAtStartup(pathToOpen)
+      getProjectPathAtStartup(initPromise, pathToOpen)
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -312,6 +328,8 @@ app.on('window-all-closed', () => {
 app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
+
+  registerFileProtocolCsp()
 
   // Create the mainWindow
   mainWindow = createWindow()
@@ -520,6 +538,8 @@ ipcMain.handle('disable-menu', (event, data) => {
   disableMenu(menuId)
 })
 
+ipcMain.handle('get-path-userdata', () => app.getPath('userData'))
+
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
   if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
@@ -602,9 +622,11 @@ app.on('ready', () => {
 })
 
 const getProjectPathAtStartup = async (
+  initPromise: Promise<ModuleType>,
   filePath?: string
 ): Promise<string | null> => {
-  await initPromiseNode
+  // Make sure we have WASM, because we're about to use it indirectly.
+  const wasmInstance = await initPromise
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
@@ -648,7 +670,7 @@ const getProjectPathAtStartup = async (
   if (projectPath) {
     // We have a project path, load the project information.
     console.log(`Loading project at startup: ${projectPath}`)
-    const currentFile = await getCurrentProjectFile(projectPath)
+    const currentFile = await getCurrentProjectFile(projectPath, wasmInstance)
 
     if (currentFile instanceof Error) {
       console.error(currentFile)
@@ -663,7 +685,7 @@ const getProjectPathAtStartup = async (
 }
 
 function registerStartupListeners() {
-  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  // Linux and Windows from electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging

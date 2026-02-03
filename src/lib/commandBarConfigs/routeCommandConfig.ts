@@ -19,7 +19,7 @@ export function createRouteCommands(
       const path = location.pathname.includes(PATHS.FILE)
         ? filePath + PATHS.TELEMETRY + '?tab=project'
         : PATHS.HOME + PATHS.TELEMETRY
-      navigate(path)
+      void navigate(path)
     },
   }
 
@@ -31,7 +31,7 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      navigate(PATHS.HOME)
+      void navigate(PATHS.HOME)
     },
   }
 
@@ -46,9 +46,13 @@ export function createRouteCommands(
       const path = location.pathname.includes(PATHS.FILE)
         ? filePath + PATHS.SETTINGS + '?tab=project'
         : PATHS.HOME + PATHS.SETTINGS
-      navigate(path)
+      void navigate(path)
     },
   }
 
-  return { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand }
+  return {
+    RouteTelemetryCommand,
+    RouteHomeCommand,
+    RouteSettingsCommand,
+  }
 }

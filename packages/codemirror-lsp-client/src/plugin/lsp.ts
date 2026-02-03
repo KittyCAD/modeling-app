@@ -770,8 +770,8 @@ export class LanguageServerPlugin implements PluginValue {
 
     if (tooltip) {
       // Create and show the tooltip manually
-      const { pos: tooltipPos, create } = tooltip
-      const tooltipView = create(view)
+      const { pos: tooltipPos } = tooltip
+      const tooltipView = tooltip.create(view)
 
       const tooltipElement = document.createElement('div')
       tooltipElement.className =

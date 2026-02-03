@@ -11,6 +11,7 @@ on:
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,12 +24,12 @@ jobs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - run: npm install
 
@@ -43,7 +44,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v12
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -52,7 +53,7 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Build WASM condition
+      - name: Build Wasm condition
         id: wasm
         run: |
           set -euox pipefail
@@ -75,8 +76,9 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
+          rustflags: '' # Use .cargo/config.toml
 
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -93,12 +95,15 @@ jobs:
 
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
           export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
+          npm run files:set-windows-codesign-config
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -106,7 +111,21 @@ jobs:
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
 
-      - uses: actions/upload-artifact@v4
+      - name: Set dummy release version (forced release build) and disable updater
+        if: ${{ env.FORCE_RELEASE_BUILD == 'true' }}
+        run: |
+          export VERSION=255.255.0
+          npm run files:set-version
+          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
+
+      - name: Set windows codesign config
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
+        run: |
+          npm run files:set-windows-codesign-config
+
+      - uses: actions/upload-artifact@v6
         with:
           name: prepared-files
           path: |
@@ -141,7 +160,7 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v4
         name: prepared-files
@@ -159,15 +178,15 @@ jobs:
           cp prepared-files/assets/icon.png assets/icon.png
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm' # Set this to npm, npm or pnpm.
+          node-version-file: .nvmrc
+          cache: npm # Set this to npm, npm or pnpm.
 
       - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           echo "${{secrets.SM_SERVICE_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
           cat /c/Certificate_pkcs12.p12
@@ -182,7 +201,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -200,13 +219,13 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_STAGING == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
         run: npm run tronb:package:dev
 
       - name: Build the app (release)
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -215,13 +234,14 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
+          CSC_FOR_PULL_REQUEST: ${{ env.FORCE_RELEASE_BUILD }}
+          # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
       - name: List artifacts in out/
         run: ls -R out
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: out-arm64-${{ matrix.platform }}
           # first two will pick both Zoo Design Studio-$VERSION-arm64-win.exe and Zoo Design Studio-$VERSION-win.exe
@@ -231,7 +251,7 @@ jobs:
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: out-x64-${{ matrix.platform }}
           path: |
@@ -239,7 +259,7 @@ jobs:
             out/*-x64-mac.*
             out/*-x86_64-linux.*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
@@ -260,7 +280,7 @@ jobs:
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v4
         with:
@@ -352,7 +372,7 @@ jobs:
             }' > out/last_download.json
             cat out/last_download.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: out-download-json
           path: out/last_download.json
@@ -362,13 +382,13 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.10'
+        uses: 'google-github-actions/auth@v3.0.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2.1.4
+        uses: google-github-actions/setup-gcloud@v3.0.1
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 

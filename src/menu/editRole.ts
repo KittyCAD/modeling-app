@@ -1,10 +1,8 @@
-import os from 'node:os'
 import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-
-const isMac = os.platform() === 'darwin'
+import { isMac } from '@src/menu/utils'
 
 export const projectEditRole = (
   mainWindow: BrowserWindow
@@ -92,15 +90,6 @@ export const modelingEditRole = (
   return {
     label: 'Edit',
     submenu: [
-      {
-        label: 'Modify with Zoo Text-To-CAD',
-        id: 'Edit.Modify with Zoo Text-To-CAD',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Modify with Zoo Text-To-CAD',
-          })
-        },
-      },
       {
         label: 'Edit Parameter',
         id: 'Edit.Edit parameter',

@@ -225,7 +225,8 @@ description: Artifact commands subtract_regression01.kcl
         "opposite": {
           "Other": 6.35
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -410,7 +411,8 @@ description: Artifact commands subtract_regression01.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -460,19 +462,5 @@ description: Artifact commands subtract_regression01.kcl
         "tolerance": 0.0000001
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

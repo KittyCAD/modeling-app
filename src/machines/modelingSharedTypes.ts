@@ -1,13 +1,19 @@
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
-import { isDesktop } from '@src/lib/isDesktop'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -173,7 +179,6 @@ export type SegmentOverlayPayload =
 
 export interface Store {
   videoElement?: HTMLVideoElement
-  openPanes: SidebarId[]
   cameraProjection?: Setting<CameraProjectionType>
   useNewSketchMode?: Setting<boolean>
 }
@@ -191,40 +196,25 @@ export type SketchTool =
 
 export type MoveDesc = { line: number; snippet: string }
 
-export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
-
-interface PersistedModelingContext {
-  openPanes: Store['openPanes']
+/** Input into the Modeling machine consists of its external dependencies */
+export type ModelingMachineInput = {
+  kclManager: KclManager
+  engineCommandManager: ConnectionManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
+  machineManager: MachineManager
+  wasmInstance: ModuleType
+  store?: Store
 }
-
-type PersistedKeys = keyof PersistedModelingContext
-export const PersistedValues: PersistedKeys[] = ['openPanes']
-
-export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const fallbackContextObject = {
-    openPanes: isDesktop()
-      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
-      : (['feature-tree', 'code'] satisfies Store['openPanes']),
-  }
-
-  try {
-    const c: Partial<PersistedModelingContext> = JSON.parse(
-      localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}'
-    )
-    return { ...fallbackContextObject, ...c }
-  } catch {
-    return fallbackContextObject
-  }
-}
-
-export interface ModelingMachineContext {
+export type ModelingMachineInternalContext = {
   currentMode: ToolbarModeName
   currentTool: SketchTool
   toastId: string | null
-  machineManager: MachineManager
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
+  // Data returned by 'animate-to-sketch-solve' to initialize sketch solve
   sketchPlaneId: string
   sketchEnginePathId: string
   moveDescs: MoveDesc[]
@@ -235,7 +225,16 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
+  // sketch solve context
+  sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
+  sketchSolveId?: number
+  initialSceneGraphDelta: SceneGraphDelta
+  // TODO are these both used?
+  sketchSolveTool: EquipTool | null
+  sketchSolveToolName: EquipTool | null
 }
+export type ModelingMachineContext = ModelingMachineInput &
+  ModelingMachineInternalContext
 
 export type PlaneVisibilityMap = {
   xy: boolean

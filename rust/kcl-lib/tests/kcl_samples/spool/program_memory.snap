@@ -159,29 +159,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -226,10 +210,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -320,10 +304,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -367,28 +351,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -396,7 +365,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -594,29 +562,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -661,10 +613,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -755,10 +707,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -802,28 +754,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -831,7 +768,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1029,29 +965,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1096,10 +1016,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1190,10 +1110,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1237,28 +1157,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1266,7 +1171,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1464,29 +1368,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1531,10 +1419,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1625,10 +1513,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1672,28 +1560,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1701,7 +1574,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1899,29 +1771,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -1966,10 +1822,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2060,10 +1916,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2107,28 +1963,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2136,7 +1977,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2334,29 +2174,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2401,10 +2225,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2495,10 +2319,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2542,28 +2366,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2571,7 +2380,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2769,29 +2577,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2836,10 +2628,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2930,10 +2722,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2977,28 +2769,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3006,7 +2783,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3204,29 +2980,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3271,10 +3031,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3365,10 +3125,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3412,28 +3172,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3441,7 +3186,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3644,29 +3388,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3711,10 +3439,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3805,10 +3533,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3852,28 +3580,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3881,7 +3594,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4079,29 +3791,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4146,10 +3842,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4240,10 +3936,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4287,28 +3983,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4316,7 +3997,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4514,29 +4194,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -4581,10 +4245,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4675,10 +4339,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4722,28 +4386,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4751,7 +4400,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4949,29 +4597,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5016,10 +4648,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5110,10 +4742,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5157,28 +4789,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5186,7 +4803,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5384,29 +5000,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5451,10 +5051,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5545,10 +5145,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5592,28 +5192,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5621,7 +5206,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5819,29 +5403,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -5886,10 +5454,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5980,10 +5548,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6027,28 +5595,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6056,7 +5609,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6254,29 +5806,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -6321,10 +5857,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6415,10 +5951,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6462,28 +5998,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6491,7 +6012,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6689,29 +6209,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -6756,10 +6260,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6850,10 +6354,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6897,28 +6401,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6926,7 +6415,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7124,29 +6612,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -7191,10 +6663,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7285,10 +6757,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7332,28 +6804,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7361,7 +6818,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7559,29 +7015,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -7626,10 +7066,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7720,10 +7160,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7767,28 +7207,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7796,7 +7221,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7994,29 +7418,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8061,10 +7469,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8155,10 +7563,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8202,28 +7610,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8231,7 +7624,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8429,29 +7821,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8496,10 +7872,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8590,10 +7966,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8637,28 +8013,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8666,7 +8027,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8864,29 +8224,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -8931,10 +8275,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9025,10 +8369,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9072,28 +8416,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9101,7 +8430,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -9299,29 +8627,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -9366,10 +8678,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9460,10 +8772,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9507,28 +8819,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9536,7 +8833,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -9734,29 +9030,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -9801,10 +9081,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9895,10 +9175,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9942,28 +9222,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9971,7 +9236,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -10169,29 +9433,13 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -10236,10 +9484,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 624,
-                      "end": 630,
+                      "commentStart": 667,
+                      "end": 673,
                       "moduleId": 0,
-                      "start": 624,
+                      "start": 667,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -10330,10 +9578,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 624,
-                        "end": 630,
+                        "commentStart": 667,
+                        "end": 673,
                         "moduleId": 0,
-                        "start": 624,
+                        "start": 667,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10377,28 +9625,13 @@ description: Variables in memory after executing spool.kcl
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -10406,7 +9639,6 @@ description: Variables in memory after executing spool.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -10525,10 +9757,10 @@ description: Variables in memory after executing spool.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 624,
-            "end": 630,
+            "commentStart": 667,
+            "end": 673,
             "moduleId": 0,
-            "start": 624,
+            "start": 667,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -10619,10 +9851,10 @@ description: Variables in memory after executing spool.kcl
               132.5
             ],
             "tag": {
-              "commentStart": 624,
-              "end": 630,
+              "commentStart": 667,
+              "end": 673,
               "moduleId": 0,
-              "start": 624,
+              "start": 667,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -10666,28 +9898,13 @@ description: Variables in memory after executing spool.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              75.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              75.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -10695,7 +9912,6 @@ description: Variables in memory after executing spool.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -10811,6 +10027,8 @@ description: Variables in memory after executing spool.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -10818,7 +10036,6 @@ description: Variables in memory after executing spool.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

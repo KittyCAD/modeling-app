@@ -2,20 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands index_of_array.kcl
 ---
-{
-  "rust/kcl-lib/tests/index_of_array/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
-}
+{}

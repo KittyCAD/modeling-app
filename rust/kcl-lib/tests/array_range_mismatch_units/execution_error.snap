@@ -4,8 +4,7 @@ description: Error from executing array_range_mismatch_units.kcl
 ---
 KCL Semantic error
 
-  × semantic: Range start and end must be of the same type, but found 1:
-  │ number(mm) and 3: number(cm)
+  × semantic: Range start and range end have incompatible units: mm and cm
    ╭─[1:5]
  1 │ a = [1mm..3cm]
    ·     ─────┬────

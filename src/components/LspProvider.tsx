@@ -1,5 +1,5 @@
 import type { LanguageSupport } from '@codemirror/language'
-import type { Extension } from '@codemirror/state'
+import { Prec, type Extension } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
@@ -7,7 +7,13 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
@@ -24,10 +30,10 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager } from '@src/lib/singletons'
-import { useToken } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -67,6 +73,7 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
+  const { kclManager, useToken } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -117,17 +124,17 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isDesktop() && isKclLspReady && kclLspClient && codeManager.code) {
+    if (!isDesktop() && isKclLspReady && kclLspClient && kclManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
           languageId: 'kcl',
           version: 1,
-          text: codeManager.code,
+          text: kclManager.code,
         },
       })
     }
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, kclManager.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -168,6 +175,20 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     }
     return plugin
   }, [kclLspClient, isKclLspReady])
+
+  useEffect(() => {
+    // New code to just update the CodeMirror extensions directly.
+    if (kclLSP === null) {
+      return
+    }
+    kclManager.editorView.dispatch({
+      effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
+    })
+    return () =>
+      kclManager.editorView.dispatch({
+        effects: kclLspCompartment.reconfigure(Prec.highest([])),
+      })
+  }, [kclLSP, kclManager.editorView])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -214,17 +235,24 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isCopilotLspReady && copilotLspClient) {
       // Set up the lsp plugin.
-      const lsp = copilotPlugin({
-        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-        workspaceFolders: getWorkspaceFolders(),
-        client: copilotLspClient,
-        allowHTMLContent: true,
-      })
+      const lsp = copilotPlugin(
+        {
+          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+          workspaceFolders: getWorkspaceFolders(),
+          client: copilotLspClient,
+          allowHTMLContent: true,
+        },
+        kclManager
+      )
 
+      // New code to just update the CodeMirror extensions directly.
+      kclManager.editorView.dispatch({
+        effects: kclAutocompleteCompartment.reconfigure(Prec.highest(lsp)),
+      })
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady])
+  }, [copilotLspClient, isCopilotLspReady, kclManager])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
@@ -250,9 +278,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
+    kclManager.clearGlobalHistory()
 
     if (redirect) {
-      navigate(PATHS.HOME)
+      void navigate(PATHS.HOME)
     }
   }
 

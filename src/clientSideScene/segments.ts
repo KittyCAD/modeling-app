@@ -11,7 +11,6 @@ import {
   Line,
   LineBasicMaterial,
   LineCurve3,
-  LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
   Shape,
@@ -75,12 +74,11 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
-import { commandBarActor } from '@src/lib/singletons'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
@@ -92,6 +90,10 @@ import type {
   SegmentOverlays,
 } from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ActorRefFrom } from 'xstate'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -106,6 +108,9 @@ interface CreateSegmentArgs {
   isSelected?: boolean
   sceneInfra: SceneInfra
   selection?: Selections
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }
 
 interface UpdateSegmentArgs {
@@ -114,6 +119,7 @@ interface UpdateSegmentArgs {
   group: Group
   sceneInfra: SceneInfra
   scale?: number
+  wasmInstance: ModuleType
 }
 
 interface CreateSegmentResult {
@@ -155,6 +161,9 @@ class StraightSegment implements SegmentUtils {
     sceneInfra,
     prevSegment,
     selection,
+    commandBarActor,
+    kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -194,6 +203,7 @@ class StraightSegment implements SegmentUtils {
       callExpName,
       baseColor,
       selection,
+      wasmInstance,
     }
 
     // All segment types get an extra segment handle,
@@ -212,6 +222,9 @@ class StraightSegment implements SegmentUtils {
         to,
         scale,
         sceneInfra,
+        commandBarActor,
+        kclManager,
+        wasmInstance,
       })
       segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
@@ -234,6 +247,7 @@ class StraightSegment implements SegmentUtils {
       group: segmentGroup,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -393,6 +407,7 @@ class TangentialArcToSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -440,6 +455,7 @@ class TangentialArcToSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -455,6 +471,7 @@ class TangentialArcToSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -470,6 +487,7 @@ class TangentialArcToSegment implements SegmentUtils {
       arcEndPoint: to,
       tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
+      wasmInstance,
     })
 
     const pxLength = arcInfo.arcLength / scale
@@ -593,6 +611,9 @@ class CircleSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    commandBarActor,
+    kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -637,6 +658,9 @@ class CircleSegment implements SegmentUtils {
       to: [center[0] + radius, center[1]],
       scale,
       sceneInfra,
+      commandBarActor,
+      kclManager,
+      wasmInstance,
     })
 
     arcMesh.userData.type = meshType
@@ -669,6 +693,7 @@ class CircleSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -836,6 +861,7 @@ class CircleThreePointSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    wasmInstance,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -911,6 +937,7 @@ class CircleThreePointSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1053,6 +1080,9 @@ class ArcSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    commandBarActor,
+    kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -1093,6 +1123,9 @@ class ArcSegment implements SegmentUtils {
       to: from,
       scale,
       sceneInfra,
+      commandBarActor,
+      kclManager,
+      wasmInstance,
     })
 
     const grey = 0xaaaaaa
@@ -1146,6 +1179,9 @@ class ArcSegment implements SegmentUtils {
       ],
       scale,
       sceneInfra,
+      commandBarActor,
+      kclManager,
+      wasmInstance,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
 
@@ -1185,6 +1221,7 @@ class ArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1408,6 +1445,7 @@ class ThreePointArcSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    wasmInstance,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -1490,6 +1528,7 @@ class ThreePointArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1760,12 +1799,18 @@ function createLengthIndicator({
   scale,
   length = 0.1,
   sceneInfra,
+  commandBarActor,
+  kclManager,
+  wasmInstance,
 }: {
   from: Coords2d
   to: Coords2d
   scale: number
   length?: number
   sceneInfra: SceneInfra
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
@@ -1802,6 +1847,8 @@ function createLengthIndicator({
         graphSelections: [selection.graphSelections[0]],
       },
       angleOrLength: 'setLength',
+      kclManager,
+      wasmInstance,
     })
     if (err(canConstrainLength) || !canConstrainLength.enabled) {
       toast.error(
@@ -1870,16 +1917,6 @@ export function createArcGeometry({
     !ccw,
     0
   )
-  const arcEnd = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    endAngle,
-    startAngle,
-    ccw,
-    0
-  )
 
   const shape = createLineShape(scale)
   if (!isDashed) {
@@ -1920,6 +1957,16 @@ export function createArcGeometry({
     })
   }
 
+  const arcEnd = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    endAngle,
+    startAngle,
+    ccw,
+    0
+  )
   // Create dashes at the start of the arc
   for (let i = 0; i < dashesAtEachEnd; i++) {
     const t = i / totalDashes
@@ -1975,43 +2022,43 @@ export function createArcGeometry({
 // https://threejs.org/docs/#api/en/extras/curves/EllipseCurve
 // I'm not sure why it wasn't done like this in the first place?
 // I don't touch the code above because it may break something else.
-export function createCircleGeometry({
-  center,
-  radius,
-  color,
-  isDashed = false,
-  scale = 1,
-}: {
-  center: Coords2d
-  radius: number
-  color: number
-  isDashed?: boolean
-  scale?: number
-}): Line {
-  const circle = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    0,
-    Math.PI * 2,
-    true,
-    scale
-  )
-  const points = circle.getPoints(75) // just enough points to not see edges.
-  const geometry = new BufferGeometry().setFromPoints(points)
-  const material = !isDashed
-    ? new LineBasicMaterial({ color })
-    : new LineDashedMaterial({
-        color,
-        scale,
-        dashSize: 6,
-        gapSize: 6,
-      })
-  const line = new Line(geometry, material)
-  line.computeLineDistances()
-  return line
-}
+// export function createCircleGeometry({
+//   center,
+//   radius,
+//   color,
+//   isDashed = false,
+//   scale = 1,
+// }: {
+//   center: Coords2d
+//   radius: number
+//   color: number
+//   isDashed?: boolean
+//   scale?: number
+// }): Line {
+//   const circle = new EllipseCurve(
+//     center[0],
+//     center[1],
+//     radius,
+//     radius,
+//     0,
+//     Math.PI * 2,
+//     true,
+//     scale
+//   )
+//   const points = circle.getPoints(75) // just enough points to not see edges.
+//   const geometry = new BufferGeometry().setFromPoints(points)
+//   const material = !isDashed
+//     ? new LineBasicMaterial({ color })
+//     : new LineDashedMaterial({
+//         color,
+//         scale,
+//         dashSize: 6,
+//         gapSize: 6,
+//       })
+//   const line = new Line(geometry, material)
+//   line.computeLineDistances()
+//   return line
+// }
 
 export function dashedStraight(
   from: Coords2d,

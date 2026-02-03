@@ -11,10 +11,11 @@ import toast from 'react-hot-toast'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import { engineCommandManager } from '@src/lib/singletons'
-import { getSettings, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
@@ -72,11 +73,8 @@ function cameraViewStateToNamedView(
   name: string,
   cameraViewState: CameraViewState
 ): NamedView | Error {
-  let pivot_position: Tuple3 | null = null
-  let pivot_rotation: Tuple4 | null = null
-
-  pivot_position = point3DToNumberArray(cameraViewState.pivot_position)
-  pivot_rotation = point4DToNumberArray(cameraViewState.pivot_rotation)
+  const pivot_position = point3DToNumberArray(cameraViewState.pivot_position)
+  const pivot_rotation = point4DToNumberArray(cameraViewState.pivot_rotation)
 
   // Create a new named view
   const requestedView: NamedView = {
@@ -97,7 +95,15 @@ function cameraViewStateToNamedView(
   return requestedView
 }
 
-export function createNamedViewsCommand() {
+export function createNamedViewsCommand(
+  engineCommandManager: ConnectionManager,
+  settingsActor: SettingsActorType
+) {
+  const getSettings = (): SettingsType => {
+    const { currentProject: _, ...settings } =
+      settingsActor.getSnapshot().context
+    return settings
+  }
   // Creates a command to be registered in the command bar.
   // The createNamedViewsCommand will prompt the user for a name and then
   // hit the engine for the camera properties and write them back to disk

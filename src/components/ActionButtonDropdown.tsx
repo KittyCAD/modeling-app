@@ -32,7 +32,7 @@ export function ActionButtonDropdown({
       className={`${baseClassNames} ${className}`}
       data-onboarding-id={`${props.name}-group`}
     >
-      {({ close }) => (
+      {(popover) => (
         <>
           {children}
           <Popover.Button
@@ -67,13 +67,13 @@ export function ActionButtonDropdown({
             className="!pointer-events-auto absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
             unmount={false}
           >
-            {splitMenuItems.map((item, index) => (
+            {splitMenuItems.map((item) => (
               <ActionButtonDropdownListItem
                 item={item}
                 onClick={() => {
                   item.onClick()
                   // Close the popover
-                  close()
+                  popover.close()
                 }}
                 key={item.label}
               />

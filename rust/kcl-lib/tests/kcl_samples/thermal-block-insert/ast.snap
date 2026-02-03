@@ -153,8 +153,6 @@ description: Result of parsing thermal-block-insert.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define tongue-and-groove profile parameters for interlocking geometry"
         ],
         "start": 0,
@@ -1334,6 +1332,14 @@ description: Result of parsing thermal-block-insert.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "tongueBlockFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",
@@ -1347,8 +1353,6 @@ description: Result of parsing thermal-block-insert.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Function to create one side of the repeating tongue geometry along the block edge"
         ],
         "start": 0,
@@ -1764,25 +1768,6 @@ description: Result of parsing thermal-block-insert.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create bottom-side profile with grooves (inverse of tongue)",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1795,8 +1780,6 @@ description: Result of parsing thermal-block-insert.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create top-side profile with tongues"
         ],
         "start": 0,
@@ -2266,25 +2249,6 @@ description: Result of parsing thermal-block-insert.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Extrude both tongue and groove profiles to form the final thermal insert block",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2296,6 +2260,9 @@ description: Result of parsing thermal-block-insert.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create bottom-side profile with grooves (inverse of tongue)"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2422,6 +2389,9 @@ description: Result of parsing thermal-block-insert.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Extrude both tongue and groove profiles to form the final thermal insert block"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2445,6 +2415,7 @@ description: Result of parsing thermal-block-insert.kcl
         "preComments": [
           "// Thermal Block Insert",
           "// Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency",
+          "// Categories: Automotive, Computer Hardware",
           "",
           "",
           "// Set units in millimeters (mm)"
@@ -2519,6 +2490,18 @@ description: Result of parsing thermal-block-insert.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "3": [
           {
             "commentStart": 0,
@@ -2530,6 +2513,54 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "inlineComment",
               "value": "spacing between tongues",
               "style": "line"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
             }
           }
         ]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 npm run circular-deps | sed '$d' > /tmp/circular-deps.txt

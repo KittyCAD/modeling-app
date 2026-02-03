@@ -1,11 +1,9 @@
-import type { MarkedOptions } from '@ts-stack/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
 import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
-import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { IS_STAGING_OR_DEBUG, getReleaseUrl } from '@src/routes/utils'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export function ToastUpdate({
   version,
@@ -21,14 +19,6 @@ export function ToastUpdate({
   const containsBreakingChanges = releaseNotes
     ?.toLocaleLowerCase()
     .includes('breaking')
-
-  const markedOptions: MarkedOptions = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    unescape,
-    escape,
-  }
 
   return (
     <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
@@ -70,40 +60,42 @@ export function ToastUpdate({
                 <strong className="text-destroy-50"> (Breaking changes)</strong>
               )}
             </summary>
-            <div
-              className="parsed-markdown py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
-              dangerouslySetInnerHTML={{
-                __html: Marked.parse(releaseNotes, {
-                  renderer: new SafeRenderer(markedOptions),
-                  ...markedOptions,
-                }),
-              }}
-            ></div>
+            <MarkdownText
+              text={releaseNotes}
+              className="py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
+            />
           </details>
         )}
-        <div className="flex justify-between gap-8">
+        <div className="flex justify-between items-center gap-8">
           <ActionButton
             Element="button"
             iconStart={{
-              icon: 'arrowRotateRight',
+              icon: 'close',
+              iconClassName: 'bg-destroy-80 text-6',
             }}
-            name="restart"
-            onClick={onRestart}
-          >
-            Restart app now
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'checkmark',
-            }}
+            data-negative-button="dismiss"
             name="dismiss"
             onClick={() => {
               toast.dismiss()
               onDismiss()
             }}
           >
-            Got it
+            Not right now
+          </ActionButton>
+          <p className="text-center text-2 text-xs">
+            <em>
+              The update will be applied when you restart the application.
+            </em>
+          </p>
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'arrowShortRight',
+            }}
+            name="accept"
+            onClick={onRestart}
+          >
+            Restart to update
           </ActionButton>
         </div>
       </div>

@@ -391,7 +391,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -437,7 +438,7 @@ description: Artifact commands color-cube.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -597,7 +598,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -643,7 +645,7 @@ description: Artifact commands color-cube.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -803,7 +805,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -849,7 +852,7 @@ description: Artifact commands color-cube.kcl
           "r": 0.0,
           "g": 1.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -1009,7 +1012,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1055,7 +1059,7 @@ description: Artifact commands color-cube.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -1215,7 +1219,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1261,7 +1266,7 @@ description: Artifact commands color-cube.kcl
           "r": 0.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -1421,7 +1426,8 @@ description: Artifact commands color-cube.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1467,26 +1473,12 @@ description: Artifact commands color-cube.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

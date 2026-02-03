@@ -126,6 +126,9 @@ export function createMachineCommand<
   if ('reviewMessage' in commandConfig) {
     command.reviewMessage = commandConfig.reviewMessage
   }
+  if ('reviewValidation' in commandConfig) {
+    command.reviewValidation = commandConfig.reviewValidation
+  }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }
@@ -170,6 +173,7 @@ export function buildCommandArgument<
     displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
+    prepopulate: arg.prepopulate,
     hidden: arg.hidden,
     skip: arg.skip,
     machineActor,
@@ -204,6 +208,7 @@ export function buildCommandArgument<
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
+      clearSelectionFirst: arg.clearSelectionFirst,
       allowNoSelection: arg.allowNoSelection,
       selectionSource: arg.selectionSource,
       selectionFilter: arg.selectionFilter,
@@ -224,6 +229,13 @@ export function buildCommandArgument<
       validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'vector3d' }
+  } else if (arg.inputType === 'vector2d') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'vector2d' }
   } else if (arg.inputType === 'string') {
     return {
       inputType: arg.inputType,

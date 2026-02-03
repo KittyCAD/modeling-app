@@ -21,9 +21,11 @@ import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import type { ILog } from '@src/lib/debugger'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -67,6 +69,7 @@ export interface Fixtures {
   scene: SceneFixture
   homePage: HomePageFixture
   signInPage: SignInPageFixture
+  copilot: CopilotFixture
 }
 
 export class ElectronZoo {
@@ -86,7 +89,12 @@ export class ElectronZoo {
   async makeAvailableAgain() {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
-        if (!window.engineCommandManager.engineConnection?.state?.type) {
+        if (
+          window.engineCommandManager.connection &&
+          window.engineCommandManager.started &&
+          window.engineCommandManager.connection.websocket?.readyState ===
+            WebSocket.OPEN
+        ) {
           return resolve(undefined)
         }
 
@@ -98,8 +106,10 @@ export class ElectronZoo {
           // It's possible we never even created an engineConnection
           // e.g. never left Projects view.
           if (
-            window.engineCommandManager?.engineConnection?.state.type ===
-            'disconnected'
+            !window.engineCommandManager.connection ||
+            !window.engineCommandManager.started ||
+            window.engineCommandManager.connection.websocket?.readyState ===
+              WebSocket.CLOSED
           ) {
             return resolve(undefined)
           }
@@ -180,7 +190,9 @@ export class ElectronZoo {
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs.
+      // to guarantee it runs. Intentionally changing `this`, so no need to
+      // bind.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
@@ -189,6 +201,8 @@ export class ElectronZoo {
         await that.page.reload()
       }
 
+      // Intentionally changing `this`, so no need to bind.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
@@ -350,10 +364,13 @@ const fixturesForWeb = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     page.setBodyDimensions = page.setViewportSize
 
     // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
     // at the correct time, so we reload the page and it fires appropriately.
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldPageAddInitScript = page.addInitScript
     page.addInitScript = async function (...args) {
       // @ts-expect-error
@@ -361,6 +378,8 @@ const fixturesForWeb = {
       await page.reload()
     }
 
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldContextAddInitScript = context.addInitScript
     context.addInitScript = async function (...args) {
       // @ts-expect-error
@@ -373,6 +392,14 @@ const fixturesForWeb = {
 
     await use(page)
   },
+}
+
+interface IFormattedLog {
+  time: number
+  message: string
+  stack?: string
+  label: string
+  metadata: any
 }
 
 const fixturesBasedOnProcessEnvPlatform = {
@@ -394,6 +421,43 @@ const fixturesBasedOnProcessEnvPlatform = {
   signInPage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new SignInPageFixture(page))
   },
+  copilot: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new CopilotFixture(page))
+  },
+  _globalAfterEach: [
+    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+      await use() // <-- runs the actual test
+
+      // <-- this runs *after every test* in the entire suite
+      if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
+        // NO OP
+        return
+      }
+
+      const engineLogs: ILog[] = await page.evaluate(
+        () => window.engineDebugger.logs || []
+      )
+      const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
+        const newLog: IFormattedLog = {
+          ...log,
+        }
+        delete newLog['stack']
+        newLog.metadata = JSON.stringify(newLog.metadata, null, 1)
+        return newLog
+      })
+
+      await testInfo.attach('logs', {
+        /**
+         * gotcha: this is not actually a string for some unknown reason
+         * testInfo.attachments.logs will have body be body: <Buffer 5b 0a 20 20 ...
+         * even if I set the contentType to text/plain which is the default
+         */
+        body: JSON.stringify(formattedLogs, null, 2),
+        contentType: 'application/json',
+      })
+    },
+    { auto: true }, // ensures it always runs, no need to opt-in
+  ],
 }
 
 if (process.env.TARGET === 'web') {

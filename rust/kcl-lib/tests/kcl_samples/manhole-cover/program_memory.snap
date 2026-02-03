@@ -403,23 +403,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              5.674369999999998,
-              -8.539703000000003
-            ],
-            "tag": null,
-            "to": [
-              5.67437,
-              -8.539703
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               3.568886,
               -9.673446
             ],
@@ -492,23 +475,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -9.673446
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.5688859999999982,
-              -9.673446
-            ],
-            "tag": null,
-            "to": [
-              3.568886,
-              -9.673446
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -597,23 +563,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              1.1140059999999976,
-              -10.308200000000001
-            ],
-            "tag": null,
-            "to": [
-              1.114006,
-              -10.3082
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -1.814767,
               -10.266164
             ],
@@ -686,23 +635,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.266164000000002
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.814767000000002,
-              -10.266164000000002
-            ],
-            "tag": null,
-            "to": [
-              -1.814767,
-              -10.266164
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -791,23 +723,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              7.459999999999998,
-              -6.949
-            ],
-            "tag": null,
-            "to": [
-              7.46,
-              -6.949
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               8.896,
               -4.8592
             ],
@@ -880,23 +795,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -4.859200000000003
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              8.895999999999999,
-              -4.859200000000003
-            ],
-            "tag": null,
-            "to": [
-              8.896,
-              -4.8592
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -985,23 +883,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              9.858099999999999,
-              -2.092700000000002
-            ],
-            "tag": null,
-            "to": [
-              9.8581,
-              -2.0927
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -5.779208,
               -8.745042
             ],
@@ -1074,23 +955,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.745042000000002
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.779208000000001,
-              -8.745042000000002
-            ],
-            "tag": null,
-            "to": [
-              -5.779208,
-              -8.745042
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -1172,28 +1036,13 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.7847,
-              2.1528999999999994
-            ],
-            "tag": null,
-            "to": [
-              9.7847,
-              2.1529
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1201,7 +1050,6 @@ description: Variables in memory after executing manhole-cover.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1280,6 +1128,8 @@ description: Variables in memory after executing manhole-cover.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1287,7 +1137,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1333,13 +1182,14 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1765,23 +1615,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              5.674369999999998,
-              -8.539703000000003
-            ],
-            "tag": null,
-            "to": [
-              5.67437,
-              -8.539703
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               3.568886,
               -9.673446
             ],
@@ -1854,23 +1687,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -9.673446
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.5688859999999982,
-              -9.673446
-            ],
-            "tag": null,
-            "to": [
-              3.568886,
-              -9.673446
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -1959,23 +1775,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              1.1140059999999976,
-              -10.308200000000001
-            ],
-            "tag": null,
-            "to": [
-              1.114006,
-              -10.3082
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -1.814767,
               -10.266164
             ],
@@ -2048,23 +1847,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.266164000000002
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.814767000000002,
-              -10.266164000000002
-            ],
-            "tag": null,
-            "to": [
-              -1.814767,
-              -10.266164
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -2153,23 +1935,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              7.459999999999998,
-              -6.949
-            ],
-            "tag": null,
-            "to": [
-              7.46,
-              -6.949
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               8.896,
               -4.8592
             ],
@@ -2242,23 +2007,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -4.859200000000003
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              8.895999999999999,
-              -4.859200000000003
-            ],
-            "tag": null,
-            "to": [
-              8.896,
-              -4.8592
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -2347,23 +2095,6 @@ description: Variables in memory after executing manhole-cover.kcl
               "sourceRange": []
             },
             "from": [
-              9.858099999999999,
-              -2.092700000000002
-            ],
-            "tag": null,
-            "to": [
-              9.8581,
-              -2.0927
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -5.779208,
               -8.745042
             ],
@@ -2436,23 +2167,6 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.745042000000002
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.779208000000001,
-              -8.745042000000002
-            ],
-            "tag": null,
-            "to": [
-              -5.779208,
-              -8.745042
-            ],
-            "type": "ToPoint",
             "units": "in"
           },
           {
@@ -2534,28 +2248,13 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.7847,
-              2.1528999999999994
-            ],
-            "tag": null,
-            "to": [
-              9.7847,
-              2.1529
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2563,7 +2262,6 @@ description: Variables in memory after executing manhole-cover.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2705,6 +2403,8 @@ description: Variables in memory after executing manhole-cover.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 288.925,
           "y": 0.0,
@@ -2712,7 +2412,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2758,13 +2457,14 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 288.925,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2883,28 +2583,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.674369999999998,
-            -8.539703000000003
-          ],
-          "tag": null,
-          "to": [
-            5.67437,
-            -8.539703
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2912,7 +2597,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3038,28 +2722,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.5688859999999982,
-            -9.673446
-          ],
-          "tag": null,
-          "to": [
-            3.568886,
-            -9.673446
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3067,7 +2736,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3193,28 +2861,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.1140059999999976,
-            -10.308200000000001
-          ],
-          "tag": null,
-          "to": [
-            1.114006,
-            -10.3082
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3222,7 +2875,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3348,28 +3000,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.814767000000002,
-            -10.266164000000002
-          ],
-          "tag": null,
-          "to": [
-            -1.814767,
-            -10.266164
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3377,7 +3014,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3503,28 +3139,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            7.459999999999998,
-            -6.949
-          ],
-          "tag": null,
-          "to": [
-            7.46,
-            -6.949
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3532,7 +3153,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3658,28 +3278,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            8.895999999999999,
-            -4.859200000000003
-          ],
-          "tag": null,
-          "to": [
-            8.896,
-            -4.8592
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3687,7 +3292,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3813,28 +3417,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            9.858099999999999,
-            -2.092700000000002
-          ],
-          "tag": null,
-          "to": [
-            9.8581,
-            -2.0927
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3842,7 +3431,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3968,28 +3556,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -5.779208000000001,
-            -8.745042000000002
-          ],
-          "tag": null,
-          "to": [
-            -5.779208,
-            -8.745042
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3997,7 +3570,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4123,28 +3695,13 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            9.7847,
-            2.1528999999999994
-          ],
-          "tag": null,
-          "to": [
-            9.7847,
-            2.1529
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4152,7 +3709,6 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

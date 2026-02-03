@@ -4,7 +4,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState,
+        ControlFlowKind, ExecState,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
@@ -49,6 +49,7 @@ async fn call_map_closure(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("map closure".to_owned()),
     );
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
@@ -58,6 +59,17 @@ async fn call_map_closure(
             source_ranges,
         ))
     })?;
+    let output = match output.control {
+        ControlFlowKind::Continue => output.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside map function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
     Ok(output)
 }
 
@@ -101,6 +113,7 @@ async fn call_reduce_closure(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("reduce closure".to_owned()),
     );
     let transform_fn_return = reduce_fn
         .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)
@@ -114,6 +127,17 @@ async fn call_reduce_closure(
             source_ranges.clone(),
         ))
     })?;
+    let out = match out.control {
+        ControlFlowKind::Continue => out.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside reduce function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
     Ok(out)
 }
 
@@ -187,4 +211,39 @@ fn inner_concat(
         RuntimeType::any()
     };
     KclValue::HomArray { value: new, ty }
+}
+
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
+
+    let (array, original_ty) = match array_value {
+        KclValue::HomArray { value, ty, .. } => (value, ty),
+        KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+        _ => (vec![array_value], RuntimeType::any()),
+    };
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
+        }
+    }
+
+    let ty = infer_flattened_type(original_ty, &flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
+/// Infer the type of a flattened array based on the original type and the
+/// types of the flattened values. Currently, we preserve the original type only
+/// if all flattened values have the same type as the original element type.
+/// Otherwise, we fall back to `any`.
+fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> RuntimeType {
+    for value in values {
+        if !value.has_type(&original_ty) {
+            return RuntimeType::any();
+        };
+    }
+
+    original_ty
 }

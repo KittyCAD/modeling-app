@@ -4,11 +4,12 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program, ProjectManager,
+    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs,
+    MockConfig, Program, ProjectManager,
 };
 use wasm_bindgen::prelude::*;
 
-const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
+pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
 pub struct Context {
@@ -17,6 +18,7 @@ pub struct Context {
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
     pub(crate) project_manager: ProjectManager,
+    pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
 }
 
 #[wasm_bindgen]
@@ -27,6 +29,13 @@ impl Context {
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
+        // Initialize the thread pool for rayon. For some reason, this wasn't
+        // happening automatically. It may return an error if it was already
+        // initialized, so ignore the result.
+        let _ = rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .use_current_thread()
+            .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
@@ -40,10 +49,11 @@ impl Context {
             )),
             response_context,
             project_manager: ProjectManager,
+            frontend: Arc::new(tokio::sync::RwLock::new(FrontendState::new())),
         })
     }
 
-    fn create_executor_ctx(
+    pub(crate) fn create_executor_ctx(
         &self,
         settings: &str,
         path: Option<String>,
@@ -174,7 +184,11 @@ impl Context {
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
             )))
         })?;
-        ctx.run_mock(&program, use_prev_memory).await
+        let mock_config = MockConfig {
+            use_prev_memory,
+            ..Default::default()
+        };
+        ctx.run_mock(&program, &mock_config).await
     }
 
     /// Export a scene to a file.

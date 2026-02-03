@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -9,9 +9,7 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { codeManager, kclManager } from '@src/lib/singletons'
-import { useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -26,6 +24,19 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    sceneInfra,
+    systemIOActor,
+    useSettings,
+    useToken,
+    authActor,
+    settingsActor,
+  } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -40,7 +51,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand()
+    } = createNamedViewsCommand(engineCommandManager, settingsActor)
 
     const commands = [
       createNamedViewCommand,
@@ -62,7 +73,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [])
+  }, [commandBarActor, engineCommandManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -88,7 +99,9 @@ export const ModelingPageProvider = ({
     if (location.pathname === PATHS.HOME) {
       commandBarActor.send({
         type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
       commandBarActor.send({
@@ -106,7 +119,17 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
+  const cb = modelingMenuCallbackMostActions({
+    authActor,
+    commandBarActor,
+    engineCommandManager,
+    filePath,
+    kclManager,
+    navigate,
+    sceneInfra,
+    settings,
+    settingsActor,
+  })
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
@@ -142,14 +165,19 @@ export const ModelingPageProvider = ({
     return kclCommands({
       authToken: token ?? '',
       projectData,
+      kclManager,
       settings: {
         defaultUnit:
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
+      project,
+      rustContext,
+      systemIOActor,
+      wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [codeManager, kclManager, project, file])
+  }, [kclManager, project, file])
 
   useEffect(() => {
     commandBarActor.send({
@@ -163,7 +191,7 @@ export const ModelingPageProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return <div>{children}</div>

@@ -13,14 +13,14 @@ import usePlatform from '@src/hooks/usePlatform'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { authActor } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const { authActor } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -28,7 +28,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_USER
               : PATHS.HOME + PATHS.SETTINGS_USER
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         {
@@ -92,7 +92,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_KEYBINDINGS
               : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         'break',
@@ -163,27 +163,6 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         },
         'break',
         {
-          id: 'change-environment',
-          Element: 'button',
-          children: <span>Change environment</span>,
-          onClick: () => {
-            const environment = env().VITE_KITTYCAD_BASE_DOMAIN
-            if (environment) {
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  groupId: 'application',
-                  name: 'switch-environments',
-                  argDefaultValues: {
-                    environment,
-                  },
-                },
-              })
-            }
-          },
-          className: hideEnvironmentItems ? 'hidden' : '',
-        },
-        {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
@@ -237,16 +216,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   return (
     <Popover className="relative grid">
       <Popover.Button
-        className="m-0 relative group border-0 w-fit min-w-max p-0 rounded-l-full rounded-r focus-visible:outline-appForeground"
+        className="m-0 relative group/avatar border-0 w-fit min-w-max p-0 rounded-sm focus-visible:outline-2 hover:bg-transparent"
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">
-          <div className="rounded-full border overflow-hidden">
+          <div className="avatar">
             {user?.image && !imageLoadFailed ? (
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-6 w-6 rounded-full"
+                className="h-6 w-6"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
@@ -273,6 +252,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         as={Fragment}
       >
         <Popover.Panel
+          data-testid="user-dropdown"
           className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}

@@ -1,0 +1,8 @@
+/// Functions for debugging and interacting with the runtime system.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+/// Exit the program early.
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn exit() {}

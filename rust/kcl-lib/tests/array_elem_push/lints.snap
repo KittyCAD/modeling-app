@@ -1,0 +1,56 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints array_elem_push.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'new_arr1'",
+    "pos": [
+      16,
+      24,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'new_arr1' to 'newArr1'",
+      "insert": "arr = [1, 2, 3]\nnewArr1 = push(arr, item = 4)\nnew_arr2 = push(newArr1, item = 5)\nassert(newArr1[0], isEqualTo = 1, error = \"element 0 should not have changed\")\nassert(newArr1[1], isEqualTo = 2, error = \"element 1 should not have changed\")\nassert(newArr1[2], isEqualTo = 3, error = \"element 2 should not have changed\")\nassert(newArr1[3], isEqualTo = 4, error = \"4 was added to the end of the array\")\nassert(new_arr2[0], isEqualTo = 1, error = \"element 0 should not have changed\")\nassert(new_arr2[1], isEqualTo = 2, error = \"element 1 should not have changed\")\nassert(new_arr2[2], isEqualTo = 3, error = \"element 2 should not have changed\")\nassert(new_arr2[3], isEqualTo = 4, error = \"4 was added to the end of the array\")\nassert(new_arr2[4], isEqualTo = 5, error = \"5 was added to the end of the array\")\n",
+      "source_range": [
+        0,
+        809,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'new_arr2'",
+    "pos": [
+      47,
+      55,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'new_arr2' to 'newArr2'",
+      "insert": "arr = [1, 2, 3]\nnew_arr1 = push(arr, item = 4)\nnewArr2 = push(new_arr1, item = 5)\nassert(new_arr1[0], isEqualTo = 1, error = \"element 0 should not have changed\")\nassert(new_arr1[1], isEqualTo = 2, error = \"element 1 should not have changed\")\nassert(new_arr1[2], isEqualTo = 3, error = \"element 2 should not have changed\")\nassert(new_arr1[3], isEqualTo = 4, error = \"4 was added to the end of the array\")\nassert(newArr2[0], isEqualTo = 1, error = \"element 0 should not have changed\")\nassert(newArr2[1], isEqualTo = 2, error = \"element 1 should not have changed\")\nassert(newArr2[2], isEqualTo = 3, error = \"element 2 should not have changed\")\nassert(newArr2[3], isEqualTo = 4, error = \"4 was added to the end of the array\")\nassert(newArr2[4], isEqualTo = 5, error = \"5 was added to the end of the array\")\n",
+      "source_range": [
+        0,
+        809,
+        0
+      ]
+    }
+  }
+]

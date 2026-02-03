@@ -183,7 +183,8 @@ description: Artifact commands user_reported_union_2_bug.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -354,7 +355,8 @@ description: Artifact commands user_reported_union_2_bug.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -429,19 +431,5 @@ description: Artifact commands user_reported_union_2_bug.kcl
         "tolerance": 0.0000001
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

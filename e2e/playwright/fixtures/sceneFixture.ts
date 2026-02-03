@@ -33,13 +33,17 @@ type SceneSerialised = {
   }
 }
 
-type ClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
-type MoveHandler = (moveParams?: MouseParams) => Promise<void | boolean>
-type DblClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
-type DragToHandler = (dragParams: MouseDragToParams) => Promise<void | boolean>
+type ClickHandler = (clickParams?: MouseParams) => Promise<undefined | boolean>
+type MoveHandler = (moveParams?: MouseParams) => Promise<undefined | boolean>
+type DblClickHandler = (
+  clickParams?: MouseParams
+) => Promise<undefined | boolean>
+type DragToHandler = (
+  dragParams: MouseDragToParams
+) => Promise<undefined | boolean>
 type DragFromHandler = (
   dragParams: MouseDragFromParams
-) => Promise<void | boolean>
+) => Promise<undefined | boolean>
 
 export class SceneFixture {
   public page: Page
@@ -149,16 +153,16 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        return clickParams?.shouldDbClick
-          ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+        clickParams?.shouldDbClick
+          ? await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
               delay: clickParams?.delay || 0,
             })
           : clickParams?.shouldRightClick
-            ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            ? await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
                 button: 'right',
                 delay: clickParams?.delay || 0,
               })
-            : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            : await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
                 delay: clickParams?.delay || 0,
               })
       },
@@ -176,7 +180,7 @@ export class SceneFixture {
             moveParams.pixelDiff
           )
         }
-        return this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
+        await this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
       },
       async (clickParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -191,7 +195,7 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
+        await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
       },
     ] as const
   makeDragHelpers = (
@@ -244,7 +248,7 @@ export class SceneFixture {
             dragToParams.pixelDiff
           )
         }
-        return this.page.dragAndDrop('#stream', '#stream', {
+        await this.page.dragAndDrop('#stream', '#stream', {
           sourcePosition: resolvedFromPoint,
           targetPosition: resolvedToPoint,
         })
@@ -282,7 +286,7 @@ export class SceneFixture {
             dragFromParams.pixelDiff
           )
         }
-        return this.page.dragAndDrop('#stream', '#stream', {
+        await this.page.dragAndDrop('#stream', '#stream', {
           sourcePosition: resolvedFromPoint,
           targetPosition: resolvedToPoint,
         })
@@ -318,7 +322,7 @@ export class SceneFixture {
   clickYAxis = async () => {
     const pointOnYAxis = await this.convertPagePositionToStream(
       0.5,
-      0.25,
+      0.7,
       'ratio'
     )
     await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
@@ -457,6 +461,52 @@ export class SceneFixture {
     })
     await expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
+  }
+
+  /**
+   * Get the bounding box of an element by its locator string.
+   * Returns a bounding box with x, y, width, and height, defaulting x and y to 0 if not found.
+   */
+  getBoundingBox = async (locator: string) => {
+    const box = await this.page.locator(locator).boundingBox({ timeout: 5_000 })
+    if (!box) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+    return { ...box, x: box.x || 0, y: box.y || 0 }
+  }
+
+  /**
+   * Get the bounding box of an element by its locator string.
+   * Throws an error if the element is not found or if width/height are undefined.
+   * Returns a bounding box with guaranteed width and height (non-optional).
+   */
+  getBoundingBoxOrThrow = async (
+    locator: string
+  ): Promise<{
+    x: number
+    y: number
+    width: number
+    height: number
+  }> => {
+    const box = await this.getBoundingBox(locator)
+    if (
+      !box ||
+      box.width === undefined ||
+      box.height === undefined ||
+      box.x === undefined ||
+      box.y === undefined
+    ) {
+      throw new Error(
+        `Could not find element with locator "${locator}" or element has no dimensions`
+      )
+    }
+    // TypeScript now knows width and height are defined after the check above
+    return {
+      x: box.x,
+      y: box.y,
+      width: box.width,
+      height: box.height,
+    }
   }
 
   isNativeFileMenuCreated = async () => {

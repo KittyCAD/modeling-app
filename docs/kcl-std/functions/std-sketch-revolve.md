@@ -17,6 +17,7 @@ revolve(
   bidirectionalAngle?: number(Angle),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): [Solid; 1+]
 ```
 
@@ -35,7 +36,7 @@ revolved around the same axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch or set of sketches that should be revolved | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be revolved | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis of revolution. | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
@@ -43,10 +44,11 @@ revolved around the same axis.
 | `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
@@ -290,7 +292,6 @@ part001 = revolve(
 ```kcl
 // Revolve two sketches around the same axis.
 
-
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [4, 8])
   |> xLine(length = 3)
@@ -327,7 +328,6 @@ revolve([profile001, profile002], axis = X)
 ```kcl
 // Revolve around a path that has not been extruded.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -358,7 +358,6 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Revolve around a path that has not been extruded or closed.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -386,7 +385,6 @@ sketch001 = startSketchOn(XY)
 
 ```kcl
 // Symmetrically revolve around a path.
-
 
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -416,7 +414,6 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Bidirectional revolve around a path.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -436,6 +433,31 @@ sketch001 = startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve12.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+halfTorus = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
+closedTorus = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(axis = Y, bodyType = SURFACE)
+  |> translate(z = 30)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the revolve function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve13_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve13.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

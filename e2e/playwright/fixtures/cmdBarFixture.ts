@@ -1,6 +1,4 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 export type CmdBarSerialised =
@@ -23,17 +21,24 @@ export type CmdBarSerialised =
       stage: 'review'
       headerArguments: Record<string, string>
       commandName: string
+      reviewValidationError?: string
     }
 
 export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
+  public stepBackButton!: Locator
   public cmdBarElement!: Locator
+  public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
+    this.stepBackButton = this.page.getByTestId('command-bar-step-back')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
+      'command-bar-loading-checking-arguments'
+    )
   }
 
   get currentArgumentInput() {
@@ -66,18 +71,72 @@ export class CmdBarFixture {
     }
     const getCommandName = () =>
       this.page.getByTestId('command-name').textContent()
+    const getReviewValidationError = async () => {
+      const locator = this.page.getByTestId('cmd-bar-review-validation-error')
+      if (!(await locator.isVisible())) return undefined
+      return (await locator.textContent()) || undefined
+    }
     if (await reviewForm.isVisible()) {
-      const [headerArguments, commandName] = await Promise.all([
-        getHeaderArgs(),
-        getCommandName(),
-      ])
+      const [headerArguments, commandName, reviewValidationError] =
+        await Promise.all([
+          getHeaderArgs(),
+          getCommandName(),
+          getReviewValidationError(),
+        ])
       return {
         stage: 'review',
         headerArguments,
         commandName: commandName || '',
+        reviewValidationError,
       }
     }
 
+    // Check if we're dealing with vector2d inputs
+    const vector2dInputsExist = await this.page
+      .getByTestId('vector2d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector2dInputsExist) {
+      // Validate that both vector2d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector2d-x-input').isVisible(),
+        this.page.getByTestId('vector2d-y-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector2d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector2d-x-input').inputValue(),
+        this.page.getByTestId('vector2d-y-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
+    // Check if we're dealing with vector3d inputs
     const vector3dInputsExist = await this.page
       .getByTestId('vector3d-x-input')
       .isVisible()
@@ -151,6 +210,12 @@ export class CmdBarFixture {
     }
   }
   expectState = async (expected: CmdBarSerialised) => {
+    if (expected.stage === 'review') {
+      await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
+    } else if (expected.stage === 'commandBarClosed') {
+      await expect(this.cmdBarElement).not.toBeAttached()
+    }
+
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /**
@@ -189,6 +254,11 @@ export class CmdBarFixture {
   submit = async () => {
     const submitButton = this.page.getByTestId('command-bar-submit')
     await submitButton.click()
+  }
+
+  stepBack = async () => {
+    await this.page.waitForTimeout(1000)
+    await this.stepBackButton.click()
   }
 
   openCmdBar = async () => {
@@ -241,127 +311,17 @@ export class CmdBarFixture {
   }
 
   /**
+   * Select an argument in header from the command bar
+   */
+  clickHeaderArgument = async (argName: string) => {
+    await this.page.getByTestId(`arg-name-${argName}`).click()
+  }
+
+  /**
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {
     await this.variableCheckbox.click()
-  }
-
-  /**
-   * Captures a snapshot of the request sent to the text-to-cad API endpoint
-   * and saves it to a file named after the current test.
-   *
-   * The snapshot file will be saved in the specified directory with a filename
-   * derived from the test's full path (including describe blocks).
-   *
-   * @param testInfoInOrderToGetTestTitle The TestInfo object from the test context
-   * @param customOutputDir Optional custom directory for the output file
-   */
-  async captureTextToCadRequestSnapshot(
-    testInfoInOrderToGetTestTitle: TestInfo,
-    customOutputDir = 'e2e/playwright/snapshots/prompt-to-edit'
-  ) {
-    // First sanitize each title component individually
-    const sanitizedTitleComponents = [
-      ...testInfoInOrderToGetTestTitle.titlePath.slice(0, -1), // Get all parent titles
-      testInfoInOrderToGetTestTitle.title, // Add the test title
-    ].map(
-      (component) =>
-        component
-          .replace(/[^a-z0-9]/gi, '-') // Replace non-alphanumeric chars with hyphens
-          .toLowerCase()
-          .replace(/-+/g, '-') // Replace multiple consecutive hyphens with a single one
-          .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-    )
-
-    // Join the sanitized components with -- as a clear separator
-    const sanitizedTestName = sanitizedTitleComponents.join('--')
-
-    // Create the output path
-    const outputPath = path.join(
-      customOutputDir,
-      `${sanitizedTestName}.snap.json`
-    )
-
-    // Create a handler function that saves request bodies to a file
-    const requestHandler = (route: Route, request: Request) => {
-      try {
-        // Get the raw post data
-        const postData = request.postData()
-        if (!postData) {
-          console.error('No post data found in request')
-          return
-        }
-
-        // Extract all parts from the multipart form data
-        const boundary = postData.match(/------WebKitFormBoundary[^\r\n]*/)?.[0]
-        if (!boundary) {
-          console.error('Could not find form boundary')
-          return
-        }
-
-        const parts = postData.split(boundary).filter((part) => part.trim())
-        const files: Record<string, string> = {}
-        let eventData = null
-
-        for (const part of parts) {
-          // Skip the final boundary marker
-          if (part.startsWith('--')) continue
-
-          const nameMatch = part.match(/name="([^"]+)"/)
-          if (!nameMatch) {
-            console.log('No name match found in part:', part.substring(0, 100))
-            continue
-          }
-
-          const name = nameMatch[1]
-          const content = part.split(/\r?\n\r?\n/)[1]?.trim()
-          if (!content) continue
-
-          if (name === 'body') {
-            eventData = JSON.parse(content)
-          } else if (name === 'files') {
-            files[name] = content
-          }
-        }
-
-        if (!eventData) {
-          console.error('Could not find event JSON in multipart form data')
-          return
-        }
-
-        const requestBody = {
-          ...eventData,
-          files,
-        }
-
-        // Ensure directory exists
-        const dir = path.dirname(outputPath)
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true })
-        }
-
-        // Write the request body to the file
-        fs.writeFileSync(outputPath, JSON.stringify(requestBody, null, 2))
-
-        console.log(`Saved text-to-cad API request to: ${outputPath}`)
-      } catch (error) {
-        console.error('Error processing text-to-cad request:', error)
-      }
-
-      // Use void to explicitly mark the promise as ignored
-      void route.continue()
-    }
-
-    // Start monitoring requests
-    await this.page.route(
-      '**/ml/text-to-cad/multi-file/iteration',
-      requestHandler
-    )
-
-    console.log(
-      `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
-    )
   }
 
   async toBeOpened() {
@@ -385,10 +345,7 @@ export class CmdBarFixture {
 
   async expectCommandName(value: string) {
     // Check the placeholder project name exists
-    const actual = await this.cmdBarElement
-      .getByTestId('command-name')
-      .textContent()
-    const expected = value
-    expect(actual).toBe(expected)
+    const cmdNameElement = this.cmdBarElement.getByTestId('command-name')
+    return await expect(cmdNameElement).toHaveText(value)
   }
 }

@@ -122,28 +122,13 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              2.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -151,7 +136,6 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -306,28 +290,13 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            2.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -335,7 +304,6 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -381,13 +349,14 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

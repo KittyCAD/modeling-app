@@ -130,7 +130,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 6.3,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -182,15 +183,20 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.7,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.7,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -288,7 +294,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -417,7 +424,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 92.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -469,15 +477,20 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -575,7 +588,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -921,7 +935,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1120,7 +1135,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1296,7 +1312,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 51.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1425,7 +1442,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -51.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1589,7 +1607,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -32.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1641,15 +1660,20 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 6.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 6.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -1747,7 +1771,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1876,7 +1901,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 22.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1928,15 +1954,20 @@ description: Artifact commands coilover-assembly.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 19.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 19.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -2034,7 +2065,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2351,7 +2383,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2550,7 +2583,8 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2610,7 +2644,7 @@ description: Artifact commands coilover-assembly.kcl
           "r": 0.14509805,
           "g": 0.13725491,
           "b": 0.09411765,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -2647,7 +2681,6 @@ description: Artifact commands coilover-assembly.kcl
       }
     }
   ],
-  "public/kcl-samples/coilover-assembly/parameters.kcl": [],
   "public/kcl-samples/coilover-assembly/spring.kcl": [
     {
       "cmdId": "[uuid]",
@@ -2832,26 +2865,12 @@ description: Artifact commands coilover-assembly.kcl
           "r": 0.84313726,
           "g": 0.5058824,
           "b": 0.03529412,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.9,
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -1749,25 +1749,6 @@ description: Result of parsing keyboard.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "9": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create a short cylindrical foot at each corner of the keyboard",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1780,8 +1761,6 @@ description: Result of parsing keyboard.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch the side profile of the keyboard base and extrude to total width"
         ],
         "start": 0,
@@ -1882,6 +1861,9 @@ description: Result of parsing keyboard.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create a short cylindrical foot at each corner of the keyboard"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2944,8 +2926,6 @@ description: Result of parsing keyboard.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define the plane to sketch keyboard keys on"
         ],
         "start": 0,
@@ -4478,6 +4458,16 @@ description: Result of parsing keyboard.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Repeat key when desired. This will default to zero",
                                 "style": "line"
@@ -4537,6 +4527,14 @@ description: Result of parsing keyboard.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "keyFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -4606,8 +4604,6 @@ description: Result of parsing keyboard.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a function to build a key. Parameterize for position, width, height, number of instances, and appearance color."
         ],
         "start": 0,
@@ -4805,8 +4801,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the first row of keys"
         ],
         "start": 0,
@@ -6462,8 +6456,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the second row of keys"
         ],
         "start": 0,
@@ -7240,8 +7232,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the third row of keys"
         ],
         "start": 0,
@@ -8018,8 +8008,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the fourth row of keys"
         ],
         "start": 0,
@@ -8730,8 +8718,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the fifth row of keys"
         ],
         "start": 0,
@@ -9221,8 +9207,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Build the sixth row of keys"
         ],
         "start": 0,
@@ -10072,8 +10056,6 @@ description: Result of parsing keyboard.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a plane to sketch ZOO brand letters on"
         ],
         "start": 0,
@@ -12097,6 +12079,14 @@ description: Result of parsing keyboard.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "z",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -12144,8 +12134,6 @@ description: Result of parsing keyboard.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function to draw the ZOO 'Z'"
         ],
         "start": 0,
@@ -14117,6 +14105,14 @@ description: Result of parsing keyboard.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "o",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -14164,8 +14160,6 @@ description: Result of parsing keyboard.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function to draw the ZOO 'O'"
         ],
         "start": 0,
@@ -14300,8 +14294,6 @@ description: Result of parsing keyboard.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place the Z logo on the Z key. Place the O logo on the O and P keys"
         ],
         "start": 0,
@@ -14665,6 +14657,7 @@ description: Result of parsing keyboard.kcl
         "preComments": [
           "// Zoo Keyboard",
           "// A custom keyboard with Zoo brand lettering",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"
@@ -14738,7 +14731,176 @@ description: Result of parsing keyboard.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "27": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "30": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "33": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "36": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "38": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "41": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "42": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "43": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "44": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

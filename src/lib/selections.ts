@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { Object3D, Object3DEventMap } from 'three'
+import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -18,47 +18,39 @@ import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedS
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
+  getLastVariable,
   getNodeFromPath,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
+
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import {
-  isCursorInSketchCommandRange,
-  isTopLevelModule,
-  topLevelRange,
-} from '@src/lang/util'
+import type { PathToNodeMap } from '@src/lang/util'
+import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
+  ExecState,
   Expr,
-  PathToNode,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import { engineStreamActor } from '@src/lib/singletons'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
-  getModuleId,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -73,34 +65,24 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
-export type DefaultPlaneSelection = {
-  name: DefaultPlaneStr
-  id: string
-}
-
-export type NonCodeSelection = Axis | DefaultPlaneSelection
-export interface Selection {
-  artifact?: Artifact
-  codeRef: CodeRef
-}
-export type Selections = {
-  otherSelections: Array<NonCodeSelection>
-  graphSelections: Array<Selection>
-}
-
-export async function getEventForSelectWithPoint({
-  data,
-}: Extract<
-  OkModelingCmdResponse,
-  { type: 'select_with_point' }
->): Promise<ModelingMachineEvent | null> {
+export async function getEventForSelectWithPoint(
+  { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
+  {
+    artifactGraph,
+    rustContext,
+  }: {
+    artifactGraph: ArtifactGraph
+    rustContext: RustContext
+  }
+): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -136,7 +118,7 @@ export async function getEventForSelectWithPoint({
     }
   }
 
-  let _artifact = kclManager.artifactGraph.get(data.entity_id)
+  let _artifact = artifactGraph.get(data.entity_id)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
     // we should still return an empty singleCodeCursor to plug into the selection logic
@@ -149,10 +131,7 @@ export async function getEventForSelectWithPoint({
       data: { selectionType: 'singleCodeCursor' },
     }
   }
-  const codeRefs = getCodeRefsByArtifactId(
-    data.entity_id,
-    kclManager.artifactGraph
-  )
+  const codeRefs = getCodeRefsByArtifactId(data.entity_id, artifactGraph)
   if (_artifact && codeRefs) {
     return {
       type: 'Set selection',
@@ -169,7 +148,10 @@ export async function getEventForSelectWithPoint({
 }
 
 export function getEventForSegmentSelection(
-  obj: Object3D<Object3DEventMap>
+  obj: Object3D,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): ModelingMachineEvent | null {
   const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
@@ -186,22 +168,21 @@ export function getEventForSegmentSelection(
   // id does not match up with the artifact graph when in sketch mode, because mock executions
   // do not update the artifact graph, therefore we match up the pathToNode instead
   // we can reliably use `type === 'segment'` since it's in sketch mode and we're concerned with segments
-  const segWithMatchingPathToNode__Id = [...kclManager.artifactGraph].find(
-    (entry) => {
-      return (
-        entry[1].type === 'segment' &&
-        JSON.stringify(entry[1].codeRef.pathToNode) ===
-          JSON.stringify(group?.userData?.pathToNode)
-      )
-    }
-  )?.[0]
+  const segWithMatchingPathToNode__Id = [...artifactGraph].find((entry) => {
+    return (
+      entry[1].type === 'segment' &&
+      JSON.stringify(entry[1].codeRef.pathToNode) ===
+        JSON.stringify(group?.userData?.pathToNode)
+    )
+  })?.[0]
 
   const id = segWithMatchingPathToNode__Id
 
   if (!id && group) {
     const node = getNodeFromPath<Expr>(
-      kclManager.ast,
-      group.userData.pathToNode
+      ast,
+      group.userData.pathToNode,
+      wasmInstance
     )
     if (err(node)) return null
     return {
@@ -218,9 +199,13 @@ export function getEventForSegmentSelection(
     }
   }
   if (!id || !group) return null
-  const artifact = kclManager.artifactGraph.get(id)
+  const artifact = artifactGraph.get(id)
   if (!artifact) return null
-  const node = getNodeFromPath<Expr>(kclManager.ast, group.userData.pathToNode)
+  const node = getNodeFromPath<Expr>(
+    ast,
+    group.userData.pathToNode,
+    wasmInstance
+  )
   if (err(node)) return null
   return {
     type: 'Set selection',
@@ -239,8 +224,20 @@ export function getEventForSegmentSelection(
 
 export function handleSelectionBatch({
   selections,
+  artifactGraph,
+  code,
+  ast,
+  systemDeps,
 }: {
   selections: Selections
+  artifactGraph: ArtifactGraph
+  code: string
+  ast: Node<Program>
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+    engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
+  }
 }): {
   engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
@@ -254,15 +251,17 @@ export function handleSelectionBatch({
       selectionToEngine.push({
         id: artifact?.id,
         range:
-          getCodeRefsByArtifactId(artifact.id, kclManager.artifactGraph)?.[0]
-            .range || defaultSourceRange(),
+          getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
+          defaultSourceRange(),
       })
   })
-  const engineEvents: WebSocketRequest[] =
-    resetAndSetEngineEntitySelectionCmds(selectionToEngine)
+  const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
+    selectionToEngine,
+    systemDeps
+  )
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      const safeEnd = Math.min(codeRef.range[1], code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
@@ -274,17 +273,17 @@ export function handleSelectionBatch({
         selections.graphSelections.length - 1
       ),
       updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.graphSelections),
+        updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
 
   return {
     codeMirrorSelection: EditorSelection.create(
-      [EditorSelection.cursor(codeManager.code.length)],
+      [EditorSelection.cursor(code.length)],
       0
     ),
     engineEvents,
     updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.graphSelections),
+      updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
   }
 }
 
@@ -299,12 +298,20 @@ export function processCodeMirrorRanges({
   isShiftDown,
   ast,
   artifactGraph,
+  artifactIndex,
+  systemDeps,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   isShiftDown: boolean
-  ast: Program
+  ast: Node<Program>
   artifactGraph: ArtifactGraph
+  artifactIndex: ArtifactIndex
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+    engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
+  }
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: WebSocketRequest[]
@@ -335,12 +342,20 @@ export function processCodeMirrorRanges({
   const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
     codeBasedSelections,
     artifactGraph,
-    kclManager.artifactIndex
+    artifactIndex
   )
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     if (!id) {
       const pathToNode = getNodePathFromSourceRange(ast, range)
+      const invalidPathToNode =
+        pathToNode.length === 1 &&
+        pathToNode[0][0] === 'body' &&
+        pathToNode[0][1] === ''
+      if (invalidPathToNode) {
+        console.warn('Could not find valid pathToNode, found:', pathToNode)
+        continue
+      }
       selections.push({
         codeRef: {
           range,
@@ -359,7 +374,7 @@ export function processCodeMirrorRanges({
   }
 
   if (!selectionRanges) return null
-  updateSceneObjectColors(codeBasedSelections)
+  updateSceneObjectColors(codeBasedSelections, ast, systemDeps)
   return {
     modelingEvent: {
       type: 'Set selection',
@@ -372,19 +387,31 @@ export function processCodeMirrorRanges({
       },
     },
     engineEvents: resetAndSetEngineEntitySelectionCmds(
-      idBasedSelections.filter(({ id }) => !!id)
+      idBasedSelections.filter(({ id }) => !!id),
+      systemDeps
     ),
   }
 }
 
-function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = kclManager.ast
+function updateSceneObjectColors(
+  codeBasedSelections: Selection[],
+  ast: Node<Program>,
+  {
+    sceneEntitiesManager,
+    wasmInstance,
+  }: {
+    sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
+  }
+) {
+  const updated = ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
     const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
+      wasmInstance,
       ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
@@ -430,9 +457,14 @@ export function updateExtraSegments(
 }
 
 function resetAndSetEngineEntitySelectionCmds(
-  selections: SelectionToEngine[]
+  selections: SelectionToEngine[],
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
 ): WebSocketRequest[] {
-  if (!engineCommandManager.engineConnection?.isReady()) {
+  if (
+    systemDeps.engineCommandManager.connection?.pingIntervalId === undefined
+  ) {
     return []
   }
   return [
@@ -457,9 +489,13 @@ function resetAndSetEngineEntitySelectionCmds(
 /**
  * Is the selection a single cursor in a sketch pipe expression chain?
  */
-export function isSketchPipe(selectionRanges: Selections) {
-  if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
-  return isCursorInSketchCommandRange(kclManager.artifactGraph, selectionRanges)
+export function isSketchPipe(
+  selectionRanges: Selections,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+) {
+  if (!isSingleCursorInPipe(selectionRanges, ast)) return false
+  return isCursorInSketchCommandRange(artifactGraph, selectionRanges)
 }
 
 // This accounts for non-geometry selections under "other"
@@ -474,6 +510,7 @@ export type SelectionCountsByType = Map<ResolvedSelectionType, number>
  * @returns
  */
 export function getSelectionCountByType(
+  ast: Node<Program>,
   selection?: Selections
 ): SelectionCountsByType | 'none' {
   const selectionsByType: SelectionCountsByType = new Map()
@@ -506,7 +543,7 @@ export function getSelectionCountByType(
        * Once we move the artifactGraph creation to WASM, we can remove this,
        * as the artifactGraph will always be up-to-date.
        */
-      if (isSingleCursorInPipe(selection, kclManager.ast)) {
+      if (isSingleCursorInPipe(selection, ast)) {
         incrementOrInitializeSelectionType('segment')
         return
       } else {
@@ -525,9 +562,10 @@ export function getSelectionCountByType(
 }
 
 export function getSelectionTypeDisplayText(
+  ast: Node<Program>,
   selection?: Selections
 ): string | null {
-  const selectionsByType = getSelectionCountByType(selection)
+  const selectionsByType = getSelectionCountByType(ast, selection)
   if (selectionsByType === 'none') return null
 
   return [...selectionsByType.entries()]
@@ -652,6 +690,12 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const sketchBlock = entries.find(
+    (entry) => entry.artifact.type === 'sketchBlock'
+  )
+  if (sketchBlock) {
+    return sketchBlock
+  }
 
   for (const entry of entries) {
     // Segments take precedence
@@ -673,7 +717,11 @@ function getBestCandidate(
     }
 
     // Other valid artifact types
-    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
+        entry.artifact.type
+      )
+    ) {
       return entry
     }
   }
@@ -729,19 +777,18 @@ export function codeToIdSelections(
 }
 
 export async function sendSelectEventToEngine(
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  videoRef: HTMLVideoElement,
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
 ) {
-  // No video stream to normalise against, return immediately
-  const engineStreamState = engineStreamActor.getSnapshot().context
-  if (!engineStreamState.videoRef.current)
-    return Promise.reject('video element not ready')
-
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineStreamState.videoRef.current,
-    engineCommandManager.streamDimensions
+    videoRef,
+    systemDeps.engineCommandManager.streamDimensions
   )
-  let res = await engineCommandManager.sendSceneCommand({
+  let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -769,7 +816,9 @@ export async function sendSelectEventToEngine(
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
-  ast: Program | Error
+  ast: Program | Error,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): Selections | Error {
   if (err(ast)) return ast
 
@@ -777,13 +826,13 @@ export function updateSelections(
     .map(([index, pathToNode]): Selection | undefined => {
       const previousSelection =
         prevSelectionRanges.graphSelections[Number(index)]
-      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       let artifact: Artifact | null = null
-      for (const [id, a] of kclManager.artifactGraph) {
+      for (const [id, a] of artifactGraph) {
         if (previousSelection?.artifact?.type === a.type) {
-          const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
+          const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
           if (!codeRefs) continue
           if (
             JSON.stringify(codeRefs[0].pathToNode) ===
@@ -808,7 +857,7 @@ export function updateSelections(
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
   for (const pathToNode of Object.values(pathToNodeMap)) {
-    const node = getNodeFromPath<Expr>(ast, pathToNode)
+    const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
@@ -852,8 +901,13 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
 }
 
 export function getDefaultSketchPlaneData(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    rustContext: RustContext
+    sceneInfra: SceneInfra
+  }
 ): Error | false | DefaultPlane {
+  const { sceneInfra, rustContext } = systemDeps
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) {
     return new Error('No default planes defined in rustContext')
@@ -923,10 +977,54 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+export async function getPlaneDataFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    rustContext: RustContext
+    sceneInfra: SceneInfra
+  }
+): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
+  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
+  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
+  // XY no matter what for now
+
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  if (!sketchBlock.planeId) {
+    return null
+  }
+
+  // Try to get the artifact from the graph
+  const _artifact = artifactGraph.get(sketchBlock.planeId)
+
+  // Use the default XY plane.
+  // This is a temporary solution while we determine the proper approach for default planes
+  if (true) {
+    const defaultPlanes = systemDeps.rustContext.defaultPlanes
+    if (defaultPlanes?.xy) {
+      const defaultResult = getDefaultSketchPlaneData(
+        defaultPlanes.xy,
+        systemDeps
+      )
+      if (!err(defaultResult) && defaultResult) {
+        return defaultResult
+      }
+    }
+    return null
+  }
+
+  return null
+}
+
 export function selectDefaultSketchPlane(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+  }
 ): Error | boolean {
-  const result = getDefaultSketchPlaneData(defaultPlaneId)
+  const { sceneInfra } = systemDeps
+  const result = getDefaultSketchPlaneData(defaultPlaneId, systemDeps)
   if (err(result) || result === false) return result
   sceneInfra.modelingSend({
     type: 'Select sketch plane',
@@ -936,8 +1034,13 @@ export function selectDefaultSketchPlane(
 }
 
 export async function getOffsetSketchPlaneData(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+  }
 ): Promise<Error | false | OffsetPlane> {
+  const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
     return new Error(
       `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
@@ -945,7 +1048,8 @@ export async function getOffsetSketchPlaneData(
   }
   const planeId = artifact.id
   try {
-    const planeInfo = await sceneEntitiesManager.getFaceDetails(planeId)
+    const planeInfo =
+      await systemDeps.sceneEntitiesManager.getFaceDetails(planeId)
 
     // Apply camera-based orientation logic similar to default planes
     let zAxis: [number, number, number] = [
@@ -1006,9 +1110,14 @@ export async function getOffsetSketchPlaneData(
 }
 
 export async function selectOffsetSketchPlane(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+  }
 ): Promise<Error | boolean> {
-  const result = await getOffsetSketchPlaneData(artifact)
+  const { sceneInfra } = systemDeps
+  const result = await getOffsetSketchPlaneData(artifact, systemDeps)
   if (err(result) || result === false) return result
 
   try {
@@ -1024,47 +1133,59 @@ export async function selectOffsetSketchPlane(
 }
 
 export async function selectionBodyFace(
-  planeOrFaceId: ArtifactId
+  planeOrFaceId: ArtifactId,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  execState: ExecState,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
+  }
 ): Promise<ExtrudeFacePlane | undefined> {
-  const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+  const { sceneInfra } = systemDeps
+  const defaultSketchPlaneSelected = selectDefaultSketchPlane(
+    planeOrFaceId,
+    systemDeps
+  )
   if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
-  const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-  const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+  const artifact = artifactGraph.get(planeOrFaceId)
+  const offsetPlaneSelected = await selectOffsetSketchPlane(
+    artifact,
+    systemDeps
+  )
   if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
 
   // Artifact is likely an sweep face
   const faceId = planeOrFaceId
-  const extrusion = getSweepFromSuspectedSweepSurface(
-    faceId,
-    kclManager.artifactGraph
-  )
+  const extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
   if (!err(extrusion)) {
-    if (!isTopLevelModule(extrusion.codeRef.range)) {
-      const moduleId = getModuleId(extrusion.codeRef.range)
-      const importDetails = kclManager.execState.filenames[moduleId]
-      if (!importDetails) {
-        toast.error("can't sketch on this face")
-        return
-      }
-      if (importDetails?.type === 'Local') {
-        // importDetails has OS specific separators from the rust side!
-        const fileNameWithExtension = getStringAfterLastSeparator(
-          importDetails.value
-        )
-        showSketchOnImportToast(fileNameWithExtension)
-      } else if (
-        importDetails?.type === 'Main' ||
-        importDetails?.type === 'Std'
-      ) {
+    const maybeImportNode = getNodeFromPath<ImportStatement>(
+      ast,
+      extrusion.codeRef.pathToNode,
+      systemDeps.wasmInstance,
+      ['ImportStatement']
+    )
+    if (
+      !err(maybeImportNode) &&
+      maybeImportNode.node &&
+      maybeImportNode.node.type === 'ImportStatement'
+    ) {
+      if (maybeImportNode.node.path.type === 'Kcl') {
+        showSketchOnImportToast(maybeImportNode.node.path.filename)
+      } else if (maybeImportNode.node.path.type === 'Foreign') {
+        showSketchOnImportToast(maybeImportNode.node.path.path)
+      } else if (maybeImportNode.node.path.type === 'Std') {
         toast.error("can't sketch on this face")
       } else {
         // force tsc error if more cases are added
-        const _exhaustiveCheck: never = importDetails
+        const _exhaustiveCheck: never = maybeImportNode.node.path
       }
     }
   }
@@ -1078,20 +1199,21 @@ export async function selectionBodyFace(
 
   const codeRef =
     artifact.type === 'cap'
-      ? getCapCodeRef(artifact, kclManager.artifactGraph)
+      ? getCapCodeRef(artifact, artifactGraph)
       : artifact.type === 'wall'
-        ? getWallCodeRef(artifact, kclManager.artifactGraph)
+        ? getWallCodeRef(artifact, artifactGraph)
         : artifact.codeRef
 
-  const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
+  const faceInfo = await systemDeps.sceneEntitiesManager.getFaceDetails(faceId)
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
   const edgeCutMeta = getEdgeCutMeta(
     artifact,
-    kclManager.ast,
-    kclManager.artifactGraph
+    ast,
+    artifactGraph,
+    systemDeps.wasmInstance
   )
   const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
     ? edgeCutMeta
@@ -1108,17 +1230,20 @@ export async function selectionBodyFace(
     )
   }
 
-  const lastChild =
-    findAllChildrenAndOrderByPlaceInCode(
-      { type: 'sweep', ...extrusion },
-      kclManager.artifactGraph
-    )[0] || null
-  const lastChildCodeRef: PathToNode | null =
-    lastChild?.type === 'compositeSolid' ? lastChild.codeRef.pathToNode : null
-
-  const extrudePathToNode = !err(extrusion)
-    ? lastChildCodeRef || extrusion.codeRef.pathToNode
-    : []
+  const children = findAllChildrenAndOrderByPlaceInCode(
+    { type: 'sweep', ...extrusion },
+    artifactGraph
+  )
+  const lastChildVariable = getLastVariable(
+    children,
+    ast,
+    systemDeps.wasmInstance,
+    ['sweep', 'compositeSolid']
+  )
+  const extrudePathToNode =
+    lastChildVariable && !err(lastChildVariable)
+      ? lastChildVariable.pathToNode
+      : []
 
   return {
     type: 'extrudeFace',
@@ -1131,5 +1256,37 @@ export async function selectionBodyFace(
     extrudePathToNode,
     faceInfo: _faceInfo,
     faceId: faceId,
+  }
+}
+
+export function selectAllInCurrentSketch(
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+  }
+): Selections {
+  const graphSelections: Selection[] = []
+
+  Object.keys(systemDeps.sceneEntitiesManager.activeSegments).forEach(
+    (pathToNode) => {
+      const artifact = artifactGraph
+        .values()
+        .find(
+          (g) =>
+            'codeRef' in g &&
+            JSON.stringify(g.codeRef.pathToNode) === pathToNode
+        )
+      if (artifact && ['path', 'segment'].includes(artifact.type)) {
+        const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+        if (codeRefs?.length) {
+          graphSelections.push({ artifact, codeRef: codeRefs[0] })
+        }
+      }
+    }
+  )
+
+  return {
+    graphSelections,
+    otherSelections: [],
   }
 }

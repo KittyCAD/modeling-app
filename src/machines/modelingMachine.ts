@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type {
   SetSelections,
@@ -8,33 +8,38 @@ import type {
   SegmentOverlayPayload,
   SketchDetails,
   SketchDetailsUpdate,
-  SegmentOverlays,
   ExtrudeFacePlane,
   DefaultPlane,
   OffsetPlane,
-  Store,
   SketchTool,
-  MoveDesc,
   PlaneVisibilityMap,
+  ModelingMachineContext,
+  ModelingMachineInput,
 } from '@src/machines/modelingSharedTypes'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
-import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -67,17 +72,9 @@ import {
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
-import type {
-  ChamferParameters,
-  FilletParameters,
-} from '@src/lang/modifyAst/addEdgeTreatment'
-import {
-  EdgeTreatmentType,
-  editEdgeTreatment,
-  modifyAstWithEdgeTreatmentAndTag,
-} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addIntersect,
+  addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
@@ -85,7 +82,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -93,7 +90,11 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
+import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -133,29 +134,35 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
-  codeManager,
-  editorManager,
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import type { ToolbarModeName } from '@src/lib/toolbar'
+  getEventForSegmentSelection,
+  handleSelectionBatch,
+  updateExtraSegments,
+  updateSelections,
+} from '@src/lib/selections'
+import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type RustContext from '@src/lib/rustContext'
+import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { EditorView } from 'codemirror'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
       data?: {
         forceNewSketch?: boolean
+        keepDefaultPlaneVisibility?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -176,6 +183,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
+  | { type: 'Exit sketch' }
   | {
       type: 'Add start point' | 'Continue existing profile'
       data: {
@@ -217,19 +225,29 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Boolean Intersect']
     }
   | {
+      type: 'Boolean Split'
+      data: ModelingCommandSchema['Boolean Split']
+    }
+  | {
       type: 'Pattern Circular 3D'
       data: ModelingCommandSchema['Pattern Circular 3D']
+    }
+  | {
+      type: 'Pattern Linear 3D'
+      data: ModelingCommandSchema['Pattern Linear 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
+  | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
+  | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Delete selection'
@@ -244,6 +262,9 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
+  | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | {
       type:
         | 'Add circle origin'
@@ -284,7 +305,6 @@ export type ModelingMachineEvent =
       type: 'xstate.done.actor.setup-client-side-sketch-segments9'
     }
   | { type: 'Set mouse state'; data: MouseState }
-  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -293,8 +313,8 @@ export type ModelingMachineEvent =
       type: 'Center camera on selection'
     }
   | {
-      type: 'Delete segment'
-      data: PathToNode
+      type: 'Delete segments'
+      data: PathToNode[]
     }
   | {
       type: 'code edit during sketch'
@@ -330,76 +350,61 @@ export type ModelingMachineEvent =
   | {
       type: 'Restore default plane visibility'
     }
-
-// export type MoveDesc = { line: number; snippet: string }
-
-export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
-
-interface PersistedModelingContext {
-  openPanes: Store['openPanes']
-}
-
-type PersistedKeys = keyof PersistedModelingContext
-export const PersistedValues: PersistedKeys[] = ['openPanes']
-
-export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const fallbackContextObject = {
-    openPanes: isDesktop()
-      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
-      : (['feature-tree', 'code'] satisfies Store['openPanes']),
-  }
-
-  try {
-    const c: Partial<PersistedModelingContext> =
-      (typeof window !== 'undefined' &&
-        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
-      fallbackContextObject
-
-    // filter out any invalid IDs at read time
-    if (c.openPanes) {
-      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
     }
-    return c
-  } catch (e) {
-    console.error(e)
-    return fallbackContextObject
-  }
-}
-
-export interface ModelingMachineContext {
-  currentMode: ToolbarModeName
-  currentTool: SketchTool
-  toastId: string | null
-  machineManager: MachineManager
-  selection: string[]
-  selectionRanges: Selections
-  sketchDetails: SketchDetails | null
-  sketchPlaneId: string
-  sketchEnginePathId: string
-  moveDescs: MoveDesc[]
-  mouseState: MouseState
-  segmentOverlays: SegmentOverlays
-  segmentHoverMap: { [pathToNodeString: string]: number }
-  store: Store
-  defaultPlaneVisibility: PlaneVisibilityMap
-  savedDefaultPlaneVisibility: PlaneVisibilityMap
-  planesInitialized: boolean
-}
+  | {
+      type:
+        | 'coincident'
+        | 'LinesEqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+        | 'Perpendicular'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
+    }
+  | { type: 'unequip tool' }
+  | {
+      type: 'update sketch outcome'
+      data: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        debounceEditorUpdate?: boolean
+      }
+    }
+  | {
+      type: 'sketch solve tool changed'
+      data: { tool: EquipTool | null }
+    }
+  | { type: 'delete selected' }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
 export const modelingMachine = setup({
   types: {
+    // We store everything in the input on context as well
     context: {} as ModelingMachineContext,
     events: {} as ModelingMachineEvent,
-    input: {} as ModelingMachineContext,
+    input: {} as ModelingMachineInput,
   },
   guards: {
     'should use new sketch mode': ({ context }) => {
       return context.store.useNewSketchMode?.current === true
     },
-    'Selection is on face': ({
+    'Selection is sketchBlock': ({
       context: { selectionRanges },
+      event,
+    }): boolean => {
+      if (event.type !== 'Enter sketch') return false
+      if (event.data?.forceNewSketch) return false
+      return isSketchBlockSelected(selectionRanges)
+    },
+    'Selection is on face': ({
+      context: { selectionRanges, kclManager, wasmInstance },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
@@ -417,7 +422,8 @@ export const modelingMachine = setup({
       if (
         isCursorInFunctionDefinition(
           kclManager.ast,
-          selectionRanges.graphSelections[0]
+          selectionRanges.graphSelections[0],
+          wasmInstance
         )
       ) {
         return false
@@ -429,130 +435,177 @@ export const modelingMachine = setup({
     },
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
-    'is-error-free': (): boolean => {
+    // TODO: figure out if we really need this one, was separate from 'no kcl errors'
+    'is-error-free': ({ context: { kclManager } }): boolean => {
       return kclManager.errors.length === 0 && !kclManager.hasErrors()
     },
-    'no kcl errors': () => {
-      return !kclManager.hasErrors()
+    'is editing existing sketch': ({
+      context: { sketchDetails, kclManager, wasmInstance },
+    }) => {
+      return isEditingExistingSketch({
+        sketchDetails,
+        kclManager,
+        wasmInstance,
+      })
     },
-    'is editing existing sketch': ({ context: { sketchDetails } }) =>
-      isEditingExistingSketch({ sketchDetails }),
-    'Can make selection horizontal': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'horizontal')
+    'Can make selection horizontal': ({ context }) => {
+      const info = horzVertInfo(
+        context.selectionRanges,
+        'horizontal',
+        context.kclManager.ast,
+        context.wasmInstance
+      )
       if (err(info)) return false
       return info.enabled
     },
-    'Can make selection vertical': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'vertical')
+    'Can make selection vertical': ({ context }) => {
+      const info = horzVertInfo(
+        context.selectionRanges,
+        'vertical',
+        context.kclManager.ast,
+        context.wasmInstance
+      )
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
+    'Can constrain horizontal distance': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
+    'Can constrain vertical distance': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setVertDistance',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain ABS X': ({ context: { selectionRanges } }) => {
+    'Can constrain ABS X': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'xAbs',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
+    'Can constrain ABS Y': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'yAbs',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain angle': ({ context: { selectionRanges } }) => {
+    'Can constrain angle': ({
+      context: { selectionRanges, kclManager, wasmInstance },
+    }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
+        kclManager,
+        wasmInstance,
       })
       if (err(angleBetween)) return false
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
+        kclManager,
+        wasmInstance,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
-    'Can constrain length': ({ context: { selectionRanges } }) => {
+    'Can constrain length': ({
+      context: { selectionRanges, kclManager, wasmInstance },
+    }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
+        kclManager,
+        wasmInstance,
       })
       if (err(angleLength)) return false
       return angleLength.enabled
     },
-    'Can constrain perpendicular distance': ({
-      context: { selectionRanges },
-    }) => {
-      const info = intersectInfo({ selectionRanges })
-      if (err(info)) return false
-      return info.enabled
-    },
-    'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
-      const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
-        constraint: 'setHorzDistance',
+    'Can constrain perpendicular distance': ({ context }) => {
+      const info = intersectInfo({
+        selectionRanges: context.selectionRanges,
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain vertically align': ({ context: { selectionRanges } }) => {
+    'Can constrain horizontally align': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain snap to X': ({ context: { selectionRanges } }) => {
+    'Can constrain vertically align': ({ context }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: context.selectionRanges,
+        constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
+      })
+      if (err(info)) return false
+      return info.enabled
+    },
+    'Can constrain snap to X': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'snapToXAxis',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
+    'Can constrain snap to Y': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'snapToYAxis',
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain equal length': ({ context: { selectionRanges } }) => {
+    'Can constrain equal length': ({ context }) => {
       const info = setEqualLengthInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
+        ast: context.kclManager.ast,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain parallel': ({ context: { selectionRanges } }) => {
+    'Can constrain parallel': ({ context }) => {
       const info = equalAngleInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
     'Can constrain remove constraints': ({
-      context: { selectionRanges },
+      context: { selectionRanges, kclManager, wasmInstance },
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
@@ -562,27 +615,39 @@ export const modelingMachine = setup({
         : selectionRanges.graphSelections.map(({ codeRef }) => {
             return codeRef.pathToNode
           })
-      const info = removeConstrainingValuesInfo(pathToNodes)
+      const info = removeConstrainingValuesInfo(
+        pathToNodes,
+        kclManager,
+        wasmInstance
+      )
       if (err(info)) return false
       return info.enabled
     },
-    'Can convert to named value': ({ event }) => {
+    'Can convert to named value': ({ context, event }) => {
       if (event.type !== 'Constrain with named value') return false
       if (!event.data) return false
-      const ast = parse(recast(kclManager.ast))
+
+      const ast = parse(
+        recast(context.kclManager.ast, context.wasmInstance),
+        context.wasmInstance
+      )
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
       const isSafeRetVal = isNodeSafeToReplacePath(
         ast.program,
-
-        event.data.currentValue.pathToNode
+        event.data.currentValue.pathToNode,
+        context.wasmInstance
       )
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
-    'next is tangential arc': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'tangentialArc' &&
-      isEditingExistingSketch({ sketchDetails }),
-
+    'next is tangential arc': ({
+      context: { sketchDetails, currentTool, kclManager, wasmInstance },
+    }) => {
+      return (
+        currentTool === 'tangentialArc' &&
+        isEditingExistingSketch({ sketchDetails, kclManager, wasmInstance })
+      )
+    },
     'next is rectangle': ({ context: { currentTool } }) =>
       currentTool === 'rectangle',
     'next is center rectangle': ({ context: { currentTool } }) =>
@@ -613,7 +678,7 @@ export const modelingMachine = setup({
         toast.error(event.error.message)
       }
     },
-    toastErrorAndExitSketch: ({ event }) => {
+    toastErrorAndExitSketch: ({ event, context: { sceneEntitiesManager } }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
         toast.error(event.output.message)
@@ -651,9 +716,9 @@ export const modelingMachine = setup({
       }
     ),
     'hide default planes': assign({
-      defaultPlaneVisibility: () => {
+      defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.hidePlanes()
+        context.kclManager.hidePlanes()
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -662,7 +727,7 @@ export const modelingMachine = setup({
       sketchEnginePathId: '',
       sketchPlaneId: '',
     }),
-    'reset camera position': () => {
+    'reset camera position': ({ context: { engineCommandManager } }) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -685,59 +750,82 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'set up draft line': assign(({ context: { sketchDetails }, event }) => {
-      if (!sketchDetails) return {}
-      if (event.type !== 'Add start point') return {}
+    'set up draft line': assign(
+      ({
+        context: { sketchDetails, sceneEntitiesManager, kclManager },
+        event,
+      }) => {
+        if (!sketchDetails) return {}
+        if (event.type !== 'Add start point') return {}
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftSegment(
-          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          'line'
-        )
-        .then(() => {
-          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
-      return {
-        sketchDetails: {
-          ...sketchDetails,
-          sketchEntryNodePath: event.data.sketchEntryNodePath,
-          sketchNodePaths: event.data.sketchNodePaths,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        sceneEntitiesManager
+          .setupDraftSegment(
+            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            'line'
+          )
+          .then(() => {
+            return kclManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast,
+              { shouldAddToHistory: false }
+            )
+          })
+        return {
+          sketchDetails: {
+            ...sketchDetails,
+            sketchEntryNodePath: event.data.sketchEntryNodePath,
+            sketchNodePaths: event.data.sketchNodePaths,
+          },
+        }
       }
-    }),
-    'set up draft arc': assign(({ context: { sketchDetails }, event }) => {
-      if (!sketchDetails) return {}
-      if (event.type !== 'Continue existing profile') return {}
+    ),
+    'set up draft arc': assign(
+      ({
+        context: { sketchDetails, sceneEntitiesManager, kclManager },
+        event,
+      }) => {
+        if (!sketchDetails) return {}
+        if (event.type !== 'Continue existing profile') return {}
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftSegment(
-          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          'tangentialArc'
-        )
-        .then(() => {
-          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
-      return {
-        sketchDetails: {
-          ...sketchDetails,
-          sketchEntryNodePath: event.data.sketchEntryNodePath,
-          sketchNodePaths: event.data.sketchNodePaths,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        sceneEntitiesManager
+          .setupDraftSegment(
+            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            'tangentialArc'
+          )
+          .then(() => {
+            return kclManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast,
+              { shouldAddToHistory: false }
+            )
+          })
+        return {
+          sketchDetails: {
+            ...sketchDetails,
+            sketchEntryNodePath: event.data.sketchEntryNodePath,
+            sketchNodePaths: event.data.sketchNodePaths,
+          },
+        }
       }
-    }),
-    'listen for rectangle origin': ({ context: { sketchDetails } }) => {
+    ),
+    'listen for rectangle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
@@ -745,7 +833,6 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
@@ -755,7 +842,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -768,7 +860,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -778,15 +871,20 @@ export const modelingMachine = setup({
       })
     },
 
-    'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
+    'listen for center rectangle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
       // Position the click raycast plane
-
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
@@ -796,7 +894,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -809,7 +912,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -819,7 +923,14 @@ export const modelingMachine = setup({
       })
     },
 
-    'listen for circle origin': ({ context: { sketchDetails } }) => {
+    'listen for circle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
@@ -827,7 +938,6 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
@@ -837,7 +947,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -851,7 +966,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -860,13 +976,19 @@ export const modelingMachine = setup({
         },
       })
     },
-    'listen for circle first point': ({ context: { sketchDetails } }) => {
+    'listen for circle first point': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -878,7 +1000,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -892,7 +1019,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -902,7 +1030,12 @@ export const modelingMachine = setup({
       })
     },
     'listen for circle second point': ({
-      context: { sketchDetails },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
       event,
     }) => {
       if (!sketchDetails) return
@@ -913,7 +1046,6 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
@@ -937,7 +1069,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -953,7 +1090,8 @@ export const modelingMachine = setup({
                 p2: sceneEntitiesManager.getSnappedDragPoint(
                   twoD,
                   args.intersects,
-                  args.mouseEvent
+                  args.mouseEvent,
+                  wasmInstance
                 ).snappedPoint,
               },
             })
@@ -1004,24 +1142,35 @@ export const modelingMachine = setup({
       }
     }),
     'show default planes': assign({
-      defaultPlaneVisibility: () => {
+      defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.showPlanes()
+        context.kclManager.showPlanes()
         return { xy: true, xz: true, yz: true }
       },
     }),
     'show default planes if no errors': assign({
-      defaultPlaneVisibility: ({ context }) => {
+      defaultPlaneVisibility: ({
+        context: { kclManager, defaultPlaneVisibility },
+      }) => {
         if (!kclManager.hasErrors()) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           kclManager.showPlanes()
           return { xy: true, xz: true, yz: true }
         }
-        return { ...context.defaultPlaneVisibility }
+        return { ...defaultPlaneVisibility }
       },
     }),
+    'show planes sketch no face': assign(({ event, context }) => {
+      if (event.type !== 'Enter sketch') return {}
+      if (event.data?.keepDefaultPlaneVisibility) {
+        // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
+        return {}
+      }
+      void context.kclManager.showPlanes()
+      return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
+    }),
     'setup noPoints onClick listener': ({
-      context: { sketchDetails, currentTool },
+      context: { sketchDetails, currentTool, sceneEntitiesManager, sceneInfra },
     }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
@@ -1031,17 +1180,16 @@ export const modelingMachine = setup({
           sceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
-              : currentTool === 'arc'
-                ? { type: 'Add start point', data }
-                : { type: 'Add start point', data }
+              : { type: 'Add start point', data }
           ),
       })
     },
-    'add axis n grid': ({ context: { sketchDetails } }) => {
+    'add axis n grid': ({
+      context: { sketchDetails, sceneEntitiesManager, kclManager },
+    }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -1049,59 +1197,67 @@ export const modelingMachine = setup({
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-    },
-    'reset client scene mouse handlers': () => {
-      // when not in sketch mode we don't need any mouse listeners
-      // (note the orbit controls are always active though)
-      sceneInfra.resetMouseListeners()
-    },
-    'clientToEngine cam sync direction': () => {
-      sceneInfra.camControls.syncDirection = 'clientToEngine'
-    },
-    /** TODO: this action is hiding unawaited asynchronous code */
-    'set selection filter to faces only': () => {
-      kclManager.setSelectionFilter(['face', 'object'])
-    },
-    /** TODO: this action is hiding unawaited asynchronous code */
-    'set selection filter to defaults': () => {
-      kclManager.defaultSelectionFilter()
-    },
-    'Delete segment': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Delete segment') return
-      if (!sketchDetails || !event.data) return
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegmentOrProfile({
-        pathToNode: event.data,
-        sketchDetails,
-      }).then(() => {
-        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+        shouldAddToHistory: false,
       })
     },
-    'Set context': assign({
-      store: ({ context: { store }, event }) => {
-        if (event.type !== 'Set context') return store
-        if (!event.data) return store
-
-        const result = {
-          ...store,
-          ...event.data,
-        }
-        const persistedContext: Partial<PersistedModelingContext> = {}
-        for (const key of PersistedValues) {
-          persistedContext[key] = result[key]
-        }
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem(
-            PERSIST_MODELING_CONTEXT,
-            JSON.stringify(persistedContext)
-          )
-        }
-        return result
+    'reset client scene mouse handlers': ({ context }) => {
+      // when not in sketch mode we don't need any mouse listeners
+      // (note the orbit controls are always active though)
+      context.sceneInfra.resetMouseListeners()
+    },
+    'clientToEngine cam sync direction': ({ context }) => {
+      context.sceneInfra.camControls.syncDirection = 'clientToEngine'
+    },
+    /** TODO: this action is hiding unawaited asynchronous code */
+    'set selection filter to faces only': ({ context }) => {
+      context.kclManager.setSelectionFilter(
+        ['face', 'object'],
+        context.sceneEntitiesManager,
+        context.wasmInstance
+      )
+    },
+    /** TODO: this action is hiding unawaited asynchronous code */
+    'set selection filter to defaults': ({ context }) => {
+      context.kclManager.setSelectionFilterToDefault(
+        context.sceneEntitiesManager,
+        context.wasmInstance
+      )
+    },
+    'Delete segments': ({
+      context: {
+        sketchDetails,
+        kclManager,
+        rustContext,
+        sceneEntitiesManager,
+        sceneInfra,
       },
-    }),
-    'remove draft entities': () => {
+      event,
+    }) => {
+      if (event.type !== 'Delete segments') return
+      if (!sketchDetails || !event.data) return
+
+      deleteSegmentsOrProfiles({
+        pathToNodes: event.data,
+        sketchDetails,
+        dependencies: {
+          kclManager,
+          rustContext,
+          sceneEntitiesManager,
+          sceneInfra,
+        },
+      })
+        .then(() => {
+          return kclManager.updateEditorWithAstAndWriteToFile(
+            kclManager.ast,
+            undefined
+          )
+        })
+        .catch((e) => {
+          console.warn('error', e)
+        })
+    },
+    'remove draft entities': ({ context: { sceneInfra } }) => {
       const draftPoint = sceneInfra.scene.getObjectByName(DRAFT_POINT)
       if (draftPoint) {
         sceneInfra.scene.remove(draftPoint)
@@ -1118,6 +1274,8 @@ export const modelingMachine = setup({
       )
         return
 
+      const sceneEntitiesManager = context.sceneEntitiesManager
+      const sceneInfra = context.sceneInfra
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1130,13 +1288,17 @@ export const modelingMachine = setup({
       }
       if (!sketchEntryNodePath) return
       const varDec = getNodeFromPath<VariableDeclaration>(
-        kclManager.ast,
+        context.kclManager.ast,
         sketchEntryNodePath,
+        context.wasmInstance,
         'VariableDeclaration'
       )
       if (err(varDec)) return
       const varName = varDec.node.declaration.id.name
-      const sg = sketchFromKclValue(kclManager.variables[varName], varName)
+      const sg = sketchFromKclValue(
+        context.kclManager.variables[varName],
+        varName
+      )
       if (err(sg)) return
       const lastSegment = sg.paths[sg.paths.length - 1] || sg.start
       const to = lastSegment.to
@@ -1156,7 +1318,8 @@ export const modelingMachine = setup({
             sceneEntitiesManager.getSnappedDragPoint(
               intersectionPoint.twoD,
               args.intersects,
-              args.mouseEvent
+              args.mouseEvent,
+              context.wasmInstance
             )
           if (isSnapped) {
             sceneEntitiesManager.positionDraftPoint({
@@ -1184,7 +1347,17 @@ export const modelingMachine = setup({
     'enable copilot': () => {},
     'disable copilot': () => {},
     'Set selection': assign(
-      ({ context: { selectionRanges, sketchDetails }, event }) => {
+      ({
+        context: {
+          selectionRanges,
+          sketchDetails,
+          engineCommandManager,
+          sceneEntitiesManager,
+          kclManager,
+          wasmInstance,
+        },
+        event,
+      }) => {
         // this was needed for ts after adding 'Set selection' action to on done modal events
         const setSelections =
           ('data' in event &&
@@ -1197,13 +1370,12 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && editorManager.isShiftDown) {
+          if (!setSelections.selection && kclManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1211,17 +1383,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !editorManager.isShiftDown) {
+          } else if (!setSelections.selection && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !editorManager.isShiftDown) {
+          } else if (setSelections.selection && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [setSelections.selection],
               otherSelections: [],
             }
-          } else if (setSelections.selection && editorManager.isShiftDown) {
+          } else if (setSelections.selection && kclManager.isShiftDown) {
             // selecting and deselecting multiple objects
 
             /**
@@ -1297,14 +1469,25 @@ export const modelingMachine = setup({
           const { engineEvents, codeMirrorSelection, updateSceneObjectColors } =
             handleSelectionBatch({
               selections,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager,
+                wasmInstance,
+              },
             })
           if (codeMirrorSelection) {
-            kclEditorActor.send({
-              type: 'setLastSelectionEvent',
-              data: {
-                codeMirrorSelection,
-                scrollIntoView: setSelections.scrollIntoView ?? false,
-              },
+            kclManager.editorView.dispatch({
+              selection: codeMirrorSelection,
+              effects: setSelections.scrollIntoView
+                ? [
+                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
+                      y: 'center',
+                    }),
+                  ]
+                : [],
             })
           }
 
@@ -1334,7 +1517,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (editorManager.isShiftDown) {
+          if (kclManager.isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
@@ -1351,16 +1534,28 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'completeSelection') {
-          const codeMirrorSelection = editorManager.createEditorSelection(
+          const codeMirrorSelection = kclManager.createEditorSelection(
             setSelections.selection
           )
-          kclEditorActor.send({
-            type: 'setLastSelectionEvent',
-            data: {
-              codeMirrorSelection,
-              scrollIntoView: false,
+
+          kclManager.editorView.dispatch({
+            selection: codeMirrorSelection,
+          })
+
+          // This turns the selection into blue, needed when selecting with ctrl+A
+          const { updateSceneObjectColors } = handleSelectionBatch({
+            selections: setSelections.selection,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager,
+              wasmInstance,
             },
           })
+          updateSceneObjectColors()
+
           if (!sketchDetails)
             return {
               selectionRanges: setSelections.selection,
@@ -1391,7 +1586,6 @@ export const modelingMachine = setup({
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
@@ -1403,7 +1597,7 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      kclManager.engineCommandManager
+      context.kclManager.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 
@@ -1427,7 +1621,7 @@ export const modelingMachine = setup({
         context.savedDefaultPlaneVisibility
       ) as (keyof PlaneVisibilityMap)[]) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.setPlaneVisibilityByKey(
+        context.kclManager.setPlaneVisibilityByKey(
           planeKey,
           context.savedDefaultPlaneVisibility[planeKey]
         )
@@ -1460,9 +1654,17 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    sketchSolveMachine,
     sketchExit: fromPromise(
-      async (args: { input: { context: { store: Store } } }) => {
-        const store = args.input.context.store
+      async (args: { input: { context: ModelingMachineContext } }) => {
+        const context = args.input.context
+        const {
+          store,
+          engineCommandManager,
+          sceneInfra,
+          kclManager,
+          sceneEntitiesManager,
+        } = context
 
         // When cancelling the sketch mode we should disable sketch mode within the engine.
         await engineCommandManager.sendSceneCommand({
@@ -1480,39 +1682,58 @@ export const modelingMachine = setup({
         sceneInfra.camControls.syncDirection = 'engineToClient'
 
         // TODO: Re-evaluate if this pause/play logic is needed.
+        // TODO: Do I need this video element?
         store.videoElement?.pause()
 
         await kclManager
           .executeCode()
           .then(() => {
-            if (engineCommandManager.idleMode) return
+            if (
+              !engineCommandManager.started &&
+              engineCommandManager.connection?.websocket?.readyState ===
+                WebSocket.CLOSED
+            )
+              return
 
             store.videoElement?.play().catch((e: Error) => {
               console.warn('Video playing was prevented', e)
             })
           })
           .catch(reportRejection)
-
         sceneEntitiesManager.tearDownSketch({ removeAxis: false })
         sceneEntitiesManager.removeSketchGrid()
         sceneInfra.camControls.syncDirection = 'engineToClient'
         sceneEntitiesManager.resetOverlays()
+        sceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, data },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          data,
+          sceneEntitiesManager,
+          kclManager,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+          | 'kclManager'
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
+          kclManager,
+          wasmInstance,
         })
         if (trap(constraint)) return
         const { pathToNodeMap } = constraint
@@ -1524,34 +1745,55 @@ export const modelingMachine = setup({
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
 
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
     ),
     'do-constrain-horizontally': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.variables
+          kclManager.variables,
+          await kclManager.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1563,32 +1805,53 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
     ),
     'do-constrain-vertically': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.variables
+          kclManager.variables,
+          await kclManager.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1600,30 +1863,52 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
     ),
     'do-constrain-horizontally-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: selectionRanges,
+          selectionRanges,
           constraint: 'setVertDistance',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1635,15 +1920,22 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1653,13 +1945,28 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: selectionRanges,
+          selectionRanges,
           constraint: 'setHorzDistance',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1671,15 +1978,22 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1689,13 +2003,28 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-x': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (err(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1707,15 +2036,22 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1725,13 +2061,28 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-y': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1743,15 +2094,22 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1761,12 +2119,27 @@ export const modelingMachine = setup({
     ),
     'do-constrain-parallel': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
+          kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1775,8 +2148,7 @@ export const modelingMachine = setup({
           trap(new Error('No sketch details'))
           return
         }
-
-        const recastAst = parse(recast(modifiedAst))
+        const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
@@ -1786,16 +2158,23 @@ export const modelingMachine = setup({
           recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
 
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1805,12 +2184,28 @@ export const modelingMachine = setup({
     ),
     'do-constrain-equal-length': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          kclManager,
+          sceneEntitiesManager,
+          wasmInstance,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'kclManager'
+          | 'sceneEntitiesManager'
+          | 'wasmInstance'
+        >
       }) => {
         const constraint = applyConstraintEqualLength({
           selectionRanges,
+          ast: kclManager.ast,
+          variables: kclManager.variables,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1822,15 +2217,22 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1843,35 +2245,50 @@ export const modelingMachine = setup({
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get ABS X info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get ABS Y info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get angle info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get perpendicular distance info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
@@ -1887,13 +2304,32 @@ export const modelingMachine = setup({
       }
     ),
     'animate-to-sketch-solve': fromPromise(
-      async (_: { input: ArtifactId | undefined }) => {
-        return {} as any // TODO
+      async (_: {
+        input: ArtifactId | undefined
+      }) => {
+        return {} as {
+          plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+          sketchSolveId: number
+        }
+      }
+    ),
+    'animate-to-existing-sketch-solve': fromPromise(
+      async (_: {
+        input: ArtifactId | undefined
+      }) => {
+        return {} as {
+          plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+          sketchSolveId: number
+          initialSceneGraphDelta: SceneGraphDelta
+        }
       }
     ),
     'Get horizontal info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
@@ -1902,7 +2338,7 @@ export const modelingMachine = setup({
       async (_: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges'
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
         > & {
           lengthValue?: KclCommandValue
         }
@@ -1912,14 +2348,25 @@ export const modelingMachine = setup({
     ),
     'setup-client-side-sketch-segments': fromPromise(
       async ({
-        input: { sketchDetails, selectionRanges },
+        input: {
+          sketchDetails,
+          selectionRanges,
+          sceneInfra,
+          sceneEntitiesManager,
+          kclManager,
+        },
       }: {
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
+          sceneInfra: SceneInfra
+          sceneEntitiesManager: SceneEntities
+          kclManager: KclManager
         }
       }) => {
-        if (!sketchDetails) return
+        if (!sketchDetails) {
+          return
+        }
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
@@ -1948,6 +2395,8 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           // We will want to pass sketchTools here
           // to add their interactions
+          getEventForSegmentSelection,
+          updateExtraSegments,
         })
 
         // We will want to update the context with sketchTools.
@@ -1957,10 +2406,20 @@ export const modelingMachine = setup({
     ),
     'animate-to-sketch': fromPromise(
       async ({
-        input: { selectionRanges },
+        input: {
+          selectionRanges,
+          kclManager,
+          engineCommandManager,
+          sceneEntitiesManager,
+          sceneInfra,
+        },
       }: {
         input: {
           selectionRanges: Selections
+          kclManager: KclManager
+          engineCommandManager: ConnectionManager
+          sceneEntitiesManager: SceneEntities
+          sceneInfra: SceneInfra
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const artifact = selectionRanges.graphSelections[0].artifact
@@ -1977,6 +2436,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
+          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -1987,7 +2447,6 @@ export const modelingMachine = setup({
           if (
             // if the variable is an sweep, check if the underlying sketch matches the artifact
             variable?.type === 'Solid' &&
-            variable.value.sketch.on.type === 'plane' &&
             variable.value.sketch.artifactId === mainPath
           ) {
             sketch = {
@@ -1995,6 +2454,15 @@ export const modelingMachine = setup({
               value: variable.value.sketch,
             }
             break
+          }
+          if (variable?.type === 'HomArray') {
+            const sketchInHomArray = variable.value.find(
+              (sk) => sk.type === 'Sketch' && sk.value.artifactId === mainPath
+            )
+            if (sketchInHomArray) {
+              sketch = sketchInHomArray
+              break
+            }
           }
           if (variable?.type === 'Plane' && plane.id === variable.value.id) {
             planeVar = variable.value
@@ -2040,8 +2508,9 @@ export const modelingMachine = setup({
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
-        if (sketchArtifact?.type !== 'path')
+        if (sketchArtifact?.type !== 'path') {
           return Promise.reject(new Error('No sketch artifact'))
+        }
         const sketchPaths = getPathsFromArtifact({
           artifact: kclManager.artifactGraph.get(plane.id),
           sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
@@ -2075,7 +2544,11 @@ export const modelingMachine = setup({
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges'
+          | 'sketchDetails'
+          | 'selectionRanges'
+          | 'kclManager'
+          | 'wasmInstance'
+          | 'sceneEntitiesManager'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -2087,7 +2560,11 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
-        let pResult = parse(recast(kclManager.ast))
+        const wasmInstance = input.wasmInstance
+        let pResult = parse(
+          recast(input.kclManager.ast, wasmInstance),
+          wasmInstance
+        )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         let parsed = pResult.program
@@ -2109,6 +2586,7 @@ export const modelingMachine = setup({
             ast: parsed,
             pathToNode: data.currentValue.pathToNode,
             newExpressionString: data.namedValue.variableName,
+            wasmInstance,
           })
           if (trap(astAfterReplacement)) {
             return Promise.reject(astAfterReplacement)
@@ -2118,8 +2596,10 @@ export const modelingMachine = setup({
               insertNamedConstant({
                 node: astAfterReplacement.modifiedAst,
                 newExpression: data.namedValue,
-              })
-            )
+              }),
+              wasmInstance
+            ),
+            wasmInstance
           )
           result.exprInsertIndex = data.namedValue.insertIndex
 
@@ -2140,6 +2620,7 @@ export const modelingMachine = setup({
             ast: parsed,
             pathToNode: data.currentValue.pathToNode,
             newExpressionString: data.namedValue.valueText,
+            wasmInstance,
           })
           if (trap(astAfterReplacement)) {
             return Promise.reject(astAfterReplacement)
@@ -2153,7 +2634,7 @@ export const modelingMachine = setup({
           result = astAfterReplacement
         }
 
-        pResult = parse(recast(result.modifiedAst))
+        pResult = parse(recast(result.modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         parsed = pResult.program
@@ -2173,23 +2654,31 @@ export const modelingMachine = setup({
           exprInsertIndex: result.exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          parsed,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
+        const updatedAst =
+          await input.sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            parsed,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await input.kclManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst,
+          undefined
+        )
 
         const selection = updateSelections(
           { 0: result.pathToReplaced },
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          input.kclManager.artifactGraph,
+          wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
         return {
@@ -2261,9 +2750,7 @@ export const modelingMachine = setup({
       }
     ),
     'submit-prompt-edit': fromPromise(
-      async ({
-        input,
-      }: {
+      async ({}: {
         input: ModelingCommandSchema['Prompt-to-edit']
       }) => {}
     ),
@@ -2274,19 +2761,27 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Extrude'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Extrude'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addExtrude({
           ast,
-          ...input,
+          artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ...input.data,
         })
         if (err(astResult)) {
-          return Promise.reject(new Error("Couldn't add extrude statement"))
+          return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
@@ -2294,9 +2789,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2308,16 +2802,23 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Sweep'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Sweep'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = kclManager
+        const { ast } = input.kclManager
         const astResult = addSweep({
-          ...input,
+          ...input.data,
           ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2328,9 +2829,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2342,14 +2842,23 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Loft'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Loft'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const { ast } = kclManager
-        const astResult = addLoft({ ast, ...input })
+        const { ast } = input.kclManager
+        const astResult = addLoft({
+          ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ...input.data,
+        })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
@@ -2359,9 +2868,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2373,16 +2881,23 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Revolve'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Revolve'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = kclManager
+        const { ast } = input.kclManager
         const astResult = addRevolve({
           ast,
-          ...input,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ...input.data,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2393,9 +2908,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2407,18 +2921,25 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Offset plane'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Offset plane'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph, variables } = kclManager
+        const { ast, artifactGraph, variables } = input.kclManager
         const astResult = addOffsetPlane({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
           variables,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2429,9 +2950,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2443,17 +2963,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Helix'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Helix'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addHelix({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2464,9 +2991,8 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2478,17 +3004,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Shell'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Shell'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = kclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addShell({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2499,9 +3032,48 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    holeAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Hole'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const astResult = addHole({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2513,91 +3085,42 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Fillet'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Fillet'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        let modifiedAst = structuredClone(ast)
-        let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, radius } = input
-
-        const parameters: FilletParameters = {
-          type: EdgeTreatmentType.Fillet,
-          radius,
+        const { ast, artifactGraph } = input.kclManager
+        const astResult = addFillet({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
-        const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
-        }
-
-        // Apply or edit fillet
-        if (nodeToEdit) {
-          // Edit existing fillet
-          // selection is not the edge treatment itself,
-          // but just the first edge in the fillet expression >
-          // we need to find the edgeCut artifact
-          // and build a new selection from it
-          // TODO: this is a bit of a hack, we should be able
-          // to get the edgeCut artifact from the selection
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(
-            kclManager.artifactGraph.values()
-          ).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              artifact.consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return Promise.reject(
-              new Error(
-                'Failed to retrieve edgeCut artifact from sweepEdge selection'
-              )
-            )
-          }
-          const edgeTreatmentSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-
-          const editResult = await editEdgeTreatment(
-            ast,
-            edgeTreatmentSelection,
-            parameters
-          )
-          if (err(editResult)) return Promise.reject(editResult)
-
-          modifiedAst = editResult.modifiedAst
-          focusPath = [editResult.pathToEdgeTreatmentNode]
-        } else {
-          // Apply fillet to selection
-          const filletResult = await modifyAstWithEdgeTreatmentAndTag(
-            ast,
-            selection,
-            parameters,
-            dependencies
-          )
-          if (err(filletResult)) return Promise.reject(filletResult)
-          modifiedAst = filletResult.modifiedAst
-          focusPath = filletResult.pathToEdgeTreatmentNode
-        }
+        const { modifiedAst, pathToNode } = astResult
 
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
-            focusPath: focusPath,
+            focusPath: pathToNode,
           }
         )
       }
@@ -2606,99 +3129,58 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Chamfer'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Chamfer'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        let modifiedAst = structuredClone(ast)
-        let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, length } = input
-
-        const parameters: ChamferParameters = {
-          type: EdgeTreatmentType.Chamfer,
-          length,
-        }
-        const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
+        const { ast, artifactGraph } = input.kclManager
+        const astResult = addChamfer({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
-        // Apply or edit chamfer
-        if (nodeToEdit) {
-          // Edit existing chamfer
-          // selection is not the edge treatment itself,
-          // but just the first edge in the chamfer expression >
-          // we need to find the edgeCut artifact
-          // and build a new selection from it
-          // TODO: this is a bit of a hack, we should be able
-          // to get the edgeCut artifact from the selection
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(
-            kclManager.artifactGraph.values()
-          ).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              artifact.consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return Promise.reject(
-              new Error(
-                'Failed to retrieve edgeCut artifact from sweepEdge selection'
-              )
-            )
-          }
-          const edgeTreatmentSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-
-          const editResult = await editEdgeTreatment(
-            ast,
-            edgeTreatmentSelection,
-            parameters
-          )
-          if (err(editResult)) return Promise.reject(editResult)
-
-          modifiedAst = editResult.modifiedAst
-          focusPath = [editResult.pathToEdgeTreatmentNode]
-        } else {
-          // Apply chamfer to selection
-          const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
-            ast,
-            selection,
-            parameters,
-            dependencies
-          )
-          if (err(chamferResult)) return Promise.reject(chamferResult)
-          modifiedAst = chamferResult.modifiedAst
-          focusPath = chamferResult.pathToEdgeTreatmentNode
-        }
+        const { modifiedAst, pathToNode } = astResult
 
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
-            focusPath: focusPath,
+            focusPath: pathToNode,
           }
         )
       }
     ),
     deleteSelectionAstMod: fromPromise(
       ({
-        input: { selectionRanges },
+        input: { selectionRanges, systemDeps },
       }: {
-        input: { selectionRanges: Selections }
+        input: {
+          selectionRanges: Selections
+          systemDeps: {
+            kclManager: KclManager
+            rustContext: RustContext
+            sceneEntitiesManager: SceneEntities
+          }
+        }
       }) => {
         return new Promise((resolve, reject) => {
           if (!selectionRanges) {
@@ -2710,7 +3192,7 @@ export const modelingMachine = setup({
             reject(new Error(deletionErrorMessage))
           }
 
-          deleteSelectionPromise(selection)
+          deleteSelectionPromise({ selection, systemDeps })
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -2726,30 +3208,34 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Appearance'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Appearance'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addAppearance({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2761,30 +3247,35 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Translate'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Translate'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addTranslate({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2796,18 +3287,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Rotate'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Rotate'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addRotate({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -2817,9 +3314,8 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2831,18 +3327,25 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Scale'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Scale'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addScale({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -2852,9 +3355,8 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2866,18 +3368,82 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Clone'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Clone'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addClone({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtFlatnessAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Flatness'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
-        const result = addClone({
-          ...input,
-          ast,
-          artifactGraph,
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addFlatnessGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -2887,9 +3453,105 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtDatumAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Datum'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addDatumGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    flipSurfaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Flip Surface'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const result = addFlipSurface({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2915,30 +3577,35 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Subtract'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Subtract'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addSubtract({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2950,30 +3617,35 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Union'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Union'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addUnion({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2985,30 +3657,77 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Union'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Intersect'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addIntersect({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+          return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    boolSplitAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Split'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addSplit({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3021,30 +3740,75 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addPatternCircular3D({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
+    patternLinear3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addPatternLinear3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3056,9 +3820,12 @@ export const modelingMachine = setup({
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
-        input: { sketchDetails },
+        input: { sketchDetails, kclManager, wasmInstance },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'kclManager' | 'wasmInstance'
+        >
       }) => {
         const errorMessage =
           'Unable to maintain sketch mode - code changes affected sketch references. Please re-enter.'
@@ -3080,7 +3847,8 @@ export const modelingMachine = setup({
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
           kclManager._lastAst,
           kclManager.ast,
-          sketchDetails.planeNodePath
+          sketchDetails.planeNodePath,
+          wasmInstance
         )
 
         if (err(updatedPlaneNodePath)) {
@@ -3138,12 +3906,16 @@ export const modelingMachine = setup({
   },
   // end actors
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANmEBmAHQBGAJwBWABwKpSqTQDsUsQBoQAT0QAmdQBYJYmmPVjDh4YsMKZAX2e60GHPgIBlMOwACWCwwck5uWgYkEBY2cJ5ogQRBNRkzOUsFOTFFGhNZQ10DBBkZCXU7Szl5KRMTWxNXd3QsPEI-QIBbVABXYKD2EnYwSN5Yji4E0CSUqSlDCQUTGRpZefV1GWF1IsQxbYkTOS0FDRo5dRpDKTkmkA9W7w6A8m5hvnZR6PH43hnU4QSVYWbYyMQKdQKRy7BDCfLSYTXQzHUQmJQuNz3Fpedr+AJ+KCdMC4QIAeQAbmAAE6YEh6WBfZisCbcP5COaKCTydQXHkydRwjYw44LSz2YQaWw5ex3B444jE4ZUl4kIlUkgBbhBEJhSaMmLM36JdlSSHmVbGZY5NLCBQw040CSImjKUrZFSy7FtAgAFVQUCgmDAAQwADMSD1MIEmLTcMHydg2AAjbA4dh6fU-SZs5LzNGHGgSmTzCG1Wow+SO11bMQmHKVRqYuVtCTYCBBggAURJ1KCAGt-OQABaZw3Z43JZFSQ5g4RqFSGZbImEVMqQyEQyFw+a3Jte-Ct9tgLs95WwAfsYdUKRRJlxcfTIQNcpQ23XflKeyFfSIUTTuQAXMcIXDIThSJ6ngtm2Hadh8VI9Bgo73qyE4iDQjqbLUpiFhYVgmDChhWJIjhXBcci2ks5EQY8UCHh2PgAO5gGATBISyUz8EI1TqEC2zZHUO7GN+xTXPsBaLjYeQSiYArUTidHHgAMqgoafPQYxjihj7JIogJpFOciGDI1zbDCC6SC6qwmNstaKGiclQUeBAAEpgOSqCYJSbFGtpgiaDxOSaLpwjFlYwgwmIpQKE65E2P5FS1A5B7QcepKhqGwTRrGIzqd8mkcTMc48VcOFgo4NwyGZEqSJW1VOBkhHqEltEpQQAASrR8N5D6cTpKxOjQxZZMYczzARGSOuh5wXFo9SGM1Cm+EOWCYN1Wm9YI1SOsYhbLLUUIqOFP4IKa1zlHk1lOJs2zgXukHJU5ABiqZBmpt4GshBVcf16EZLIlxzcux2GKscgSNUshzvYAFWAtrVEEOqqhtSa1fck1XlJc4gCqaxm2gRi5g-IUViu6813TRi1uYqEhMCQ6pEkqEjkFSYBDDl71ZutMzKNFcz1WI87kaUMJWmYWSlJokUKPYt3NPdLVOdTJK0-Tqr+NSEiQBwqM5n5-WRaUg0yeR1h2sdGQbNIgv8xKphyEccNObBLBUm9GmfXr1gLFktpSCF-IaObxQWHU4PFnkRkgxCtZOx2yAkAOuuodYkinNaFy2gKQMiWC06++CWjAVCjby5TrUACIhMM2pBrqES5Xe7F61kkj+4HpRwkZeQEbL4OmvURympcthx8ePpgB8gjsKgghEAAghXyfaWIgsSI45El+sxz4cdoHTrOoHWMcmQYmX8mtQAClSqCdEw7DT7P2vu3lnuoYiPFzAJqxVJRZnFoCJwJhQar0umfLECtFrzyYEwNm6oKAcw9s3d+5xyirw2GVFY9gdDA02NFWsLpTCr0sHLCB5cnI+ngbAWkwxl4bQqD7ZExZjIyTqAoHBxR8imEWLOZEyJqg2DHi5VAgxaGNw+sg3ymgFi2kMhCU2NopCi0cOkKEVwLD8glAoIRPhyAkCDHQmYmhAT5GULjbYEk5Ci0MjxUopolg8msByIRRBMDcEQa-SR9DBpcn5DyOEoE8gO1FnWHiSwN5Dw0eA5sD0OwACFUAeTZrgfEPQkzsHVGEQxQgKgmJCnZUJ8gjohyLOYB2YI6gaELmIIRCSklkACAAVVwHqcRXM0Z+XzFkGWUd6hLCUcdKwjhFgASOJFFE2iKYXycnUoMDSACSp5ghZLaflL21QuRS1sOhayaIIpKB4sAxcgNV6kJiYrIMEghxtjAJfbKsACDzzdtgcMYQAhQHVEwIcAQWBMEjOzCA2TkiaDMKUayqwGHKH2GZZEZhNCHVMNsiopcyHTMubAIcqAGJ3LIHAR5zzXmBA+SQL5AQwB304JAIFKRipgmliDQa5wBQ7GOmobh5w6jbBCqIEGZz9y0R8BeYcxAyCUFWqst+2ki5lC2DLdY-I5oRTrIcSEsKlwgw2AtQVg4hwECrq9YMwRCSKiBUsYikIbABzYeCCK050IqCCnCcE2wZJaqFbq14GAyUQA4CGHoVI2j9h1UCm4mhwaFxdDcQKPIVybB4cCf2cxVj8jdTq4g3BYAZJIHgAIDEODfNwOrCAARyT6J6B4puPlepzCtisYs9RdJLkqoM6SCJTC7I5DyVNl4hwSG1T2+ZTkE4Dm1MakkJbqScD0eKzmayJw3EXOUApFxQ7IrMgKMwcwciRX2IQwW3bhx9vdYO+OidDVgDHYETFAaABebx9EhoyHzcJJDqhImDogf2iIynGRuEcetu5z4tn7YekDQ4T3HiIBmrNObr3YDvSSfRIZEyDAQSGtEPEiorA3EXOsBFTCAJClZRwFRLAHt7WBiD6bcCZvVDmykzzp3IczaKitEiq1JBuFccGKjlhZ0MvyXui70EhRlucHIDtyNHp1VRqDNGYMpPnnEnwAQAAaj7ZBAi0HMIyGxrCQgihYMGGwrhgiyMA8QNSpnAfddJgdTk5O0ezYp5TAQACaGnorKA2BKci1wIVKsiuGrBDt9jsJRecuzoHj0Oeg3RlJZBAxsfaTmUNelqj1B5dZQmBFulAlI8WOy6ImrWYPGBqL4HYvyfiwEIM+B2AjglV4zjFxHRpHmBoexApCwES2GUBwecNhR22FJyjVWnM5tgVSWBuAfXkH+cqH1LG0NNY45+7L+W9oXXYYWAZId-Zg2yLWDkhlshdtKwK2zY2OyOYUwEODCHBiYEwHoAI+jsBQFwOhrYhwCHsMiioY4H6Toy0-oNfYNwALYNGzFm7cXnMTsY-ol7b2cCfY0xZF0Ml-EqI0P-AUBZTlTjZSVoDZWruw8g-DnNsBC1MACDPNTj7rKLEisAkel0jgER3UCAHpw6yRXEDDmT427u05JQz1A7nmeAlloVi15TilGGWPgxEhEFUAQduTMnl2dUVdk9TlJYAACOPQkN1agA1x9xggQrCsBsFEpRhJGEjevOsUKlDWWqML+zcPqsI7puqZ71BVs9RaxKAath-bGBmgKAmoFDiEQE8Y3GPvhwG-9zm1m3RKQvEN+wBkofubrahNIJQHLiF1QIiofOodax2BrXCNPlWOyeuDM-P1Ab8BBp7Y+sN2RlCRuyLyKxx0liOjROPzIWRQ3N6o8ORLwYZ4eSBUZUo4NfOIkMqve08wuR8SxvsZ10T+UVf10eCQmUAg9Hp0aokJIHkQHca2XA7kByX-8DfwQ5AcCKkEGwDAf-d1f-C9e-AvMQENSsLkRQUjLIQsG0MyUOcwLYY2AUG6OwOfC-K-G-UdMAx-Z-PAN-MAD-dgL-H-bAP-AAsAIAnVEAy9WACAm8JBNbE6NIaKI4QyRcWQZQOoXeYoLQS4a2bYXaMEDdUnVFGzPXa7Yg7A2-UAxUB5akG+KkWmGhUMVAKkToEgsg3-Ekf-G5GgntOgvAiAovDpS4R0Qyf2awayAUJwZtYoHkMwCwawOqfhYwKTeeBibNK9DQ+De9TAZjVDSgAIPAdQggJ-OMF-IgiQGAB+B7AIwQMI1AVfAfIEbZDQLceoDhIwEzJ0UQVeAOGwkbC7M-Lwnw+7Pwx7JDJbYI4MZIggJQjQ1QoYdQzQ2I-wQQBIxDTAJI3AdQ1I8EJ0FYdCMEYsY+fDGwEZfIMsU4GfTw7w31BjKdGolDVjUI-o1ACIgg1-VAd-OIwQZY7AadPogYswnMWFYzWaLHIucEHIhAOwWsJ0A5ewLYeYREBYioo4pjWo9YhopolQmMVojQrQg474-RU4lI84icWFQEapC4WwWwLIFlESN9TZYsaPf2KwdhT431JTFTVTDY8IyI4gwgvY4gg4kgJMWAQQPgSE1IjIcwMKdCCwdCZEe4onaAndK4O2U6XEwIfEtTIkrYgElo9gNo0Ezoqkmkuk5Ihku1Y2ZQcQAOHfQZOwT+BKUQMqdhE-SBcrcovE1zNzYU7YqIsk-YqU6kwQPQek6E7SWFGVQWbdfkBwJVFQcwPMOEGY2oCLU-fUxYgUo0k00UoE8UkEjoh+aU60202dSVXqfhR0aqJPQWYwCECKHeRYdhU0O2G0bXCQ8nPXA0wIRLIME0kk6I8kiMwQEs6guUu0+MgCKsZlVeEEQXUfXODQcoSpWoUCcZWSUo-0ioms4MqkZQsUiUqsmsmM5gsPIwACBYYwfkBvGyIZXLA4YyS4cfLcL9TwmBFHC3BrPPTPEkU00k3Y9-eeHwH0b-Q3QQA8xrWM5rOc5YIEDQJ3bZOEKECKKoRYOwm2JwU4PMyLfUvc17e8o8ibE8kMtQ8My86814Y8u84kS3B8mc4vB48pJ0PkPzHs4eXrMEFVCUSwXCGWKiAc2zIsn5akGbObBbIIv4zY08isi0h+KbGi44hbQQX4hBaczxFgxcH7I7YyOwEKEsW1AnFQFXSOHGbIfkqi6bYkWi2kRbNYhBEcsc0Micg4tixSji5Sri1SygXiytWch4vjcNSKWwLUsSwZEsMvKS+oGSqzHXM-RSPAJfRJTAAgBffADylfespIf9aKaSNEG4BxMEMyHCV8s7FYB2U2KTNyuMSXDyCQRZDgR5CAYtFjN2H5VAPAF+Ey9Ch2NQD0pEtIYyYfSKsNJ0y1LIYqj0civXRKvyzACQXAEE-RYgNxfoc8YNAKxAI7SQFw+A4aWsGFfMDrGaQ2MKZy-M3XHtCQZq5K1q56FpDFH5G+UMVMY8cs80mQz-Jgb-XQh+Kgww4cYwhQ9QIFNEKYrYZYF0BVMZGFYZbfUKU4EeU0BK9y5aiQVaxMb5JgTa7axo0c5ozS8MzKHQigvQ063qowu-S6oFCaYiB2OcK4LQNIe422GcOcNEUQnkoCv02zNK9gAgENaPaQZYLaHpQedsz9eYMoYCHdUQQsRQKTEmsmpgvi0yjrZwyWcTeYGwPg+mhPXdaqFQWsCUYQKTH0RfEkbAJDemcgSXbyxGXy5a66rfaA7rCFSsZ3E6cygUWsfkMY64WSxqha2W3y+WxWqkZWmeVKlpUmuTTgXActMlPgFDQNQGlSbapG51deB2MZHUiEYHG4OcLC2oKwFQOlQyGWuWzgW2+21ANqjqry1xVgQ1d1JGizffciGSSsSwYWk6e2N3OcBE9rM2+O62xOwIpWyXX6vAf6ja32jsXa88-a0gw68gyggwuG86hGh-YQa6pwQEbMkuL3LnVlewAKcfdBRQMzaumAG2uuu2huv69an2rajsaC4E9oyG7u46-QwA-uocC6oepG0SQ4d4gCY+HkMO1EcwGWFYQSa4JwKTHoWbKXbK9gMDUkXAJivaiQOCwQT+p-f-QYN2P+r7fq9GYsdeL+bCKEC4fIaxacawWVJPYilNC2w9MB7+yB3+91f+kGjSmC9okB-BiB+mIhnVf+6lIjYLS4MEK4OwOmhAYqxPYea4UwMEKTVyMIYc5fLynymADW2BuoIyaA4waUSsYsXrTTewcLB1P6V1XB3tAR1DJLH6oswNZZbgYtV4KkOMKkAgDe75VmQR-AAxWB7ICPHbYmTucq21F0N3fSHIF0REVefh0ILR0s4R4BgMwNPwqAPAbynAcgPsDYoISgOMf2wQ9hGWNEH+UQYHRwEGTGVeDctQa4LQHxqx7RgJ8xyAAITRmswBju7Qw+6Gk6vu4AwegvTWzkYyWsVcKUewb8oLfIXg0jWsI-fJvxlqiQEgTKwNCAdUVSAISxwZipmIzKUBw68ZkgVSQQaZms-2uwEZfSIaOcL8wZVYWXUO0QUZAhX0vU2zMp6xoZkZn1bvJZyZtZq50hsG8hrQ+Zr-e5h+R5pLTWuNEGMZfIUCOoXLM0SwFhQWHeDw9RiQIgRUXsS5wpzy1WxfcRx8lguseB++-mfaVGgiK4PmJwpNPhNEM5ymcrWF08Up3xoRzywJnwwNIxkxsxpu9a2JpUKZ6lq5nO1xusTLUwTtNJ2FBBuYMzTBcQ4C2zCl9lhF-x2l3R7vEJsJ+eTKl4OF5Ub50sxVmBtF0y7IYyYYpYbzcFGwdhkGDZbfJYblJUvlc5vXKV+FzlxFlK4p4te15UGVnanYuZg6o6mp4+6g0+8+gvQwTWl8nkQaNQAhQyYuwiTswsUQe2cpMily8ltVqlgp2VlKm5kMCZwINl3sDVz1s0yp95xZ3N7-NV1Zx1mxnVoqyy80YCeoDraaavTkDFt+1VFBqTN19NwZn67Nz51Vylwt55wE15kghZri8t-NqkKtjN5LOdbSWw6cSGTxkeGyPFiELkOKLJvMOoWaiVvXH-ZJIIGhIts8mI1mNyCE9qwAumBrQvWttGLEsGQaIo66IyPZVlHZJ0fIUSayLYTeKTY9hpahdmUd8c8Mq90tXo296g+9ocR9tCjpLlQ4aoQffhJc+4tE8id45EL8aGbt7gI47vRnQtIkYtGD8tWZyskgTNW7eLAAOSLQADUy0F24ykhkRXHbQiwFxw2US9hWstMLRTkEpHZoW5MSOoBJcAhyOSmqPjxd6wz2i6P2AGPnNmOKO2PMBy1Uj3SzsR5wdk0lcEB9hshpBjYWaIR-nAM5qyiAyIK7ts9UBc8ELIKC8aP39wH3OFMq2c9qDfP4sCr2NTLuPbEiMjIZZIoXRq8eRwZIQUDNBgRFw5KguEduinsXsvPiCfPbzMvkcMxYH2SwZTpb66hQJqgqpDJ+4+Rw3zO+HoXKL0v6NJ1jjCucuJA8vELwTnsiun2LitdFhtgHEjh2ENV11GTCI4RLBzhEScSmvHOWuUkCu+vUcPsAH26YjuvIKuiqiAiXtqy0dtXkPBvNmI3Bb7BVgDszIJYl1lBjgwoVgMDFuKjlvEcVi1v3tPtOudu-PevDvvuTvub0LuPopTNs48hNyOnWV5BSu7DNgNBb737XvfV3vxd6dGdVNfvZ5lv-86dH5aTBizBcmbYAJmEetgZwQiYM4bQMHk37PBy0fDcgg6dZO3McebzEKMfCf+vTuYSHZJpWEKJlgsFTPFwrYtBchxA1BzgZRUe82WeTczdAj7zOe8fleIT7zUjkRwYWSqb93BY8XRB99unCJsiNgD2ibCyluWfA9kcsB1fbz7fg8Z1+f7Shu0RCJTgJRESrACYnAgQMgX6JItFu21axG-QPJQiMoyaJHkQeIR4tdMtsh9b5gMnB8dMNzyI7PD2FqEYUWo-AiXkHlrwBuJwG1E-SJB42GbAYUzRM+GaY95eU3JWI-gwi+Y-S-DBy+l2E-zpYVFxa+0-CjFh5wm--Fc-rf8-2+AhO+S+yaxBe-epK+B-k-h-EC0gx-ruo5J-w-C-PKu+yaTBl-Ar++k+a-sE0+jgfZx-d+c-9-1b5-Y+qA5BT-EBV+L+h+r+zIT5t+s-m+5tVvna1n7P9S+wgd-ggE-7V9v+qfX-raH-4T8c+VvW1jPwP7R8F+VAdQJAIbQ1QZ885QWFcEE4nREQ7BcJLx35jghJkwAtAU-0P6YCFAOA9klyHwHb4cmxA00HvhJa79gE-sbttgDtqZsRGs-YRtdQBxLpNgVNUZMcHTKFhygc4UCEqW6S6kyWkrAQcex0ZBMFWAaUJgA2VaGN1BmrHQXgH9pLBfsiabDFDyyDpkEBrxMYtlkoj8DBBQzeVjJ2cgjNsAfQZlmtW+TkBDBHHJ8hwyODbQbiUcc4KsH2R74eQklMbkyhQGqC7W-gn6i6wCBEB-BnXA+r617on16m8hB-CYCabGYiM0XMbqIH2RyCcmi4cTJsClhOCNBATG5mM1zYvB0hW3SsqWynbLMH4fg5wTnXhCxsZGVAsxBFFBD5ZV4j3DLA1RoGHo0hzg-tqMzubNCehx7CDuDX3qdEPm07fwSPRuC-tsix2EyByTsiLAVEHISyHSkf6R9aWsAGMBwFdoydT6PybALAgyG3CTqwBJgM8NrKhhBAcYSAFSmK52B2Cg0IbOMjyCmhhQCeCGOIEjSIgvclwjvtcLeH3Ce8w4J4S8OU4TkbhaYM6mfU+GwIkiPwv4RgEBSwNTokgOsP7AwzSg8g2HA4FYV0wQhxM3uSTqAOuEHVUR3yNostQyE+se6MNOprQQaZIcQeaMDRENU5RGZbA85dhhtnKo3BIYpwNlAiLn7siu6nIgINyOEarDx2mQ-kbUxyFCi8hjTWBoQJ9gjF1wNgOwMXSOzSAE+JGL8M-TqH+MhwV7XKvlR5GiMWq11bImP0cDjcKg5mUWGzn3xKAds9uYyM6KXyujmI7o8dAE1cGaiBBmaOMaTX0FJiqQKYlgPlUvrsJr6SgI-LIFw7KIjg+WU0EMkt6wxJOSQhrG6OzHxi5WWgh4aEAMapiMqWVFsbNlTGX04QCDUQLjUrBG9jodYSwNIE0ACxRIMsKMQzhjHBh6xgQBoQsJk6DtlhLousXlRPJtD38HQz5t-n8HTxZxggecf7R8THwQRm8SRiEhKqSwBx9UacbWNjHzjNB9LUjtcipDFp5x3g5uquOjHricxtjYwCYn2BeMI4thWUcPi5BMp-0rCT6tWLmEPi5xG4hcbSxSE-iZxf4zcV63aF8ij6sNXIfQTkCFDCKdhP9AvWsRDE+kiIIqLkGRCeE162or0ai3d4r8vc4MZEmoBKE5BhQX6c6BjT+hYlaJTXeiY2JfEPDCGbY9MT-W7EASrY4gWFJGwYQOEP+3IFgdiSyb8RpaQk5OilUTHci0JM7cJscSiY05YmAQlgqn3zgQglG7uE1sKGNgeleQKZdnOK2n6Honk2k1qvoKaFdC3sdtXkQ-E2FdDqydtf2mvCEj8ghkUPKesUCBz-hagpEBxOCHOzTDe07k58RMG7yKV54Tzcxr5PID+0LgL4GWEqPEwyxhQOQcWILDzjdxZUdEjyY3R8GBola-kqGtkIDb4S8CCga6poDKAksoQNgUCLLHKlrxwQQ-N9FaJcmoC3J9E2camM9EiDPKPo-MECM-DRCHUwoYaNATUDiAbOd1OqehMfFIT0pKIqSZ+MkniTjxtjY7DxlhSShw2e2Aahumtg8hiETKY4PtIQlzSExTYzURoRaFzCDJ5BSJtE1gCmSCpFkI4CFAbzFhCIG0hvuUnvrY5NAH02aU+ITFLic2Pk+up9M-FbjO6k7XcUrQPFXsjxSEy+gnnOCjQb+VgUCJCITzcFWaAnJYCjIwnISdJP0hrAII-FISvx61JWhsxkRhZ1E5mawDCDnBTFIQxwFQPIgbQszDpHo76aJJnFcy2xGdHqtnSukOx+43BZPKuDFkmsgQ-SFptN2WByzEJCslCSy2uTd5mpeMqplkIFGGj4axo2ADIE1pb8NAX4KWfYHqBiygIkE9YHJK2AlEUpwDGaazOSFWyW629c9sxU7qtTHZ7Uo0fQTUC-NQUVAoODYFxhiyjI6DEaMsERSCSUpcnKXK8mPB+A64gQR4UCTiawNHEMUPOPXh6n4wW0dqYBKZhsCWtBoU-KaQWlLkkBKAvgHUFXPdRBAPIueGuWZJ5rukHcigg5u1ghHHRBA8IeNphAwRe4cGLlMgNgE6BDBA0jOSeZ123m7zhghPMuddX6h9ZhYNsEluw1SALB4pO01rMdkmmUxj5e80jlLkPmYjwy780+TPEEDnyyRGTSKCZjBAL1+ED0qAbUDKSCwGEFU90AtD-n7ypck8L2t3lPpHyWkJ86ggAtPoj09IqQRQELC1KmceUQIYBCKFIgkQe5b87BR-Jk6M40FmaPRu6h1F70tCf83BbPHwWwMRABwGSGKBFYyVgcIUCyDYhbJ-oHUC0U+g8E66RZZFLQBAGST0TxBIg1KawOUBWAyR04rCHkjCEEDEJ14cqZhL2UkEyL3Ucin+e0QUWWKlFKiveQ3DoAaK24i4CWCCIqow9igggdJr+1NCrBx8svG4AtGgQxg9AgaSeBkgQixygGkS+CBgHniZoPAQKIYlUC8YOxLeywbnLr2jhdwpeMxWhfJFCUvYIlcEaJewpU5aE4l0SxJewGSWmjwe0oJPNjmNrc4zBwIAaeIHqqFKWwxS8JRgqYgsQMhgypgLUvqU4ChqG6BRI2yq7Aw1Am6QaPh2yDAgelB4PpXoxGUVKsRIysZegB9EUL-sNgYCbFJjY9lkCTpKPAmxCWgVA0biVSJ1zuXsBdlpIyAYVMWX7ArQxMG6uumUAidJ8XjCHCoKKU3Lu8jyrZeGUeXPKgU4geQRYFl4CJ5Ut3RdINMLBGRLMAma5WEsDSsx3InkGJZUxxXjywAUKskWEjMzWQXUU0ZEMDlAVlAWSGQQWHCPemlF1l3eQlXivBXtF2VlIElZAIM4z0nE4IlYKPVFimZ0iNnQUCVAW4uVWVMnFSBlDxCHy7Z8qzKDijjC8rmJSQVeF2X4SKALAZqLQL-1+UD5I2OQUHEXPs6yrNQ6UK-N-NBpjsOFEgFVf4DVXEqkley00WYG6Z1hbAyXYBKg2npnQTW-0VpgytfnAqsV3eZaDgD4Cddo12APgBqtFE5h8wOMAUHbi7gKoCIGGYxcAnkD24bqmKkpVGs6icqtC8axNe6peWaqP+0UNNURg+W6YY2qNQ2aHRIymBpVlqkFQ8OjVeU7ZGKFaEmsKpowtZ44ykRljgJQLrCdK6GCoGIoIl4hEa4tT2pWhlrL8vaodaFyKq9SZ6zCXJK4VM7kiZwjievPICLX9KZO29V6J1yvX+BN1KWCcABDH6SxjggEHqdZH-jyAtM74YBEfihBArel3apMcHlJrWKtCt6p5VWqRomIhor6-NaJSWB4t+hqNTYGkEyBs0WVQGhfJ0GRimM7Z2G3DfesXa9QxImwE1Rli2gChTWiJdeEP3RB8Isc56hlojBw3Ug11BG6kERs457BDkFiXIK0whAixgYbDMcdaHQiyIrKMi0RGAAQD29GY1IBACzDZj3Cj5YQMGmrHk0qElN7MVfGghHjSIpwRSf3sOIxLgwYYfGBldcCk3sxZNGmjWFSEU2swGFa6geTPEBJ2amY2msRJAIpE8k7GByXOaYDsks5JG03FhJvPs4sZhgtmhmPZoQDPxvQds1zepti1Mxn4IaSwg9RSZOELAtgbiTkF5zzl42gSTSS5Si0ya5NcWhLd4DA3DM1N7m1LZrHS3FczN4gSRtLO0xhRRYNQLstuB3jhJSWS6i9QEGvi3x74hPZ+BkLSSdAOAR4m+BSkEDNafNPsOcPtEoihU8crKK6L1qqkul5AEnGVUBtG0LaAFk22rbAGm2zafaC2pbTWrM6SAjs1C32KqiUmsFtVqgZRvagZpMbu8+qDWLXF8aTBfu1cMABXMB3cAuNgQwQFWHyTugfZgmxwK9obz-g9VxiC6MEsw2RqZOf2muMEErlA7atngDWGDvri4BIdLBaHcNzh6MqHYCOpwL3DDTnB2EaOgSKstohWqSUsCNWAgiPkwI4ErGcnTzTHq2BCsiTP9sYHwy-Ku4eamvnWB+0ydOd-OnnbVsV3c7KAgu9Cv7DtG5y9V-SX1blnhC1Aqh+kQeIusA1Y6GcVCM9p1yzQ0Yz2GutGGdGkRF0rAKDf6PrUBZgxbIqZbBKDHl2W6yAYHYYGutt1B63VdSj1ZAN173UAQS4GETJFFg+kykbKbEuN0G3m7l1UzEROBztk3xpNDulNTIkUGXBXCrWTuMohliGyQY-omSHAv9157wOtWhvcMAL3zpQUcVPIJYEIgnBrgwYoYhgyhBUbRCbO4BkBtBn6J8VczadOHvGV3bF0RdGSP8yloC5iBuySwluEIS-pw1Ge4bePp3r2rIO+9afa3vtJwopog09Phg0RDWJ8wH8IEfsHVwAa1lWGtxHGE64-53EJ+kjaV2Kq8hQo-mYusEMARypZYn7KYV2ot0f639tWqAzPsj13aCtr4TIKFS2Dm8rxsuLEpajv2E1IELsDQiprtmTxXY7AR6PNu7C6Cp5musoLtOwQkSAW35CSnYyAh2Ao4Zug8HgeeQ1aD9awqpXwGIOkHb45B9yqvksJ1A8EZrfIAm06aOgeyQLG6Hq1K32dh0iWrCe-l3kDgBDnQIQ7XKj0UiTaWgN9hLTmC9ZXGGwZJgvUtidrIsyhrg2Q0dXqGwAmh7Q5Qcd2boQomwM2pvj-S9Yn1FoCENlhMg2tKYsyE9hdvSSZICDqh4gkmE8o+A0kWaMIF-q1WELJIhYDw-CmsEtpXGm8T8juFigLQQjoHeIxEe9C1aYjHkOI+Edc1JGBqmWi1NZDzD+iaV4oSmpjStDQx+yLlQoykk-oZTCAds8o5gGaSTAajDxacEP0Fo8hX1xzdhkRGCoGG36MMtg7RG6PX4napR7g+O0GPDGIdUGskV5lsis1SgxkbkBFEhBVh-F9uTA4ociyrH8q1IZZJEeLYxFBjiyJUI8dGN74pePvHGJRCUCzHSwvELfGYg3SxxSidxpZIDtsMvNHVrxyE4kb2OQCygQtc3iDFEolRZjACMfjL3ZLZ9t9B4ZBZ-I1GwAiVAQboBgHkWn5CTjC7+qPJJN4qyT9i3YqotaTOKJGLOSoP4qOBHBxxBiySNbE4LyAS4LTdPQSfoUojGcjw+k7nnJNKdNjjqyLNSdk5SnSTsp5RcyccXasQ0UjfdmZk9nHJiBFgYbukeuiWtvGdwODvAGiDnI7tggF+giA7h3Vu4xdTaBHXTVGRt8MjTVKURSi2ns4vicFKdHKjQo946EYxf7HBEz0Lg1A+zilCuQ3JXVVp4dXrFKTg56UoxJnZFSeKQhagrxJEFjDHjrqsUiZ203FFhU15U+fGsyB1hijvgtyJsfE-NWHB3aqZrR6mnCJyyspTQiwPNXyH7H+JGzZ+aQi2YLlMk7EjKW+hwNmgIN-mNQWvdZEwLoo8QOBYUS2bipjmI4sVXkM9XQb8wzYY3E2IuZkKmTMZDEDiA+qlTMNr61hCGG4vECIFCpgFfOko1AgvdQ50hS-MAT0S4BfhIiQQEmGoJLMzzLZlmglwdQ8hHAcIsyPUF6kaBKR2GPhHJVW70U1KyROfTky0wz0+Iv6C4PhmVRhUeCBciHHJV64oWQiaF5NTCQ5BoJcOYVGRl4qMBEVWc6agTB2jkqClCSFF5M1Rc2ZKMKgSDVGsXU7kLkR4UUASPZAV4BBBSxpLi1usd3vFLORySrrtAAhulAQYLTrJlmYRyVhysli8-GQZrrw5e3qguaazu7Yx9gmNKaiPpAphLasyFQ8st3YDoXCI6JLEqRWUD60oumGaaKDCR7WRljDnCojpVmx6V6YZF+opsTn2MpzACUFS-FNe0XKLKQyXsp+C+pJVhGd2nRaCgCQPV202QCsHmKhQNRo2a+dK0MxJpZXZwbEuwGkEe5FwqqgISC5am5AM0bjrk3tEtQCbtVNC+iO7aMgCgVdJZQ8SWeNUT5qIQQ4Qr0uVcjk+Do521LK6PRqsAIoQDKHOJ+hUSYwY8GWRHYFfKyVXKLUqKyiMmYaYQ2C5ELM3nJdIyRIc2ZJeoqAVqr1k6i1ianYWOQ+y75+7Y06cE7i8sFz0LK2svVrp5SG6B17i0uzdC0acmKBW0KDF-4jTQQq8EuDYXusr0QbDtHq7vMwD9WBEkefdldChTroCt0MUBPzntw4GEhltBOo9fRsp1cpW9Ba4dZX6dxIJGuCUIqPXR74f4fSdRJbw-pf0BgNDaBi2aTxl5RpAS2wkFuHGCEj4Pmc-TWAGY0sPIWVtGlyHN5tNpuprGenryXBWhdM7V3uRIA9bHS9GnYwxhoRMb9XruvEJEkNkq760bYbWMQh3FQKK2rmJt7QR9jwBVWzBTR7-sl3F6l0dkvDa0S6CsMdWjb1bIZikI9ZVX7AmF5EqYhry2p4GPSOBYDh6Zu2nWrVRoYsJ8mFsqrnIaoF0rsKAR7iJGR0LZDzMbAeyNlyVmm2NuZWmbgVdm0ugjZF05uxdGOomXcUOB6gQcbtg3ajse2ZOjLakFbcr2NRZAnWNDeL0XCAgocUoNI1vkHuUtG7Ikvo5qGMHnniNSQCaGUHv0Ax-0KgfHM+l96yp-01gVe9K2HtFMrZJTHtrHebvKSKghwUsD6qCR2Bsl6DcJK+fOCpXr7DredvMOLQri02Bd5+1AKXJv2A7c6pttXjyDPF0EQCVaxoGA5zIUkYetc0FkjhAHtpxyCsIg8UDjc5E1wAK0R1fxtciT8nSjux2isGxussUDBIB3TJhprCFKy3qdbS4s8XObnfPEmbksXFMiKqAoJJX8zsJq8MK04JrltCeKW+jPCirb2PKVFb0B3YoODfjLCObrv6cJBxI4EzcuywCIBERi0B7XFHb3FngD3UeCOYSWjnqW-SbaEJ10t+kiKtbWk5BuHyj1bijiB7RWrY2jlBqQOBZbaZILAtfVjm4h12beFj5R1Y-W6fY-HhyHqYE94xY1MahOQosNGkRmPonzPZRxj1k6qZ6Hld++swzrC+9uc3CaPGwlNDB8gj8kJnor3yds9GcbmYp7FZgLGxd0XlgupTQvFhYTanjyCmSlNzm4HLQ4RJyI+5AODgnIkPINFAkjP1w6dVIZ3dhd5BhsbkD6OHWtkBzn92muAmFbGMAvTusyJKJ7QKuEYCMoWV1krFYCsx7WE1ZqYvkBmgRnMs4BvPjMJrGeUVbnZdNZ41sgyxTOL88GGiAcBJohoFNhp2oPgkb2URWrK26-ZfpYWagMaQZBkFfYYZ-7UsAe3BPqFwvA07gn1H0H6t5gnQQ-YEG6DKmDInC0gOtIk3fAhR7xlsnwQ-f8FW214ZUXJnIlOj7JyItuXM+RC72WZmXWbDGSuPZeQO-oxEduQm1mghQRhmzEGFVJxasIoXkhC54iOVtbOLow3NYDDLDGxd9mzhPNeWPFBWSVRRfS-MiNYU6p0RYAehytv1clhVAosQQlk1DiIhw66wS12qJXOjytRPzrZ9xHMCcpFyFVaNqLG-TyjjgsqH+IOfJY1jUZR0puxo5budkZIXKB7mN1e2UKeI4XBVFZThAG3KbXz+Ccm4tnsylZW1TMdGCQlx2D4lrWRC4SMiJ7MWE0dm5DEIj3iK3DYqt5vf0Zdj5xhdtOMcA8OpNzOyifqCJXYRo1syCbmF-UN7dsyc74rpYUm9ZlVXuMHd05PIhbmcJDYtG7ItNGxhP6mzvaWYUu4jmKzN7nM98amKtvcYpezKWN+IFzd2M1bdVSfBYRLfQvEh5b69yy-+olM0JOM+t5A-uqih68lmLCx7qKg9msEgcfOuq4LILU0pqbmx0uxuhv2veA00ilAtCq2Iv0SfJNh9IJcYKLp4HtN8pJKpLPLgfmCC7KNirX1QQBS-42R-7coi9JSQmdlVYybnCbCRETQHZIK1bgtSQdCXhx88lrusZdtRa3mLfJ2IfeT6biSFALAwWxMP1s92UWEmceIls2bKUliquaK2tD3GkZTxim1WThASgeKdgXeFldPK1K2U1Lk8Qf-DMUH1SfDDvrWOGo0rkKYg3DWUYznz1KeHPll9vNn1HqAVRO3bl4LUPDV7VDj0NdupZ+QHJ2h7C-myIvdLAd5R-ypVX6gvOdnEbqXBQLhYtiFhIRBNYSXQ56H5dyPd+nKh9JarOO3CnE6C832iX1a4HQxaZwkbwXiO3V8A86SZPkzbGcu8WsN9KJliK6JCKfVKBESr53dAN8NtDfwvK7nLxKbfHcz8vUrg5pZ2tByp-DxdLRICCNrASFwN1s2V9KA8YoXP5ALdyYnWDeZ3l9xXZttEqQJRFB9Qa72jNu8A0gaQYR79fUqDFwdw+ssSKJlEhwXAx5GEuZqIHkOvIHPimrscwwxzQwWHJAiqRUkhWFjjFqxU+KZQU-JsoWV0ccJXjZIzu44vDZGcB2T9jp7ajLeUT6JPMKTp7qO7XGkkFQ5bQncyQ2LMnu8pzenWPJqUUUUYBSzWi1hmvh0WD4tgBi1hOvFEpSwKgtYd6v7uqUS-kfAuFgZSq0S0ikdxtcNH7G2lCnBzVq2ACMttOZYnQHy8iERiIRI6dMkE2NlygIR8DMdmex5db87ILpu5DR8yD8sATzk81ZwRqPXrchErrfwCdeDXejqfg+Iso9CMCPZze94CFwf3c6qyi4prf-L+2P+s6zCEu7uQNDpTNiiflUunv4bRWut+uXiHNMkboRA3jZqCcCfJNG1reIj6Lfvan35-FF5wiqBvHfR5XuEoEd5E6uf3RBp9+ldPLXBFpeWGBgslbcO2V8MEMa6HbIDLG3Ddb8h9THLE8zm4ATFsCHB2bIoKYy6Gs3RbKtSoRzcpraDW-K9pyCMwUA-ibbOEMM1nBeLIh5hL-FWjzQpuq0oAa31ftHAdBElh1SMr1RVDgSkTV9Qsdjyr9A0Y7XG1TtH1GcttfY4HkFHUBo2GhbuAijZwpQIESNh6nHfUDQcdc9Hx11ofSxmBdkZ4jIcDoI5X4te4AznLErQcIXOB-dVXXgRKAaPzhJf1GsE-A8tYGHTgThRQAywqNRjQQDSOK3XZho-ag3XAmdDLAqRE9DAJ3RTEY73Lp69bPWGBrfEqg0RiPf6C9IK9M+1EcfeNB0kCHhafVr8KvYhy9IxkNIGsQ40BtA5Ri7aRXMCXgV-SR8ovZeW7NE0e2EcQKgWZU4RKRJX3BBLIAhA8dSiDg3uFZA-LFyB2tUaDGp9mYZBBRdkPiB94FoGwyADtfeEFHow7Mv1ddgYetFitO0B0l2QCjTylCNijVzXv90A6cAEh9tbTE2BVSEpG4wnERfQqhZEUUxWMKghpF6Nog7IJkQOJTxm5czWM4xtwYLYIRBNIYcoPqQUke40zEoTLIK8CxuD0mAgXQHaENVBkVuB7N-RLHFlRiAsUx3kGFZUzpNVTFoCytNMO4itEjZTuXYZl5MwCZQ0jDLAOYg6VwFcAgAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANmEBmAHQBGAJwBWABwKpSqTQDsUsQBoQAT0QAmdQBYJYmmPVjDh4YsMKZAX2e60GHPgIBlMOwACWCwwck5uWgYkEBY2cJ5ogQRBNRkzOUsFOTFFGhNZQ10DBBkZCXU7Szl5KRMTWxNXd3QsPEI-QIBbVABXYKD2EnYwSN5Yji4E0CSUqSlDCQUTGRpZefV1GWF1IsQxbYkTOS0FDRo5dRpDKTkmkA9W7w6AvyhOsFxAgHkANzAAJ0wJD0sFG0XG8V4Mzmigk8nUFwRMnUwhMG12CGOC0s9mEGlsOXsdweXkIAFUmBAhmAggBrfzkAAWAQwg2wmFB9DGrAm3F4xUEJg0EnEcls8gUhmWhjEJl0SWq+UOJmEsjETnUyjExJapOIH2G-wC5BI73+JAC3CCITCkzBzB5kMSQjmmvMq2MyxyaWECgxpxoIsMNGUpWyKh1njaBAAKqgoFBMDSMAAzEg9TCBJhA3A0n7YNgAI3ZHD09pijsmUJdUoUhxoeJk8wUmnycv0iHkgdDW1lOUqjTc9110dg9PYTKCqEwfwC7FQ0+NjLIMAg5YhVedyXmeOkMmDaSFGyk9gxc2ECzsEqs232cluQ5JbQk2AgSYIAFFPgC6QzGevKz5LdBEMbIJEMJtFBPGUGyOHQOwQVF1EOFFUWRJYbnqSNHigF83zAT9vyNMc-yoKQogdOJN2mIRrjrbIjlKC8oIbHYELkEw6wsIUG2MPExHVbDSTw98Pz4dh-h6DAAKooCaOSPFA02WpTAbCwrHbYoZWscDTlAhFfSWORhCE59X3fHwAHcwDAJgZN5KZ+CEapkNYhj8lA4xCgQ659nrKUbDyPE0RMx8R3wESCIAGVQFN2Hsp15MERRhDhepjjFfcTzY4oVBlCQQ1WFVrCOJYFFMiLzIIgAlMAfmnP4Euopzkk0ZCck0FLhCbG8MTEUo61xGw2oqWoKtwqqCC+FMU2CLMcxGLlwUAxyZlVVzg3EGQbGUaoz34uEMn4pwMm08bIoIAAJVo+CauSWuSlYRRoJssmMOZ5gxUCaEDH7zguLR6kMc7Jp8RksEwO7Vucp7jFgptOLo4Qz1G8o8hVDUtk0EH8Ku6dFooitZOhhAcikCRjMcY5NhWNIZQxQR9jrLQxQghxpVlHH3wAMXZJN4qWyiHOrZJql+85VmRPJbFAr7VjkCmmy2E972ydQuYIohl06FMAShkWREscpLnEFEpE2Ow-R8qUFfkAacXDYGwqjSrcYAQSYJgwBIc0KAJ7liYNvEFesKxNhsFZ7HgrTNi4oUWxMATLCkDXY192AgWGfXgIqBZJWqAo0TqBRo8QfJTEWbbmNA6obFT6rUEGLPBaJ4Wc-mEU3pbYzNhVKQMXqJYKclK4LGRPFyudnCLp8E0k2zpLNFS-JlHNrGArkAexWQ0pzaWBFrBhVOiEwbh-eWwOc5euFkQM5ZTiOTSy8T5Clipo4tBelwp+EyaAHEAAiMYAjc0zrmWAnJCYbnukkMmFMLxZDXrTeopdkj5FSizcU7N9ycx-mZXGAAhBcSYyAvB6IWCSJAwgLwehUZe3VFB1CsPIZGCF9jXxyF6OoGh1RaFTkQ-GpCyS4DtC3aBJNBCmDrFkBQF59yD3yH1Co0j7xwRqL6fhxDva4ACAASSIsEahYiVoGyRHCTQNhgxBU4n1JQyEhRSiBjKMQKc8Gu3fAABSGIaHRRBsD-HIBmH2AQxAAJobA448CqZIJeighmKozCYLZpKDmg5mguwmrjLx7AfEBCingb2RpQnhL2JEymiCaaxPpghZKHckkSilDg1OYkWD-AFlAkxOcbCLGMsobqUtNR9XRorNQ9R9whhKqnZAJB6QlNagJRYVR4S+hRLLHy21yZZHEFqVE7NU4AJCMMa0SZbQRGMZfJKWRJAnilkxMZeQvr2HJtTeoH8NhXCduk6ek0YxgHEoIecggiBuzCectu8kBLkypr6KU6xjhPxKMoOE+wZAtjJpkb+Xzf5ZP+KgToTB2AAtQIISAHA5kiGMNIWo+RVhVCMmeJsqUnBChuAJDGmLhwZIul+Q0AQ-kFk4PgX8E5mSwAaufIWiUWrzCOIsewwYhTGRcTlIQqVsgXDZQnFsJdPmcu+fhCQjJXxgA8QtWABA3ZtOwGmMIAQoDmiYMyMA+LOCQDmaMtV5xuriDZhsbyMczCiH6qs2+1gOVPncWACQsBGSoEsqasgcALVWptYEe1JBHUBBYEwIJww1xgqlUkQew9aUFElObVhxQXGBm6rUG42xTD2HkOdHw44mTEDIJQSGBbmpJBuWUDIRVsilH0v6vYidzFOEsHkFQ6EW1tsZAQA5-MaTBDeAaSBAdwUtUUNtZUqptoai1PE+8Ip+zJMaTKNJerhKtr-AQcgLQ+UQA4CyHo-w2jCqZO6lY5MGxbCPKoncGJNSBn6hoU4J4zjInnfeog3BYCULwAESyHBmS4FNJAAIPwSCYB6BK1uhbEA3GFNw7YxwlA7T6sFEUvpYnKzsA+LFz470iokKxpkujcbTPpNaddnxsMAk4HPd1WQzCOFKJqASMEUQo1RCKOtLYmxeoErBtjHHGRcffDx1dYB+OBFjR+gAXtwQY3aOkXOlSXZCnVrAXFVHkTY+0Lw9NRaiH6lGmM3pYwu9jC6tOawQ0hnRhnsAmc+LhlkArO0EfESLFQ5tpDLG4ZxFxpQEWenat6hBTNtpqaZH5v8AXiBBfNMhv4Vq55RcQzF0T3TzgDVsE4fYNifIXjMCXEuaIbgZCOF5iNuENOFZFcV+DuBENlZ0W7AhPgAgAA1ROcQpnUXZFx4SoKTqlOGdMhRWHVflxkw3OO4zGxNkgyHpuzYAJqLbjvuDZW0UV9W4QVYNWg3NimvQNo7h2NOjdK+dnRK5549pgcRyOhxabVFsLsrYX0ZEUwqKpQGigDs-f++N4LAQkz4HYP+UHJNZA-RQsYYNpxqgXC+lLAqJdciWPWmjv7J2AfIa9v8L2uAX2BKBEaF9NW-buuUs9VEicJZ1o2yeVKlghR4jUDLFEjP-PM8x5NgIoXwtmcwHoAIuHsBQFwKJ0CcJcQ3FKEzFVCAVAHAc6W84fZdXfaG0z98p2scVeE7hrXOucD68WwsDiP01AnmKooBlKI4SWGVg2DQ2wHfhUG7553gWVeA6CBhpgc5UDzdE+HqwL1+oXieciL6-VJDDslE4EuUdFdFeV2d5DsB0+Z4CDdgn8WWwYK66lq5+8vr3zlY4JQbNHFffjz99HdesdgAAI49EizjqAePRPGSDGsKoOQ+xyyRaYFbAVE5ehryNyfqumA+099QNvW5Z2Bi0BpOxCIxRWy0hBOs8i96MdkeGsfTulcu5Zzo-4Z1VAWcR9FPPAdgTdC+bdPtVecoWQFKbaAKGQL6PKcwatCvNQWRIkNxBPP8Cfd8R9DAZ9V9CAd9T9EiEVH9VYAqb1QDDiYDBCJYQMVFFYTiQ9YMVHHA8fJPB9ZcfAGkecacOZaTMoF6A8LEY4HITeRgrQQ4GFNYWRDQdWLgn-WvJMaNfwAIHoDPNdd4T4c1CAM+F8XAeqekDQ9gbQwQcgHAA0QQNgDAOwhdOwvTPQiAsQOZJrQMZYK4BiMUbIM8biSubYROFxdzRwQ-Y7dQuaLQnQlwjdAgQw3MYw0wqNOaSw6w7AWw+wsARwv8Zw-TWAdw8iLdIjBAWwDYOEWRAyGmZEeQAIy4M9OzXrWUDiSeZjCKVQo-KIzQ7QvjVw81AEXFf4CQbMIYFMVAf4Tocw9Imwz4Ow41XIkVfI-o9wy-ReYnMUbKWUbYX0UoEDDid0awY6GuYwNHN2Syc7AzCYsLUzSLPnQYP2AIPAcYhIowvAFIiQGAQldXW4zAQQZ41ADwqoimdVXbIfREL6Y8aQUQVFVRS4KwM4i419H4iLTAarB4ygJ43AF4wYiYkYzOcYyYz4-wQQFEszf47EwEtYlqRwX0cCa4egs3SnHyUOcwDiVZawc4fIREy4wTSrO46LR4gE14pI941AMwr4wQd3bAOeCk8YoEhEcCOoNIIPdk1BOwHIaQZlWoY4F6VmHk19aUqre4mLLEnE-4IY-EsYiYqYyUo03DOUqkizaAowbuOEZsSvWFTaL6WuFCceEKPEX0frb-Xzc43ky7ebM01AEUqNMUiUkkkgQsWAQQPgR0hUsoT-LQCCVYWRPqFxSQR+C4VQPIDQUfLlIbMM19CMubKMggXE4Y0Y9gQk20hMpMlMtM6kpIQfQMegoqGUIfJ-PYOwZCWPXaRGTKA0wICMq7WsxI2Mkw8UqNSUxM5MvQDs500oxwTYOQwfewDYewaQqtFeRYLQOYCCCeXBdo3AtjSsqcmbFvWs+sq0psm04kwlFcwQNcgEoE04aQWUFEZSFUWwPqDKcwTrKUORG4OPcs0MpEwIYHGkYUuc5Ixct8wQBC9cko3tV038+ORjFYSUFxDLAipUlUUUASVENo7zDo2C3khCx8i0vExs5stCjC78zsnCzZM8xQFEJsCoeHOk+oDYGwHLDQM4z2L3BfPHY0f-dgGMlCswt2HwGMKw--QQKS-HDc7Cso7VCmfqT7SUWsDbHEcwDYNEZEfqaUcS7MbXDSmSsAz4Osxihsgk18pSlS0A+vXAdSj4RfTSrCsHHS7c4MKRVQcjOwKnPdceJ5K5VWZQq88fW8rNAEDnLnIJXnQUzEpCt4hc+MwlNnVKmU9KwQE0v2TCqAzcyUKXewPrbbcQPqCtTucpW+CwDiSc5K9nD4NKnndE004Up85i18yUgqrqoqnnEqzKnI9irSwKxwOwGgjie8OqiXRwJqhBFqrktHfJXMTPacXglcAQ4hOZaUZmdhRTUQRwM8NSCmaPPiaWC4LagpXazACQfRDgC1CACAAYH2LMVAcAuZDVDMxOQy2JKwK6zQE84NAPXU6C6eIbbaw66cCQXAG03DYgU+foCg79DizEC6xYdUPEG2cuQ84jWsVfa4dLSObAhK+Gp6wQl63mERGNLNXFFMdkAiZCuM1I-wGYzIuY7IxYpkZYjddQAG6CSHEXG4VZJQM8cUAqG2C8QkTQCMFQ3zBG56iQRmgsZkJgVm9mpyy0waoktIpgKw2YwlAWrGxkYW-Q0WnG7IbpTUVUQeKWzUEmy3K3G+bYZETibYE8bUVWvAt6uS91ZYcmX0M87Y9KOHBCOYCwJLYKWwNQWUSUNHYOggMiGawnB25FeYZhOtPaWO2QaRVUUCc2SFDIKix3XzGMA6z4bASLH2cgTPfa-g5646+QBWNgrMzUW-BEM8ZYZCOwNsSiqde8NHWu-g+uxugJTPV6kROSsbQVfDPlPgAVT9XW2KdmgGzqcoLINzOoc2LQM8SmaQCoEMQGnwgOmmmuuuzgGe5u+cZG1GzAdG1gVdBdHevyQelQf6K3ZA2O0wEODGc4JYXhc2Ceu+hutEpuuerW5mzetm98Tm3K7miw02jIrIhYq2m2iA4QAG2wEOEMDqViWk-aC4RYJYGFCwWRcIwOtjSemAaemB2ep++BnWvW98Aa1y42nmjB82+YhwnB3QjdfB+2jiBYQ8FQEuPbbaZzDrbue+SWF6NHHoTnLPGrNpDTL4XAeSrmiQdywQNRwwuwwYLRhdHR8lWtcCOYIuEMfSRRBCD+coAvQijIASGDehgrYxjRsx9gbR3R7h60okwxnx0xn6gJqxp6YdS4baD5U8diJUeoc2UaUwPLLxw7WqMIei+m1umAdunGtEaoQ4N+GFLYfcBJrScZaQXdVgqUS4YMmCvArJh4xMRGl6288g0IbgL6x9f4XMf4AgdhgIQA7J-AEHLOkWYyJ6fYS9aobVBFdA8oQdc+xQfMssuG3zFpnJ4hAxuCz9a4qAPAB9HAcgWkLEoISgXMHe4nPPX+0u3reHa4cCVSDyaoX9DZ29LZ0IVppMDW9hrDbZ8ZjmnKj4k2s2vmi27BpwkR-QjupQQ4e8H6Ja+oVYIZfqd0jIeER2am6i68grIFtpjWkgT6z9CAc0OKEZn5hCvR1B8wox028lkgOKQQUZ352LTpeSYyFfcDZWTUSDC3CwRLaRjKUZadUKG+5p6l4F4l0loVJlyltlmloJl83hwlSwhVwlJV4FgGjzFxwMujK4WTHyXS8vPi1YV0NHIgA0H8Qlv53JpkA6gpyZrcNEZ5iTewDQdx5QOWVanYhrC4L0WRK1m1o0O19pvZy4z9PpgZoZvAbW40UNqlsZtpr+neewAMVYWUY+62A45Wt+OoF-awENoiAIcNjWzpoVQ545t2T6xN0t7Vol6tg3e23OcCCwIqf82RQcso6PeW5U+8PeY4Et3lct+mzW+NmNLDa10t8N2lsFvhiFrBoRmFuI-QwwDu4KlJMZFBQurSCwZCHuGwatBJCVvF8fGd0d6Vol8dklr6zV+t3lRt5B0F1CuaBlkqilwlK5w0Vl69iZgKkmC4Z56zNzLUDCFA2EbaNzUOGHT5nzPAy921-9iNu9lkL9x9n8Z9giFVli99jVr9qw0Nv9lNgDiq7SwdJSPiNUPISurfOsEI9UCC3yOoNHaw7RIITOEF0UulwAuqB0lGhw0-PHSAyVbS2QeTBBbISPY9WO5FpLK3YMNUNENjkhHRDOakA2pinhqYvjnDP4wTnI4TxkUTwjbSkQcPRiZQHwlyapYoaHeBHcUCeVA8q17gaUoVecAIDDd4L6-T-Ded1CkgRDV3SbAAOUwwgAADVcN8MgT1QbHVlC3to4k2ELgey1BjwsDWCz3q7EP3OhNP0vOfOsN-OcPnLnyWLgv2BQvAcIvfOYu8MOXLMuyyoaCcEVQ0gxN3a7xJAHNbHxBdiVOMnI3X1PKsdADugQDZKDDX2zCTHxvJs-2pucjFvAd2lAORZHArAbqvUILA2BIUDw8NAtgxD5nCH2q1vkMyTPc9BAv5viUrvvKbvMAtcgT5NLghQVhzgbkEUVZJAcyIK7dZRm0Rukqnu+SPdXu7uUGPiFu1L7ToeFSFh+pD0fpZd7xK1iMEQlI89jhZdXp4OaK8Dwf-81driNdbvvc9ddHYfUL4eHLSSKffitd0KfcW2XX5IqYFYLxGNmJ4DagzxFDwIeLSgKnod4rz2Ky4L7KvLIeZSqfdd9d7uo0GevKpTCu55WeleOfNutxtvD3S6fQ2DgLY7O6RQNht5q5upLuyfG8M1m85sVeJA1fgs7D08iUUz3vJBTBHBD6HMa4S9ZFDh9gJ5VhLgshJe8ubyZeIf7eM8vOrtnfXelv4-PeywcbaSB1NhA83l8h3b6mRyWtWiXJipbeHK+VZ959fK8dk-Hu1KZ858-iNKgTT1k4h9ahVRRA5YDgEkc+nBNpTBy+5fT9zRXusA6-VLGfR-z9zM9eueWxsR3ssySyUovoJMQTMJaiI4lgrW+D8m4xFxrVzVjqeL23AMrgq8Ld5hnnq0zY0QKhx6RutYnXD+0Tj+M7ijyPArSoh7ZQvXL++wa-sYDKB39nafqJ-pKzYwv826b-J4rNAzqGBOeLUX-ufwAHbdtgARHbmAJUiP9GmmzRDvvxpBwCP+VAMQMgKLRn8r06Aq-gEXkDmBMu4AvAXv1f7EJ4BJ-EwBQLLhUD-+OPDAdfzggMCY8uAmuCwNgFsDSBcgLgQgFQHUC+BtA2OscHJg4CH+NcfAV80IGsCj+CAqgMIGkGyDeBp0BQblGmZCD7+EAyAVL18wwCD+EgnQeoH0FrMKYkubVDtHqqx0EElRMOkvCgpf4mm0AogQEBIE6CFAjgkuM4NECuDaSqCI+pIyWAqkJMWQK4Fa38TsdnqeTdpsdVRgSZEYUtMhml2FB2ANSftSUOHBSEBJ7WuzStlAEtAfojmujWtr01SF-Nm2O9WQr2BuDZQZQgvNLt1GhKgNIMoEDfOULSHjtqhZbEltgD6BxsmazIcgM0Oa4ulMQGwMoGGjSBLVnEgrLUCL0aT5krgPqEYZUKRoAsvqfiCodx3nILt0GS7fmtCzyKwsICJgeFgrA7aqhmU7yfuGwlOCpRCaSgAiqhDGjP8FhsrF9PKww7zDzhzvfDoy0I4Qj2OO9BombHJylBYIWPUmN7URyo8URymXfkCPOEgiyW4IhYVpxcrBMpi0Iz9sy2-YLCxasqc2PZllyo8e2OQLIOYGzKKREQXWMQbYKRqwBswHAQVDUKtpZpsAXsKEfyItpOEmAooqaimEEC5hIAbqTPi5DSifxlgWwFsBbneYFR9wIAu8FXHUEIcAhWgl6nyJwA5JyCC6EUWKNw6vkzRHAQWtbWlFex-icohURgHzTSCOCkjcQAlgEimBLKGIXpPLVkAJJgwMObkcQN2Ym0v0zIQkukLp5mFwWmDW4Su3uFrsICwhIGIsDNi+iAoMtJxuIGVCopkWKTDzJGKCHRi+GsYgIPGNya2i1WvNZdjkWEYZjTOcWLcPbkODXBVQt+L7gA3s4LJC8YcIiuPD8EEDoBwIvHHxyzR-UBMDrQIfTSyFgRZQh9Hip1wHj6U5C8gFxOuN2iHCBCjIGcSwHAIVt9mQqNmv8EQyzjwCH1L6peOvEnjPgANUuodBxAD93saI15ArGA7qgHAlwU4niNGFHibIN4+cVUPPFCjumnOMCXJUaHWhQCX1J8Rt2-5AdfSUiUMS9F9Dd8nG6kC3qBGBqaAvWho4npOPxHTjQJyEgkWCKpHGgpxIEmkMhKhEkkCOVIqwgsIBQMTBAyEl8RizsBBpw+Rrfuk43yDkx74GpYdLIAPFzgGJsEs8VG085Gp-gSEucXJWGZwj7WsknifbWDjG5doTyGCKgjgjLw1Ih4ZEJl2kkUTGJqk-5pO3BhNDyJWk1ScxOuEpioWaYpYg8NgByBnhBUYhj9DvhSgt4CXe7JlgIn7gzirDYhBkOdbz8UBmwBWK6D3zypNAQY7KOBCuB5BCQWZWGhoJvJRSka4wzRr9VvHwTipsEl8cKGDw8ItoDYd2ssFhCcQmEoY9xrlxDIk8CpHTSCbWImJ0T8RP7AECcxlLnMG8VzRYaUW5ZiS1gymFlMHCDGxITyqIHsdYAAqRTH6VQuVjUIfZN0XJH7TVuhQCQvjdwD8I6JYhcRpTJQBUTvgGIGRR92p+U9aYVO6ldU3YwLGYQmyboviWwbIq4OsHxCm9Bxp6aTGtiYIZs1ptk2YZ+h2mJi0GTY1MS2NXYFEFAurZYFdNFBiw8guZdiJCkoYHs6gFQPiuDKslySFxTrJcYUw2Cvwfo+QbaNJwBmIBFAYEN5DKhhxtUwerDJyaeLGHdTypTEsqX4wqk6SIaXJHhBHAoru17MgaXhLtFUSKoiZnM8CU9IUk1D4xGkmkANMGYZEzmFzWAGNK+n+4-UnkcQj21F5slKYicH2qqHlnHibJYwzaeh1omwNiZTEmGfS1Ykssm6nEvjtxNUkvjKUDgJCPMCVSoJ3mg0VFK2A7Zogcg1syibbIgnKyZJ-iFSbeOGafSdJYoaEjI3vicke2qoBZFTAArpRbGJE-FodktSP0FZgQbmQnLxxJzYJb9TGp-R0lDwsp1MJwCwgRQ+ofxZUeOKHH6gxzrJXM3ZuwyhkBIXJcM9yQjPTEFEZAurfKGH0RAqAw47tXsfYkli1hw4D1dmRXJtlDzjhdklmlvRfY8crhE8wRlPM8lti1AurPIChGlxZSWUnciCJeGMCxwIIaoUHlAMnAo1axVCAiH4BOSBBhRoxa5jjXDj4THAHmPbBFUYLCg0sK0k6cxAOzecs8Nqf+TaCAVWixUM4RiQtHJTmwFgpsUQJsFQjF4akLmduVLBeiFRAy50MgNgE6BDAiuWeEBRcIUpRp6FjC4YJ7zQUd1mCDCbqC4lqD0o5O+4JLGpEj7S4IGXBThUws84sKFoJIyrq+VkXcLAUvCnGvMDAy3x88u6GuJ8OKBtg2SyqAkItRcR0KREXC5havXXpCorazvVRTkUBRW1jqwfZTBKFVIwk0ReNVflos8jk4LFDCuRTUK878pEMlo+9A2KmKOLPeLinGiIF77wlex48G4LnL3TnBScFdFeHdK5RW0fA4qB4FCIXT5KcF0yJkAUjmQrAee+leQEwncYDiXQYi8pulxv5dhzg50PJQUpaBKKja5I4pQUqoRGpQF0giHEIr7grSYSBi2iAcSQiZLOIA-VEB0v6WlLuljfUUbFNQnxZXk4EPigiCPCnBJQ8SI3G2BUCW8zyOS6eJ0pWUYACAajNZQnyOqaLtICmEdAiBtgPwjlXdRTGcvWBLK-wJSv4IUsfR4B5hGAZ8ZourRXSPGjmUUDhIFDvyrpJsaIUcSJ64QrlgK7pV4jH5Jg5+myq-FuXpJ9YjIjCYwPEh0gnLNRSgwCQlXRVgBClCNWAB+Cr6YAooNffynivkhQUuI3QzUK-KVhjptwlKdhJ9z3wO1r657WlYUqi6a9cM7qU6HIRDBvDFVVcBmLfgKiDtocpUDKBcuEiSrull0ZnqiVDq98jgfqThF5FQQgRZC2U6PEHiVhV0x8eqm5QAkmruoCVDQe8MSrfgW5kozzClT8upUSrllGKm5Z4H8C6ZAFSo6Qc2CHo2xGEnqoSgzFMH+qEQ5y86B7Bsqfo-kEkKSGwv0bZrJIGAN2Ihg8DCE6wVQRWuyRKgNKyiNgBWMGFkTJNOER8Lghmq1xZrxIha8robR04SAC1ua4tewFLU40EuFamUFWpB5B8zAWbCOKKFEklyDGElPQOQWsi2QoRq6pgIOuHX6DJAN4I4N7V2SMQUCt81IM52k4sx01S6ldTZCYA9Le1sADdVuvQDHVp1qWaTKHwow9CtItQUARsksSS4dVz4NtcuqFSnw4ozvMDewCfWei4pCoVyDgjQg1LUsKMJFLSnmWK19gUk1tVetA2xQ5KUSiQJBug1zIixKIIVsiw2QgCheUoSooGXPICQJy2GzNUKkAL1QcFzvVjeKmI2aLX4h6MiqpB+igRmRtRPyTkGTjtZh2TG9tSxrqjio71ZIiQJxpwXcbo19EPcofBnQEUY6hiq4KIS3LD0AJxDS9cxpqGxRZomhVhc7zM1zQE0uYFTbBr2A+90onqmhonBzYmCkU2QazgxqqKgRjN0m0zTNGiKWaCN1m-wLZrAD2aOVLUWUIcGpSWIiJQoRxrlAvDKCy6FlIppYEA0RRgNn6cGDgD4DO98t2APgFFrE4-86wZsXijiDGSmA+830v3nqTDipZ-NIGmocVsK0EaOtZWszhVvKDrRuoNWiCHVp8gcQpcdiCvGZRLitbyC+W1+q7KnavcetHYrlmYE0BgNTcnEDIFMstwYi6pFGSwB1BlAza7Fc2+Taq3JFzbltnLHdGUBVBrZZAdCI4miIIUFlkQGqMZAuty1CpY0x8y4ahV+2RaS1z6+JSqEkD1MusAGbMgigxiv5voi1ZWC2BO3tb8Y52lioDuu0tchAYOpUlJmWBLTWCA8KRN2IyAI63h2W3CN9pVl8x-AzvJBvzEx1LDT0PYVNYO00A+gGU9Aj0JhP2BMdxxwkKnbWJp34aKuvSiQPTv8CM6Jpy8V6BlB3G1olgcsJUARO9ppBMgnBBKoLsdY6xBprs7XbrH+BS7tKfkBKbwkVBiwUQBfGWISsHz7gxQIYVFYupM1LhTQButHa+X10AgjdgVHbsVCE3S5NQNMdfvYDPreh0eb0OwMjoCAeJcULqT3qSjkoLbyEnQB0ZvTj0J7hCecXsfMsfjWdr+GocoGDtkDvbalX2nDTUJj14oCU8el9CLp7UKbYAye1PbHur0Z6R1ZeJOP4p7iSga1aoSQKoC6xqALWEEKPcunDXHIfmkwZPocjAAALJ93Ab3RIm7AMJwwNVJTBJkeRzAQS1mKDGuNH0z6J9pyQJqLt7Vhrhgc+o-YvoNjL7O6oRVohbCcCPJhZazJeOjBuBR6M0XsM-H7AcWexCkMWK-VfgwTihUl6oDyKSpZJIolpX3V5AFA-1-7v9lAd3USU-3-6-YgBzlcAfflrMMI5ReHEqFqBSgqkrycVd9kF2UJxsXHZ3hQY07DAMDNJcmJoGDB9gD4NM-ik43gLmAjgxgWROerL3O6aDVBgjYIepD0GuyXdX9FhOlDiBHMA8alGyUy5WBKMUoKPbiibh5reOjcUQ8Dpg3Rai0hC1FC2BqnpcmIA8WkjTnDFKAo50izXeXpGZaHhgyB3Tg4aB1DqQd0aswKXpLLHsTg1wTcQlzDSlCm0e2KPbrNwwaGwWc8Vw9uoc1lFp1q48+iqFgj+iB47mRHIoXX02Hz2gusI1wxP0N6ojYhowGtr+huYb+YaC8FvCWwXg6EVeGUKUCj3WEz4zvJo3Zp0PCFEp9BRED1GuAPInGR0Shl3yxAqkHVXKLXafFzBOGJArR6I+4diOakqqmQTiBJyvQDx0ECmcQCJRqO2Ao9gCYBKAiGDgJZuJ81ClAAgDsADj7AI40UeSBWAFgKwh3VDsJ3sQrg06rULR0R0U6ndAWgIHsZARgI4AAxfIxds+LnHLj1x9o-EruPGwCK+O+5Aikrpl53jjEcnedBaQTFBRzvP5K0guOx6vw9Q8aeJwzIEyo4KIZQHBEWYx4ammG6CHImO1cF0TVqbwARuxMYnuYeJ-ABUsz49l8ZqKDgugkwFsJp0SWAaMVFZRbBzoPGaMK7MYX0h2TeKfE1ya9FvblIY8N4UIqpwhhjYnEUBl2CkySmZk0YAjbKbADynOgip4ZbEZo03ILY9aL1JhCpxt8Y1QFHsa4gSoCI1OQQchJQltDeBXZhYYhD4G9PmgwgNxvyD0fR4Wx82PXCePAkbXKAa44gc6B6Y46N6KEIZzEwRoDPTggz6ZqhFBshPSCMgN1PHaXUHgFiq0uIEU-vgNH2ZkzWiUhGowmB+m5uUabM5gGESTAbj7rZJtpA1WiB7wSiBLnnN+lOA869ZwRDoibOZngTLFds52YX2FnYjKgfGkcDqli9fUSiX8soHhLHhNjbUrlCmdITgEAQhiTE-6eIT6JDQZ5m43UhZGsQ3hpULILYmFkXUoIFaffBOc9Mnmrxk+5k7OdfLtmrzp5n5jcdAFSgr0m0ZTBwT6iMpFpLiIYfuAPjnRskuSM4dzmCShJnewnHxOhfSpiAIANxxmBQxtNfwCdfR+ztIxFCKg2YnxlC94gBC+JUh6VEJAAimM4XGLeFnnARaIsdRoStyJ4xRYZlk1NttF1E1wVQuMW8kBSTC2xddkcX+mCNH2DxaXN6GhAfF0i3cmh1BiN87bB-CidOX0WckUlpS0UjYsEaFLuAUyypbcO6HytEiDS91FiaCWETHkFxvpeqDiWEqqi6xcKOwWzhugoa1sxIG+w+X5FNY-yzSECtgAEAYpE0PEEiDCE90FguOutrI0MwOCJTI6E2k1EHLAlVi8K35fFQBBorUx0K5YuCXN4irOCkqy0FisLl4roiOgO6j6GQKlgicXo8ZBuADxmCK2WpbsX5aLKZFFVwUc3jCWjXqrfwZ3uVaCWjXQla9cJXYqwXip6r9URq2cmas41BFcBZLDqR4PPmakmVrbQ2BysbA8rw12a9YvGsRKRUU4djQRpmsFWQlWea60tb-B3W-gq11AOtY54kaJ0QAkXDYCEqP6nGvVzrmNqPRI67ghneANEAGyxHBAv6fi85fIsIoRAK+BGMHgpwdRHdVUeY7+VyB2q5qFaVVSHo1SAw0s9TA8-qnUJGoMAEW2G-ZZFhvKRe6BY8J-AtwygfhkO05fdoowaxo0saeNGaliPBjp0mMveMHA2wUNrDvOw8KqAXUaZlzTCTuJHTDGeWMrLiPepqJRANZhoERTTPhGXNVUcx8WjIKYE+hycO4h9PpD9H3CEUDbAWcwjET6IbpjbFcFsGbdLKW3co1u64EbP0pqwvjnRSIqkTGkOzLIjkFbTSUyBpRAoiCDq1+uIwsj3QNgFfr5tGMTiCsSeaNE4RNDeUUahKQsDkSZaR3lzKI6QFIqzYfGBVhBsoARUKj7q6YbpqwSTxl4vdeqQpSklabc3LZrOVcNQEdEhITom0YOxzD91IP3SCsSVRHp3ayrd21LcR2VMOWpQqBTVSdsorLjQJdYwDIRFu9H2nsy9qyUZHuyviJyVBaUvCDbHNWNixIS4h6MA+1WnIn3F7cas9Jjxti1ghLpMdYzE2L2oQVGYPGXvRQBKn3KtVgc2ElroxkKtIwvE4OH1hK7ZqbeU6e0uuxxsrZewWdgKfbLxqBaCOxNEFTgRZ4OSM5wCoC1naojVOcY1YJKVXnvjEe7sgCPHLbtz5iGqCye+QyQY0K4Ru6temqLdsYS01x0tHtrQwKgdXBt0jIpo9R2rjtg6ot-iVSiBjK0f64NVKE7Xe1HRQwmdlB4dj4e7MUakxXDKLY7w5inktjS4BvZlR1g5q3tTCHssVtq06aw8g+Yg3ZoKP5qtjZUigk6yy1WRpOJLdKDWZp0F6y5zHmBVkStVfIIVK6t0hgi7ZGMIVHR0aIKyMMDQ0DHXFFIEcVEI+JDUci9ssQ6itk-SL7heEgZT176LDdafPQ4Ci2gbyzZzrYEVVg1FBWt7tg4A0iwHynTDSp5k+qeGPGFmAUWzgj-LBo0IAGHtuXQwT3hUUDGmXMWxG5pPmGfTuBq484ZgA6n81Q+jweYOnAYhTB5wYwI+0HCRuPjb6uYz-A6MwnH3VlNvF4NByidYkqw3GobCNq0cY7YhLEeSxeEkW-0CC2i1G2ak7MTHEIh-Ed1DYPnSs5s1BMQkyV+mAIOp0KEVhMdDtJ4FsA1S30P9mwQmt2u85Q7yToXtQvXHgDqeyER4hIbtiqWHs-i7c6ELQGdccdStSOEbE4WWxQ4KO0gfd8DJlNWBojKb5gORHuTJjRyRukLl6ne0JG0TsOCj4hzwZWBbkU68OBolQwPZVV77yDlJ4diQ5ht8X-Dxe16ChTbsIIu7XvWScxZtXkmXqEdsh2ZcEvRrMbBF4va6P9bF+0mGVDtoaCuRekPgw+Iy+gFJsxXo3Ua82zqcBGxe06B-v4TN5uhsJ2wQioPARDWudXtr8dqy+1dsvmXdTq4FdKqK5BBuHrwp37x9AP5giSbjN+yxBEOzKWGs5NuyyzdL9In2qQhmiM6takHEaTZSPvanuHZ2OpCWgxs8XtW56IgRtOzbG02dhzgNODUOqBcRV4-XBWMbB52evedIu2GWLgO6Zv68aZEeBEH8NjhEUQKENSITCGPbgvaKY3MnpN2ALqyZuPd4UD9BaJ1ALZicFAvJgsAXguSQMHuMPyxwvctcd71yNLg4hMJDw+0ZXfjPVA5l4SZ7tu7yQh6I9-3r9o8KJsfgge6gKMVGTGpoZf39gP71XH++1w68APKH77qiDjeTO2uW23crKC3IavSJh9uD2TwQ+Ef2exHh994VREkKGUE6FYP1DEyvHXjeH1PPH0d6MP67pZKoI-Baf7sK4Ak9eGiGUBCeG8TeRPmJ53e7ZFqL8PvNuTI8iErcNvIB4x4r6N9q+uORkGx+lykfioFZowJjML1vITYi1JTzohn7j8hnSHlc2XSalBQ1g6-HJ73VkSpLGMk9-wQu8CHBDGbvWkmEBXE9d8ceScXvVmXdKDd5Y+lXKZq4kDoWjh7nzd-JC9DtR0es6B-gC6rRsxjYCUpg2FUsnxzCXIbp1w4hD5pZdNljnbWJp-FehFqB4VFNV6hejXqokwvoKLcfg1MPtufBkkohmWMpj2S8aoD14Zp2Tp2Cwup6qDkKdPP4AU2xCvmhy2NfBDEObxIAlc0Tq3S3p1zR+Nim4Nk0nRZoXjRhgGH3+PVjs-3C+fPX7GkcwCl2pgHsTwJ6XSB3j0V6kmwFYt-tGglETWrRzojd1F627ZjS8byL71+OVeo9wwTByQvO61fPfeR1Y4UXWJe+5eaSFTMx1BkVDqhrAqRgskox+7vIQwlkyuc9S+fbRAPJcAKcZFeRbn67aulJHsuTo0-d5isrqQnIfElTPgHL55NBAtZ1rKmZcAoCLzODZd8yPP2OXvP5+EvDEPTWCTK93UyNPIhmnbfcn61SJ7tOpXFgfa1f0TefVc3Zod62lEjHJ5vhR1re5bctNQauoyaj3KAbzlMgZZJ-R9N+2-FffPoN0VyUnJzhfp3rW8Qo7bzAVIMOtWN2PGR9gYSaPzL2b-98W-95swrDGrJkl2+nX3Q+BGtk8tIgLcfcO7OtprjSYiZuPqH1uEHR-p-aMz6mVjMMXeoksvvZRJ9mDuhlOpgfuxQLOQkKOkXPEeEljZs8yCql7pHfPxPvBANK-vXz9KrOBEayB-ZQB5tHn6jekXjfkBV7-Wg4Ilt5Fbe2dtICQKOO4vYz7PHE3zsQbkEeZLLZmd+z-lfo1l6cCyzfXIg05lIssluEsNF47FgY12kE78OpR6Xm9IZIVCboFHE9RkREQI1hUAdLcIULZt4AU2p99-Z2TjlpwenxXw0Qe+X3wioIMXPJ22EXF6QdwQAIels-VPztdyCPv1UkFHCGm5ZgofYQPggxbqAY44mNK3x5+dDL3LkyAweQD9xhBf36lQ2DlzMB1ION0E0PldiEMplmXrDc1VXAeRJkNpUEWt9HZDmRz88fBUAbVTKC2XcZhKAVQpxUoJjlcFrAF-DkCqJauUJda5ZSXV9TvWVFFBTyJp1DwEICeCHp3MFSDTsrZFANp9U3OyVHlyAe31thmpNzTwdc5X+ns9z6KRGyB0vH3wMYVA8gK8DZhQ+SQZIfaO3UDNSKRnAx3mbxX9E9wJQC75HEFWi-l0MVBT-kEbEIKDRYUXOF-Re9eOg1E7EfYRcgsjR60qsvOVhViNRAN41DAdiCOm-s6YEph6x7MASHvt8rJoJesFrMHz-BYjbcl7hMeX0B2h0EDEGwl6SD0F4E46P5RFQAVOlRaAJgppV-QusBNQgMBQZxhfhPVSileghrWw2d1+1DAARsQiWjVUgw+C2RLxUZbIAjo8HCUC+McjDdWuD5qQbn3VBtG6RQIO4eV3fcyNWaSj1INa4Kql7dfqzmBCKFDSZQUWahQAk9-c4J+MlNP4GuCkXV+XpdpGYhUHNQbLUyS18QSDwYR3guwzC15oRNGuCV8IBh70NAbKG-tUlH5x+4lUSihUMpNNrTVwboL4KRNQOONxlAqYbTy2wAYPBxB4FbUIzm0IQ5CB-UtgfMW7ZBTFLTcVWZS2DeV+5dkLy18YBGyuRkbMi3hN5gvpBFA+TDmzdZvfSnTsMJdbB0XtBQSdwSwGgXAQPcfIB9yKdsPXZHzxGjbWAN1rgvyHIxPsMTWWMrdWwAVVOhYwCRYTQ74w5DK9OPUBQE9KkMYM-aFnzeExQIXj3RLKAkEtgURLtzGM7DMfSORggQBWahkg7HUk5y0XIWm99gowDeFnBatVapkWeAy-1fYSgAxD9A3bF7Acg+mR0ojYfOH3oQoSukd1yDdOC44MQ4kyMNGZNIBS45DSJFh9pGHfDFC1QljRcNrgtQHdBGUP2n9IYdQfC1ID0OiGjxSQ53VyMkgm7RmAhKG+EUBG1OoGHQY-bcnSguSTy0MtZwmoRmMFwqUPWhTVREFAga1ZqXAhtkQqH-4RXFEI5C-jcE0BNNQsCE0sXLeYIGhsg3yFLJlENEz4AcTNoEHCCoXd3RhrgD6FlAhkValbBT2ZCLo9cIKU3wAMQzZFO4lAZkNUAqcWoFMoYQR-mSwzg89iPN1OYM3zMEIy0MOCaZegmVRtoDbEJoXGFSAZINRNmXdMGzKcwXpmItQOx16gBTEKhaGGEBgs2EJHDj81zVeHZ1cIiQHoisSa8z-MoAKkK4gsbexkscNsLULfgSI+IQjojLNC2YseqUJGAi3-AS1RsQMNeANDy0PGRgiJLBi36ZpLXMFktrI7UK0tnjYoGsBfyYuigjTAFyO8sRrXy2WsaraK3mNUUNGHvhLEKqjmAGYJ6DDAcgn9TOUF1MK2XdXrIUUij0QxeyIl9WHczG1OuGtURtmCCUEC9B6VnVcBXAIAA */
   id: 'Modeling',
 
   context: ({ input }) => ({
-    ...modelingMachineDefaultContext,
+    ...modelingMachineInitialInternalContext,
     ...input,
+    store: {
+      ...modelingMachineInitialInternalContext.store,
+      ...input.store,
+    },
   }),
 
   states: {
@@ -3151,68 +3923,132 @@ export const modelingMachine = setup({
       on: {
         'Enter sketch': [
           {
+            target: 'animating to existing sketch solve',
+            actions: [
+              ({ context }) => {
+                context.sceneInfra.animate()
+              },
+            ],
+            guard: 'Selection is sketchBlock',
+          },
+          {
             target: 'animating to existing sketch',
+            actions: [
+              ({ context }) => {
+                context.sceneInfra.animate()
+              },
+            ],
             guard: 'Selection is on face',
           },
           {
             target: 'Sketch no face',
-            guard: 'no kcl errors',
+            actions: [
+              ({ context }) => {
+                context.sceneInfra.animate()
+              },
+            ],
           },
         ],
 
+        // Modeling codemods
+
         Extrude: {
           target: 'Applying extrude',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Sweep: {
           target: 'Applying sweep',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Loft: {
           target: 'Applying loft',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Revolve: {
           target: 'Applying revolve',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         'Offset plane': {
           target: 'Applying offset plane',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Helix: {
           target: 'Applying helix',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Shell: {
           target: 'Applying shell',
-          reenter: true,
-          guard: 'no kcl errors',
+        },
+
+        Hole: {
+          target: 'Applying hole',
         },
 
         Fillet: {
           target: 'Applying fillet',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Chamfer: {
           target: 'Applying chamfer',
-          reenter: true,
-          guard: 'no kcl errors',
         },
+
+        Appearance: {
+          target: 'Applying appearance',
+        },
+
+        Translate: {
+          target: 'Applying translate',
+        },
+
+        Rotate: {
+          target: 'Applying rotate',
+        },
+
+        Scale: {
+          target: 'Applying scale',
+        },
+
+        Clone: {
+          target: 'Applying clone',
+        },
+
+        'GDT Flatness': {
+          target: 'Applying GDT Flatness',
+        },
+
+        'GDT Datum': {
+          target: 'Applying GDT Datum',
+        },
+
+        'Boolean Subtract': {
+          target: 'Boolean subtracting',
+        },
+
+        'Boolean Union': {
+          target: 'Boolean uniting',
+        },
+
+        'Boolean Intersect': {
+          target: 'Boolean intersecting',
+        },
+
+        'Boolean Split': {
+          target: 'Boolean splitting',
+        },
+
+        'Pattern Circular 3D': {
+          target: 'Pattern Circular 3D',
+        },
+
+        'Pattern Linear 3D': {
+          target: 'Pattern Linear 3D',
+        },
+
+        'Flip Surface': {
+          target: 'Applying Flip Surface',
+        },
+
+        // Modeling actions
 
         Export: {
           target: 'Exporting',
@@ -3230,60 +4066,7 @@ export const modelingMachine = setup({
           reenter: true,
         },
 
-        'Text-to-CAD': {
-          target: 'idle',
-          reenter: false,
-          actions: ['Submit to Text-to-CAD API'],
-        },
-
         'Prompt-to-edit': 'Applying Prompt-to-edit',
-
-        Appearance: {
-          target: 'Applying appearance',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Translate: {
-          target: 'Applying translate',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Rotate: {
-          target: 'Applying rotate',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Scale: {
-          target: 'Applying scale',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Clone: {
-          target: 'Applying clone',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        'Boolean Subtract': {
-          target: 'Boolean subtracting',
-          guard: 'no kcl errors',
-        },
-        'Boolean Union': {
-          target: 'Boolean uniting',
-          guard: 'no kcl errors',
-        },
-        'Boolean Intersect': {
-          target: 'Boolean intersecting',
-          guard: 'no kcl errors',
-        },
-        'Pattern Circular 3D': {
-          target: 'Pattern Circular 3D',
-          guard: 'no kcl errors',
-        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -3291,9 +4074,8 @@ export const modelingMachine = setup({
       states: {
         hidePlanes: {
           on: {
-            'Artifact graph populated': {
+            'Artifact graph emptied': {
               target: 'showPlanes',
-              guard: 'no kcl errors',
             },
           },
 
@@ -3302,7 +4084,7 @@ export const modelingMachine = setup({
 
         showPlanes: {
           on: {
-            'Artifact graph emptied': 'hidePlanes',
+            'Artifact graph populated': 'hidePlanes',
           },
 
           entry: ['show default planes'],
@@ -3411,9 +4193,20 @@ export const modelingMachine = setup({
               invoke: {
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments3',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
                 onDone: [
                   {
@@ -3427,6 +4220,7 @@ export const modelingMachine = setup({
                 ],
                 onError: {
                   target: '#Modeling.idle',
+                  actions: [(event) => console.log(event)],
                   reenter: true,
                 },
               },
@@ -3446,9 +4240,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get horizontal info',
             id: 'get-horizontal-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3462,9 +4259,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get vertical info',
             id: 'get-vertical-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3478,9 +4278,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get ABS X info',
             id: 'get-abs-x-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3494,9 +4297,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get ABS Y info',
             id: 'get-abs-y-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3510,9 +4316,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get angle info',
             id: 'get-angle-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3526,12 +4335,16 @@ export const modelingMachine = setup({
           invoke: {
             src: 'astConstrainLength',
             id: 'AST-constrain-length',
-            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+              event,
+            }) => {
               const data =
                 event.type === 'Constrain length' ? event.data : undefined
               return {
                 selectionRanges,
                 sketchDetails,
+                kclManager,
                 lengthValue: data?.length,
               }
             },
@@ -3547,9 +4360,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get perpendicular distance info',
             id: 'get-perpendicular-distance-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3591,9 +4407,22 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments7',
                 onDone: 'Init',
                 onError: 'Init',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -3655,9 +4484,22 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments6',
                 onDone: 'Init',
                 onError: 'Init',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -3719,9 +4561,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -3787,9 +4642,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments2',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -3832,8 +4700,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'reeval-node-paths',
             id: 'reeval-node-paths',
-            input: ({ context: { sketchDetails } }) => ({
+            input: ({
+              context: { sketchDetails, kclManager, wasmInstance },
+            }) => ({
               sketchDetails,
+              kclManager,
+              wasmInstance,
             }),
 
             onDone: {
@@ -3852,18 +4724,24 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Apply named value constraint',
             id: 'astConstrainNamedValue',
-            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
-              if (event.type !== 'Constrain with named value') {
-                return {
-                  selectionRanges,
-                  sketchDetails,
-                  data: undefined,
-                }
-              }
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                wasmInstance,
+                kclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
+              },
+              event,
+            }) => {
+              assertEvent(event, 'Constrain with named value')
               return {
                 selectionRanges,
                 sketchDetails,
                 data: event.data,
+                wasmInstance,
+                kclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
               }
             },
             onError: 'SketchIdle',
@@ -3878,7 +4756,16 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-remove-constraint',
             id: 'do-constrain-remove-constraint',
-            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                sceneEntitiesManager: providedSceneEntitiesManager,
+                wasmInstance,
+                kclManager: providedKclManager,
+              },
+              event,
+            }) => {
               return {
                 selectionRanges,
                 sketchDetails,
@@ -3886,6 +4773,9 @@ export const modelingMachine = setup({
                   event.type === 'Constrain remove constraints'
                     ? event.data
                     : undefined,
+                sceneEntitiesManager: providedSceneEntitiesManager,
+                wasmInstance,
+                kclManager: providedKclManager,
               }
             },
             onDone: {
@@ -3899,9 +4789,20 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-horizontally',
             id: 'do-constrain-horizontally',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                kclManager: providedKclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
+                wasmInstance,
+              },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager: providedKclManager,
+              sceneEntitiesManager: providedSceneEntitiesManager,
+              wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3914,9 +4815,20 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-vertically',
             id: 'do-constrain-vertically',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                kclManager: providedKclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
+                wasmInstance,
+              },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager: providedKclManager,
+              sceneEntitiesManager: providedSceneEntitiesManager,
+              wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3932,6 +4844,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3947,6 +4862,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3962,6 +4880,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3977,6 +4898,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3992,6 +4916,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4007,6 +4934,9 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
+              kclManager: context.kclManager,
+              wasmInstance: context.wasmInstance,
+              sceneEntitiesManager: context.sceneEntitiesManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4093,9 +5023,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments4',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4150,9 +5093,22 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments',
                 onDone: '#Modeling.Sketch.Change Tool ifs',
                 onError: '#Modeling.Sketch.SketchIdle',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4218,9 +5174,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments5',
                 onDone: 'Awaiting first point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4289,9 +5258,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments8',
                 onDone: 'Awaiting start point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4376,9 +5358,22 @@ export const modelingMachine = setup({
                   target: 'Awaiting for circle center',
                   reenter: true,
                 },
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4388,9 +5383,22 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments10',
                 onDone: 'Awaiting start point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
+                    wasmInstance,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4410,10 +5418,9 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-
-        'Delete segment': {
+        'Delete segments': {
           reenter: false,
-          actions: ['Delete segment', 'reset selections'],
+          actions: ['Delete segments', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {
@@ -4430,7 +5437,7 @@ export const modelingMachine = setup({
     'Sketch no face': {
       entry: [
         'disable copilot',
-        'show default planes',
+        'show planes sketch no face',
         'set selection filter to faces only',
         'enter sketching mode',
       ],
@@ -4473,7 +5480,10 @@ export const modelingMachine = setup({
 
         input: ({ context }) => ({
           selectionRanges: context.selectionRanges,
-          sketchDetails: context.sketchDetails,
+          kclManager: context.kclManager,
+          engineCommandManager: context.engineCommandManager,
+          sceneEntitiesManager: context.sceneEntitiesManager,
+          sceneInfra: context.sceneInfra,
         }),
 
         onDone: {
@@ -4490,17 +5500,104 @@ export const modelingMachine = setup({
     },
 
     sketchSolveMode: {
-      invoke: {
-        src: sketchSolveMachine,
-        input: ({ context }) => ({
-          parentContext: context,
-          initialSketchDetails: context.sketchDetails,
-        }),
-        onDone: {
-          target: 'idle',
+      id: 'sketchSolveMode',
+      entry: ['clientToEngine cam sync direction'],
+      initial: 'active',
+      states: {
+        active: {
+          invoke: {
+            id: 'sketchSolveMachine',
+            src: 'sketchSolveMachine',
+            input: ({ context }) => ({
+              initialSketchSolvePlane: context.sketchSolveInit,
+              sketchId: context.sketchSolveId || 0,
+              initialSceneGraphDelta: context.initialSceneGraphDelta,
+              // Use context values if available, otherwise fall back to singletons
+              sceneInfra: context.sceneInfra,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+              rustContext: context.rustContext,
+              kclManager: context.kclManager,
+            }),
+            onDone: {
+              target: '#sketchSolveMode.exiting',
+            },
+            onError: {
+              target: '#sketchSolveMode.exiting',
+            },
+          },
         },
-        onError: {
-          target: 'idle',
+        exiting: {
+          invoke: {
+            id: 'sketchExit',
+            src: 'sketchExit',
+            input: ({ context }) => {
+              console.log('sketchExit actor input prepared')
+              return { context }
+            },
+            onDone: {
+              target: '#Modeling.idle',
+              actions: ['reset sketch metadata'],
+            },
+            onError: {
+              target: '#Modeling.idle',
+              actions: ['reset sketch metadata'],
+            },
+          },
+        },
+      },
+      on: {
+        Cancel: {
+          actions: [sendTo('sketchSolveMachine', { type: 'escape' })],
+          // Forward escape to sketch solve machine for hierarchical handling:
+          // - If tool equipped in ShowDraftLine: delete draft, return to ready
+          // - If tool equipped in ready: unequip tool
+          // - If no tool equipped (move and select): exit sketch mode
+        },
+        'Exit sketch': {
+          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
+          // Exit sketch immediately, bypassing tool unequip logic
+        },
+        'equip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'unequip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        coincident: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Parallel: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Perpendicular: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        LinesEqualLength: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Vertical: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Horizontal: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Dimension: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        HorizontalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        VerticalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        construction: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'delete selected': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'update sketch outcome': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
       description: `Actor defined in separate file`,
@@ -4510,9 +5607,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'extrudeAstMod',
         id: 'extrudeAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Extrude') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4526,9 +5627,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'sweepAstMod',
         id: 'sweepAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Sweep') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4542,9 +5647,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'loftAstMod',
         id: 'loftAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Loft') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4558,9 +5667,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'revolveAstMod',
         id: 'revolveAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Revolve') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4574,9 +5687,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'offsetPlaneAstMod',
         id: 'offsetPlaneAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Offset plane') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4590,9 +5707,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'helixAstMod',
         id: 'helixAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Helix') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4606,9 +5727,33 @@ export const modelingMachine = setup({
       invoke: {
         src: 'shellAstMod',
         id: 'shellAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Shell') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying hole': {
+      invoke: {
+        src: 'holeAstMod',
+        id: 'holeAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Hole') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4622,9 +5767,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'filletAstMod',
         id: 'filletAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Fillet') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4638,9 +5789,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'chamferAstMod',
         id: 'chamferAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Chamfer') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            engineCommandManager: context.engineCommandManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4675,8 +5832,15 @@ export const modelingMachine = setup({
         src: 'deleteSelectionAstMod',
         id: 'deleteSelectionAstMod',
 
-        input: ({ event, context }) => {
-          return { selectionRanges: context.selectionRanges }
+        input: ({ context }) => {
+          return {
+            selectionRanges: context.selectionRanges,
+            systemDeps: {
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+            },
+          }
         },
 
         onDone: 'idle',
@@ -4696,9 +5860,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'appearanceAstMod',
         id: 'appearanceAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Appearance') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4712,9 +5880,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'translateAstMod',
         id: 'translateAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Translate') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4728,9 +5900,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'rotateAstMod',
         id: 'rotateAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Rotate') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4744,9 +5920,13 @@ export const modelingMachine = setup({
       invoke: {
         src: 'scaleAstMod',
         id: 'scaleAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Scale') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4760,9 +5940,75 @@ export const modelingMachine = setup({
       invoke: {
         src: 'cloneAstMod',
         id: 'cloneAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Clone') return undefined
-          return event.data
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Flatness': {
+      invoke: {
+        src: 'gdtFlatnessAstMod',
+        id: 'gdtFlatnessAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Flatness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Datum': {
+      invoke: {
+        src: 'gdtDatumAstMod',
+        id: 'gdtDatumAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Datum') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Flip Surface': {
+      invoke: {
+        src: 'flipSurfaceAstMod',
+        id: 'flipSurfaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Flip Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4805,8 +6051,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolSubtractAstMod',
         id: 'boolSubtractAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Subtract' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Subtract') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -4819,8 +6072,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolUnionAstMod',
         id: 'boolUnionAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Union' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Union') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -4833,8 +6093,36 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolIntersectAstMod',
         id: 'boolIntersectAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Intersect' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Intersect') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Boolean splitting': {
+      invoke: {
+        src: 'boolSplitAstMod',
+        id: 'boolSplitAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Split') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -4847,8 +6135,34 @@ export const modelingMachine = setup({
       invoke: {
         src: 'patternCircular3dAstMod',
         id: 'patternCircular3dAstMod',
-        input: ({ event }) =>
-          event.type !== 'Pattern Circular 3D' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Pattern Circular 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Pattern Linear 3D': {
+      invoke: {
+        src: 'patternLinear3dAstMod',
+        id: 'patternLinear3dAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Pattern Linear 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -4860,12 +6174,54 @@ export const modelingMachine = setup({
     'animating to sketch solve mode': {
       invoke: {
         src: 'animate-to-sketch-solve',
-        onDone: 'sketchSolveMode',
+        onDone: {
+          target: 'sketchSolveMode',
+          actions: assign(({ event }) => {
+            // TODO remove any
+            const output = (event as any).output
+            return {
+              // Pipe the plane/face data from the actor into context
+              sketchSolveInit: output?.plane ?? null,
+              sketchSolveId: output?.sketchSolveId ?? undefined,
+            }
+          }),
+        },
         onError: 'Sketch no face',
         input: ({ event }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
           return event.data
         },
+      },
+    },
+
+    'animating to existing sketch solve': {
+      invoke: {
+        src: 'animate-to-existing-sketch-solve',
+        input: ({ event, context }) => {
+          if (event.type === 'Enter sketch') {
+            // Get artifact ID from selection
+            const artifact =
+              context.selectionRanges.graphSelections[0]?.artifact
+            if (artifact?.type === 'sketchBlock' && artifact.id) {
+              return artifact.id
+            }
+          }
+          return undefined
+        },
+        onDone: {
+          target: 'sketchSolveMode',
+          actions: assign(({ event }) => {
+            // TODO remove any
+            const output = (event as any).output
+            return {
+              // Pipe the plane/face data from the actor into context
+              sketchSolveInit: output?.plane ?? null,
+              sketchSolveId: output?.sketchSolveId || 0,
+              initialSceneGraphDelta: output?.initialSceneGraphDelta,
+            }
+          }),
+        },
+        onError: 'idle',
       },
     },
   },
@@ -4881,6 +6237,9 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         'enter modeling mode',
+        ({ context }) => {
+          context.sceneInfra.stop()
+        },
       ],
     },
 
@@ -4893,14 +6252,12 @@ export const modelingMachine = setup({
       reenter: false,
       actions: 'Set mouse state',
     },
-    'Set context': {
-      reenter: false,
-      actions: 'Set context',
-    },
+
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
     },
+
     'Update sketch details': {
       reenter: false,
       actions: 'Set sketchDetails',
@@ -4909,16 +6266,30 @@ export const modelingMachine = setup({
       reenter: false,
       actions: 'Center camera on selection',
     },
+
     'Toggle default plane visibility': {
       reenter: false,
       actions: 'Toggle default plane visibility',
+    },
+
+    'sketch solve tool changed': {
+      reenter: false,
+      actions: assign(({ event }) => {
+        console.log('sketch solve tool changed', event)
+        if (event.type !== 'sketch solve tool changed') return {}
+        return {
+          sketchSolveToolName: event.data.tool,
+        }
+      }),
     },
   },
 })
 
 function listenForOriginMove(
   args: OnMoveCallbackArgs,
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails,
+  sceneEntitiesManager: SceneEntities,
+  wasmInstance: ModuleType
 ) {
   if (!args) return
   const { intersectionPoint } = args
@@ -4926,7 +6297,8 @@ function listenForOriginMove(
   const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
     intersectionPoint.twoD,
     args.intersects,
-    args.mouseEvent
+    args.mouseEvent,
+    wasmInstance
   )
   if (isSnapped) {
     sceneEntitiesManager.positionDraftPoint({
@@ -4942,8 +6314,12 @@ function listenForOriginMove(
 
 export function isEditingExistingSketch({
   sketchDetails,
+  kclManager,
+  wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }): boolean {
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfile" callExpression
@@ -4951,6 +6327,7 @@ export function isEditingExistingSketch({
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchEntryNodePath,
+    wasmInstance,
     'VariableDeclarator',
     false,
     true // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
@@ -4987,13 +6364,18 @@ export function isEditingExistingSketch({
 
 export function pipeHasCircle({
   sketchDetails,
+  kclManager,
+  wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }): boolean {
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchEntryNodePath,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false

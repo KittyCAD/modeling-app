@@ -156,7 +156,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -318,7 +319,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -395,19 +397,5 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "tolerance": 0.0000001
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

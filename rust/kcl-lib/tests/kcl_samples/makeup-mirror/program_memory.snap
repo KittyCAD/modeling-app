@@ -89,6 +89,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -96,7 +98,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -188,6 +189,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -195,7 +198,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -318,6 +320,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -325,7 +329,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -417,6 +420,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -424,7 +429,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -516,6 +520,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -523,7 +529,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -615,6 +620,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -622,7 +629,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -714,6 +720,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -721,7 +729,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -813,6 +820,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -820,7 +829,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -912,6 +920,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -919,7 +929,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1020,6 +1029,8 @@ description: Variables in memory after executing makeup-mirror.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": -165.0,
@@ -1027,7 +1038,6 @@ description: Variables in memory after executing makeup-mirror.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

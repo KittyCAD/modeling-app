@@ -12,6 +12,8 @@ use walkdir::WalkDir;
 
 use super::Test;
 
+const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
+
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
     static ref INPUTS_DIR: PathBuf = Path::new("../../public/kcl-samples").to_path_buf();
@@ -146,7 +148,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     }
     Test {
         name: test_name.to_owned(),
-        entry_point: entry_point.clone(),
+        entry_point,
         input_dir: parent.to_path_buf(),
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.
@@ -234,6 +236,8 @@ const COMMENT_PREFIX: &str = "//";
 #[serde(rename_all = "camelCase")]
 struct KclMetadata {
     file: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    categories: Vec<String>,
     path_from_project_directory_to_first_file: String,
     multiple_files: bool,
     title: String,
@@ -264,9 +268,19 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         return None;
     }
 
-    // Extract title and description from the first two lines
+    // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
+    let categories = if let Some(third_line) = lines.get(2)
+        && let Some(categories_line) = third_line
+            .trim_start_matches(COMMENT_PREFIX)
+            .trim()
+            .strip_prefix("Categories: ")
+    {
+        categories_line.split(',').map(|s| s.trim().to_string()).collect()
+    } else {
+        Vec::new()
+    };
 
     // Get the relative path from the project directory to the primary KCL file
     let path_from_project_dir = full_path_to_primary_kcl
@@ -285,6 +299,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         title,
         description,
         files,
+        categories,
     })
 }
 
@@ -312,7 +327,8 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
-                        ext == "kcl"
+                        let ext = ext.to_str().unwrap().to_lowercase();
+                        ALLOWED_FILETYPES.contains(&ext.as_str())
                     } else {
                         false
                     }

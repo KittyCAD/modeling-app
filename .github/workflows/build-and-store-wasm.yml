@@ -1,4 +1,4 @@
-name: Build and Store WASM
+name: Build and Store Wasm
 
 on:
   push:
@@ -9,11 +9,11 @@ jobs:
   build-and-upload:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - name: Install dependencies
         run: npm install
       - name: Use correct Rust toolchain
@@ -24,7 +24,8 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+          rustflags: '' # Use .cargo/config.toml
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
           tool: wasm-pack
       - name: Rust Cache
@@ -35,8 +36,8 @@ jobs:
         run: npm run build:wasm
 
 
-      # Upload the WASM bundle as an artifact
-      - uses: actions/upload-artifact@v4
+      # Upload the Wasm bundle as an artifact
+      - uses: actions/upload-artifact@v6
         with:
           name: wasm-bundle
           path: rust/kcl-wasm-lib/pkg

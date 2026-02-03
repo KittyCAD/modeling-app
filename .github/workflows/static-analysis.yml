@@ -19,27 +19,29 @@ jobs:
   npm-fmt-check:
     runs-on: 'ubuntu-22.04'
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
       - run: npm run fmt:check
 
-  npm-build-wasm:
+  build-wasm:
     uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-tsc:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts
@@ -62,14 +64,14 @@ jobs:
 
   npm-lint:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts
@@ -92,14 +94,14 @@ jobs:
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
+    needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install
 
       - name: Download all artifacts
@@ -120,40 +122,10 @@ jobs:
 
       - run: npm run circular-deps:diff
 
-  npm-url-checker:
-    runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
-
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - run: npm install
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Copy prepared wasm
-        run: |
-          ls -R prepared-wasm
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
-          mkdir rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
-
-      - name: Copy prepared ts-rs bindings
-        run: |
-          ls -R prepared-ts-rs-bindings
-          mkdir rust/kcl-lib/bindings
-          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
-
-      - run: npm run url-checker:diff
-
   python-codespell:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Run codespell
-        uses: crate-ci/typos@v1.34.0
+        uses: crate-ci/typos@v1.42.0

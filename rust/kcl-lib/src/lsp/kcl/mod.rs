@@ -42,7 +42,7 @@ use tower_lsp::{
 
 use crate::{
     ModuleId, Program, SourceRange,
-    docs::kcl_doc::ModData,
+    docs::kcl_doc::{ArgData, ModData},
     exec::KclValue,
     execution::cache,
     lsp::{
@@ -53,7 +53,7 @@ use crate::{
     },
     parsing::{
         PIPE_OPERATOR,
-        ast::types::{Expr, VariableKind},
+        ast::types::{Expr, Node, VariableKind},
         token::TokenStream,
     },
 };
@@ -109,7 +109,7 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
-    pub stdlib_args: HashMap<String, HashMap<String, String>>,
+    pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -204,6 +204,75 @@ impl Backend {
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
+    }
+
+    fn try_arg_completions(
+        &self,
+        ast: &Node<crate::parsing::ast::types::Program>,
+        position: usize,
+        current_code: &str,
+    ) -> Option<impl Iterator<Item = CompletionItem>> {
+        let curr_expr = ast.get_expr_for_position(position)?;
+        let hover =
+            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
+
+        // Now we can tell if the user's cursor is inside a callable function.
+        // If so, get its name (the function name being called.)
+        let maybe_callee = match hover {
+            Hover::Function { name, range: _ } => Some(name),
+            Hover::Signature {
+                name,
+                parameter_index: _,
+                range: _,
+            } => Some(name),
+            Hover::Comment { .. } => None,
+            Hover::Variable { .. } => None,
+            Hover::KwArg {
+                callee_name,
+                name: _,
+                range: _,
+            } => Some(callee_name),
+            Hover::Type { .. } => None,
+        };
+        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+
+        let arg_label_completions = callee_args
+            .iter()
+            // Don't suggest labels for unlabelled args!
+            .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
+            .map(|(arg_name, arg_data)| CompletionItem {
+                label: arg_name.to_owned(),
+                label_details: None,
+                kind: Some(CompletionItemKind::PROPERTY),
+                detail: arg_data.props.ty.clone(),
+                documentation: arg_data.props.docs.clone().map(|docs| {
+                    Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: docs,
+                    })
+                }),
+                deprecated: None,
+                preselect: None,
+                sort_text: Some(arg_name.to_owned()),
+                filter_text: Some(arg_name.to_owned()),
+                insert_text: {
+                    // let snippet = "${0:x}";
+                    if let Some(snippet) = arg_data.props.get_autocomplete_snippet(0).map(|(_i, snippet)| snippet) {
+                        Some(snippet)
+                    } else {
+                        Some(format!("{arg_name} = "))
+                    }
+                },
+                insert_text_format: Some(InsertTextFormat::SNIPPET),
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            });
+        Some(arg_label_completions)
     }
 }
 
@@ -369,7 +438,10 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            let discovered_findings = ast.lint_all().into_iter().flatten().collect::<Vec<_>>();
+            let mut discovered_findings: Vec<_> = ast.lint_all().into_iter().flatten().collect();
+            // Filter out Z0005 (old sketch syntax) from LSP diagnostics
+            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            discovered_findings.retain(|finding| finding.finding.code != "Z0005");
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 
@@ -695,7 +767,16 @@ impl Backend {
             return Ok(());
         }
 
-        match executor_ctx.run_with_caching(ast.clone()).await {
+        // Use run_mock for mock contexts, run_with_caching for live contexts
+        let result = if executor_ctx.is_mock() {
+            executor_ctx
+                .run_mock(ast, &crate::execution::MockConfig::default())
+                .await
+        } else {
+            executor_ctx.run_with_caching(ast.clone()).await
+        };
+
+        match result {
             Err(err) => {
                 self.add_to_diagnostics(params, &[err], false).await;
 
@@ -1135,14 +1216,14 @@ impl LanguageServer for Backend {
                     return Ok(None);
                 };
 
-                let Some(tip) = arg_map.get(&name) else {
+                let Some(arg_entry) = arg_map.get(&name) else {
                     return Ok(None);
                 };
 
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: tip.clone(),
+                        value: arg_entry.tip.clone(),
                     }),
                     range: Some(range),
                 }))
@@ -1255,20 +1336,17 @@ impl LanguageServer for Backend {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
-        let Some(current_code) = self
-            .code_map
-            .get(params.text_document_position.text_document.uri.as_ref())
-        else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-
         let position = position_to_char_index(params.text_document_position.position, current_code);
         if ast.ast.in_comment(position) {
             // If we are in a code comment we don't want to show completions.
             return Ok(None);
+        }
+
+        // If we're inside a CallExpression or something where a function parameter label could be completed,
+        // then complete it.
+        // Let's find the AST node that the user's cursor is in.
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+            completions.extend(arg_label_completions);
         }
 
         // Get the completion items for the ast.
@@ -1546,11 +1624,36 @@ impl LanguageServer for Backend {
     }
 
     async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
-        let actions = params
-            .context
-            .diagnostics
+        // Get the actual diagnostics from our map to ensure we have the full diagnostic info
+        let filename = params.text_document.uri.to_string();
+        let stored_diagnostics = self
+            .diagnostics_map
+            .get(&filename)
+            .map(|d| d.clone())
+            .unwrap_or_default();
+
+        // Use stored diagnostics if available, otherwise fall back to params.context.diagnostics
+        let diagnostics_to_check: Vec<_> = if stored_diagnostics.is_empty() {
+            params.context.diagnostics.clone()
+        } else {
+            // Match params.context.diagnostics with stored diagnostics by range
+            params
+                .context
+                .diagnostics
+                .iter()
+                .filter_map(|param_diag| {
+                    stored_diagnostics
+                        .iter()
+                        .find(|stored_diag| stored_diag.range == param_diag.range)
+                        .cloned()
+                })
+                .collect()
+        };
+
+        let actions = diagnostics_to_check
             .into_iter()
             .filter_map(|diagnostic| {
+                // Handle regular suggestions (like camelCase)
                 let (suggestion, range) = diagnostic
                     .data
                     .as_ref()
@@ -1664,15 +1767,21 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
     signatures
 }
 
+#[derive(Clone, Debug)]
+pub struct LspArgData {
+    pub tip: String,
+    pub props: ArgData,
+}
+
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
     let mut result = HashMap::new();
 
     for d in kcl_std.all_docs() {
         let crate::docs::kcl_doc::DocData::Fn(f) = d else {
             continue;
         };
-        let arg_map: HashMap<String, String> = f
+        let arg_map: HashMap<String, _> = f
             .args
             .iter()
             .map(|data| {
@@ -1683,7 +1792,11 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
                     tip.push_str("\n\n");
                     tip.push_str(docs);
                 }
-                (data.name.clone(), tip)
+                let arg_data = LspArgData {
+                    tip,
+                    props: data.clone(),
+                };
+                (data.name.clone(), arg_data)
             })
             .collect();
         if !arg_map.is_empty() {
@@ -1707,12 +1820,13 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    std::cmp::min(char_position, code.len() - 1)
+    let end_of_file = if code.is_empty() { 0 } else { code.len() - 1 };
+    std::cmp::min(char_position, end_of_file)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let mem = cache::read_old_memory().await?;
-    let value = mem.0.get(name, SourceRange::default()).ok()?;
+    let value = mem.stack.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
 }
@@ -1759,5 +1873,13 @@ return 42"#;
         let position = Position::new(1, 8);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 19);
+    }
+
+    #[test]
+    fn test_position_to_char_empty() {
+        let code = r#""#;
+        let position = Position::new(0, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 0);
     }
 }

@@ -1,6 +1,7 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
-import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
@@ -31,8 +32,6 @@ export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
 export const PROJECT_IMAGE_NAME = `thumbnail.png`
-/** The localStorage key for last-opened projects */
-export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
@@ -47,16 +46,27 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   LOFT: 'loft',
   SWEEP: 'sweep',
   SHELL: 'shell',
+  HOLE: 'hole',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  SPLIT: 'split',
   PATTERN: 'pattern',
+  CHAMFER: 'chamfer',
+  FILLET: 'fillet',
+  SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+
+/** The default KCL tolerance expression */
+export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+
+/** The default KCL precision expression */
+export const KCL_DEFAULT_PRECISION = `3`
 
 /** The default KCL instances expression */
 export const KCL_DEFAULT_INSTANCES = `3`
@@ -64,14 +74,44 @@ export const KCL_DEFAULT_INSTANCES = `3`
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
+/** The default KCL scale arg value that means no scale */
+export const KCL_DEFAULT_SCALE = `1`
+
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
 
 /** The default KCL vector3d origin expression */
 export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
+/** The default KCL vector2d origin expression */
+export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
+
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
+
+/** The sketch mode revamp selection rgb values */
+export const SKETCH_SELECTION_RGB = [255, 183, 39]
+/** The sketch mode revamp selection rgb values as a string */
+export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+
+/**
+ * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).
+ * Used for Three.js color values that expect an integer representation.
+ */
+export function packRgbToColor(rgb: number[]): number {
+  return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2]
+}
+/** The sketch mode revamp selection rgb values as HEX */
+export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+
+/** The default KCL leader scale expression */
+export const KCL_DEFAULT_LEADER_SCALE = `1.0`
+
+/** The default KCL font point size expression */
+export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
+
+/** The default KCL font scale expression */
+export const KCL_DEFAULT_FONT_SCALE = `1.0`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -120,9 +160,6 @@ export const MAKE_TOAST_MESSAGES = {
   SUCCESS: 'Started print successfully',
 }
 
-/** The URL for the KCL samples manifest files */
-export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
-
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
@@ -132,9 +169,6 @@ export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
-/** Toast id for the download app toast on web */
-export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
-
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 
@@ -142,9 +176,6 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
 export const KCL_AXIS_Z = 'Z'
-export const KCL_AXIS_NEG_X = '-X'
-export const KCL_AXIS_NEG_Y = '-Y'
-export const KCL_DEFAULT_AXIS = 'X'
 
 export enum AxisNames {
   X = 'x',
@@ -163,6 +194,12 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Y]: 'Front',
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
+
+/** Plane names in KCL for operations */
+export const KCL_PLANE_XY = 'XY'
+export const KCL_PLANE_XZ = 'XZ'
+export const KCL_PLANE_YZ = 'YZ'
+
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
 
@@ -179,13 +216,14 @@ export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
  * When no annotation is in the KCL file to specify the defaults, we use these
  * default units.
  */
-export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
+export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 
 /**
- * When no annotation is in the KCL file to specify the defaults, we use these
- * default units.
+ * When no annotation is in the KCL file to specify the defaults
  */
-export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
+  type: 'Deny',
+}
 
 /** Real execution. */
 export const EXECUTION_TYPE_REAL = 'real'
@@ -238,8 +276,9 @@ export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
  */
 export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
   token: string // authentication token from signing in. Can be empty string
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
+  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
 }
 
 /**
@@ -248,7 +287,8 @@ export type EnvironmentConfiguration = {
  */
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
+  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -259,19 +299,54 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
 export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for prompt input
+ *  we should never set this search param from the app,
+ *  only read and delete.
+ */
+export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
- * Used by the modeling sidebar to validate persisted pane IDs.
+ * Number of engine connection retries within a cycle before the application stops automatically trying
  */
-export const VALID_PANE_IDS = [
-  'code',
-  'debug',
-  'export',
-  'files',
-  'feature-tree',
-  'logs',
-  'lspMessages',
-  'variables',
-  'text-to-cad',
-  'text-to-cad-2',
-] as const
+export const NUMBER_OF_ENGINE_RETRIES = 5
+
+/**
+ *Global timeout on pending commands, it will be bad if we hit this case.
+ */
+export const PENDING_COMMAND_TIMEOUT = 60_000
+
+/** Timeout in MS to save layout */
+export const LAYOUT_SAVE_THROTTLE = 500
+
+// Copilot input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
+
+// Default backface color
+export const DEFAULT_BACKFACE_COLOR = {
+  a: 1.0,
+  b: 0.05,
+  g: 0.05,
+  r: 0.95,
+}
+
+/**
+ * KCL constants defined in rust/kcl-lib/std/prelude.kcl
+ * TODO: figure if how we could keep this in sync automatically
+ */
+export type KclPreludeBodyType = 'SURFACE' | 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType = 'SURFACE'
+export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType = 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_VALUES: KclPreludeBodyType[] = [
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+]
+
+export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
+export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+]
+
+export const ARCHIVE_DIR = 'archive'

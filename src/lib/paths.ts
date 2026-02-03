@@ -1,6 +1,6 @@
 import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import type { IElectronAPI } from '@root/interface'
 import { fsManager } from '@src/lang/std/fileSystemManager'
@@ -11,6 +11,7 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SETTINGS = '/settings'
 
@@ -37,9 +38,13 @@ export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
-    electron: IElectronAPI
+    electron: IElectronAPI,
+    wasmInstance: ModuleType
   ) => Promise<DeepPartial<Configuration>>,
-  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
+  readLocalStorageAppSettingsFile: (
+    wasmInstance: ModuleType
+  ) => DeepPartial<Configuration> | Error,
+  wasmInstance: ModuleType,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
@@ -49,8 +54,8 @@ export async function getProjectMetaByRouteId(
 
   if (configuration === undefined || isPlaywright) {
     configuration = window.electron
-      ? await readAppSettingsFile(window.electron)
-      : readLocalStorageAppSettingsFile()
+      ? await readAppSettingsFile(window.electron, wasmInstance)
+      : readLocalStorageAppSettingsFile(wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -278,4 +283,71 @@ export const getParentAbsolutePath = (absolutePath: string) => {
   split.pop()
   const joined = desktopSafePathJoin(split)
   return joined
+}
+
+/**
+ * Helper function to detect if an extension is an import extension
+ */
+export const isExtensionAnImportExtension = (
+  extension: string,
+  importExtensions: string[]
+) => {
+  return importExtensions.includes(extension.toLowerCase())
+}
+
+export const isExtensionARelevantExtension = (
+  extension: string,
+  relevantExtensions: string[]
+) => {
+  return relevantExtensions.includes(extension.toLowerCase())
+}
+
+/**
+ * Given an absolute file path, remove everything
+ * up to and including the project name to get
+ * the path to the file relative to the project root.
+ */
+export function getFilePathRelativeToProject(
+  absoluteFilePath: string,
+  projectName: string,
+  sep = window.electron?.sep
+) {
+  // Gotcha: below we're gonna look for the index of the project name,
+  // but what if the project name happens to be in the path earlier than the real one?
+  // Let's put separators on either side of it and offset by one, so we know
+  // it matches a whole directory name.
+  const projectNameWithSeparators = sep + projectName + sep
+  const projectIndexInPath = absoluteFilePath.indexOf(projectNameWithSeparators)
+  // Let's leave the leading separator
+  const sliceOffset = projectNameWithSeparators.length - 1
+
+  return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
+}
+
+/** TODO: This is not used by the web yet. */
+async function getArchiveBasePath() {
+  return window.electron
+    ? desktopSafePathJoin([
+        await window.electron.getPathUserData(),
+        ARCHIVE_DIR,
+      ])
+    : webSafeJoin(['/', ARCHIVE_DIR])
+}
+
+/** Convert any given path to an archived one.
+ * The archive works by keeping the same structure as the original paths were on disk,
+ * just nested within the return value of `getArchiveBasePath`,
+ * so that if they are restored they can be returned to the original location.
+ */
+export async function toArchivePath(absolutePath: string) {
+  const basePath = await getArchiveBasePath()
+
+  if (window.electron) {
+    // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
+    // Make that make sense, right? So our archive paths need to replace that character.
+    const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
+    return window.electron.join(basePath, absolutePathWithSafeDriveName)
+  }
+
+  return webSafeJoin([basePath, absolutePath])
 }

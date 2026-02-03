@@ -17,7 +17,7 @@ count(@array: [any]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array whose length will be returned. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array whose length will be returned. | Yes |
 
 ### Returns
 

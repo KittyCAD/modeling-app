@@ -708,8 +708,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Number of bins in each direction"
         ],
         "start": 0,
@@ -883,8 +881,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// The total height of the baseplate is a summation of the vertical heights of the baseplate steps"
         ],
         "start": 0,
@@ -1673,6 +1669,14 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "face",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -1699,8 +1703,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function which builds the profile of the baseplate bin"
         ],
         "start": 0,
@@ -1960,8 +1962,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extrude a single side of the bin"
         ],
         "start": 0,
@@ -2375,8 +2375,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the other sides of the bin by using a circular pattern"
         ],
         "start": 0,
@@ -2580,8 +2578,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define an axis axis000"
         ],
         "start": 0,
@@ -2825,8 +2821,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a single corner of the bin"
         ],
         "start": 0,
@@ -3240,8 +3234,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the corners of the bin"
         ],
         "start": 0,
@@ -4932,25 +4924,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "3": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create the baseplate by patterning sides",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5392,25 +5365,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create the corners of the baseplate by patterning the corners",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5422,6 +5376,9 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create the baseplate by patterning sides"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5852,25 +5809,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create the fill of the bin by patterning the corners",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5882,6 +5820,9 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create the corners of the baseplate by patterning the corners"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -6323,6 +6264,9 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create the fill of the bin by patterning the corners"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -7402,25 +7346,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "8": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Define a function which builds the profile of the baseplate bin",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -8258,6 +8183,16 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "|> yLine(length = lipHeight, tag = $line100)",
                                 "style": "line"
@@ -8265,6 +8200,16 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                             }
                           ],
                           "3": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLine"
+                              }
+                            },
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -8331,6 +8276,14 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "lipFace",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -8356,6 +8309,9 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Define a function which builds the profile of the baseplate bin"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -9709,8 +9665,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extrude a single side of the lip of the bin"
         ],
         "start": 0,
@@ -9990,8 +9944,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Extrude a single side of the lip of the bin"
         ],
         "start": 0,
@@ -10459,8 +10411,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the other sides of the lips by using a circular pattern"
         ],
         "start": 0,
@@ -10928,8 +10878,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the other sides of the lips by using a circular pattern"
         ],
         "start": 0,
@@ -11079,8 +11027,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define an axis axis000"
         ],
         "start": 0,
@@ -11241,8 +11187,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a single corner of the bin"
         ],
         "start": 0,
@@ -11394,8 +11338,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a single corner of the bin"
         ],
         "start": 0,
@@ -11863,8 +11805,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the corners of the bin"
         ],
         "start": 0,
@@ -12332,8 +12272,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the corners of the bin"
         ],
         "start": 0,
@@ -12359,6 +12297,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "preComments": [
           "// Gridfinity Bins With A Stacking Lip",
           "// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins",
+          "// Categories: Maker",
           "",
           "",
           "// Set units in millimeters (mm)"
@@ -12433,6 +12372,102 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "22": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "23": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "24": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "26": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "27": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "28": [
           {
             "commentStart": 0,
@@ -12457,7 +12492,55 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
+        "30": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "31": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "32": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "33": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "34": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12494,6 +12577,114 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
           }
         ],
         "37": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "38": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "39": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "40": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "41": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "42": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "43": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "44": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "45": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "46": [
           {
             "commentStart": 0,
             "end": 0,

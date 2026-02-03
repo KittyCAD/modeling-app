@@ -173,7 +173,8 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -240,15 +241,20 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -257,15 +263,20 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 50.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 50.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -521,7 +532,8 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -557,19 +569,5 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

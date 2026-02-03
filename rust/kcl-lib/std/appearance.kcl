@@ -90,7 +90,7 @@
 ///   },
 /// )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn hexString(
   /// The red, blue and green components of the color.
   /// Must be between 0 and 255.

@@ -1082,25 +1082,6 @@ description: Result of parsing spool.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "10": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create a function that draws an indent on the outer faces of the spool",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1113,8 +1094,6 @@ description: Result of parsing spool.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sketch the revolved profile of one side of the spool"
         ],
         "start": 0,
@@ -2036,6 +2015,14 @@ description: Result of parsing spool.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "score",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2082,6 +2069,9 @@ description: Result of parsing spool.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Create a function that draws an indent on the outer faces of the spool"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2391,8 +2381,6 @@ description: Result of parsing spool.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Circular pattern indents around each side face of the spool"
         ],
         "start": 0,
@@ -2862,20 +2850,6 @@ description: Result of parsing spool.kcl
                       "style": "line"
                     }
                   }
-                ],
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model a wound coil on the spool diameter",
-                      "style": "line"
-                    }
-                  }
                 ]
               },
               "startNodes": []
@@ -3181,6 +3155,9 @@ description: Result of parsing spool.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model a wound coil on the spool diameter"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3669,8 +3646,6 @@ description: Result of parsing spool.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Sweep and color the coil"
         ],
         "start": 0,
@@ -3696,6 +3671,7 @@ description: Result of parsing spool.kcl
         "preComments": [
           "// Spool",
           "// A spool is a winding device for storing large batches of filament, wire, tape, etc",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"
@@ -3741,7 +3717,68 @@ description: Result of parsing spool.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

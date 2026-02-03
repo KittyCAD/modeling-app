@@ -83,81 +83,6 @@ description: Result of parsing kittycad_svg.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startProfile",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
                           "raw": "2.52",
                           "start": 0,
                           "type": "Literal",
@@ -207,7 +132,7 @@ description: Result of parsing kittycad_svg.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "line",
+                    "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -9902,174 +9827,6 @@ description: Result of parsing kittycad_svg.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "14.28",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 14.28,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "argument": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "raw": "13.44",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 13.44,
-                              "suffix": "None"
-                            }
-                          },
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "operator": "-",
-                          "start": 0,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "line",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "9.24",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 9.24,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "argument": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "raw": "13.44",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 13.44,
-                              "suffix": "None"
-                            }
-                          },
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "operator": "-",
-                          "start": 0,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "line",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
                           "raw": "11.76",
                           "start": 0,
                           "type": "Literal",
@@ -23096,90 +22853,6 @@ description: Result of parsing kittycad_svg.kcl
                           "type": "Literal",
                           "value": {
                             "value": 11.76,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "argument": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "raw": "5.88",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 5.88,
-                              "suffix": "None"
-                            }
-                          },
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "operator": "-",
-                          "start": 0,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "line",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "10.92",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 10.92,
                             "suffix": "None"
                           }
                         },
@@ -23768,14 +23441,7 @@ description: Result of parsing kittycad_svg.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -23844,7 +23510,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23858,7 +23524,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23872,7 +23538,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23886,7 +23552,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23900,7 +23566,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23914,7 +23580,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23928,7 +23594,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23942,7 +23608,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23956,7 +23622,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23970,7 +23636,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23984,7 +23650,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -23998,7 +23664,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24012,7 +23678,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24026,7 +23692,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24040,7 +23706,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24054,7 +23720,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24068,7 +23734,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24082,7 +23748,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24096,7 +23762,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24110,7 +23776,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24124,7 +23790,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24138,7 +23804,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24152,7 +23818,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24166,7 +23832,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24180,7 +23846,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24194,7 +23860,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24208,7 +23874,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24222,7 +23888,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24236,7 +23902,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24250,7 +23916,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24264,7 +23930,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24278,7 +23944,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24292,7 +23958,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24306,7 +23972,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24320,7 +23986,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24334,7 +24000,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24348,7 +24014,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24362,7 +24028,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24376,7 +24042,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24390,7 +24056,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24404,7 +24070,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24418,7 +24084,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24432,7 +24098,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24446,7 +24112,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24460,7 +24126,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24474,7 +24140,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24488,7 +24154,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24502,7 +24168,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24516,7 +24182,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24530,26 +24196,12 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "52": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
                       "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
                 ],
-                "53": [
+                "52": [
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -24569,8 +24221,32 @@ description: Result of parsing kittycad_svg.kcl
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
                       "type": "blockComment",
                       "value": "StopAbsolute",
+                      "style": "line"
+                    }
+                  }
+                ],
+                "53": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "inlineComment",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -24584,7 +24260,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24598,7 +24274,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24612,7 +24288,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24626,7 +24302,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24640,7 +24316,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24654,7 +24330,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24668,7 +24344,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24682,7 +24358,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24696,7 +24372,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24710,7 +24386,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24724,7 +24400,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24738,7 +24414,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24752,7 +24428,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24766,7 +24442,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24780,7 +24456,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24794,7 +24470,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24808,7 +24484,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24822,7 +24498,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24836,7 +24512,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24850,7 +24526,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24864,7 +24540,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24878,7 +24554,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24892,7 +24568,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24906,7 +24582,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -24920,7 +24596,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24934,7 +24610,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -24948,7 +24624,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -24962,7 +24638,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -24976,7 +24652,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -24990,7 +24666,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25004,7 +24680,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25018,7 +24694,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25032,7 +24708,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25046,7 +24722,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25060,7 +24736,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25074,7 +24750,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25088,7 +24764,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25102,7 +24778,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25116,7 +24792,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25130,7 +24806,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25144,7 +24820,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25158,7 +24834,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25172,7 +24848,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25186,7 +24862,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -25200,7 +24876,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25214,7 +24890,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25228,7 +24904,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25242,7 +24918,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -25256,7 +24932,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25270,7 +24946,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25284,7 +24960,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25298,7 +24974,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25312,7 +24988,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25326,7 +25002,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25340,7 +25016,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25354,7 +25030,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25368,7 +25044,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25382,7 +25058,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25396,7 +25072,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25410,7 +25086,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -25424,7 +25100,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25438,7 +25114,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25452,7 +25128,61 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
+                      "style": "line"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "|> line(endAbsolute = [14.28, -13.44]) // HorizontalLineRelative",
+                      "style": "line"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLine"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "|> line(endAbsolute = [9.24, -13.44]) // MoveRelative",
                       "style": "line"
                     }
                   }
@@ -25466,7 +25196,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25480,7 +25210,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25494,7 +25224,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "HorizontalLineRelative here",
                       "style": "line"
                     }
                   }
@@ -25508,7 +25238,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25522,7 +25252,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25536,7 +25266,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative here",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25550,7 +25280,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25564,7 +25294,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25578,7 +25308,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25592,7 +25322,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25606,7 +25336,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25620,7 +25350,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25634,7 +25364,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25648,7 +25378,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25662,7 +25392,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25676,7 +25406,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25690,7 +25420,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25704,7 +25434,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25718,7 +25448,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25732,7 +25462,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -25774,7 +25504,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25788,7 +25518,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25802,7 +25532,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25816,7 +25546,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25830,7 +25560,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25844,7 +25574,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -25858,7 +25588,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25872,7 +25602,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25886,7 +25616,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -25900,7 +25630,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -25914,7 +25644,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25928,7 +25658,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25942,7 +25672,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25956,7 +25686,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25970,7 +25700,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25984,7 +25714,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -25998,7 +25728,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26012,7 +25742,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26026,7 +25756,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26040,7 +25770,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26054,7 +25784,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26068,7 +25798,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26082,7 +25812,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26096,7 +25826,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26110,7 +25840,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26124,7 +25854,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -26138,7 +25868,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26152,7 +25882,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26166,7 +25896,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26180,7 +25910,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26194,7 +25924,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26208,7 +25938,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26222,7 +25952,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26236,7 +25966,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26250,7 +25980,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26264,7 +25994,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26278,7 +26008,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26292,7 +26022,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26306,7 +26036,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26320,7 +26050,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26334,7 +26064,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26348,7 +26078,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -26362,7 +26092,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26376,7 +26106,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26390,7 +26120,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26404,7 +26134,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26418,7 +26148,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -26432,7 +26162,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -26446,7 +26176,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26460,7 +26190,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26474,7 +26204,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26488,7 +26218,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26502,7 +26232,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26516,7 +26246,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26530,7 +26260,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26544,7 +26274,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26558,7 +26288,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26572,7 +26302,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26586,7 +26316,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26600,7 +26330,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26614,7 +26344,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26628,7 +26358,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26642,7 +26372,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26656,7 +26386,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26670,7 +26400,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26684,7 +26414,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -26698,7 +26428,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26712,7 +26442,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26726,7 +26456,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26740,7 +26470,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26754,7 +26484,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26768,7 +26498,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26782,7 +26512,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26796,7 +26526,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26810,7 +26540,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26824,7 +26554,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26838,7 +26568,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26852,7 +26582,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26866,7 +26596,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26880,7 +26610,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26894,7 +26624,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26908,7 +26638,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26922,7 +26652,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26936,7 +26666,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26950,7 +26680,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26964,7 +26694,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26978,7 +26708,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -26992,7 +26722,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27006,7 +26736,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27020,7 +26750,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -27034,7 +26764,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27048,7 +26778,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27062,7 +26792,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27076,7 +26806,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27090,7 +26820,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -27104,7 +26834,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27118,7 +26848,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -27132,7 +26862,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -27146,7 +26876,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27160,7 +26890,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27174,7 +26904,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27188,7 +26918,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27202,7 +26932,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27216,7 +26946,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27230,7 +26960,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27244,7 +26974,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -27258,7 +26988,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27272,7 +27002,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27286,7 +27016,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27300,7 +27030,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27314,7 +27044,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -27328,7 +27058,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27342,7 +27072,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -27356,7 +27086,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -27370,7 +27100,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27384,7 +27114,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27398,7 +27128,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27412,7 +27142,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27426,7 +27156,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27440,7 +27170,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27454,7 +27184,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
@@ -27468,7 +27198,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -27482,7 +27212,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27510,7 +27240,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveRelative",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27524,7 +27254,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27538,7 +27268,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineHorizontal",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27552,7 +27282,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27566,7 +27296,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27580,7 +27310,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "MoveAbsolute",
                       "style": "line"
                     }
                   }
@@ -27594,7 +27324,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27608,7 +27338,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27622,7 +27352,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "MoveAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27636,7 +27366,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "VerticalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27650,7 +27380,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "HorizontalLineAbsolute",
                       "style": "line"
                     }
                   }
@@ -27664,7 +27394,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27678,7 +27408,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
+                      "value": "MoveRelative",
                       "style": "line"
                     }
                   }
@@ -27692,7 +27422,7 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "HorizontalLineAbsolute",
+                      "value": "HorizontalLineRelative",
                       "style": "line"
                     }
                   }
@@ -27706,68 +27436,12 @@ description: Result of parsing kittycad_svg.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "VerticalLineAbsolute",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "278": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "279": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "MoveRelative",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "280": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
-                      "value": "HorizontalLineRelative",
-                      "style": "line"
-                    }
-                  }
-                ],
-                "281": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "inlineComment",
                       "value": "VerticalLineHorizontal",
                       "style": "line"
                     }
                   }
                 ],
-                "282": [
+                "278": [
                   {
                     "commentStart": 0,
                     "end": 0,

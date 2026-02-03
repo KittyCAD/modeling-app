@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useAuthState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { generateSignInUrl } from '@src/routes/utils'
 
 /**
@@ -12,6 +12,7 @@ import { generateSignInUrl } from '@src/routes/utils'
  * accordingly.
  */
 export function useAuthNavigation() {
+  const { useAuthState } = useSingletons()
   const navigate = useNavigate()
   const location = useLocation()
   const authState = useAuthState()
@@ -26,7 +27,7 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      navigate(PATHS.INDEX)
+      void navigate(PATHS.INDEX)
     } else if (
       authState.matches('loggedOut') &&
       !location.pathname.includes(PATHS.SIGN_IN)
@@ -36,7 +37,7 @@ export function useAuthNavigation() {
         return
       }
 
-      navigate(PATHS.SIGN_IN + (location.search || ''))
+      void navigate(PATHS.SIGN_IN + (location.search || ''))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])

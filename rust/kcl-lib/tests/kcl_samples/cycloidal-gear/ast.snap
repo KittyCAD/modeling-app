@@ -1578,6 +1578,14 @@ description: Result of parsing cycloidal-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "gearSketch",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -1816,8 +1824,6 @@ description: Result of parsing cycloidal-gear.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw sketches of the gear profile along the gear height and loft them together"
                   ],
                   "start": 0,
@@ -1856,6 +1862,18 @@ description: Result of parsing cycloidal-gear.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "0": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "1": [
                     {
                       "commentStart": 0,
@@ -1876,6 +1894,14 @@ description: Result of parsing cycloidal-gear.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "cycloidalGear",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2087,8 +2113,6 @@ description: Result of parsing cycloidal-gear.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Call the cycloidal gear function"
         ],
         "start": 0,
@@ -2114,6 +2138,7 @@ description: Result of parsing cycloidal-gear.kcl
         "preComments": [
           "// Cycloidal Gear",
           "// A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
+          "// Categories: Manufacturing, Medical",
           "",
           "",
           "// Set units"
@@ -2187,7 +2212,20 @@ description: Result of parsing cycloidal-gear.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

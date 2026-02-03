@@ -325,28 +325,13 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -59.59,
-              99.65
-            ],
-            "tag": null,
-            "to": [
-              -59.59,
-              99.65
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -354,7 +339,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -700,6 +684,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -707,7 +693,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -758,13 +743,14 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -834,6 +820,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -841,7 +829,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -933,6 +920,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -940,7 +929,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1190,28 +1178,13 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "type": "TangentialArcTo",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -224.97,
-                  184.88
-                ],
-                "tag": null,
-                "to": [
-                  -224.97,
-                  184.88
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1219,7 +1192,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1464,28 +1436,13 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "type": "TangentialArcTo",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -224.97,
-                  184.88
-                ],
-                "tag": null,
-                "to": [
-                  -224.97,
-                  184.88
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1493,7 +1450,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1546,13 +1502,14 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1733,6 +1690,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1740,7 +1699,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1925,6 +1883,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1932,7 +1892,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2029,6 +1988,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2036,7 +1997,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2128,6 +2088,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2135,7 +2097,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2299,28 +2260,13 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -41.0,
-            401.0
-          ],
-          "tag": null,
-          "to": [
-            -41.0,
-            401.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2328,7 +2274,6 @@ description: Variables in memory after executing gingerbread-man.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2531,23 +2476,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -37.56,
-              405.86
-            ],
-            "tag": null,
-            "to": [
-              -37.56,
-              405.86
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -2652,28 +2580,13 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -41.0,
-              401.0
-            ],
-            "tag": null,
-            "to": [
-              -41.0,
-              401.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2681,7 +2594,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

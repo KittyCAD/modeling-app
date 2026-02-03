@@ -15,10 +15,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1519,
-            "end": 1530,
+            "commentStart": 1544,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1519,
+            "start": 1544,
             "type": "TagDeclarator",
             "value": "filletEdge"
           },
@@ -45,10 +45,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.095,
             "tag": {
-              "commentStart": 1519,
-              "end": 1530,
+              "commentStart": 1544,
+              "end": 1555,
               "moduleId": 0,
-              "start": 1519,
+              "start": 1544,
               "type": "TagDeclarator",
               "value": "filletEdge"
             },
@@ -64,6 +64,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -87,10 +88,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 744,
-                  "end": 752,
+                  "commentStart": 769,
+                  "end": 777,
                   "moduleId": 0,
-                  "start": 744,
+                  "start": 769,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -117,10 +118,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   ],
                   "radius": 0.1565,
                   "tag": {
-                    "commentStart": 744,
-                    "end": 752,
+                    "commentStart": 769,
+                    "end": 777,
                     "moduleId": 0,
-                    "start": 744,
+                    "start": 769,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -135,6 +136,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -142,7 +145,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -294,10 +296,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 744,
-            "end": 752,
+            "commentStart": 769,
+            "end": 777,
             "moduleId": 0,
-            "start": 744,
+            "start": 769,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -324,10 +326,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.1565,
             "tag": {
-              "commentStart": 744,
-              "end": 752,
+              "commentStart": 769,
+              "end": 777,
               "moduleId": 0,
-              "start": 744,
+              "start": 769,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -342,6 +344,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -349,7 +353,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -642,6 +645,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -665,10 +669,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 744,
-                  "end": 752,
+                  "commentStart": 769,
+                  "end": 777,
                   "moduleId": 0,
-                  "start": 744,
+                  "start": 769,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -695,10 +699,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   ],
                   "radius": 0.1565,
                   "tag": {
-                    "commentStart": 744,
-                    "end": 752,
+                    "commentStart": 769,
+                    "end": 777,
                     "moduleId": 0,
-                    "start": 744,
+                    "start": 769,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -713,6 +717,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -720,7 +726,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

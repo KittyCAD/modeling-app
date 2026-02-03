@@ -224,7 +224,8 @@ description: Artifact commands pattern_into_union.kcl
         "distance": -3.28740157480315,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -412,7 +413,8 @@ description: Artifact commands pattern_into_union.kcl
         "distance": -0.1,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1218,7 +1220,8 @@ description: Artifact commands pattern_into_union.kcl
         "distance": -0.1,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1904,19 +1907,5 @@ description: Artifact commands pattern_into_union.kcl
         "tolerance": 0.0000001
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

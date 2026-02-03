@@ -52,7 +52,7 @@ class Logger {
   }
 
   private write(label: string, ...messageParts: unknown[]): void {
-    const message = messageParts.map(log.stringify).join(' ')
+    const message = messageParts.map(log.stringify.bind(log)).join(' ')
     const dateTime = new Date().toLocaleString()
     log.output.appendLine(`${label} [${dateTime}]: ${message}`)
   }
@@ -119,7 +119,7 @@ export function isValidExecutable(path: string): boolean {
     env: { ...process.env },
   })
 
-  const printOutput = res.error ? log.warn : log.info
+  const printOutput = res.error ? log.warn.bind(log) : log.info.bind(log)
   printOutput(path, '--version:', res)
 
   return res.status === 0
@@ -165,11 +165,16 @@ export function execute(
       }
 
       if (stderr) {
+        if (typeof stderr !== 'string') {
+          return reject(new Error(stderr.toString()))
+        }
         reject(new Error(stderr))
         return
       }
 
-      resolve(stdout.trimEnd())
+      const stdoutAsString =
+        typeof stdout !== 'string' ? stdout.toString() : stdout
+      resolve(stdoutAsString.trimEnd())
     })
   })
 }
@@ -187,8 +192,9 @@ export function executeDiscoverProject(
         reject(err)
         return
       }
-
-      resolve(stdout.trimEnd())
+      const stdoutAsString =
+        typeof stdout !== 'string' ? stdout.toString() : stdout
+      resolve(stdoutAsString.trimEnd())
     })
   })
 }

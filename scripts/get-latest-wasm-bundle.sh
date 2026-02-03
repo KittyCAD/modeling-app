@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set the repository owner and name
 REPO_OWNER="KittyCAD"

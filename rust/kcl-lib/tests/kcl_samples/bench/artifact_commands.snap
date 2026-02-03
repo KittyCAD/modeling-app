@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands bench.kcl
 ---
 {
-  "public/kcl-samples/bench/bench-parts.kcl": [],
   "public/kcl-samples/bench/main.kcl": [
     {
       "cmdId": "[uuid]",
@@ -446,7 +445,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -923,7 +923,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1449,7 +1450,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1910,7 +1912,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2436,7 +2439,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2897,7 +2901,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3237,7 +3242,8 @@ description: Artifact commands bench.kcl
         "distance": 56.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3512,7 +3518,8 @@ description: Artifact commands bench.kcl
         "distance": 56.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3843,7 +3850,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3904,7 +3912,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3965,7 +3974,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4267,7 +4277,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4328,7 +4339,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5126,19 +5138,5 @@ description: Artifact commands bench.kcl
         "hidden": true
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

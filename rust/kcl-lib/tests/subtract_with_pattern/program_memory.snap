@@ -110,28 +110,13 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.65,
-              12.2
-            ],
-            "tag": null,
-            "to": [
-              2.65,
-              12.2
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -139,7 +124,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -231,6 +215,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -238,7 +224,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -333,6 +318,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -340,7 +327,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -432,6 +418,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -439,7 +427,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -531,6 +518,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -538,7 +527,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -630,6 +618,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -637,7 +627,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -729,6 +718,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -736,7 +727,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -828,6 +818,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -835,7 +827,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -927,6 +918,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -934,7 +927,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1026,6 +1018,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1033,7 +1027,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1125,6 +1118,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1132,7 +1127,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1224,6 +1218,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1231,7 +1227,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1352,28 +1347,13 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.65,
-            12.2
-          ],
-          "tag": null,
-          "to": [
-            2.65,
-            12.2
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1381,7 +1361,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1455,6 +1434,8 @@ description: Variables in memory after executing subtract_with_pattern.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1462,7 +1443,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1508,13 +1488,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1540,13 +1521,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

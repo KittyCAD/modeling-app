@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing recursive_function_factorial.kcl
+---
+fn fact(@n) {
+  return if n == 0 {
+    1
+  } else {
+    n * fact(n - 1)
+  }
+}
+
+assert(fact(0), isEqualTo = 1)
+assert(fact(1), isEqualTo = 1)
+assert(fact(2), isEqualTo = 2)
+assert(fact(3), isEqualTo = 6)

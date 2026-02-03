@@ -96,8 +96,6 @@ description: Result of parsing pillow-block-bearing.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Render each part"
         ],
         "start": 0,
@@ -149,6 +147,7 @@ description: Result of parsing pillow-block-bearing.kcl
         "preComments": [
           "// Pillow Block Bearing",
           "// A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.",
+          "// Categories: Construction, Manufacturing",
           "",
           "",
           "// Set units"
@@ -194,7 +193,20 @@ description: Result of parsing pillow-block-bearing.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

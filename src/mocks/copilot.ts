@@ -1,4 +1,4 @@
-import { BSON } from 'bson'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type {
   MlCopilotServerMessage,
   ReasoningMessage,
@@ -53,14 +53,6 @@ const toolOutput = (): Extract<
       result: {
         ...toolOutputChoice,
       },
-    },
-  }
-}
-
-const error = (): MlCopilotServerMessage & { error: any } => {
-  return {
-    error: {
-      detail: stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
     },
   }
 }
@@ -143,7 +135,10 @@ const endOfStream = (): MlCopilotServerMessage & { end_of_stream: any } => {
 
 const generators = {
   reasoning: [
-    error,
+    // error,
+    // error,
+    // error,
+    // error,
     info,
     toolOutput,
     toolOutput,
@@ -183,8 +178,19 @@ function generateMlServerMessages(): MlCopilotServerMessage[] {
 
 function generateUserResponse(
   ms: MockSocket,
-  cbs: WebSocketEventListenerMap['message'][]
+  cbs: WebSocketEventListenerMap['message'][],
+  forceResponse?: MlCopilotServerMessage
 ) {
+  // Separate from the below because it's not time based.
+  if (forceResponse) {
+    for (let cb of cbs) {
+      cb.bind(ms)(
+        new MessageEvent('message', { data: JSON.stringify(forceResponse) })
+      )
+    }
+    return
+  }
+
   const messages = generateMlServerMessages()
   let i = 0
   const loop = () => {
@@ -209,17 +215,15 @@ function generateUserResponse(
   loop()
 }
 
-function generateReplayResponse(): Extract<
-  MlCopilotServerMessage,
-  { replay: any }
-> {
-  return {
+function generateReplayResponse(): Uint8Array {
+  const te = new TextEncoder()
+  return msgpackEncode({
     replay: {
-      messages: generateMlServerMessages().map((m: MlCopilotServerMessage) =>
-        Array.from(BSON.serialize(m))
-      ),
+      messages: generateMlServerMessages().map((m: MlCopilotServerMessage) => {
+        return Array.from(te.encode(JSON.stringify(m)))
+      }),
     },
-  }
+  })
 }
 
 type WebSocketEventListenerMap = {
@@ -271,10 +275,23 @@ export class MockSocket extends WebSocket {
         setTimeout(() => {
           this.cbs.message[0].bind(this)(
             new MessageEvent('message', {
-              data: JSON.stringify(generateReplayResponse()),
+              data: JSON.stringify({
+                conversation_id: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+              }),
+            })
+          )
+          const data = generateReplayResponse()
+          this.cbs.message[0].bind(this)(
+            new MessageEvent('message', {
+              data,
             })
           )
         })
+
+        // Force a close after 3 seconds
+        // setTimeout(() => {
+        //   this.cbs.close.forEach((cb) => cb())
+        // }, 10000)
       }
     } else if (isWebSocketEventType('close', type, listener)) {
       this.cbs.close.push(listener)
@@ -286,6 +303,15 @@ export class MockSocket extends WebSocket {
 
     if (obj.type === 'system' && obj.command === 'new') {
       // response = { conversation_id: { conversation_id: 'satehusateohustahseut' }}
+    }
+
+    if (obj.type === 'system' && obj.command === 'cancel') {
+      const response = {
+        info: {
+          text: 'Message canceled by user request',
+        },
+      }
+      generateUserResponse(this, this.cbs.message, response)
     }
 
     if (obj.type === 'user') {

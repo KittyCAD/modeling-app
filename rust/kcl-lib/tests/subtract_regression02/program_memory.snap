@@ -200,28 +200,13 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -229,7 +214,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -321,6 +305,8 @@ description: Variables in memory after executing subtract_regression02.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -328,7 +314,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -571,28 +556,13 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -600,7 +570,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -692,6 +661,8 @@ description: Variables in memory after executing subtract_regression02.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -699,7 +670,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -942,28 +912,13 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -971,7 +926,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1022,13 +976,14 @@ description: Variables in memory after executing subtract_regression02.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1191,28 +1146,13 @@ description: Variables in memory after executing subtract_regression02.kcl
           ],
           "type": "Arc",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.7499999999999999,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -0.75,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1220,7 +1160,6 @@ description: Variables in memory after executing subtract_regression02.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1266,13 +1205,14 @@ description: Variables in memory after executing subtract_regression02.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1326,6 +1266,8 @@ description: Variables in memory after executing subtract_regression02.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1333,7 +1275,6 @@ description: Variables in memory after executing subtract_regression02.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1379,13 +1320,14 @@ description: Variables in memory after executing subtract_regression02.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": -1.0,
@@ -1439,6 +1381,8 @@ description: Variables in memory after executing subtract_regression02.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1446,7 +1390,6 @@ description: Variables in memory after executing subtract_regression02.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,

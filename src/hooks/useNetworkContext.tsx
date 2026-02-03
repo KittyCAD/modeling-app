@@ -2,12 +2,12 @@ import { createContext, useContext } from 'react'
 
 import type { NetworkStatus } from '@src/hooks/useNetworkStatus'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import type { EngineConnectionState } from '@src/lang/std/engineConnection'
 import {
   ConnectingTypeGroup,
   EngineConnectionStateType,
   initialConnectingTypeGroupState,
-} from '@src/lang/std/engineConnection'
+} from '@src/network/utils'
+import type { EngineConnectionState } from '@src/network/utils'
 
 export const NetworkContext = createContext<NetworkStatus>({
   immediateState: {

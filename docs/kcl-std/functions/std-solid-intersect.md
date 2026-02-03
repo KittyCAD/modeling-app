@@ -23,19 +23,18 @@ verifying fit, and analyzing overlapping geometries in assemblies.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | `[Solid; 2+]` | The solids to intersect. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to intersect. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
 
 ```kcl
 // Intersect two cubes using the stdlib functions.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)
@@ -73,7 +72,6 @@ intersectedPart = intersect([part001, part002])
 // Intersect two cubes using operators.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)

@@ -9,8 +9,9 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { useSingletons } from '@src/lib/boot'
 
 type ModalResolve = {
   value: string
@@ -44,6 +45,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
+  const { kclManager, rustContext } = useSingletons()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
@@ -65,6 +67,10 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
+    rustContext,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
   const isDisabled =
     (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable

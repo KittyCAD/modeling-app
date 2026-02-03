@@ -300,7 +300,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -346,10 +347,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 0.6784314,
           "g": 0.35686275,
           "b": 0.14509805,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -706,7 +707,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -752,10 +754,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -869,7 +871,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -915,10 +918,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1072,7 +1075,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1118,10 +1122,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 0.9843137,
           "g": 0.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1315,7 +1319,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1361,10 +1366,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 0.0,
           "g": 1.0,
           "b": 0.9843137,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1659,7 +1664,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1705,10 +1711,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1909,7 +1915,8 @@ description: Artifact commands gingerbread-man.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1955,10 +1962,10 @@ description: Artifact commands gingerbread-man.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1983,19 +1990,5 @@ description: Artifact commands gingerbread-man.kcl
         "rotate_duplicates": true
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

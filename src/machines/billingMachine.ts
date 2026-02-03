@@ -1,4 +1,8 @@
-import { BillingError, getBillingInfo } from '@kittycad/react-shared'
+import {
+  BillingError,
+  type IBillingInfo,
+  getBillingInfo,
+} from '@kittycad/react-shared'
 import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -15,11 +19,7 @@ export enum BillingTransition {
   Wait = 'wait',
 }
 
-export interface BillingContext {
-  credits: undefined | number
-  allowance: undefined | number
-  isOrg?: boolean
-  hasSubscription?: boolean
+export interface BillingContext extends Partial<IBillingInfo> {
   error: undefined | BillingError
   urlUserService: () => string
   lastFetch: undefined | Date
@@ -31,8 +31,10 @@ export interface BillingUpdateEvent {
 }
 
 export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
-  credits: undefined,
+  balance: undefined,
   allowance: undefined,
+  paymentMethods: [],
+  userPaymentBalance: undefined,
   error: undefined,
   isOrg: undefined,
   hasSubscription: undefined,
@@ -56,6 +58,16 @@ export const billingMachine = setup({
           input.context.lastFetch &&
           Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
         ) {
+          console.log(
+            'BillingTransition.Update was skipped as it was recently fetched'
+          )
+          return input.context
+        }
+
+        if (!input.event.apiToken) {
+          console.log(
+            'BillingTransition.Update was skipped as the token is missing'
+          )
           return input.context
         }
 
@@ -66,11 +78,13 @@ export const billingMachine = setup({
         }
 
         return {
-          credits: billing.credits,
+          ...BILLING_CONTEXT_DEFAULTS,
+          balance: billing.balance,
           allowance: billing.allowance,
+          paymentMethods: billing.paymentMethods,
+          userPaymentBalance: billing.userPaymentBalance,
           isOrg: billing.isOrg,
           hasSubscription: billing.hasSubscription,
-          lastFetch: new Date(),
         }
       }
     ),
@@ -109,6 +123,8 @@ export const billingMachine = setup({
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
             actions: assign({
+              // Clear out the rest of the fields here
+              ...BILLING_CONTEXT_DEFAULTS,
               // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),

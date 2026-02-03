@@ -1,30 +1,47 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use indexmap::IndexMap;
+use kcl_ezpz::{Constraint, NonLinearSystemError};
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Object, ObjectKind};
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        Operation, PlaneType, StatementKind, TagIdentifier, annotations,
+        AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
+        SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedExpr,
+        UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
-        fn_call::Args,
-        kcl_value::{FunctionSource, TypeDef},
+        control_continue,
+        fn_call::{Arg, Args},
+        kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
-        state::ModuleState,
+        sketch_solve::{
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
+            substitute_sketch_var_in_segment, substitute_sketch_vars,
+        },
+        state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
-    fmt,
-    modules::{ModuleId, ModulePath, ModuleRepr},
+    front::PointCtor,
+    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator, Type,
-        UnaryExpression, UnaryOperator,
+        BinaryPart, BodyItem, CodeBlock, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility,
+        MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
+        Type, UnaryExpression, UnaryOperator,
     },
-    std::args::TyF64,
+    std::{
+        args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine, sketch2::create_segments_in_engine,
+    },
 };
+
+fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
+    KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
+}
 
 impl<'a> StatementKind<'a> {
     fn expect_name(&self) -> &'a str {
@@ -130,18 +147,51 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
         module_id: ModuleId,
         path: &ModulePath,
-    ) -> Result<
-        (Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState),
-        (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>),
-    > {
+    ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
-        if !preserve_mem {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        // When executing only the new statements in incremental execution or
+        // mock executing for sketch mode, we need the scene objects that were
+        // created during the last execution, which are in the execution cache.
+        // The cache is read to create the initial module state. Depending on
+        // whether it's mock execution or engine execution, it's rehydrated
+        // differently, so we need to clone them from a different place. Then
+        // make sure the object ID generator matches the number of existing
+        // scene objects.
+        let mut local_state = ModuleState::new(
+            path.clone(),
+            exec_state.stack().memory.clone(),
+            Some(module_id),
+            exec_state.mod_local.sketch_mode,
+            exec_state.mod_local.freedom_analysis,
+        );
+        match preserve_mem {
+            PreserveMem::Always => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    use crate::id::IncIdGenerator;
+                    exec_state
+                        .mod_local
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
+                    exec_state.mod_local.artifacts.object_id_generator =
+                        IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
+                }
+            }
+            PreserveMem::Normal => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    local_state
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+                }
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+            }
         }
 
         let no_prelude = self
@@ -149,7 +199,7 @@ impl ExecutorContext {
             .await
             .map_err(|err| (err, None, None))?;
 
-        if !preserve_mem {
+        if preserve_mem.normal() {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
         }
 
@@ -157,38 +207,49 @@ impl ExecutorContext {
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
             .await;
 
-        let env_ref = if preserve_mem {
-            exec_state.mut_stack().pop_and_preserve_env()
-        } else {
-            exec_state.mut_stack().pop_env()
+        let env_ref = match preserve_mem {
+            PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
+            PreserveMem::Normal => exec_state.mut_stack().pop_env(),
         };
-        let module_artifacts = if !preserve_mem {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-            local_state.artifacts
-        } else {
-            std::mem::take(&mut exec_state.mod_local.artifacts)
+        let module_artifacts = match preserve_mem {
+            PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
+            PreserveMem::Normal => {
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                local_state.artifacts
+            }
         };
 
         crate::log::log(format!("leave {path}"));
 
         result
             .map_err(|err| (err, Some(env_ref), Some(module_artifacts.clone())))
-            .map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
+            .map(|last_expr| ModuleExecutionOutcome {
+                last_expr: last_expr.map(|value_cf| value_cf.into_value()),
+                environment: env_ref,
+                exports: local_state.module_exports,
+                artifacts: module_artifacts,
+            })
     }
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(super) async fn exec_block<'a>(
+    pub(super) async fn exec_block<'a, B>(
         &'a self,
-        program: NodeRef<'a, Program>,
+        block: &'a B,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<Option<KclValue>, KclError> {
+    ) -> Result<Option<KclValueControlFlow>, KclError>
+    where
+        B: CodeBlock + Sync,
+    {
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for statement in block.body() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
                     if !matches!(body_type, BodyType::Root) {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Imports are only supported at the top-level of a file.".to_owned(),
@@ -264,7 +325,7 @@ impl ExecutorContext {
                                 }
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return value.map(Option::Some);
+                                    return value.map(|v| Some(v.continue_()));
                                 }
 
                                 // Add the item to the current module.
@@ -319,10 +380,10 @@ impl ExecutorContext {
                                     .memory
                                     .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
-                                        KclError::new_internal(KclErrorDetails::new(
+                                        internal_err(
                                             format!("{name} is not defined in module (but was exported?)"),
-                                            vec![source_range],
-                                        ))
+                                            source_range,
+                                        )
                                     })?
                                     .clone();
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
@@ -348,19 +409,33 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(expression_statement);
-                    last_expr = Some(
-                        self.execute_expr(
+                    let value = self
+                        .execute_expr(
                             &expression_statement.expression,
                             exec_state,
                             &metadata,
                             &[],
                             StatementKind::Expression,
                         )
-                        .await?,
-                    );
+                        .await?;
+
+                    let is_return = value.is_some_return();
+                    last_expr = Some(value);
+
+                    if is_return {
+                        break;
+                    }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
+                        continue;
+                    }
+
                     let var_name = variable_declaration.declaration.id.name.to_string();
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
@@ -385,11 +460,35 @@ impl ExecutorContext {
                     exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
 
-                    exec_state
-                        .mut_stack()
-                        .add(var_name.clone(), rhs.clone(), source_range)?;
+                    if rhs.is_some_return() {
+                        last_expr = Some(rhs);
+                        break;
+                    }
+                    let rhs = rhs.into_value();
 
-                    if rhs.show_variable_in_feature_tree() {
+                    let should_bind_name =
+                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+                            // Declaring a function with a name, so only bind
+                            // the variable name if it differs from the function
+                            // name.
+                            var_name != fn_name
+                        } else {
+                            // Not declaring a function, so we should bind the
+                            // variable name.
+                            true
+                        };
+                    if should_bind_name {
+                        exec_state
+                            .mut_stack()
+                            .add(var_name.clone(), rhs.clone(), source_range)?;
+                    }
+
+                    // Track operations, for the feature tree.
+                    // Don't track these operations if the KCL code being executed is in the stdlib,
+                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+                    let should_show_in_feature_tree =
+                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+                    if should_show_in_feature_tree {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
                             value: OpKclValue::from(&rhs),
@@ -411,13 +510,19 @@ impl ExecutorContext {
                         }
                     }
                     // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs);
+                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
                 BodyItem::TypeDeclaration(ty) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
-                        annotations::Impl::Rust | annotations::Impl::RustConstraint => {
+                        annotations::Impl::Rust
+                        | annotations::Impl::RustConstrainable
+                        | annotations::Impl::RustConstraint => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
@@ -492,6 +597,10 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&return_statement.argument) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(return_statement);
 
                     if matches!(body_type, BodyType::Root) {
@@ -501,7 +610,7 @@ impl ExecutorContext {
                         )));
                     }
 
-                    let value = self
+                    let value_cf = self
                         .execute_expr(
                             &return_statement.argument,
                             exec_state,
@@ -510,6 +619,11 @@ impl ExecutorContext {
                             StatementKind::Expression,
                         )
                         .await?;
+                    if value_cf.is_some_return() {
+                        last_expr = Some(value_cf);
+                        break;
+                    }
+                    let value = value_cf.into_value();
                     exec_state
                         .mut_stack()
                         .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
@@ -528,7 +642,7 @@ impl ExecutorContext {
             // Flush the batch queue.
             exec_state
                 .flush_batch(
-                    ModelingCmdMeta::new(self, SourceRange::new(program.end, program.end, program.module_id)),
+                    ModelingCmdMeta::new(exec_state, self, block.to_source_range()),
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
@@ -611,13 +725,13 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((_, env_ref, items, _))) => Ok((*env_ref, items.clone())),
+            ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                 .await
-                .map(|(val, er, items, module_artifacts)| {
-                    *cache = Some((val, er, items.clone(), module_artifacts.clone()));
-                    (er, items)
+                .map(|outcome| {
+                    *cache = Some(outcome.clone());
+                    (outcome.environment, outcome.exports)
                 }),
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot import items from foreign modules".to_owned(),
@@ -642,15 +756,16 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((val, _, _, _))) => Ok(val.clone()),
+            ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.last_expr.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                     .await;
                 match result {
-                    Ok((val, env, items, module_artifacts)) => {
-                        *cached_items = Some((val.clone(), env, items, module_artifacts));
-                        Ok(val)
+                    Ok(outcome) => {
+                        let value = outcome.last_expr.clone();
+                        *cached_items = Some(outcome);
+                        Ok(value)
                     }
                     Err(e) => Err(e),
                 }
@@ -684,13 +799,13 @@ impl ExecutorContext {
         path: &ModulePath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-        preserve_mem: bool,
-    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState), KclError> {
+        preserve_mem: PreserveMem,
+    ) -> Result<ModuleExecutionOutcome, KclError> {
         exec_state.global.mod_loader.enter_module(path);
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
-        exec_state.global.mod_loader.leave_module(path);
+        exec_state.global.mod_loader.leave_module(path, source_range)?;
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
@@ -719,11 +834,11 @@ impl ExecutorContext {
         metadata: &Metadata,
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
-    ) -> Result<KclValue, KclError> {
+    ) -> Result<KclValueControlFlow, KclError> {
         let item = match init {
-            Expr::None(none) => KclValue::from(none),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
-            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::None(none) => KclValue::from(none).continue_(),
+            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
             Expr::Name(name) => {
                 let being_declared = exec_state.mod_local.being_declared.clone();
                 let value = name
@@ -736,7 +851,7 @@ impl ExecutorContext {
                         module_id,
                         exec_state,
                         metadata.source_range
-                        ).await?
+                        ).await?.map(|v| v.continue_())
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
@@ -749,24 +864,34 @@ impl ExecutorContext {
                             KclValue::KclNone {
                                 value: Default::default(),
                                 meta: new_meta,
-                            }
+                            }.continue_()
                         })
                 } else {
-                    value
+                    value.continue_()
                 }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
+                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
+
+                // Check the KCL @(feature_tree = ) annotation.
+                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
+                    && (attrs.impl_ == annotations::Impl::Rust
+                        || attrs.impl_ == annotations::Impl::RustConstrainable
+                        || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                            meta: vec![metadata.to_owned()],
-                        }
+                        (
+                            KclValue::Function {
+                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                                meta: vec![metadata.to_owned()],
+                            },
+                            None,
+                        )
                     } else {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Rust implementation of functions is restricted to the standard library".to_owned(),
@@ -777,15 +902,53 @@ impl ExecutorContext {
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
-                    KclValue::Function {
-                        value: Box::new(FunctionSource::kcl(
-                            function_expression.clone(),
-                            exec_state.mut_stack().snapshot(),
-                            matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
-                        )),
-                        meta: vec![metadata.to_owned()],
+                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                        // Recursive function needs a snapshot that includes
+                        // itself.
+                        let dummy = EnvironmentRef::dummy();
+                        (dummy, Some(dummy))
+                    } else {
+                        (exec_state.mut_stack().snapshot(), None)
+                    };
+                    (
+                        KclValue::Function {
+                            value: Box::new(FunctionSource::kcl(
+                                function_expression.clone(),
+                                env_ref,
+                                KclFunctionSourceParams {
+                                    is_std,
+                                    experimental,
+                                    include_in_feature_tree,
+                                },
+                            )),
+                            meta: vec![metadata.to_owned()],
+                        },
+                        placeholder_env_ref,
+                    )
+                };
+
+                // If the function expression has a name, i.e. `fn name() {}`,
+                // bind it in the current scope.
+                if let Some(fn_name) = &function_expression.name {
+                    // If we used a placeholder env ref for recursion, fix it up
+                    // with the name recursively bound so that it's available in
+                    // the function body.
+                    if let Some(placeholder_env_ref) = placeholder_env_ref {
+                        closure = exec_state.mut_stack().add_recursive_closure(
+                            fn_name.name.to_owned(),
+                            closure,
+                            placeholder_env_ref,
+                            metadata.source_range,
+                        )?;
+                    } else {
+                        // Regular non-recursive binding.
+                        exec_state
+                            .mut_stack()
+                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
                     }
                 }
+
+                closure.continue_()
             }
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -801,7 +964,7 @@ impl ExecutorContext {
                     )));
                 }
                 StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
-                    Some(x) => x,
+                    Some(x) => x.continue_(),
                     None => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "cannot use % outside a pipe expression".to_owned(),
@@ -817,20 +980,30 @@ impl ExecutorContext {
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
-                let result = self
+                let value_cf = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
+                let value = control_continue!(value_cf);
                 exec_state
                     .mut_stack()
-                    .add(expr.label.name.clone(), result.clone(), init.into())?;
+                    .add(expr.label.name.clone(), value.clone(), init.into())?;
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
-                result
+                value.continue_()
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
-            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
+    }
+}
+
+/// When executing in sketch mode, whether we should skip executing this
+/// expression.
+fn sketch_mode_should_skip(expr: &Expr) -> bool {
+    match expr {
+        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
+        _ => true,
     }
 }
 
@@ -855,46 +1028,487 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
 
 impl Node<AscribedExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
         let result = ctx
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        apply_ascription(&result, &self.ty, exec_state, self.into())
+        let result = control_continue!(result);
+        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
     }
 }
 
 impl Node<SketchBlock> {
-    pub async fn get_result(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        if exec_state.mod_local.sketch_block.is_some() {
+            // Disallow nested sketch blocks for now.
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot execute a sketch block from within another sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        }
+
+        let range = SourceRange::from(self);
+
+        // Evaluate arguments.
+        let mut labeled = IndexMap::new();
+        for labeled_arg in &self.arguments {
+            let source_range = SourceRange::from(labeled_arg.arg.clone());
+            let metadata = Metadata { source_range };
+            let value_cf = ctx
+                .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+            let value = control_continue!(value_cf);
+            let arg = Arg::new(value, source_range);
+            match &labeled_arg.label {
+                Some(label) => {
+                    labeled.insert(label.name.clone(), arg);
+                }
+                None => {
+                    let name = labeled_arg.arg.ident_name();
+                    if let Some(name) = name {
+                        labeled.insert(name.to_owned(), arg);
+                    } else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                            vec![SourceRange::from(&labeled_arg.arg)],
+                        )));
+                    }
+                }
+            }
+        }
+        let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+        args.labeled = labeled;
+
+        // Create the sketch block scene object. This needs to happen before
+        // scene objects created inside the sketch block so that its ID is
+        // stable across sketch block edits. In order to create the sketch block
+        // scene object, we need to make sure the plane scene object is created.
+        let arg_on: SketchOrSurface = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+        let mut sketch_surface = arg_on.into_sketch_surface();
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        if exec_state.sketch_mode() {
+            if sketch_surface.object_id().is_none() {
+                #[cfg(not(feature = "artifact-graph"))]
+                {
+                    // Without artifact graph, we just create a new object ID.
+                    // It will never be used for anything meaningful.
+                    sketch_surface.set_object_id(exec_state.next_object_id());
+                }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Look up the last object. Since this is where we would have
+                    // created it in real execution, it will be the last object.
+                    let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                        return Err(internal_err(
+                            "In sketch mode, the `on` plane argument must refer to an existing plane object.",
+                            range,
+                        ));
+                    };
+                    sketch_surface.set_object_id(last_object.id);
+                }
+            }
+        } else {
+            match &mut sketch_surface {
+                SketchSurface::Plane(plane) => {
+                    // Ensure that it's been created in the engine.
+                    ensure_sketch_plane_in_engine(plane, exec_state, &args).await?;
+                }
+                SketchSurface::Face(_) => {
+                    // All faces should already be created in the engine.
+                }
+            }
+        }
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(internal_err(message, range));
+        };
+        let arg_on_expr_name = self
+            .arguments
+            .iter()
+            .find_map(|labeled_arg| {
+                if let Some(label) = &labeled_arg.label
+                    && label.name == "on"
+                {
+                    // Being a simple identifier only is required by the parser.
+                    if let Some(name) = labeled_arg.arg.ident_name() {
+                        Some(Ok(name))
+                    } else {
+                        let message = "A sketch block's `on` parameter must be a variable or identifier, not an arbitrary expression. The parser should have enforced this."
+                                .to_owned();
+                        debug_assert!(false, "{message}");
+                        Some(Err(internal_err(message, &labeled_arg.arg)))
+                    }
+                } else {
+                    None
+                }
+            })
+            .unwrap_or_else(|| {
+                Err(KclError::new_invalid_expression(KclErrorDetails::new(
+                    "sketch block requires an `on` parameter".to_owned(),
+                    vec![SourceRange::from(self)],
+                )))
+            })?
+            // Convert to owned so that we can do an exclusive borrow later.
+            .to_owned();
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = on_object_id;
+            drop(arg_on_expr_name);
+        }
+        #[cfg(feature = "artifact-graph")]
+        let sketch_id = {
+            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
+
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
+
+            let sketch_id = exec_state.next_object_id();
+
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchCtor { on: arg_on_expr_name },
+                    plane: on_object_id,
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id,
+                source: range.into(),
+            };
+            exec_state.add_scene_object(sketch_scene_object, range);
+
+            // Create and add the sketch block artifact
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                plane_id: plane_artifact_id,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id,
+            }));
+
+            sketch_id
+        };
+
+        let (return_result, variables, sketch_block_state) = {
+            // Don't early return until the stack frame is popped!
+            self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
+
+            // Track that we're executing a sketch block.
+            let original_value = exec_state.mod_local.sketch_block.replace(SketchBlockState::default());
+
+            // When executing the body of the sketch block, we no longer want to
+            // skip any code.
+            let original_sketch_mode = std::mem::replace(&mut exec_state.mod_local.sketch_mode, false);
+
+            let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+
+            exec_state.mod_local.sketch_mode = original_sketch_mode;
+
+            let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
+
+            let block_variables = exec_state
+                .stack()
+                .find_all_in_current_env()
+                .map(|(name, value)| (name.clone(), value.clone()))
+                .collect::<IndexMap<_, _>>();
+
+            exec_state.mut_stack().pop_env();
+
+            (result, block_variables, sketch_block_state)
+        };
+
+        // Propagate errors.
+        return_result?;
+        let Some(sketch_block_state) = sketch_block_state else {
+            debug_assert!(false, "Sketch block state should still be set to Some from just above");
+            return Err(internal_err(
+                "Sketch block state should still be set to Some from just above",
+                self,
+            ));
+        };
+
+        // Translate sketch variables and constraints to solver input.
+        let constraints = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .map(kcl_ezpz::ConstraintRequest::highest_priority)
+            .chain(
+                // Optional constraints have a lower priority.
+                sketch_block_state
+                    .solver_optional_constraints
+                    .iter()
+                    .cloned()
+                    .map(|c| kcl_ezpz::ConstraintRequest::new(c, 1)),
+            )
+            .collect::<Vec<_>>();
+        let initial_guesses = sketch_block_state
+            .sketch_vars
+            .iter()
+            .map(|v| {
+                let Some(sketch_var) = v.as_sketch_var() else {
+                    return Err(internal_err("Expected sketch variable", self));
+                };
+                let constraint_id = sketch_var.id.to_constraint_id(range)?;
+                // Normalize units.
+                let number_value = KclValue::Number {
+                    value: sketch_var.initial_value,
+                    ty: sketch_var.ty,
+                    meta: sketch_var.meta.clone(),
+                };
+                let initial_guess_value =
+                    normalize_to_solver_unit(&number_value, v.into(), exec_state, "sketch variable initial value")?;
+                let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
+                    n.n
+                } else {
+                    let message = format!(
+                        "Expected number after coercion, but found {}",
+                        initial_guess_value.human_friendly_type()
+                    );
+                    debug_assert!(false, "{}", &message);
+                    return Err(internal_err(message, self));
+                };
+                Ok((constraint_id, initial_guess))
+            })
+            .collect::<Result<Vec<_>, KclError>>()?;
+        // Solve constraints.
+        let config = kcl_ezpz::Config::default().with_max_iterations(50);
+        let solve_result = if exec_state.mod_local.freedom_analysis {
+            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
+                let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
+                (outcome.outcome, Some(freedom_analysis))
+            })
+        } else {
+            kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+        };
+        // Build a combined list of all constraints (regular + optional) for conflict detection
+        let num_required_constraints = sketch_block_state.solver_constraints.len();
+        let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .chain(sketch_block_state.solver_optional_constraints.iter().cloned())
+            .collect();
+
+        let (solve_outcome, solve_analysis) = match solve_result {
+            Ok((solved, freedom)) => {
+                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                (outcome, freedom)
+            }
+            Err(failure) => {
+                match &failure.error {
+                    NonLinearSystemError::FaerMatrix { .. }
+                    | NonLinearSystemError::Faer { .. }
+                    | NonLinearSystemError::FaerSolve { .. }
+                    | NonLinearSystemError::FaerSvd(..)
+                    | NonLinearSystemError::DidNotConverge => {
+                        // Constraint solver failed to find a solution. Build a
+                        // solution that is the initial guesses.
+                        exec_state.warn(
+                            CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            annotations::WARN_SOLVER,
+                        );
+                        let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
+                        (
+                            Solved {
+                                final_values,
+                                iterations: Default::default(),
+                                warnings: failure.warnings,
+                                priority_solved: Default::default(),
+                                variables_in_conflicts: Default::default(),
+                            },
+                            None,
+                        )
+                    }
+                    NonLinearSystemError::EmptySystemNotAllowed
+                    | NonLinearSystemError::WrongNumberGuesses { .. }
+                    | NonLinearSystemError::MissingGuess { .. }
+                    | NonLinearSystemError::NotFound(..) => {
+                        // These indicate something's gone wrong in KCL or ezpz,
+                        // it's not a user error. We should investigate this.
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::error_1(
+                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                        );
+                        return Err(internal_err(
+                            format!("Internal error from constraint solver: {}", &failure.error),
+                            self,
+                        ));
+                    }
+                    _ => {
+                        // Catch all error case so that it's not a breaking change to publish new errors.
+                        return Err(internal_err(
+                            format!("Error from constraint solver: {}", &failure.error),
+                            self,
+                        ));
+                    }
+                }
+            }
+        };
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = solve_analysis;
+        // Propagate warnings.
+        for warning in &solve_outcome.warnings {
+            let message = if let Some(index) = warning.about_constraint.as_ref() {
+                format!("{}; constraint index {}", &warning.content, index)
+            } else {
+                format!("{}", &warning.content)
+            };
+            exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
+        }
+        // Substitute solutions back into sketch variables.
+        let solution_ty = solver_numeric_type(exec_state);
+        let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty, solve_analysis.as_ref())?;
+        let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
+        for unsolved_segment in &sketch_block_state.needed_by_engine {
+            solved_segments.push(substitute_sketch_var_in_segment(
+                unsolved_segment.clone(),
+                &solve_outcome,
+                solver_numeric_type(exec_state),
+                solve_analysis.as_ref(),
+            )?);
+        }
+        let solved_segments = solved_segments; // Remove mutability
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Store variable solutions so that the sketch refactoring API can
+            // write them back to the source. When editing a sketch block, we
+            // exit early so that the sketch block that we're editing is always
+            // the last one. Therefore, we should overwrite any previous
+            // solutions.
+            exec_state.mod_local.artifacts.var_solutions =
+                sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
+        }
+
+        // Create scene objects after unknowns are solved.
+        let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(scene_objects);
+        #[cfg(feature = "artifact-graph")]
+        {
+            let mut segment_object_ids = Vec::with_capacity(scene_objects.len());
+            for scene_object in scene_objects {
+                segment_object_ids.push(scene_object.id);
+                // Fill in placeholder scene objects.
+                exec_state.set_scene_object(scene_object);
+            }
+            // Update the sketch scene object with the segments.
+            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_object_by_id_mut(sketch_id) else {
+                let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
+                debug_assert!(false, "{}", &message);
+                return Err(internal_err(message, range));
+            };
+            let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+                let message = format!(
+                    "Expected Sketch object after it was just created to be a sketch kind; id={:?}, actual={:?}",
+                    sketch_id, sketch_object
+                );
+                debug_assert!(
+                    false,
+                    "{}; scene_objects={:#?}",
+                    &message, &exec_state.mod_local.artifacts.scene_objects
+                );
+                return Err(internal_err(message, range));
+            };
+            sketch.segments.extend(segment_object_ids);
+            // Update the sketch scene object with constraints.
+            let mut sketch_block_state = sketch_block_state;
+            sketch
+                .constraints
+                .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
+
+            // Push sketch solve operation
+            exec_state.push_op(Operation::SketchSolve {
+                sketch_id,
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
+        }
+
+        // If not in sketch mode, send everything to the engine.
+        if !exec_state.sketch_mode() {
+            create_segments_in_engine(&sketch_surface, &solved_segments, ctx, exec_state, range).await?;
+        }
+
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
-        // TODO: sketch-api: Implement sketch block execution
-        Ok(KclValue::Bool {
-            value: false,
+        let return_value = KclValue::Object {
+            value: variables,
+            constrainable: Default::default(),
             meta: vec![metadata],
+        };
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
         })
+    }
+}
+
+impl SketchBlock {
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
+        exec_state.mut_stack().push_new_env_for_call(parent);
     }
 }
 
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        // TODO: sketch-api: Implement sketch variable execution
-        if let Some(initial) = &self.initial {
-            Ok(KclValue::from_numeric_literal(initial, exec_state))
+        let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot use a sketch variable outside of a sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        };
+        let id = sketch_block_state.next_sketch_var_id();
+        let sketch_var = if let Some(initial) = &self.initial {
+            KclValue::from_sketch_var_literal(initial, id, exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
             };
 
-            Ok(KclValue::Number {
-                value: 0.0,
-                ty: NumericType::default(),
-                meta: vec![metadata],
-            })
-        }
+            KclValue::SketchVar {
+                value: Box::new(super::SketchVar {
+                    id,
+                    initial_value: 0.0,
+                    ty: NumericType::default(),
+                    meta: vec![metadata],
+                }),
+            }
+        };
+
+        let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot use a sketch variable outside of a sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        };
+        sketch_block_state.sketch_vars.push(sketch_var.clone());
+
+        Ok(sketch_var)
     }
 }
 
@@ -936,10 +1550,14 @@ fn apply_ascription(
 
 impl BinaryPart {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state)),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned(),
+            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
+            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -949,7 +1567,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
-            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await.map(KclValue::continue_),
         }
     }
 }
@@ -1064,10 +1682,16 @@ impl Node<Name> {
 }
 
 impl Node<MemberExpression> {
-    async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
+        // TODO: The order of execution is wrong. We should execute the object
+        // *before* the property.
         let property = Property::try_from(
             self.computed,
             self.property.clone(),
@@ -1079,28 +1703,392 @@ impl Node<MemberExpression> {
             StatementKind::Expression,
         )
         .await?;
-        let object = ctx
+        let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
+        let object = control_continue!(object_cf);
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
+            (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
+                "at" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => {
+                        match &segment.kind {
+                            UnsolvedSegmentKind::Point { position, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::HomArray {
+                                    value: vec![
+                                        KclValue::from_unsolved_expr(position[0].clone(), segment.meta.clone()),
+                                        KclValue::from_unsolved_expr(position[1].clone(), segment.meta.clone()),
+                                    ],
+                                    ty: RuntimeType::any(),
+                                }
+                                .continue_())
+                            }
+                            _ => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
+                    }
+                    SegmentRepr::Solved { segment } => {
+                        match &segment.kind {
+                            SegmentKind::Point { position, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [position[0].n, position[1].n],
+                                    position[0].ty,
+                                    segment.meta.clone(),
+                                )
+                                .continue_())
+                            }
+                            _ => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
+                    }
+                },
+                "start" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        UnsolvedSegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        id: segment.id,
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                    },
+                },
+                "end" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        UnsolvedSegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        id: segment.id,
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        SegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        id: segment.id,
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                    },
+                },
+                "center" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            center_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        id: segment.id,
+                                        object_id: *center_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                            freedom: *center_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                other => Err(KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("Property '{other}' not found in segment"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                )),
+            },
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -1112,7 +2100,7 @@ impl Node<MemberExpression> {
             },
             (KclValue::Object { value: map, .. }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
-                    Ok(value.to_owned())
+                    Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -1133,17 +2121,17 @@ impl Node<MemberExpression> {
                 if i == 0
                     && let Some(value) = map.get("x")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 if i == 1
                     && let Some(value) = map.get("y")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 if i == 2
                     && let Some(value) = map.get("z")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 let t = p.type_name();
                 let article = article_for(t);
@@ -1155,7 +2143,7 @@ impl Node<MemberExpression> {
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
-                    Ok(value.to_owned())
+                    Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -1168,7 +2156,7 @@ impl Node<MemberExpression> {
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
             // This is kind of a silly property, but it's possible it occurs in generic code or something.
-            (obj, Property::UInt(0), _) => Ok(obj),
+            (obj, Property::UInt(0), _) => Ok(obj.continue_()),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
@@ -1179,7 +2167,8 @@ impl Node<MemberExpression> {
             }
             (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
                 value: Box::new(value.sketch),
-            }),
+            }
+            .continue_()),
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1200,14 +2189,22 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
                 constrainable: false,
-            }),
+            }
+            .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
                     vec![self.clone().into()],
                 )))
             }
-            (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
+            (being_indexed, _, false) => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Only objects can have members accessed with dot notation, but you're trying to access {}",
+                    being_indexed.human_friendly_type()
+                ),
+                vec![self.clone().into()],
+            ))),
+            (being_indexed, _, true) => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Only arrays can be indexed, but you're trying to index {}",
                     being_indexed.human_friendly_type()
@@ -1219,16 +2216,94 @@ impl Node<MemberExpression> {
 }
 
 impl Node<BinaryExpression> {
-    #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let left_value = self.left.get_result(exec_state, ctx).await?;
-        let right_value = self.right.get_result(exec_state, ctx).await?;
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        enum State {
+            EvaluateLeft(Node<BinaryExpression>),
+            FromLeft {
+                node: Node<BinaryExpression>,
+            },
+            EvaluateRight {
+                node: Node<BinaryExpression>,
+                left: KclValue,
+            },
+            FromRight {
+                node: Node<BinaryExpression>,
+                left: KclValue,
+            },
+        }
+
+        let mut stack = vec![State::EvaluateLeft(self.clone())];
+        let mut last_result: Option<KclValue> = None;
+
+        while let Some(state) = stack.pop() {
+            match state {
+                State::EvaluateLeft(node) => {
+                    let left_part = node.left.clone();
+                    match left_part {
+                        BinaryPart::BinaryExpression(child) => {
+                            stack.push(State::FromLeft { node });
+                            stack.push(State::EvaluateLeft(*child));
+                        }
+                        part => {
+                            let left_value = part.get_result(exec_state, ctx).await?;
+                            let left_value = control_continue!(left_value);
+                            stack.push(State::EvaluateRight { node, left: left_value });
+                        }
+                    }
+                }
+                State::FromLeft { node } => {
+                    let Some(left_value) = last_result.take() else {
+                        return Err(Self::missing_result_error(&node));
+                    };
+                    stack.push(State::EvaluateRight { node, left: left_value });
+                }
+                State::EvaluateRight { node, left } => {
+                    let right_part = node.right.clone();
+                    match right_part {
+                        BinaryPart::BinaryExpression(child) => {
+                            stack.push(State::FromRight { node, left });
+                            stack.push(State::EvaluateLeft(*child));
+                        }
+                        part => {
+                            let right_value = part.get_result(exec_state, ctx).await?;
+                            let right_value = control_continue!(right_value);
+                            let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
+                            last_result = Some(result);
+                        }
+                    }
+                }
+                State::FromRight { node, left } => {
+                    let Some(right_value) = last_result.take() else {
+                        return Err(Self::missing_result_error(&node));
+                    };
+                    let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
+                    last_result = Some(result);
+                }
+            }
+        }
+
+        last_result
+            .map(KclValue::continue_)
+            .ok_or_else(|| Self::missing_result_error(self))
+    }
+
+    async fn apply_operator(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        left_value: KclValue,
+        right_value: KclValue,
+    ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
-            && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
                 (&left_value, &right_value)
         {
             return Ok(KclValue::String {
@@ -1240,7 +2315,7 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("union".to_owned()));
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1253,7 +2328,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("subtract".to_owned()));
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1264,28 +2339,24 @@ impl Node<BinaryExpression> {
                 .await?;
                 return Ok(result.into());
             }
-        } else if self.operator == BinaryOperator::And {
+        } else if self.operator == BinaryOperator::And
+            && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
+        {
             // Check if we have solids.
-            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
-                let result = crate::std::csg::inner_intersect(
-                    vec![*left.clone(), *right.clone()],
-                    Default::default(),
-                    exec_state,
-                    args,
-                )
-                .await?;
-                return Ok(result.into());
-            }
+            let args = Args::new_no_args(self.into(), ctx.clone(), Some("intersect".to_owned()));
+            let result = crate::std::csg::inner_intersect(
+                vec![*left.clone(), *right.clone()],
+                Default::default(),
+                exec_state,
+                args,
+            )
+            .await?;
+            return Ok(result.into());
         }
 
         // Check if we are doing logical operations on booleans.
         if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
-            let KclValue::Bool {
-                value: left_value,
-                meta: _,
-            } = left_value
-            else {
+            let KclValue::Bool { value: left_value, .. } = left_value else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
@@ -1294,11 +2365,7 @@ impl Node<BinaryExpression> {
                     vec![self.left.clone().into()],
                 )));
             };
-            let KclValue::Bool {
-                value: right_value,
-                meta: _,
-            } = right_value
-            else {
+            let KclValue::Bool { value: right_value, .. } = right_value else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
@@ -1313,6 +2380,363 @@ impl Node<BinaryExpression> {
                 _ => unreachable!(),
             };
             return Ok(KclValue::Bool { value: raw_value, meta });
+        }
+
+        // Check if we're doing equivalence in sketch mode.
+        if self.operator == BinaryOperator::Eq && exec_state.mod_local.sketch_block.is_some() {
+            match (&left_value, &right_value) {
+                // Same sketch variables.
+                (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
+                    if left_value.id == right_value.id =>
+                {
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                // Different sketch variables.
+                (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
+                    // TODO: sketch-api: Collapse the two sketch variables into
+                    // one constraint variable.
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "TODO: Different sketch variables".to_owned(),
+                        vec![self.into()],
+                    )));
+                }
+                // One sketch variable, one number.
+                (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
+                | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
+                    let number_value = normalize_to_solver_unit(
+                        input_number,
+                        input_number.into(),
+                        exec_state,
+                        "fixed constraint value",
+                    )?;
+                    let Some(n) = number_value.as_ty_f64() else {
+                        let message = format!(
+                            "Expected number after coercion, but found {}",
+                            number_value.human_friendly_type()
+                        );
+                        debug_assert!(false, "{}", &message);
+                        return Err(internal_err(message, self));
+                    };
+                    let constraint = Constraint::Fixed(var.id.to_constraint_id(self.as_source_range())?, n.n);
+                    let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                        let message = "Being inside a sketch block should have already been checked above".to_owned();
+                        debug_assert!(false, "{}", &message);
+                        return Err(internal_err(message, self));
+                    };
+                    sketch_block_state.solver_constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                // One sketch constraint, one number.
+                (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
+                | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
+                    let number_value = normalize_to_solver_unit(
+                        input_number,
+                        input_number.into(),
+                        exec_state,
+                        "fixed constraint value",
+                    )?;
+                    let Some(n) = number_value.as_ty_f64() else {
+                        let message = format!(
+                            "Expected number after coercion, but found {}",
+                            number_value.human_friendly_type()
+                        );
+                        debug_assert!(false, "{}", &message);
+                        return Err(internal_err(message, self));
+                    };
+                    match &constraint.kind {
+                        SketchConstraintKind::Distance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_constraint = Constraint::Distance(solver_pt0, solver_pt1, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::Distance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                            let range = self.as_source_range();
+                            let center = &points[0];
+                            let start = &points[1];
+                            // Find the arc segment that has matching center and start to get its end point
+                            let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
+                                return Err(internal_err(
+                                    "Being inside a sketch block should have already been checked above",
+                                    self,
+                                ));
+                            };
+                            // Find the arc segment with matching center and start
+                            let (constraint_name, is_diameter) = match &constraint.kind {
+                                SketchConstraintKind::Radius { .. } => ("radius", false),
+                                SketchConstraintKind::Diameter { .. } => ("diameter", true),
+                                _ => unreachable!(),
+                            };
+                            let arc_segment = sketch_block_state
+                                .needed_by_engine
+                                .iter()
+                                .find(|seg| {
+                                    matches!(&seg.kind, UnsolvedSegmentKind::Arc {
+                                        center_object_id,
+                                        start_object_id,
+                                        ..
+                                    } if *center_object_id == center.object_id && *start_object_id == start.object_id)
+                                })
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        format!("Could not find arc segment for {} constraint", constraint_name),
+                                        range,
+                                    )
+                                })?;
+                            let UnsolvedSegmentKind::Arc { end, .. } = &arc_segment.kind else {
+                                return Err(internal_err("Expected arc segment", range));
+                            };
+                            // Extract end point coordinates
+                            let (end_x_var, end_y_var) = match (&end[0], &end[1]) {
+                                (UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)) => (*end_x, *end_y),
+                                _ => {
+                                    return Err(internal_err(
+                                        "Arc end point must have sketch vars in all coordinates",
+                                        range,
+                                    ));
+                                }
+                            };
+                            let solver_arc = kcl_ezpz::datatypes::inputs::DatumCircularArc {
+                                center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                    center.vars.x.to_constraint_id(range)?,
+                                    center.vars.y.to_constraint_id(range)?,
+                                ),
+                                start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                    start.vars.x.to_constraint_id(range)?,
+                                    start.vars.y.to_constraint_id(range)?,
+                                ),
+                                end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                    end_x_var.to_constraint_id(range)?,
+                                    end_y_var.to_constraint_id(range)?,
+                                ),
+                            };
+                            // Use ArcRadius constraint from ezpz solver
+                            // Diameter is twice the radius, so we divide by 2 before passing to the solver
+                            let radius_value = if is_diameter { n.n / 2.0 } else { n.n };
+                            let solver_constraint = Constraint::ArcRadius(solver_arc, radius_value);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::ArtifactId;
+
+                                // Find the arc segment object ID from the sketch block state
+                                let arc_object_id = sketch_block_state
+                                    .needed_by_engine
+                                    .iter()
+                                    .find(|seg| {
+                                        matches!(&seg.kind, UnsolvedSegmentKind::Arc {
+                                            center_object_id,
+                                            start_object_id,
+                                            ..
+                                        } if *center_object_id == center.object_id && *start_object_id == start.object_id)
+                                    })
+                                    .map(|seg| seg.object_id)
+                                    .ok_or_else(|| {
+                                        internal_err(
+                                            format!(
+                                                "Could not find arc segment object ID for {} constraint",
+                                                constraint_name
+                                            ),
+                                            range,
+                                        )
+                                    })?;
+
+                                let constraint = if is_diameter {
+                                    use crate::frontend::sketch::Diameter;
+                                    crate::front::Constraint::Diameter(Diameter {
+                                        arc: arc_object_id,
+                                        diameter: n.try_into().map_err(|_| {
+                                            internal_err("Failed to convert diameter units numeric suffix:", range)
+                                        })?,
+                                    })
+                                } else {
+                                    use crate::frontend::sketch::Radius;
+                                    crate::front::Constraint::Radius(Radius {
+                                        arc: arc_object_id,
+                                        radius: n.try_into().map_err(|_| {
+                                            internal_err("Failed to convert radius units numeric suffix:", range)
+                                        })?,
+                                    })
+                                };
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::HorizontalDistance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            // Horizontal distance: p1.x - p0.x = n
+                            // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
+                            // So we swap the points to get p1.x - p0.x = n
+                            let solver_constraint =
+                                kcl_ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::HorizontalDistance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::VerticalDistance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            // Vertical distance: p1.y - p0.y = n
+                            // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
+                            // So we swap the points to get p1.y - p0.y = n
+                            let solver_constraint = kcl_ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::VerticalDistance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                    }
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                _ => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot create an equivalence constraint between values of these types: {} and {}",
+                            left_value.human_friendly_type(),
+                            right_value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    )));
+                }
+            }
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;
@@ -1385,6 +2809,10 @@ impl Node<BinaryExpression> {
         Ok(value)
     }
 
+    fn missing_result_error(node: &Node<BinaryExpression>) -> KclError {
+        internal_err("missing result while evaluating binary expression", node)
+    }
+
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
         if ty == &NumericType::Unknown {
             let sr = self.as_source_range();
@@ -1402,130 +2830,155 @@ impl Node<BinaryExpression> {
 }
 
 impl Node<UnaryExpression> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        if self.operator == UnaryOperator::Not {
-            let value = self.argument.get_result(exec_state, ctx).await?;
-            let KclValue::Bool {
-                value: bool_value,
-                meta: _,
-            } = value
-            else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Cannot apply unary operator ! to non-boolean value: {}",
-                        value.human_friendly_type()
-                    ),
-                    vec![self.into()],
-                )));
-            };
-            let meta = vec![Metadata {
-                source_range: self.into(),
-            }];
-            let negated = KclValue::Bool {
-                value: !bool_value,
-                meta,
-            };
-
-            return Ok(negated);
-        }
-
-        let value = &self.argument.get_result(exec_state, ctx).await?;
-        let err = || {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "You can only negate numbers, planes, or lines, but this is a {}",
-                    value.human_friendly_type()
-                ),
-                vec![self.into()],
-            ))
-        };
-        match value {
-            KclValue::Number { value, ty, .. } => {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        match self.operator {
+            UnaryOperator::Not => {
+                let value = self.argument.get_result(exec_state, ctx).await?;
+                let value = control_continue!(value);
+                let KclValue::Bool {
+                    value: bool_value,
+                    meta: _,
+                } = value
+                else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot apply unary operator ! to non-boolean value: {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    )));
+                };
                 let meta = vec![Metadata {
                     source_range: self.into(),
                 }];
-                Ok(KclValue::Number {
-                    value: -value,
+                let negated = KclValue::Bool {
+                    value: !bool_value,
                     meta,
-                    ty: *ty,
-                })
-            }
-            KclValue::Plane { value } => {
-                let mut plane = value.clone();
-                if plane.info.x_axis.x != 0.0 {
-                    plane.info.x_axis.x *= -1.0;
-                }
-                if plane.info.x_axis.y != 0.0 {
-                    plane.info.x_axis.y *= -1.0;
-                }
-                if plane.info.x_axis.z != 0.0 {
-                    plane.info.x_axis.z *= -1.0;
-                }
-
-                plane.value = PlaneType::Uninit;
-                plane.id = exec_state.next_uuid();
-                Ok(KclValue::Plane { value: plane })
-            }
-            KclValue::Object {
-                value: values, meta, ..
-            } => {
-                // Special-case for negating line-like objects.
-                let Some(direction) = values.get("direction") else {
-                    return Err(err());
                 };
 
-                let direction = match direction {
-                    KclValue::Tuple { value: values, meta } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
-                                    meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
-
-                        KclValue::Tuple {
-                            value: values,
-                            meta: meta.clone(),
+                Ok(negated.continue_())
+            }
+            UnaryOperator::Neg => {
+                let value = self.argument.get_result(exec_state, ctx).await?;
+                let value = control_continue!(value);
+                let err = || {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only negate numbers, planes, or lines, but this is a {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))
+                };
+                match &value {
+                    KclValue::Number { value, ty, .. } => {
+                        let meta = vec![Metadata {
+                            source_range: self.into(),
+                        }];
+                        Ok(KclValue::Number {
+                            value: -value,
+                            meta,
+                            ty: *ty,
                         }
+                        .continue_())
                     }
-                    KclValue::HomArray {
-                        value: values,
-                        ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                    KclValue::Plane { value } => {
+                        let mut plane = value.clone();
+                        if plane.info.x_axis.x != 0.0 {
+                            plane.info.x_axis.x *= -1.0;
+                        }
+                        if plane.info.x_axis.y != 0.0 {
+                            plane.info.x_axis.y *= -1.0;
+                        }
+                        if plane.info.x_axis.z != 0.0 {
+                            plane.info.x_axis.z *= -1.0;
+                        }
+
+                        plane.id = exec_state.next_uuid();
+                        plane.object_id = None;
+                        Ok(KclValue::Plane { value: plane }.continue_())
+                    }
+                    KclValue::Object {
+                        value: values, meta, ..
                     } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
+                        // Special-case for negating line-like objects.
+                        let Some(direction) = values.get("direction") else {
+                            return Err(err());
+                        };
+
+                        let direction = match direction {
+                            KclValue::Tuple { value: values, meta } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
+
+                                KclValue::Tuple {
+                                    value: values,
                                     meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
+                                }
+                            }
+                            KclValue::HomArray {
+                                value: values,
+                                ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                            } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::HomArray {
-                            value: values,
-                            ty: ty.clone(),
+                                KclValue::HomArray {
+                                    value: values,
+                                    ty: ty.clone(),
+                                }
+                            }
+                            _ => return Err(err()),
+                        };
+
+                        let mut value = values.clone();
+                        value.insert("direction".to_owned(), direction);
+                        Ok(KclValue::Object {
+                            value,
+                            meta: meta.clone(),
+                            constrainable: false,
                         }
+                        .continue_())
                     }
-                    _ => return Err(err()),
-                };
-
-                let mut value = values.clone();
-                value.insert("direction".to_owned(), direction);
-                Ok(KclValue::Object {
-                    value,
-                    meta: meta.clone(),
-                    constrainable: false,
-                })
+                    _ => Err(err()),
+                }
             }
-            _ => Err(err()),
+            UnaryOperator::Plus => {
+                let operand = self.argument.get_result(exec_state, ctx).await?;
+                let operand = control_continue!(operand);
+                match operand {
+                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only apply unary + to numbers or planes, but this is a {}",
+                            operand.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))),
+                }
+            }
         }
     }
 }
@@ -1535,7 +2988,7 @@ pub(crate) async fn execute_pipe_body(
     body: &[Expr],
     source_range: SourceRange,
     ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     let Some((first, body)) = body.split_first() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Pipe expressions cannot be empty".to_owned(),
@@ -1552,6 +3005,7 @@ pub(crate) async fn execute_pipe_body(
     let output = ctx
         .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
         .await?;
+    let output = control_continue!(output);
 
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -1572,7 +3026,7 @@ async fn inner_execute_pipe_body(
     exec_state: &mut ExecState,
     body: &[Expr],
     ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     for expression in body {
         if let Expr::TagDeclarator(_) = expression {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1586,11 +3040,12 @@ async fn inner_execute_pipe_body(
         let output = ctx
             .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
+        let output = control_continue!(output);
         exec_state.mod_local.pipe_value = Some(output);
     }
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
     let final_output = exec_state.mod_local.pipe_value.take().unwrap();
-    Ok(final_output)
+    Ok(final_output.continue_())
 }
 
 impl Node<TagDeclarator> {
@@ -1605,7 +3060,7 @@ impl Node<TagDeclarator> {
 
         exec_state
             .mut_stack()
-            .add(self.name.clone(), memory_item.clone(), self.into())?;
+            .add(self.name.clone(), memory_item, self.into())?;
 
         Ok(self.into())
     }
@@ -1613,7 +3068,11 @@ impl Node<TagDeclarator> {
 
 impl Node<ArrayExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
@@ -1623,6 +3082,7 @@ impl Node<ArrayExpression> {
             let value = ctx
                 .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value);
 
             results.push(value);
         }
@@ -1630,13 +3090,18 @@ impl Node<ArrayExpression> {
         Ok(KclValue::HomArray {
             value: results,
             ty: RuntimeType::Primitive(PrimitiveType::Any),
-        })
+        }
+        .continue_())
     }
 }
 
 impl Node<ArrayRangeExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let metadata = Metadata::from(&self.start_element);
         let start_val = ctx
             .execute_expr(
@@ -1647,33 +3112,42 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let (start, start_ty) = start_val
-            .as_int_with_ty()
+        let start_val = control_continue!(start_val);
+        let start = start_val
+            .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", start_val.human_friendly_type()),
+                format!(
+                    "Expected number for range start but found {}",
+                    start_val.human_friendly_type()
+                ),
                 vec![self.into()],
             )))?;
         let metadata = Metadata::from(&self.end_element);
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let (end, end_ty) = end_val
-            .as_int_with_ty()
-            .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", end_val.human_friendly_type()),
-                vec![self.into()],
-            )))?;
+        let end_val = control_continue!(end_val);
+        let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Expected number for range end but found {}",
+                end_val.human_friendly_type()
+            ),
+            vec![self.into()],
+        )))?;
 
-        if start_ty != end_ty {
-            let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
-            let start = fmt::human_display_number(start.n, start.ty);
-            let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
-            let end = fmt::human_display_number(end.n, end.ty);
+        let (start, end, ty) = NumericType::combine_range(start, end, exec_state, self.as_source_range())?;
+        let Some(start) = crate::try_f64_to_i64(start) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Range start and end must be of the same type, but found {start} and {end}"),
+                format!("Range start must be an integer, but found {start}"),
                 vec![self.into()],
             )));
-        }
+        };
+        let Some(end) = crate::try_f64_to_i64(end) else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Range end must be an integer, but found {end}"),
+                vec![self.into()],
+            )));
+        };
 
         if end < start {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1697,25 +3171,30 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: start_ty,
+                    ty,
                     meta: meta.clone(),
                 })
                 .collect(),
-            ty: RuntimeType::Primitive(PrimitiveType::Number(start_ty)),
-        })
+            ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
+        }
+        .continue_())
     }
 }
 
 impl Node<ObjectExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let mut object = HashMap::with_capacity(self.properties.len());
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
                 .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-
+            let result = control_continue!(result);
             object.insert(property.key.name.clone(), result);
         }
 
@@ -1725,7 +3204,8 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
             constrainable: false,
-        })
+        }
+        .continue_())
     }
 }
 
@@ -1750,9 +3230,13 @@ fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclEr
 
 impl Node<IfExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         // Check the `if` branch.
-        let cond = ctx
+        let cond_value = ctx
             .execute_expr(
                 &self.cond,
                 exec_state,
@@ -1760,10 +3244,10 @@ impl Node<IfExpression> {
                 &[],
                 StatementKind::Expression,
             )
-            .await?
-            .get_bool()?;
-        if cond {
-            let block_result = ctx.exec_block(&self.then_val, exec_state, BodyType::Block).await?;
+            .await?;
+        let cond_value = control_continue!(cond_value);
+        if cond_value.get_bool()? {
+            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
             // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1772,7 +3256,7 @@ impl Node<IfExpression> {
 
         // Check any `else if` branches.
         for else_if in &self.else_ifs {
-            let cond = ctx
+            let cond_value = ctx
                 .execute_expr(
                     &else_if.cond,
                     exec_state,
@@ -1780,10 +3264,10 @@ impl Node<IfExpression> {
                     &[],
                     StatementKind::Expression,
                 )
-                .await?
-                .get_bool()?;
-            if cond {
-                let block_result = ctx.exec_block(&else_if.then_val, exec_state, BodyType::Block).await?;
+                .await?;
+            let cond_value = control_continue!(cond_value);
+            if cond_value.get_bool()? {
+                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
                 // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1792,7 +3276,7 @@ impl Node<IfExpression> {
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&self.final_else, exec_state, BodyType::Block)
+        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
             .await
             .map(|expr| expr.unwrap())
     }
@@ -1832,6 +3316,14 @@ impl Property {
         let prop_value = ctx
             .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
             .await?;
+        let prop_value = match prop_value.control {
+            ControlFlowKind::Continue => prop_value.into_value(),
+            ControlFlowKind::Exit => {
+                let message = "Early return inside array brackets is currently not supported".to_owned();
+                debug_assert!(false, "{}", &message);
+                return Err(internal_err(message, sr));
+            }
+        };
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -1875,7 +3367,11 @@ impl Property {
 
 impl Node<PipeExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }
@@ -2106,10 +3602,10 @@ d = b + c
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .map_err(|err| {
-                        KclError::new_internal(KclErrorDetails::new(
+                        internal_err(
                             format!("Failed to create mock engine connection: {err}"),
-                            vec![SourceRange::default()],
-                        ))
+                            SourceRange::default(),
+                        )
                     })
                     .unwrap(),
             )),
@@ -2357,10 +3853,75 @@ y = x[0mm + 1]
 
     #[tokio::test(flavor = "multi_thread")]
     async fn getting_property_of_plane() {
-        // let ast = include_str!("../../tests/inputs/planestuff.kcl");
         let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
-
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_artifacts_from_within_hole_call() {
+        // Test that executing stdlib KCL, like the `hole` function
+        // (which is actually implemented in KCL not Rust)
+        // does not generate artifacts from within the stdlib code,
+        // only from the user code.
+        let ast = std::fs::read_to_string("tests/inputs/sample_hole.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        // There should be 5, for sketching the cube and applying the hole.
+        // If the stdlib internal calls are being tracked, that's a bug,
+        // and the actual number of operations will be something like 35.
+        let expected = 5;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should not generate an operation,
+        // because its 'feature_tree' attribute has been set to false.
+        let ast = std::fs::read_to_string("tests/inputs/feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 0;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should generate an operation,
+        // because @(feature_tree) defaults to true.
+        let ast = std::fs::read_to_string("tests/inputs/no_feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 2;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+        assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
+        assert!(matches!(actual_operations[1], Operation::GroupEnd));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2386,5 +3947,19 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 1);
         assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cannot_solid_extrude_an_open_profile() {
+        // This should fail during mock execution, because KCL should catch
+        // that the profile is not closed.
+        let code = std::fs::read_to_string("tests/inputs/cannot_solid_extrude_an_open_profile.kcl").unwrap();
+        let program = crate::Program::parse_no_errs(&code).expect("should parse");
+        let exec_ctxt = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&exec_ctxt);
+
+        let err = exec_ctxt.run(&program, &mut exec_state).await.unwrap_err().error;
+        assert!(matches!(err, KclError::Semantic { .. }));
+        exec_ctxt.close().await;
     }
 }

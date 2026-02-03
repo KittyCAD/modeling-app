@@ -16,6 +16,7 @@ import pow, sqrt from "std::math"
 /// assert(v2[1], isEqualTo = 12)
 /// assert(v2[2], isEqualTo = 13)
 /// ```
+@(feature_tree = false)
 export fn add(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
@@ -37,6 +38,7 @@ export fn add(@u: [number], v: [number]): [number] {
 /// assert(v2[1], isEqualTo = 8)
 /// assert(v2[2], isEqualTo = 7)
 /// ```
+@(feature_tree = false)
 export fn sub(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
@@ -59,6 +61,7 @@ export fn sub(@u: [number], v: [number]): [number] {
 /// assert(v2[1], isEqualTo = 20)
 /// assert(v2[2], isEqualTo = 30)
 /// ```
+@(feature_tree = false)
 export fn mul(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
@@ -81,6 +84,7 @@ export fn mul(@u: [number], v: [number]): [number] {
 /// assert(v2[1], isEqualTo = 5)
 /// assert(v2[2], isEqualTo = 3.333, tolerance = 0.01)
 /// ```
+@(feature_tree = false)
 export fn div(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
@@ -100,6 +104,7 @@ export fn div(@u: [number], v: [number]): [number] {
 /// assert(vz[1], isEqualTo = 0)
 /// assert(vz[2], isEqualTo = 1)
 /// ```
+@(feature_tree = false)
 export fn cross(@u: Point3d, v: Point3d) {
   return [
     u[1] * v[2] - (u[2] * v[1]),
@@ -115,6 +120,7 @@ export fn cross(@u: Point3d, v: Point3d) {
 /// dotprod = vector::dot(u, v)
 /// assert(dotprod, isEqualTo = 12)
 /// ```
+@(feature_tree = false)
 export fn dot(@u: [number], v: [number]): number {
   l0 = count(u)
   l1 = count(v)
@@ -135,6 +141,7 @@ export fn dot(@u: [number], v: [number]): number {
 /// m = vector::magnitude(v)
 /// assert(m, isEqualTo = 5)
 /// ```
+@(feature_tree = false)
 export fn magnitude(@v: [number]): number {
   return reduce(
     [0..<count(v)],
@@ -154,6 +161,7 @@ export fn magnitude(@v: [number]): number {
 /// assert(normed[0], isEqualTo = 0.6)
 /// assert(normed[1], isEqualTo = 0.8)
 /// ```
+@(feature_tree = false)
 export fn normalize(@v: [number]): [number] {
   mag = magnitude(v)
   return map(v, f = fn(@i) { return i/mag })

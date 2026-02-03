@@ -1474,8 +1474,6 @@ description: Result of parsing parametric-shelf-unit.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Side Panels ---",
           "// Left and right vertical structural walls."
         ],
@@ -1947,8 +1945,6 @@ description: Result of parsing parametric-shelf-unit.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Floor Base / Plinth ---",
           "// Supporting base element between side panels."
         ],
@@ -2149,8 +2145,6 @@ description: Result of parsing parametric-shelf-unit.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- First Shelf Board ---"
         ],
         "start": 0,
@@ -2876,8 +2870,6 @@ description: Result of parsing parametric-shelf-unit.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// --- Shelf Stack ---"
         ],
         "start": 0,
@@ -3253,6 +3245,54 @@ description: Result of parsing parametric-shelf-unit.kcl
               "type": "newLine"
             }
           }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
         ]
       },
       "startNodes": [
@@ -3277,6 +3317,18 @@ description: Result of parsing parametric-shelf-unit.kcl
           "value": {
             "type": "blockComment",
             "value": "A modular and adjustable 3D shelf model designed for basic furniture design.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Construction",
             "style": "line"
           }
         },

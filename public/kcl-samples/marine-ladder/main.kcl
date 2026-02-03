@@ -1,8 +1,6 @@
 // Marine Ladder
 // A parametric vertical or steep-access ladder commonly used on ships, in engine rooms, or in industrial environments. It features two bent side rails and evenly spaced cylindrical rungs for compact, reinforced access.
-
-
-
+// Categories: Construction
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
@@ -32,6 +30,7 @@ railPath = startSketchOn(YZ)
        ladderHeight - (ladderReach / 2)
      ])
   |> yLine(length = -ladderReach / 2) // vertical tip-down
+
 
 railSection = startSketchOn(XY)
   |> circle(center = [0, 0], radius = railDiameter / 2)

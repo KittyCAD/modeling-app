@@ -4,7 +4,7 @@ import {
 } from '@src/lib/settings/initialKeybindings'
 
 interface KeybindingSectionsListProps {
-  scrollRef: React.RefObject<HTMLDivElement>
+  scrollRef: React.RefObject<HTMLDivElement | null>
 }
 
 export function KeybindingsSectionsList({

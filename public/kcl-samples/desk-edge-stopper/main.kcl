@@ -1,8 +1,6 @@
 // Desk-Edge Stopper
 // 3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.
-
-
-
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 
@@ -132,16 +130,16 @@ fillets = fillet(
   radius = 1,
   tags = [
     getCommonEdge(faces = [
-  innerFaceOfTheUprofileBottom,
-  innerFaceOfTheUProfileLeftSide
-]),
+      innerFaceOfTheUprofileBottom,
+      innerFaceOfTheUProfileLeftSide
+    ]),
     getCommonEdge(faces = [
-  innerFaceOfTheUprofileRightSide,
-  innerFaceOfTheUprofileBottom
-]),
+      innerFaceOfTheUprofileRightSide,
+      innerFaceOfTheUprofileBottom
+    ]),
     getCommonEdge(faces = [
-  innerFaceOfTheWall,
-  upperFaceOfTheUprofile
-])
+      innerFaceOfTheWall,
+      upperFaceOfTheUprofile
+    ])
   ],
 )

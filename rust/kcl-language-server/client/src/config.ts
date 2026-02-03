@@ -37,6 +37,7 @@ export class Config {
   constructor(ctx: vscode.ExtensionContext) {
     this.globalStorageUri = ctx.globalStorageUri
     vscode.workspace.onDidChangeConfiguration(
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- this arg is provided on next line.
       this.onDidChangeConfiguration,
       this,
       ctx.subscriptions
@@ -104,6 +105,7 @@ export class Config {
    * ```
    * So this getter handles this quirk by not requiring the caller to use postfix `!`
    */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   private get<T>(path: string): T | undefined {
     return prepareVSCodeConfig(this.cfg.get<T>(path))
   }

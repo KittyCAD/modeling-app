@@ -1,0 +1,14 @@
+square = fn sq(@x) {
+  return x * x
+}
+
+result = map([1, 2], f = fn inc(@x) {
+  return x + 1
+})
+
+assert(result[0], isEqualTo = 2)
+assert(result[1], isEqualTo = 3)
+assert(count(result), isEqualTo = 2)
+
+// Make sure inc was bound.
+assert(inc(41), isEqualTo = 42)

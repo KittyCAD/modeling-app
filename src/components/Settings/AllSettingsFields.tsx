@@ -22,12 +22,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import {
-  codeManager,
-  kclManager,
-  settingsActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import {
@@ -35,6 +30,7 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { AppMachineEventType } from '@src/lib/types'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -46,6 +42,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
+    const { appActor, kclManager, settingsActor, useSettings, systemIOActor } =
+      useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = useSettings()
@@ -71,13 +69,13 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        codeManager,
         kclManager,
+        systemIOActor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
       if (!isDesktop()) {
-        navigate('..')
+        void navigate('..')
       }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)
@@ -103,11 +101,8 @@ export const AllSettingsFields = forwardRef(
                   {decamelize(category, { separator: ' ' })}
                 </h2>
                 {Object.entries(categorySettings)
-                  .filter(
-                    // Filter out settings that don't have a Component or inputType
-                    // or are hidden on the current level or the current platform
-                    (item: [string, Setting<unknown>]) =>
-                      shouldShowSettingInput(item[1], searchParamTab)
+                  .filter((item: [string, Setting<unknown>]) =>
+                    shouldShowSettingInput(item[1], searchParamTab)
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting
@@ -229,6 +224,24 @@ export const AllSettingsFields = forwardRef(
                 Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
+          </SettingsSection>
+          <SettingsSection
+            title="Layout"
+            description="Reset to the default layout"
+          >
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                appActor.send({ type: AppMachineEventType.ResetLayout })
+              }}
+              iconStart={{
+                icon: 'refresh',
+                size: 'sm',
+                className: 'p-1',
+              }}
+            >
+              Reset Layout
+            </ActionButton>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
             About Design Studio

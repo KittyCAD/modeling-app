@@ -1,11 +1,18 @@
+// Import globals setup first to ensure 'expect' and 'fetch' are available
+import '@src/setupTests-globals'
 import '@testing-library/jest-dom'
-import fetch from 'node-fetch'
+
+import { cleanup } from '@testing-library/react'
+import { afterEach } from 'vitest'
+import { Vector2 } from 'three'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'
 
-// @ts-ignore
-globalThis.fetch = fetch
+// Explicit cleanup is needed to prevent DOM elements persisting between tests
+afterEach(() => {
+  cleanup()
+})
 
 class MockRTCPeerConnection {
   createDataChannel() {
@@ -57,6 +64,10 @@ vi.mock('three', async () => {
       setSize() {}
       render() {}
       dispose() {}
+      // Engine Connection needs this in the modelingMachine.test.ts files
+      getDrawingBufferSize() {
+        return new Vector2()
+      }
       // Add any other methods or properties that are used in your components
     },
     // Mock other 'three' exports if necessary
@@ -66,14 +77,14 @@ vi.mock('three', async () => {
 /// Cleanup the engine connection if we had one.
 /*
 import { afterAll } from 'vitest'
-import { engineCommandManager } from '@src/lib/singletons'
+import { singletons } from '@src/lib/app'
 
 afterEach(async () => {
-  const ws = engineCommandManager.engineConnection?.websocket as any
+  const ws = singletons.engineCommandManager.engineConnection?.websocket as any
   if (ws) {
     await finishWebSocket(ws)
   }
-  engineCommandManager.tearDown()
+  singletons.engineCommandManager.tearDown()
 })
 
 // 1️⃣  make timers fake

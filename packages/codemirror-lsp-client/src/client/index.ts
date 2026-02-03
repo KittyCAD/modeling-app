@@ -35,7 +35,7 @@ interface LSPRequestMap {
   'textDocument/rename': [LSP.RenameParams, LSP.WorkspaceEdit | null]
   'textDocument/prepareRename': [
     LSP.PrepareRenameParams,
-    LSP.Range | LSP.PrepareRenameResult | null,
+    LSP.PrepareRenameResult | null,
   ]
   'textDocument/definition': [
     LSP.DefinitionParams,
@@ -246,7 +246,7 @@ export class LanguageServerClient {
     return this.client.request(method, params) as Promise<LSPRequestMap[K][1]>
   }
 
-  requestCustom<P, R>(method: string, params: P): Promise<R> {
+  requestCustom<R>(method: string, params: unknown): Promise<R> {
     return this.client.request(method, params) as Promise<R>
   }
 
@@ -257,7 +257,7 @@ export class LanguageServerClient {
     return this.client.notify(method, params)
   }
 
-  notifyCustom<P>(method: string, params: P): void {
+  notifyCustom(method: string, params: unknown): void {
     return this.client.notify(method, params)
   }
 

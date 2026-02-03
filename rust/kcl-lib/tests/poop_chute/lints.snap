@@ -1,0 +1,206 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints poop_chute.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'wall_thickness'",
+    "pos": [
+      0,
+      14,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'wall_thickness' to 'wallThickness'",
+      "insert": "wallThickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfront_length = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wallThickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wallThickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wallThickness / 2)\n  |> xLine(length = -wallThickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wallThickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wallThickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wallThickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wallThickness / 2)\n  |> xLine(length = -wallThickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wallThickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'back_walls_width'",
+    "pos": [
+      23,
+      39,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'back_walls_width' to 'backWallsWidth'",
+      "insert": "wall_thickness = 0.125\nbackWallsWidth = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfront_length = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [backWallsWidth / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = backWallsWidth, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = backWallsWidth / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [backWallsWidth / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = backWallsWidth, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = backWallsWidth / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'front_walls_width'",
+    "pos": [
+      44,
+      61,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'front_walls_width' to 'frontWallsWidth'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfrontWallsWidth = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfront_length = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'back_length'",
+    "pos": [
+      102,
+      113,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'back_length' to 'backLength'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nbackLength = 7\nexit_height = 1\nfront_length = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = backLength - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'exit_height'",
+    "pos": [
+      118,
+      129,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'exit_height' to 'exitHeight'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexitHeight = 1\nfront_length = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'front_length'",
+    "pos": [
+      134,
+      146,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'front_length' to 'frontLength'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfrontLength = 6\nFx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Fx'",
+    "pos": [
+      151,
+      153,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Fx' to 'fx'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfront_length = 6\nfx = 0.5\nFy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'Fy'",
+    "pos": [
+      160,
+      162,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'Fy' to 'fy'",
+      "insert": "wall_thickness = 0.125\nback_walls_width = 2\nfront_walls_width = 2.5\nheight = 5.5\nfilletRadius = 0.050\nback_length = 7\nexit_height = 1\nfront_length = 6\nFx = 0.5\nfy = 0.5\n\nsketch001 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\npart001 = revolve(\n  sketch001,\n  angle = 90,\n  axis = {\n    direction = [1.0, 0.0],\n    origin = [0.0, height + .0000001]\n  },\n)\n\nsketch002 = startSketchOn(-YZ)\n  |> startProfile(at = [back_walls_width / 2, 0])\n  |> xLine(length = wall_thickness / 2)\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)\n  |> yLine(endAbsolute = height)\n  |> xLine(length = -wall_thickness)\n  |> yLine(endAbsolute = segEndY(seg01))\n  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)\n  |> xLine(length = -wall_thickness)\n  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)\n  |> yLine(endAbsolute = height)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = segEndY(seg02))\n  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)\n  |> close(%)\n  |> extrude(length = back_length - height)\n",
+      "source_range": [
+        0,
+        1671,
+        0
+      ]
+    }
+  }
+]

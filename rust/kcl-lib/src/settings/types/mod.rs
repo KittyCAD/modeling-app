@@ -7,9 +7,8 @@ use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
-use validator::{Validate, ValidateRange};
+use validator::Validate;
 
-const DEFAULT_THEME_COLOR: f64 = 264.5;
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
 
 /// User specific settings for the app.
@@ -76,10 +75,6 @@ pub struct AppSettings {
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
-    /// Permanently dismiss the banner warning to download the desktop app.
-    /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub dismiss_web_banner: bool,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,
@@ -150,16 +145,6 @@ impl From<FloatOrInt> for f64 {
     }
 }
 
-impl From<FloatOrInt> for AppColor {
-    fn from(float_or_int: FloatOrInt) -> Self {
-        match float_or_int {
-            FloatOrInt::String(s) => s.parse::<f64>().unwrap().into(),
-            FloatOrInt::Float(f) => f.into(),
-            FloatOrInt::Int(i) => (i as f64).into(),
-        }
-    }
-}
-
 /// The settings for the theme of the app.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
@@ -168,47 +153,6 @@ pub struct AppearanceSettings {
     /// The overall theme of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub theme: AppTheme,
-    /// The hue of the primary theme color for the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub color: AppColor,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
-#[ts(export)]
-#[serde(transparent)]
-pub struct AppColor(pub f64);
-
-impl Default for AppColor {
-    fn default() -> Self {
-        Self(DEFAULT_THEME_COLOR)
-    }
-}
-
-impl From<AppColor> for f64 {
-    fn from(color: AppColor) -> Self {
-        color.0
-    }
-}
-
-impl From<f64> for AppColor {
-    fn from(color: f64) -> Self {
-        Self(color)
-    }
-}
-
-impl Validate for AppColor {
-    fn validate(&self) -> Result<(), validator::ValidationErrors> {
-        if !self.0.validate_range(Some(0.0), None, None, Some(360.0)) {
-            let mut errors = validator::ValidationErrors::new();
-            let mut err = validator::ValidationError::new("color");
-            err.add_param(std::borrow::Cow::from("min"), &0.0);
-            err.add_param(std::borrow::Cow::from("exclusive_max"), &360.0);
-            errors.add("color", err);
-            return Err(errors);
-        }
-        Ok(())
-    }
 }
 
 /// The overall appearance of the app.
@@ -269,12 +213,12 @@ pub struct ModelingSettings {
     /// The controls for how to navigate the 3D view.
     #[serde(default, skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
+    /// Which type of orientation gizmo to use.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub gizmo_type: GizmoType,
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_touch_controls: DefaultTrue,
-    /// Toggle copilot features
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_copilot: bool,
     /// Toggle new sketch mode implementation
     #[serde(default, skip_serializing_if = "is_default")]
     pub use_new_sketch_mode: bool,
@@ -317,8 +261,8 @@ impl Default for ModelingSettings {
             camera_projection: Default::default(),
             camera_orbit: Default::default(),
             mouse_controls: Default::default(),
+            gizmo_type: Default::default(),
             enable_touch_controls: Default::default(),
-            enable_copilot: Default::default(),
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
@@ -403,6 +347,19 @@ pub enum CameraOrbitType {
     /// Orbit using a trackball camera movement.
     #[display("trackball")]
     Trackball,
+}
+
+/// Which type of orientation gizmo to use.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum GizmoType {
+    /// 3D cube gizmo
+    #[default]
+    Cube,
+    /// 3-axis gizmo
+    Axis,
 }
 
 /// Settings that affect the behavior of the KCL text editor.
@@ -592,10 +549,9 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
-    use validator::Validate;
 
     use super::{
-        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
         ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
         TextEditorSettings, UnitLength,
     };
@@ -642,10 +598,7 @@ text_wrapping = true"#;
             settings: Settings {
                 app: AppSettings {
                     onboarding_status: OnboardingStatus::Dismissed,
-                    appearance: AppearanceSettings {
-                        theme: AppTheme::Dark,
-                        color: AppColor(264.5),
-                    },
+                    appearance: AppearanceSettings { theme: AppTheme::Dark },
                     ..Default::default()
                 },
                 modeling: ModelingSettings {
@@ -691,57 +644,5 @@ enable_ssao = false
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
-    }
-
-    #[test]
-    fn test_color_validation() {
-        let color = AppColor(360.0);
-
-        let result = color.validate();
-        if let Ok(r) = result {
-            panic!("Expected an error, but got success: {r:?}");
-        }
-        assert!(result.is_err());
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("color: Validation error: color")
-        );
-
-        let appearance = AppearanceSettings {
-            theme: AppTheme::System,
-            color: AppColor(361.5),
-        };
-        let result = appearance.validate();
-        if let Ok(r) = result {
-            panic!("Expected an error, but got success: {r:?}");
-        }
-        assert!(result.is_err());
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("color: Validation error: color")
-        );
-    }
-
-    #[test]
-    fn test_settings_color_validation_error() {
-        let settings_file = r#"[settings.app.appearance]
-color = 1567.4"#;
-
-        let result = Configuration::parse_and_validate(settings_file);
-        if let Ok(r) = result {
-            panic!("Expected an error, but got success: {r:?}");
-        }
-        assert!(result.is_err());
-
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("color: Validation error: color")
-        );
     }
 }

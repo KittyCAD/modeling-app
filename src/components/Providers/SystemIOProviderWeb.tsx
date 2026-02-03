@@ -2,14 +2,8 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
-import {
-  billingActor,
-  mlEphantManagerActor,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { useSingletons } from '@src/lib/boot'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
   useProjectIdToConversationId,
@@ -20,6 +14,13 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
+  const {
+    billingActor,
+    engineCommandManager,
+    systemIOActor,
+    useSettings,
+    useToken,
+  } = useSingletons()
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
   const token = useToken()
@@ -45,24 +46,13 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useClearQueryParams()
 
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    mlEphantManagerActor2,
     billingActor,
     token,
-    (prompt, promptMeta) => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.createKCLFile,
-        data: {
-          requestedProjectName: promptMeta.project.name,
-          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
-          requestedFileNameWithExtension:
-            promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
-        },
-      })
-    },
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -81,12 +71,7 @@ export function SystemIOMachineLogicListenerWeb() {
     }
   )
 
-  useProjectIdToConversationId(
-    mlEphantManagerActor,
-    mlEphantManagerActor2,
-    systemIOActor,
-    settings
-  )
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   return null
 }

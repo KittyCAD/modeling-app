@@ -1,3 +1,5 @@
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
 use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
@@ -6,21 +8,27 @@ use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, MockConfig, SourceRange,
+    collections::AhashIndexSet,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, UnsolvedSegment, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
+    front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
+    front::Number,
+    id::IncIdGenerator,
 };
 
 /// State for executing a program.
@@ -48,6 +56,9 @@ pub(super) struct GlobalState {
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
+    /// The segments that were edited that triggered this execution.
+    #[cfg(feature = "artifact-graph")]
+    pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -79,6 +90,17 @@ pub struct ModuleArtifactState {
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+    /// Objects in the scene, created from execution.
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    /// Map from artifact ID to object ID in the scene.
+    pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
+    /// Solutions for sketch variables.
+    pub var_solutions: Vec<(SourceRange, Number)>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -90,18 +112,35 @@ pub(super) struct ModuleState {
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
+    /// The size of the call stack. This is used to prevent stack overflows with
+    /// recursive function calls. In general, this doesn't match `stack`'s size
+    /// since it's conservative in reclaiming frames between executions.
+    pub(super) call_stack_size: usize,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
     /// The closest variable declaration being executed in any parent node in the AST.
     /// This is used to provide better error messages, e.g. noticing when the user is trying
     /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
-    /// TODO: Make this a reference.
     pub being_declared: Option<String>,
+    /// Present if we're currently executing inside a sketch block.
+    pub sketch_block: Option<SketchBlockState>,
+    /// Tracks if KCL being executed is currently inside a stdlib function or not.
+    /// This matters because e.g. we shouldn't emit artifacts from declarations declared inside a stdlib function.
+    pub inside_stdlib: bool,
+    /// The source range where we entered the standard library.
+    pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    /// True if executing in sketch mode. Only a single sketch block will be
+    /// executed. All other code is ignored.
+    pub sketch_mode: bool,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained. The only time we disable this is when a user is
+    /// dragging segments.
+    pub freedom_analysis: bool,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
@@ -111,20 +150,53 @@ pub(super) struct ModuleState {
     pub(super) denied_warnings: Vec<&'static str>,
 }
 
+#[derive(Debug, Clone, Default)]
+pub(crate) struct SketchBlockState {
+    pub sketch_vars: Vec<KclValue>,
+    #[cfg(feature = "artifact-graph")]
+    pub sketch_constraints: Vec<ObjectId>,
+    pub solver_constraints: Vec<kcl_ezpz::Constraint>,
+    pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
+    pub needed_by_engine: Vec<UnsolvedSegment>,
+}
+
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default()),
+            global: GlobalState::new(&exec_context.settings, Default::default()),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
+        }
+    }
+
+    pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
+        #[cfg(feature = "artifact-graph")]
+        let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        #[cfg(not(feature = "artifact-graph"))]
+        let segment_ids_edited = Default::default();
+        ExecState {
+            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new(),
+                Default::default(),
+                mock_config.sketch_block_id.is_some(),
+                mock_config.freedom_analysis,
+            ),
         }
     }
 
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
-        let global = GlobalState::new(&exec_context.settings);
+        let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(
+                self.mod_local.path.clone(),
+                ProgramMemory::new(),
+                Default::default(),
+                false,
+                true,
+            ),
         };
     }
 
@@ -193,6 +265,12 @@ impl ExecState {
             operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: self.global.root_module_artifacts.scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: self.global.root_module_artifacts.var_solutions,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -206,8 +284,143 @@ impl ExecState {
         &mut self.mod_local.stack
     }
 
+    /// Increment the user-level call stack size, returning an error if it
+    /// exceeds the maximum.
+    pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
+        // If you change this, make sure to test in WebAssembly in the app since
+        // that's the limiting factor.
+        if self.mod_local.call_stack_size >= 50 {
+            return Err(KclError::MaxCallStack {
+                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
+            });
+        }
+        self.mod_local.call_stack_size += 1;
+        Ok(())
+    }
+
+    /// Decrement the user-level call stack size, returning an error if it would
+    /// go below zero.
+    pub(super) fn dec_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
+        // Prevent underflow.
+        if self.mod_local.call_stack_size == 0 {
+            let message = "call stack size below zero".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+        }
+        self.mod_local.call_stack_size -= 1;
+        Ok(())
+    }
+
+    /// Returns true if we're executing in sketch mode for the current module.
+    /// In sketch mode, we still want to execute the prelude and other stdlib
+    /// modules as normal, so it can vary per module within a single overall
+    /// execution.
+    pub(crate) fn sketch_mode(&self) -> bool {
+        self.mod_local.sketch_mode
+            && match &self.mod_local.path {
+                ModulePath::Main => true,
+                ModulePath::Local { .. } => true,
+                ModulePath::Std { .. } => false,
+            }
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub fn next_object_id(&mut self) -> ObjectId {
+        // The return value should only ever be used when the feature is
+        // enabled,
+        ObjectId(0)
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn next_object_id(&mut self) -> ObjectId {
+        ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub fn peek_object_id(&self) -> ObjectId {
+        // The return value should only ever be used when the feature is
+        // enabled,
+        ObjectId(0)
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn peek_object_id(&self) -> ObjectId {
+        ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
+        let id = obj.id;
+        debug_assert!(
+            id.0 == self.mod_local.artifacts.scene_objects.len(),
+            "Adding scene object with ID {} but next ID is {}",
+            id.0,
+            self.mod_local.artifacts.scene_objects.len()
+        );
+        let artifact_id = obj.artifact_id;
+        self.mod_local.artifacts.scene_objects.push(obj);
+        self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
+        id
+    }
+
+    /// Add a placeholder scene object. This is useful when we need to reserve
+    /// an ID before we have all the information to create the full object.
+    #[cfg(feature = "artifact-graph")]
+    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
+        self.mod_local
+            .artifacts
+            .scene_objects
+            .push(Object::placeholder(id, source_range));
+        self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        id
+    }
+
+    /// Update a scene object. This is useful to replace a placeholder.
+    #[cfg(feature = "artifact-graph")]
+    pub fn set_scene_object(&mut self, object: Object) {
+        let id = object.id;
+        let artifact_id = object.artifact_id;
+        self.mod_local.artifacts.scene_objects[id.0] = object;
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn scene_object_id_by_artifact_id(&self, artifact_id: ArtifactId) -> Option<ObjectId> {
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .get(&artifact_id)
+            .cloned()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn segment_ids_edited_contains(&self, object_id: &ObjectId) -> bool {
+        self.global.segment_ids_edited.contains(object_id)
+    }
+
+    pub(super) fn is_in_sketch_block(&self) -> bool {
+        self.mod_local.sketch_block.is_some()
+    }
+
+    pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
+        self.mod_local.sketch_block.as_mut()
+    }
+
     pub fn next_uuid(&mut self) -> Uuid {
         self.mod_local.id_generator.next_uuid()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn next_artifact_id(&mut self) -> ArtifactId {
+        self.mod_local.id_generator.next_artifact_id()
     }
 
     pub fn id_generator(&mut self) -> &mut IdGenerator {
@@ -222,7 +435,7 @@ impl ExecState {
 
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
-        self.mod_local.artifacts.operations.push(op.clone());
+        self.mod_local.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
@@ -244,7 +457,7 @@ impl ExecState {
 
     pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-        self.global.path_to_source_id.insert(path.clone(), id);
+        self.global.path_to_source_id.insert(path, id);
     }
 
     pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
@@ -268,7 +481,7 @@ impl ExecState {
     }
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
-        self.global.id_to_source.insert(id, source.clone());
+        self.global.id_to_source.insert(id, source);
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
@@ -359,6 +572,14 @@ impl ExecState {
     }
 
     #[cfg(feature = "artifact-graph")]
+    pub(crate) fn build_program_lookup(
+        &self,
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+    ) -> ProgramLookup {
+        ProgramLookup::new(current, self.global.module_infos.clone())
+    }
+
+    #[cfg(feature = "artifact-graph")]
     pub(crate) async fn build_artifact_graph(
         &mut self,
         engine: &Arc<Box<dyn EngineManager>>,
@@ -368,8 +589,11 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
-                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    new_commands.extend(outcome.artifacts.process_commands());
+                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
                     new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
@@ -391,12 +615,15 @@ impl ExecState {
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
+        let programs = self.build_program_lookup(program.clone());
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
             &new_responses,
             program,
             &mut self.global.artifacts.artifacts,
             initial_graph,
+            &programs,
+            &self.global.module_infos,
         );
 
         let artifact_graph = graph_result?;
@@ -416,7 +643,9 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new(settings: &ExecutorSettings) -> Self {
+    fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(segment_ids_edited);
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -425,6 +654,8 @@ impl GlobalState {
             mod_loader: Default::default(),
             errors: Default::default(),
             id_to_source: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited,
         };
 
         let root_id = ModuleId::default();
@@ -435,13 +666,18 @@ impl GlobalState {
                 id: root_id,
                 path: ModulePath::Local {
                     value: root_path.clone(),
+                    original_import_path: None,
                 },
                 repr: ModuleRepr::Root,
             },
         );
-        global
-            .path_to_source_id
-            .insert(ModulePath::Local { value: root_path }, root_id);
+        global.path_to_source_id.insert(
+            ModulePath::Local {
+                value: root_path,
+                original_import_path: None,
+            },
+            root_id,
+        );
         global
     }
 
@@ -490,6 +726,14 @@ impl ModuleArtifactState {
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
+        if other.scene_objects.len() > self.scene_objects.len() {
+            self.scene_objects
+                .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
+        }
+        self.source_range_to_object.extend(other.source_range_to_object);
+        self.artifact_id_to_scene_object
+            .extend(other.artifact_id_to_scene_object);
+        self.var_solutions.extend(other.var_solutions);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them
@@ -502,22 +746,72 @@ impl ModuleArtifactState {
         self.commands.extend(unprocessed);
         new_module_commands
     }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id_mut(&mut self, id: ObjectId) -> Option<&mut Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get_mut(id.0)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
 }
 
 impl ModuleState {
-    pub(super) fn new(path: ModulePath, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
+    pub(super) fn new(
+        path: ModulePath,
+        memory: Arc<ProgramMemory>,
+        module_id: Option<ModuleId>,
+        sketch_mode: bool,
+        freedom_analysis: bool,
+    ) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
+            call_stack_size: 0,
             pipe_value: Default::default(),
             being_declared: Default::default(),
+            sketch_block: Default::default(),
+            stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            sketch_mode,
+            freedom_analysis,
             artifacts: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            inside_stdlib: false,
         }
     }
 
@@ -526,6 +820,57 @@ impl ModuleState {
             .find_all_in_env(main_ref)
             .map(|(k, v)| (k.clone(), v.clone()))
             .collect()
+    }
+}
+
+impl SketchBlockState {
+    pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
+        SketchVarId(self.sketch_vars.len())
+    }
+
+    /// Given a solve outcome, return the solutions for the sketch variables and
+    /// enough information to update them in the source.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn var_solutions(
+        &self,
+        solve_outcome: Solved,
+        solution_ty: NumericType,
+        range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        self.sketch_vars
+            .iter()
+            .map(|v| {
+                let Some(sketch_var) = v.as_sketch_var() else {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "Expected sketch variable".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let var_index = sketch_var.id.0;
+                let solved_n = solve_outcome.final_values.get(var_index).ok_or_else(|| {
+                    let message = format!("No solution for sketch variable with id {}", var_index);
+                    debug_assert!(false, "{}", &message);
+                    KclError::new_internal(KclErrorDetails::new(
+                        message,
+                        sketch_var.meta.iter().map(|m| m.source_range).collect(),
+                    ))
+                })?;
+                let solved_value = Number {
+                    value: *solved_n,
+                    units: solution_ty.try_into().map_err(|_| {
+                        KclError::new_internal(KclErrorDetails::new(
+                            "Failed to convert numeric type to units".to_owned(),
+                            vec![range],
+                        ))
+                    })?,
+                };
+                let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
+                    return Ok(None);
+                };
+                Ok(Some((source_range, solved_value)))
+            })
+            .filter_map(Result::transpose)
+            .collect::<Result<Vec<_>, KclError>>()
     }
 }
 

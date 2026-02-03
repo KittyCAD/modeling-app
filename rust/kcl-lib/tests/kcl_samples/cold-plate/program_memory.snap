@@ -146,28 +146,13 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -175,7 +160,6 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -352,28 +336,13 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -381,7 +350,6 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -558,28 +526,13 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -587,7 +540,6 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -764,28 +716,13 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -793,7 +730,6 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -881,10 +817,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 859,
-            "end": 865,
+            "commentStart": 915,
+            "end": 921,
             "moduleId": 0,
-            "start": 859,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -895,10 +831,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 908,
-            "end": 914,
+            "commentStart": 964,
+            "end": 970,
             "moduleId": 0,
-            "start": 908,
+            "start": 964,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -916,10 +852,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1018,
-            "end": 1024,
+            "commentStart": 1074,
+            "end": 1080,
             "moduleId": 0,
-            "start": 1018,
+            "start": 1074,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -944,10 +880,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1201,
-            "end": 1207,
+            "commentStart": 1257,
+            "end": 1263,
             "moduleId": 0,
-            "start": 1201,
+            "start": 1257,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1062,10 +998,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 859,
-              "end": 865,
+              "commentStart": 915,
+              "end": 921,
               "moduleId": 0,
-              "start": 859,
+              "start": 915,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -1086,10 +1022,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 908,
-              "end": 914,
+              "commentStart": 964,
+              "end": 970,
               "moduleId": 0,
-              "start": 908,
+              "start": 964,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1132,10 +1068,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "tag": {
-              "commentStart": 1018,
-              "end": 1024,
+              "commentStart": 1074,
+              "end": 1080,
               "moduleId": 0,
-              "start": 1018,
+              "start": 1074,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -1195,10 +1131,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.047006236503076
             ],
             "tag": {
-              "commentStart": 1201,
-              "end": 1207,
+              "commentStart": 1257,
+              "end": 1263,
               "moduleId": 0,
-              "start": 1201,
+              "start": 1257,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1281,6 +1217,8 @@ description: Variables in memory after executing cold-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1288,7 +1226,6 @@ description: Variables in memory after executing cold-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1368,10 +1305,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1606,
-            "end": 1612,
+            "commentStart": 1662,
+            "end": 1668,
             "moduleId": 0,
-            "start": 1606,
+            "start": 1662,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1397,10 +1334,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1676,
-            "end": 1682,
+            "commentStart": 1732,
+            "end": 1738,
             "moduleId": 0,
-            "start": 1676,
+            "start": 1732,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1421,10 +1358,10 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "tag": {
-            "commentStart": 1751,
-            "end": 1757,
+            "commentStart": 1807,
+            "end": 1813,
             "moduleId": 0,
-            "start": 1751,
+            "start": 1807,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -1450,10 +1387,10 @@ description: Variables in memory after executing cold-plate.kcl
             -0.9999999999999984
           ],
           "tag": {
-            "commentStart": 1822,
-            "end": 1828,
+            "commentStart": 1878,
+            "end": 1884,
             "moduleId": 0,
-            "start": 1822,
+            "start": 1878,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1496,10 +1433,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.9999999999999998
           ],
           "tag": {
-            "commentStart": 1961,
-            "end": 1967,
+            "commentStart": 2017,
+            "end": 2023,
             "moduleId": 0,
-            "start": 1961,
+            "start": 2017,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -1531,6 +1468,8 @@ description: Variables in memory after executing cold-plate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1538,7 +1477,6 @@ description: Variables in memory after executing cold-plate.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1599,7 +1537,7 @@ description: Variables in memory after executing cold-plate.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "seg01": {
@@ -1727,6 +1665,8 @@ description: Variables in memory after executing cold-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": -186.68999999999997,
             "y": 0.0,
@@ -1734,7 +1674,6 @@ description: Variables in memory after executing cold-plate.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

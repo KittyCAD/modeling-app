@@ -110,28 +110,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -139,7 +124,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -285,28 +269,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.1,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -2.1,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -314,7 +283,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -462,28 +430,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -491,7 +444,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -569,13 +521,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": -900.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -669,28 +622,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.1,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -2.1,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -698,7 +636,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -864,28 +801,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.2,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.2,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -893,7 +815,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -971,13 +892,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": -1000.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1071,28 +993,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.2,
-            0.4
-          ],
-          "tag": null,
-          "to": [
-            -2.2,
-            0.4
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": -1000.0,
@@ -1100,7 +1007,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1257,28 +1163,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.2,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.2,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1286,7 +1177,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1492,6 +1382,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1499,7 +1391,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1705,6 +1596,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1712,7 +1605,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1816,6 +1708,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
@@ -1823,7 +1717,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1907,6 +1800,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
@@ -1914,7 +1809,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1985,13 +1879,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": -2100.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2048,6 +1943,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": -2100.0,
               "y": 0.0,
@@ -2055,7 +1952,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2129,6 +2025,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": -2100.0,
               "y": 0.0,
@@ -2136,7 +2034,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2193,13 +2090,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": -2100.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2327,28 +2225,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.1,
-              2.35
-            ],
-            "tag": null,
-            "to": [
-              2.1,
-              2.35
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 250.0,
@@ -2356,7 +2239,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2502,28 +2384,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.1,
-            2.35
-          ],
-          "tag": null,
-          "to": [
-            2.1,
-            2.35
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 250.0,
@@ -2531,7 +2398,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2577,13 +2443,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 250.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2733,28 +2600,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.76,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -0.76,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -2762,7 +2614,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2881,28 +2732,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.76,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -0.76,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -2910,7 +2746,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3111,6 +2946,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3118,7 +2955,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3324,6 +3160,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3331,7 +3169,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3484,28 +3321,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.6,
-              2.15
-            ],
-            "tag": null,
-            "to": [
-              -1.6,
-              2.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -3513,7 +3335,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3650,28 +3471,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.6,
-            2.15
-          ],
-          "tag": null,
-          "to": [
-            -1.6,
-            2.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -3679,7 +3485,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3830,28 +3635,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 12,
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
@@ -3859,7 +3649,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3983,28 +3772,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 12,
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
@@ -4012,7 +3786,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4101,13 +3874,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 12,
       "origin": {
         "x": 2100.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -4204,28 +3978,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 12,
             "origin": {
               "x": 2100.0,
               "y": 0.0,
@@ -4233,7 +3992,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -4347,28 +4105,13 @@ description: Variables in memory after executing stylized-firetruck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 12,
             "origin": {
               "x": 2100.0,
               "y": 0.0,
@@ -4376,7 +4119,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -4433,13 +4175,14 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 12,
       "origin": {
         "x": 2100.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -4572,6 +4315,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4579,7 +4324,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4671,6 +4415,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4678,7 +4424,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4807,6 +4552,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4814,7 +4561,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4906,6 +4652,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4913,7 +4661,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5042,6 +4789,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5049,7 +4798,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5141,6 +4889,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5148,7 +4898,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5277,6 +5026,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5284,7 +5035,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5376,6 +5126,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5383,7 +5135,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

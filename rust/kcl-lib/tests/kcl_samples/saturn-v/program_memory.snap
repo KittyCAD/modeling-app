@@ -74,28 +74,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -4.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -4.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -103,7 +88,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -200,28 +184,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ArcThreePoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -4.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -4.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -229,7 +198,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -275,13 +243,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -307,13 +276,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -339,13 +309,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -371,13 +342,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -505,28 +477,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -534,7 +491,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -687,28 +643,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -716,7 +657,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -869,28 +809,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -898,7 +823,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1051,28 +975,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1080,7 +989,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1199,28 +1107,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.23,
-            6.02
-          ],
-          "tag": null,
-          "to": [
-            -4.23,
-            6.02
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1228,7 +1121,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1274,13 +1166,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -1384,28 +1277,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1413,7 +1291,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1465,7 +1342,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -1520,28 +1419,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1549,7 +1433,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1601,7 +1484,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -1656,28 +1561,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1685,7 +1575,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1737,7 +1626,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -1792,28 +1703,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1821,7 +1717,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1923,28 +1818,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.1,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.1,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1952,7 +1832,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1998,13 +1877,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2197,28 +2077,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              80.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              80.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 12,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2226,7 +2091,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2396,28 +2260,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            80.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            80.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 12,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2425,7 +2274,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2471,13 +2319,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 12,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2569,28 +2418,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -4.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2598,7 +2432,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2649,13 +2482,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 5,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2727,28 +2561,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ArcThreePoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -4.5,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2756,7 +2575,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2848,28 +2666,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ArcThreePoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -4.5,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2877,7 +2680,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2923,13 +2725,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 5,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3021,28 +2824,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -4.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3050,7 +2838,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3179,28 +2966,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3208,7 +2980,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3260,7 +3031,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -3315,28 +3108,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3344,7 +3122,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3396,7 +3173,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -3451,28 +3250,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3480,7 +3264,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3532,7 +3315,29 @@ description: Variables in memory after executing saturn-v.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -3587,28 +3392,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3616,7 +3406,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3718,28 +3507,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.1,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.1,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3747,7 +3521,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3793,13 +3566,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3884,6 +3658,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3891,7 +3667,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3942,13 +3717,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4002,6 +3778,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4009,7 +3787,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4055,13 +3832,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4128,6 +3906,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4135,7 +3915,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4214,6 +3993,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4221,7 +4002,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4308,6 +4088,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 11,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4315,7 +4097,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4366,13 +4147,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4426,6 +4208,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 10,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4433,7 +4217,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4479,13 +4262,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 10,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4511,13 +4295,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4571,6 +4356,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 11,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4578,7 +4365,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4624,13 +4410,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4697,6 +4484,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4704,7 +4493,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4850,28 +4638,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              64.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              64.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4879,7 +4652,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4998,28 +4770,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            64.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            64.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5027,7 +4784,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5073,13 +4829,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 8,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -5200,28 +4957,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              64.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              64.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5229,7 +4971,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5348,28 +5089,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            64.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            64.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5377,7 +5103,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5518,28 +5243,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              66.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              66.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5547,7 +5257,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5666,28 +5375,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            66.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            66.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 9,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5695,7 +5389,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5741,13 +5434,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 9,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -5868,28 +5562,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              66.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              66.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5897,7 +5576,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -6016,28 +5694,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            66.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            66.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 9,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6045,7 +5708,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -6091,13 +5753,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 7,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -6151,6 +5814,8 @@ description: Variables in memory after executing saturn-v.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 7,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6158,7 +5823,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -6204,13 +5868,14 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 7,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -6277,6 +5942,8 @@ description: Variables in memory after executing saturn-v.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6284,7 +5951,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6401,28 +6067,13 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -4.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -4.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6430,7 +6081,6 @@ description: Variables in memory after executing saturn-v.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6527,28 +6177,13 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ArcThreePoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -4.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -4.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6556,7 +6191,6 @@ description: Variables in memory after executing saturn-v.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

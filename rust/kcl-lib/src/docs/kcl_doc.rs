@@ -645,8 +645,12 @@ impl FnData {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "split" {
+            return "split([${0:extrude001}, ${1:extrude002}], merge = ${2:true})".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "subtract2d" {
+            return "subtract2d(tool = ${0:profileToSubtract})".to_owned();
         } else if self.name == "intersect" {
             return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
@@ -655,6 +659,8 @@ impl FnData {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         } else if self.name == "extrude" {
             return "extrude(length = ${0:10})".to_owned();
+        } else if self.name == "translate" {
+            return "translate(x = ${0:0}, y = ${1:0}, z = ${2:0})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -822,7 +828,7 @@ impl ArgData {
             format!("{} = ", self.name)
         };
         if let Some(vals) = &self.snippet_array {
-            let mut snippet = label.to_owned();
+            let mut snippet = label;
             snippet.push('[');
             let n = vals.len();
             for (i, val) in vals.iter().enumerate() {
@@ -888,6 +894,12 @@ impl ArgData {
                 })
             }),
         }
+    }
+
+    /// Is this a normal, labelled arg,
+    /// or the special unlabelled first arg?
+    pub fn is_labelled(&self) -> bool {
+        matches!(self.kind, ArgKind::Labelled(_))
     }
 }
 
@@ -1039,9 +1051,9 @@ trait ApplyMeta {
                 if let Some((e, p)) = example {
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
+                    } else {
+                        examples.push((e.trim().to_owned(), p));
                     }
-
-                    examples.push((e.trim().to_owned(), p));
                     example = None;
                 } else {
                     let args = l[3..].split(',');
@@ -1304,9 +1316,21 @@ impl ApplyMeta for ArgData {
 
 #[cfg(test)]
 mod test {
+    use std::path::{Path, PathBuf};
+
     use kcl_derive_docs::{for_all_example_test, for_each_example_test};
 
     use super::*;
+
+    fn stdlib_module_path(module_name: &str) -> PathBuf {
+        let file_stem = match module_name {
+            "std" | "" => "prelude",
+            other => other,
+        };
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("std")
+            .join(format!("{file_stem}.kcl"))
+    }
 
     #[test]
     fn smoke() {
@@ -1400,15 +1424,26 @@ mod test {
             );
         };
 
+        let source_path = stdlib_module_path(&d.module_name);
+        let owner_name = d.qual_name.as_str();
         for (i, eg) in d.examples.iter().enumerate() {
             if i != number {
                 continue;
             }
+            eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
+            eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
             let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
-                    panic!("Error testing example {}{i}: {}", d.name, e.error.message());
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
                 }
-                Err(other_err) => panic!("{}", other_err),
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
                 Ok(img) => img,
             };
             if eg.1.norun {

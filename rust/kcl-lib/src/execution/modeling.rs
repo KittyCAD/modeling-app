@@ -9,6 +9,7 @@ use uuid::Uuid;
 use crate::exec::ArtifactCommand;
 use crate::{
     ExecState, ExecutorContext, KclError, SourceRange,
+    errors::KclErrorDetails,
     exec::{IdGenerator, KclValue},
     execution::Solid,
     std::Args,
@@ -28,26 +29,40 @@ pub(crate) struct ModelingCmdMeta<'a> {
 }
 
 impl<'a> ModelingCmdMeta<'a> {
-    pub fn new(ctx: &'a ExecutorContext, source_range: SourceRange) -> Self {
+    pub fn new(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: None,
         }
     }
 
-    pub fn with_id(ctx: &'a ExecutorContext, source_range: SourceRange, id: Uuid) -> Self {
+    pub fn with_id(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange, id: Uuid) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: Some(id),
         }
     }
 
-    pub fn from_args_id(args: &'a Args, id: Uuid) -> Self {
+    pub fn from_args(exec_state: &ExecState, args: &'a Args) -> Self {
         ModelingCmdMeta {
             ctx: &args.ctx,
-            source_range: args.source_range,
+            source_range: exec_state
+                .mod_local
+                .stdlib_entry_source_range
+                .unwrap_or(args.source_range),
+            id: None,
+        }
+    }
+
+    pub fn from_args_id(exec_state: &ExecState, args: &'a Args, id: Uuid) -> Self {
+        ModelingCmdMeta {
+            ctx: &args.ctx,
+            source_range: exec_state
+                .mod_local
+                .stdlib_entry_source_range
+                .unwrap_or(args.source_range),
             id: Some(id),
         }
     }
@@ -62,19 +77,16 @@ impl<'a> ModelingCmdMeta<'a> {
     }
 }
 
-impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
-    fn from(args: &'a Args) -> Self {
-        ModelingCmdMeta::new(&args.ctx, args.source_range)
-    }
-}
-
 impl ExecState {
     /// Add a modeling command to the batch but don't fire it right away.
     pub(crate) async fn batch_modeling_cmd(
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -91,7 +103,10 @@ impl ExecState {
         &mut self,
         meta: ModelingCmdMeta<'_>,
         cmds: &[ModelingCmdReq],
-    ) -> Result<(), crate::errors::KclError> {
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         #[cfg(feature = "artifact-graph")]
         for cmd_req in cmds {
             self.push_command(ArtifactCommand {
@@ -110,7 +125,10 @@ impl ExecState {
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         let id = meta.id(self.id_generator());
         // TODO: The order of the tracking of these doesn't match the order that
         // they're sent to the engine.
@@ -129,6 +147,9 @@ impl ExecState {
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -145,7 +166,10 @@ impl ExecState {
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: &ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -164,6 +188,9 @@ impl ExecState {
         // We only do this at the very end of the file.
         batch_end: bool,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         meta.ctx.engine.flush_batch(batch_end, meta.source_range).await
     }
 
@@ -173,6 +200,9 @@ impl ExecState {
         meta: ModelingCmdMeta<'_>,
         solids: &[Solid],
     ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
         // Make sure we don't traverse sketches more than once.
         let mut traversed_sketches = Vec::new();
 
@@ -221,4 +251,11 @@ impl ExecState {
 
         Ok(())
     }
+}
+
+fn no_modeling_in_sketch_block_error(range: SourceRange) -> KclError {
+    KclError::new_invalid_expression(KclErrorDetails::new(
+        "Modeling commands communicating with the engine cannot be used inside a sketch block".to_owned(),
+        vec![range],
+    ))
 }

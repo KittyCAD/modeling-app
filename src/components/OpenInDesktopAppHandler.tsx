@@ -9,7 +9,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { codeManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -23,6 +23,7 @@ import toast from 'react-hot-toast'
  * want to open the current page in the desktop app.
  */
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
+  const { kclManager } = useSingletons()
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
   const [searchParams, setSearchParams] = useSearchParams()
@@ -48,7 +49,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     const codeB64 = base64ToString(
       decodeURIComponent(searchParams.get('code') ?? '')
     )
-    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+    kclManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasAskToOpenParam])
 
@@ -124,7 +125,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                 Element="button"
                 className={buttonClasses + ' !text-base'}
                 onClick={onOpenInDesktopApp}
-                iconEnd={{ icon: 'arrowRight' }}
+                iconEnd={{ icon: 'arrowShortRight' }}
               >
                 Open in desktop app
               </ActionButton>
@@ -144,7 +145,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
               Element="button"
               className={buttonClasses + ' -order-1 !text-base'}
               onClick={continueToWebApp}
-              iconStart={{ icon: 'arrowLeft' }}
+              iconStart={{ icon: 'arrowShortLeft' }}
               data-testid="continue-to-web-app-button"
             >
               Continue to web app

@@ -10,15 +10,15 @@ import {
   createName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import type { Expr, Program } from '@src/lang/wasm'
+import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
 
@@ -27,16 +27,22 @@ const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 export async function applyConstraintLength({
   length,
   selectionRanges,
+  kclManager,
 }: {
   length: KclCommandValue
   selectionRanges: Selections
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
   const ast = kclManager.ast
-  const angleLength = angleLengthInfo({ selectionRanges })
+  const angleLength = angleLengthInfo({
+    selectionRanges,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
+  })
   if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
 
@@ -68,6 +74,7 @@ export async function applyConstraintLength({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: distanceExpression,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 
@@ -88,9 +95,11 @@ export async function applyConstraintLength({
 export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
+  kclManager,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -99,6 +108,8 @@ export async function applyConstraintAngleLength({
   const angleLength = angleLengthInfo({
     selectionRanges,
     angleOrLength,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(angleLength)) return Promise.reject(angleLength)
 
@@ -109,6 +120,7 @@ export async function applyConstraintAngleLength({
     transformInfos: transforms,
     memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(sketched)) return Promise.reject(sketched)
   const { valueUsedInTransform } = sketched
@@ -162,7 +174,12 @@ export async function applyConstraintAngleLength({
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  let finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
   if (
     isReferencingYAxisAngle ||
     (isReferencingXAxisAngle && calcIdentifier.name.name !== 'ZERO')
@@ -177,6 +194,7 @@ export async function applyConstraintAngleLength({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 
@@ -190,8 +208,10 @@ export async function applyConstraintAngleLength({
     )
     _modifiedAst.body = newBody
     Object.values(pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
   }
   return {

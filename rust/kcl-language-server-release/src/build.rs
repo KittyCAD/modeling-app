@@ -48,10 +48,7 @@ impl Build {
         let release_tag = if stable {
             // We already checked above if the env var contains "refs/tags".
             // So this is safe to unwrap.
-            sh.var("GITHUB_REF")
-                .unwrap_or_default()
-                .replace("refs/tags/", "")
-                .to_string()
+            sh.var("GITHUB_REF").unwrap_or_default().replace("refs/tags/", "")
         } else {
             "nightly".to_string()
         };

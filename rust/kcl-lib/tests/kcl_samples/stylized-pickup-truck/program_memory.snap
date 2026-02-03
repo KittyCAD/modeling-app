@@ -110,28 +110,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.2,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -1.2,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -139,7 +124,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -285,28 +269,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.2,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -1.2,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -314,7 +283,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -374,10 +342,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4960,
-            "end": 4966,
+            "commentStart": 4987,
+            "end": 4993,
             "moduleId": 0,
-            "start": 4960,
+            "start": 4987,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -429,10 +397,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 4960,
-              "end": 4966,
+              "commentStart": 4987,
+              "end": 4993,
               "moduleId": 0,
-              "start": 4960,
+              "start": 4987,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -476,28 +444,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.0,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -2.0,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -505,7 +458,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -589,13 +541,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": -900.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -649,10 +602,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 4960,
-            "end": 4966,
+            "commentStart": 4987,
+            "end": 4993,
             "moduleId": 0,
-            "start": 4960,
+            "start": 4987,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -696,28 +649,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.0,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -2.0,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -725,7 +663,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -888,28 +825,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -917,7 +839,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -995,13 +916,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": -1000.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1095,28 +1017,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.1,
-            0.4
-          ],
-          "tag": null,
-          "to": [
-            -2.1,
-            0.4
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": -1000.0,
@@ -1124,7 +1031,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1281,28 +1187,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1310,7 +1201,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1516,6 +1406,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1523,7 +1415,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1729,6 +1620,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1736,7 +1629,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1840,6 +1732,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": -2000.0,
                 "y": 0.0,
@@ -1847,7 +1741,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1931,6 +1824,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 11,
               "origin": {
                 "x": -2000.0,
                 "y": 0.0,
@@ -1938,7 +1833,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2009,13 +1903,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": -2000.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2072,6 +1967,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": -2000.0,
               "y": 0.0,
@@ -2079,7 +1976,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2153,6 +2049,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 11,
             "origin": {
               "x": -2000.0,
               "y": 0.0,
@@ -2160,7 +2058,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -2217,13 +2114,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 11,
       "origin": {
         "x": -2000.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2426,6 +2324,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2433,7 +2333,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2648,6 +2547,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2655,7 +2556,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2808,28 +2708,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.77,
-              2.25
-            ],
-            "tag": null,
-            "to": [
-              -0.77,
-              2.25
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -2837,7 +2722,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2974,28 +2858,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.77,
-            2.25
-          ],
-          "tag": null,
-          "to": [
-            -0.77,
-            2.25
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -3003,7 +2872,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3159,28 +3027,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 12,
               "origin": {
                 "x": 2000.0,
                 "y": 0.0,
@@ -3188,7 +3041,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3312,28 +3164,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 12,
               "origin": {
                 "x": 2000.0,
                 "y": 0.0,
@@ -3341,7 +3178,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3430,13 +3266,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 12,
       "origin": {
         "x": 2000.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3533,28 +3370,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 12,
             "origin": {
               "x": 2000.0,
               "y": 0.0,
@@ -3562,7 +3384,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -3676,28 +3497,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 12,
             "origin": {
               "x": 2000.0,
               "y": 0.0,
@@ -3705,7 +3511,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -3762,13 +3567,14 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 12,
       "origin": {
         "x": 2000.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3905,29 +3711,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.91,
-              0.81
-            ],
-            "tag": null,
-            "to": [
-              -1.91,
-              0.81
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -3958,10 +3748,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 4960,
-                  "end": 4966,
+                  "commentStart": 4987,
+                  "end": 4993,
                   "moduleId": 0,
-                  "start": 4960,
+                  "start": 4987,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -4013,10 +3803,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 4960,
-                    "end": 4966,
+                    "commentStart": 4987,
+                    "end": 4993,
                     "moduleId": 0,
-                    "start": 4960,
+                    "start": 4987,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -4060,28 +3850,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   ],
                   "type": "ToPoint",
                   "units": "m"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -2.0,
-                    0.75
-                  ],
-                  "tag": null,
-                  "to": [
-                    -2.0,
-                    0.75
-                  ],
-                  "type": "ToPoint",
-                  "units": "m"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": -900.0,
@@ -4089,7 +3864,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4259,29 +4033,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.91,
-            0.81
-          ],
-          "tag": null,
-          "to": [
-            -1.91,
-            0.81
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 6,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -4312,10 +4070,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4960,
-                "end": 4966,
+                "commentStart": 4987,
+                "end": 4993,
                 "moduleId": 0,
-                "start": 4960,
+                "start": 4987,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -4367,10 +4125,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.15
                 ],
                 "tag": {
-                  "commentStart": 4960,
-                  "end": 4966,
+                  "commentStart": 4987,
+                  "end": 4993,
                   "moduleId": 0,
-                  "start": 4960,
+                  "start": 4987,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -4414,28 +4172,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -2.0,
-                  0.75
-                ],
-                "tag": null,
-                "to": [
-                  -2.0,
-                  0.75
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -900.0,
@@ -4443,7 +4186,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4522,6 +4264,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 6,
       "value": "seg01",
       "xAxis": {
         "x": 1.0,
@@ -4552,10 +4295,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4960,
-              "end": 4966,
+              "commentStart": 4987,
+              "end": 4993,
               "moduleId": 0,
-              "start": 4960,
+              "start": 4987,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -4607,10 +4350,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.15
               ],
               "tag": {
-                "commentStart": 4960,
-                "end": 4966,
+                "commentStart": 4987,
+                "end": 4993,
                 "moduleId": 0,
-                "start": 4960,
+                "start": 4987,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -4654,28 +4397,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -2.0,
-                0.75
-              ],
-              "tag": null,
-              "to": [
-                -2.0,
-                0.75
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": -900.0,
@@ -4683,7 +4411,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4840,6 +4567,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4847,7 +4576,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4939,6 +4667,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4946,7 +4676,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5075,6 +4804,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5082,7 +4813,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5174,6 +4904,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5181,7 +4913,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5310,6 +5041,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5317,7 +5050,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5409,6 +5141,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5416,7 +5150,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5545,6 +5278,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5552,7 +5287,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5644,6 +5378,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XZ",
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5651,7 +5387,6 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

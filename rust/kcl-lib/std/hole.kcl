@@ -1,0 +1,435 @@
+/// Definitions of standard holes that could be drilled or cut into solids.
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Tops
+
+
+holeTypeSimple = 0
+holeTypeCounterbore = 1
+holeTypeCountersink = 2
+
+/// A hole top with no decoration.
+@(feature_tree = false)
+export fn simple() {
+  return { feature = holeTypeSimple }
+}
+
+/// Cut a straight vertical counterbore at the top of the hole.
+/// Typically used when a fastener (e.g. the head cap on a screw)
+/// needs to sit flush with the solid's surface.
+/// ```
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a counterbore (vertical hole that emerges from a larger hole)
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
+///      )
+/// ```
+@(feature_tree = false)
+export fn counterbore(diameter: number(Length), depth: number(Length)) {
+  return {
+    diameter = diameter,
+    depth = depth,
+    feature = holeTypeCounterbore
+  }
+}
+
+/// Cut an angled countersink at the top of the hole.
+/// Typically used when a conical screw head has to sit flush
+/// with the surface being cut into.
+/// ```
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a countersink (angled tip at the start).
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::countersink(diameter = 14, angle = 100deg),
+///      )
+/// ```
+@(feature_tree = false)
+export fn countersink(diameter: number(Length), angle: number(Angle)) {
+  return {
+    diameter = diameter,
+    angle = angle,
+    feature = holeTypeCountersink
+  }
+}
+
+// Bodies
+
+
+/// The hole has the given blind depth.
+@(feature_tree = false)
+export fn blind(depth: number(Length), diameter: number(Length)) {
+  return {
+    blindDepth = depth,
+    diameter = diameter
+  }
+}
+
+// Ends
+
+
+/// End the hole in an angle, like the end of a drill.
+/// ```
+/// // Sketch a cube, so we have something to drill into.
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+/// 
+/// // Add a hole with a very pointy drilled bottom.
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 0],
+///        holeBottom = hole::drill(pointAngle = 25deg),
+///        holeBody = hole::blind(depth = 2, diameter = 8),
+///        holeType = hole::simple(),
+///      )
+/// ```
+@(feature_tree = false)
+export fn drill(pointAngle: number(Angle)) {
+  return { drillBitAngle = pointAngle }
+}
+
+/// End the hole flat.
+/// ```
+/// // Sketch a cube, so we have something to drill into.
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+/// 
+/// // Add a hole with a flat bottom.
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 0],
+///        holeBottom = hole::flat(),
+///        holeBody = hole::blind(depth = 2, diameter = 8),
+///        holeType = hole::simple(),
+///      )
+/// ```
+@(feature_tree = false)
+export fn flat() {
+  return { drillBitAngle = 180deg }
+}
+
+// Defining the hole
+
+
+@(feature_tree = false)
+fn drawTop(@partialHoleProfile, body, holeType) {
+  prof = if holeType.feature == holeTypeSimple {
+    partialHoleProfile
+      |> xLine(length = body.diameter / 2)
+  } else if holeType.feature == holeTypeCounterbore {
+    lip = (holeType.diameter - body.diameter) / 2
+    partialHoleProfile
+      |> yLine(length = holeType.depth)
+      |> xLine(length = holeType.diameter / 2)
+      |> yLine(length = -holeType.depth)
+      |> xLine(length = -lip)
+  } else if holeType.feature == holeTypeCountersink {
+    theta = holeType.angle / 2
+    alpha = 90 - theta
+    tr = holeType.diameter / 2
+    br = body.diameter / 2
+    assert(tr, isGreaterThan = br, error = "Diameter of the countersink must be greater than diameter of the hole's body")
+    // Ugly trigonometry that I calculated with pen and paper
+    up = (tr - br) / tan(theta)
+    b = br / tan(theta)
+    diag = up/cos(theta)
+    partialHoleProfile
+      |> yLine(length = up)
+      |> xLine(length = tr)
+      |> angledLine(length = diag, angle = 180 + alpha)
+  } else {
+    assert(holeType.feature, isLessThanOrEqual = holeTypeCountersink, error = "unknown holeType feature")
+  }
+  return prof
+}
+
+@(feature_tree = false)
+fn holeTypeHeight(body, holeType) {
+  height = if holeType.feature == holeTypeSimple {
+    0
+  } else if holeType.feature == holeTypeCounterbore {
+    holeType.depth
+  } else if holeType.feature == holeTypeCountersink {
+    t = holeType.angle / 2
+    tr = holeType.diameter / 2
+    br = body.diameter / 2
+    // Ugly trigonometry that I calculated with pen and paper
+    up = (tr - br) / tan(t)
+    up
+  } else {
+    assert(holeType.feature, isLessThanOrEqual = holeTypeCountersink, error = "unknown holeType feature")
+  }
+  return height
+}
+
+// Actually defining a hole
+
+
+/// Profile for the end of the hole. Only really intended for advanced uses.
+/// You can use this and `revolveHole` to do tricky custom hole cutting.
+@(feature_tree = false)
+fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
+  body = holeBody
+  bottom = holeBottom
+  // Calculate the drill bit height
+  radius = body.diameter / 2
+  // if drill bit angle is exactly 180 degrees, it causes a divide by zero
+  // (because tan(theta = 90) = 0).
+  // So, if it would be 180deg, change it to be 179.99deg.
+  theta = if abs(bottom.drillBitAngle - 180deg) < 0.01deg {
+    179.99deg / 2
+  } else {
+    bottom.drillBitAngle / 2
+  }
+  drillHeight = radius / tan(theta)
+
+  // Calculate total model height from holeType to bottom
+  hBody = body.blindDepth
+  hBott = drillHeight
+  totalHeight = hBody + hBott + holeTypeHeight(body, holeType)
+  sk = startProfile(sketchOn, at = [shift, -totalHeight])
+    // Drill profile
+    |> yLine(length = drillHeight)
+    // Body depth
+    |> yLine(length = body.blindDepth, tag = $d)
+    // Top
+    |> drawTop(body, holeType)
+    // Body depth
+    |> yLine(length = -body.blindDepth)
+    // // Drill profile
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return { profile = sk, axis = d }
+}
+
+/// Given a hole profile, revolve it into a 3D hole solid geometry.
+/// This can be subtracted from a solid to form a hole in it.
+@(feature_tree = false)
+fn revolveHole(@holeProfile, edge) {
+  return holeProfile
+    |> revolve(axis = edge)
+    |> appearance(color = "#ff0000")
+}
+
+/// Build a hole's geometry from its top, bottom and depth.
+/// Can be subtracted from a solid to cut a hole into it.
+@(feature_tree = false)
+fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
+  intoSolid = startSketchOn(
+    solid,
+    normalToFace = face,
+    alignAxis = -Y,
+    normalOffset = cutAt[1],
+  )
+  toCut = sketchHoleProfile(
+    intoSolid,
+    holeBottom,
+    holeBody,
+    holeType,
+    shift = -cutAt[0],
+  )
+
+  drilled = revolveHole(toCut.profile, edge = toCut.axis)
+  return drilled
+}
+
+/// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
+/// at the given 2D position on the given face.
+/// ```
+
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a countersink (angled tip at the start).
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::countersink(diameter = 14, angle = 100deg),
+///      )
+/// ```
+/// ```
+
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a counterbore (vertical hole that emerges from a larger hole)
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
+///      )
+/// ```
+@(feature_tree = true)
+export fn hole(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  /// Controls the orientation of the hole.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the cut on the given face of the solid.
+  /// Given as absolute coordinates in the global scene.
+  cutAt: [number(Length); 2],
+) {
+  drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
+  return subtract(solid, tools = [drilled])
+}
+
+/// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
+/// at each of the given 2D positions on the given face.
+/// Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
+/// ```
+/// // Sketch a solid
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-3.89, 1.95])
+///   |> line(end = [0.63, -3.25])
+///   |> xLine(length = 7.15)
+///   |> line(end = [0.59, 3.2])
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// mySolid = extrude(profile001, length = 3, symmetric = true)
+/// 
+/// // Add three holes to it.
+/// hole001 = hole::holes(
+///   mySolid,
+///   face = END,
+///   cutsAt = [[0, 0], [0, 3], [1, 2]],
+///   holeBottom = hole::drill(pointAngle = 110deg),
+///   holeBody = hole::blind(depth = 2, diameter = 0.4),
+///   holeType = hole::counterbore(diameter = 1, depth = 0.2),
+/// )
+/// ```
+@(feature_tree = true)
+export fn holes(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  /// Controls the orientation of the hole.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the holes, given as absolute coordinates in the global scene.
+  cutsAt: [[number(Length); 2]],
+) {
+  drilled = map(cutsAt, f = fn(@cutAt) {
+    return holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
+  })
+  return subtract(solid, tools = drilled)
+}
+
+/// Place the given holes in a line.
+/// Basically like function `hole` but cuts multiple holes in a line.
+/// Works like linear patterns.
+@(feature_tree = false)
+export fn holesLinear(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  /// Controls the orientation of the hole.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the first cut in the linear pattern,
+  /// given as absolute coordinates in the global scene.
+  cutAt: [number(Length); 2],
+  /// How many holes to cut.
+  instances: number(_),
+  /// How far between each hole
+  distance,
+  /// Along which axis should the holes be cut?
+  axis: Axis2d | Point2d,
+) {
+  drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
+  |> patternLinear3d(instances, distance, axis)
+
+  return subtract(solid, tools = drilled)
+}

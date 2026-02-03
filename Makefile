@@ -1,5 +1,5 @@
 .PHONY: all
-all: install check build
+all: check test-unit
 
 ###############################################################################
 # INSTALL
@@ -35,19 +35,16 @@ node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
 	npm install
 
-$(CARGO):
+$(CARGO): rust/rust-toolchain.toml
 ifdef WINDOWS
 	npm run install:rust:windows
+	@ powershell -Command "if (Test-Path '$(CARGO)') { (Get-Item '$(CARGO)').LastWriteTime = Get-Date }"
 else
 	npm run install:rust
 endif
 
 $(WASM_PACK):
-ifdef WINDOWS
 	npm run install:wasm-pack:cargo
-else
-	npm run install:wasm-pack:sh
-endif
 
 ###############################################################################
 # BUILD
@@ -57,6 +54,7 @@ KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
 RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
 REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+E2E_SOURCES := $(wildcard e2e/*.spec.ts e2e/*/*.spec.ts e2e/*/*/*.spec.ts e2e/*/*/*/*.spec.ts)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
 VITE_SOURCES := .env* $(wildcard vite.*)
 
@@ -76,7 +74,7 @@ ifndef WINDOWS
 	@ touch $@
 endif
 
-.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
+.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES) $(E2E_SOURCES)
 	npm run tronb:vite:dev
 
 ###############################################################################
@@ -90,7 +88,7 @@ format: install ## Format the code
 	npm run fmt
 
 .PHONY: lint
-lint: install ## Lint the code
+lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
 	npm run tsc
 	npm run lint
 
@@ -126,23 +124,26 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-e2e
+test: test-unit test-integration test-e2e-web
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
-	npm run test:rust
-	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	npm run test:unit
+
+.PHONY: test-integration
+test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tests
+	npm run test:integration
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
+	npm run test:e2e:kcl
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
 ifdef E2E_GREP
 	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:web -- --headed --workers='100%' "$(PW_ARGS)"
+	npm run test:e2e:web -- --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-e2e-desktop
@@ -161,7 +162,7 @@ endif
 ifdef E2E_GREP
 	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE) --grep="$(E2E_GREP)"
 else
-	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE)
+	npm run test:snapshots -- --update-snapshots=$(E2E_MODE)
 endif
 
 ###############################################################################

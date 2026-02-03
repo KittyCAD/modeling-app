@@ -21,13 +21,13 @@ shell(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | Which solid (or solids) to shell out | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | Which solid (or solids) to shell out | Yes |
 | `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the shell | Yes |
-| `faces` | [`[TaggedFace; 1+]`](/docs/kcl-std/types/std-types-TaggedFace) | The faces you want removed | Yes |
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces you want removed | Yes |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid)]
 
 
 ### Examples
@@ -227,7 +227,6 @@ shell(thing1, faces = [END], thickness = 5)
 ```kcl
 // Shell sketched on face objects on the end face, include all sketches to shell
 // the entire object.
-
 
 size = 100
 case = startSketchOn(XY)

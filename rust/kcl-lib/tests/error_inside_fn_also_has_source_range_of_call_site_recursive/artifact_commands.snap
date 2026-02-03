@@ -2,20 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
 ---
-{
-  "rust/kcl-lib/tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
-}
+{}

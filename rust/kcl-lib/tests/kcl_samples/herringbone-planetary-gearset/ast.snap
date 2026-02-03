@@ -2100,7 +2100,27 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Position the end line of the sketch at the start of the next tooth",
                                           "style": "line"
                                         }
@@ -2114,13 +2134,43 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
                                           "style": "line"
                                         }
                                       }
                                     ],
                                     "7": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
                                       {
                                         "commentStart": 0,
                                         "end": 0,
@@ -2149,8 +2199,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                             "kind": "const",
                             "moduleId": 0,
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -2187,11 +2235,36 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
+                        "nonCodeMeta": {
+                          "nonCodeNodes": {
+                            "0": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ]
+                          },
+                          "startNodes": []
+                        },
                         "start": 0
                       },
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "herringboneGearSketch",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -2217,8 +2290,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "fn",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define a function to create a rotated gear sketch on an offset plane"
                   ],
                   "start": 0,
@@ -2298,8 +2369,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch on the base plane"
                   ],
                   "start": 0,
@@ -2406,8 +2475,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch that has been rotated by the helix angle"
                   ],
                   "start": 0,
@@ -2534,25 +2601,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "1": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Loft each rotated gear sketch together to form a herringbone gear",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -2565,8 +2613,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch at the total gear height that reverses the angle direction"
                   ],
                   "start": 0,
@@ -2708,6 +2754,9 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Loft each rotated gear sketch together to form a herringbone gear"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2744,6 +2793,66 @@ description: Result of parsing herringbone-planetary-gearset.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "5": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "6": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "7": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "8": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "9": [
                     {
                       "commentStart": 0,
@@ -2764,6 +2873,14 @@ description: Result of parsing herringbone-planetary-gearset.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "herringboneGear",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -4796,7 +4913,27 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
                                           "value": "Position the end line of the sketch at the start of the next tooth",
                                           "style": "line"
                                         }
@@ -4810,13 +4947,9 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
-                                          "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
-                                          "style": "line"
+                                          "type": "newLine"
                                         }
-                                      }
-                                    ],
-                                    "7": [
+                                      },
                                       {
                                         "commentStart": 0,
                                         "end": 0,
@@ -4824,8 +4957,18 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
-                                          "type": "newLineBlockComment",
-                                          "value": "Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body",
+                                          "type": "newLine"
+                                        }
+                                      },
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "start": 0,
+                                        "type": "NonCodeNode",
+                                        "value": {
+                                          "type": "blockComment",
+                                          "value": "Pattern the sketch about the center by the specified number of teeth, then close the sketch",
                                           "style": "line"
                                         }
                                       }
@@ -4845,8 +4988,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                             "kind": "const",
                             "moduleId": 0,
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -5166,6 +5307,9 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                             "end": 0,
                             "kind": "const",
                             "moduleId": 0,
+                            "preComments": [
+                              "// Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body"
+                            ],
                             "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
@@ -5200,11 +5344,48 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
+                        "nonCodeMeta": {
+                          "nonCodeNodes": {
+                            "0": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ],
+                            "1": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "newLine"
+                                }
+                              }
+                            ]
+                          },
+                          "startNodes": []
+                        },
                         "start": 0
                       },
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "ringGearSketch",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -5230,8 +5411,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "fn",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Define a function to create a rotated gear sketch on an offset plane"
                   ],
                   "start": 0,
@@ -5311,8 +5490,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch on the base plane"
                   ],
                   "start": 0,
@@ -5419,8 +5596,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a rotated gear sketch on a middle interstitial plane"
                   ],
                   "start": 0,
@@ -5547,25 +5722,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "1": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Loft each rotated gear sketch together to form a ring gear",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -5578,8 +5734,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "kind": "const",
                   "moduleId": 0,
                   "preComments": [
-                    "",
-                    "",
                     "// Draw a gear sketch at the total gear height that reverses the angle direction"
                   ],
                   "start": 0,
@@ -5721,6 +5875,9 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Loft each rotated gear sketch together to form a ring gear"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -5757,6 +5914,66 @@ description: Result of parsing herringbone-planetary-gearset.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
+                  "4": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "5": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "6": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "7": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "8": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "9": [
                     {
                       "commentStart": 0,
@@ -5777,6 +5994,14 @@ description: Result of parsing herringbone-planetary-gearset.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "ringGear",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -5846,8 +6071,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Define a function to create a ring gear"
         ],
         "start": 0,
@@ -6016,8 +6239,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the outer ring gear for the planetary gearset"
         ],
         "start": 0,
@@ -6177,8 +6398,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create a central sun gear using a small herringbone gear"
         ],
         "start": 0,
@@ -6219,8 +6438,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the herringbone planet gears"
         ],
         "start": 0,
@@ -6739,6 +6956,7 @@ description: Result of parsing herringbone-planetary-gearset.kcl
         "preComments": [
           "// Herringbone Planetary Gearset",
           "// A herringbone planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are herringbone rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.",
+          "// Categories: Automotive, Aerospace",
           "",
           "",
           "// Set units"
@@ -6784,7 +7002,56 @@ description: Result of parsing herringbone-planetary-gearset.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

@@ -8,10 +8,13 @@ import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelec
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
+import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
+import { use } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
+  const { commandBarActor, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const {
     context: { currentArgument },
@@ -64,6 +67,8 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  const { kclManager } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   // @ts-ignore
   switch (arg.inputType) {
     case 'options':
@@ -107,6 +112,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
     case 'kcl':
@@ -132,6 +138,14 @@ function ArgumentInput({
     case 'vector3d':
       return (
         <CommandBarVector3DInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'vector2d':
+      return (
+        <CommandBarVector2DInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

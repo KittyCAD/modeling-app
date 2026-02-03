@@ -15878,6 +15878,16 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
         ],
         "format": {
           "type": "step",
+          "coords": {
+            "forward": {
+              "axis": "z",
+              "direction": "positive"
+            },
+            "up": {
+              "axis": "y",
+              "direction": "positive"
+            }
+          },
           "split_closed_faces": false
         }
       }
@@ -15947,7 +15957,7 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.12156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -15991,7 +16001,7 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.5,
@@ -16024,19 +16034,5 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
         "entity_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

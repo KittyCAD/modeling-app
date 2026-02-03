@@ -63,6 +63,7 @@ description: Variables in memory after executing v-block.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -121,10 +122,10 @@ description: Variables in memory after executing v-block.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 852,
-                    "end": 858,
+                    "commentStart": 895,
+                    "end": 901,
                     "moduleId": 0,
-                    "start": 852,
+                    "start": 895,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -293,10 +294,10 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "tag": {
-                      "commentStart": 852,
-                      "end": 858,
+                      "commentStart": 895,
+                      "end": 901,
                       "moduleId": 0,
-                      "start": 852,
+                      "start": 895,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -459,28 +460,13 @@ description: Variables in memory after executing v-block.kcl
                     ],
                     "type": "ToPoint",
                     "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.5,
-                      0.0
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.5,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
                   }
                 ],
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": -15.875,
                     "y": 0.0,
@@ -488,7 +474,6 @@ description: Variables in memory after executing v-block.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -596,6 +581,7 @@ description: Variables in memory after executing v-block.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -654,10 +640,10 @@ description: Variables in memory after executing v-block.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 852,
-                    "end": 858,
+                    "commentStart": 895,
+                    "end": 901,
                     "moduleId": 0,
-                    "start": 852,
+                    "start": 895,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -826,10 +812,10 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "tag": {
-                      "commentStart": 852,
-                      "end": 858,
+                      "commentStart": 895,
+                      "end": 901,
                       "moduleId": 0,
-                      "start": 852,
+                      "start": 895,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -992,28 +978,13 @@ description: Variables in memory after executing v-block.kcl
                     ],
                     "type": "ToPoint",
                     "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.5,
-                      0.0
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.5,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
                   }
                 ],
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
                   "origin": {
                     "x": -15.875,
                     "y": 0.0,
@@ -1021,7 +992,6 @@ description: Variables in memory after executing v-block.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -1111,6 +1081,7 @@ description: Variables in memory after executing v-block.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -1169,10 +1140,10 @@ description: Variables in memory after executing v-block.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 852,
-              "end": 858,
+              "commentStart": 895,
+              "end": 901,
               "moduleId": 0,
-              "start": 852,
+              "start": 895,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1341,10 +1312,10 @@ description: Variables in memory after executing v-block.kcl
                 2.375
               ],
               "tag": {
-                "commentStart": 852,
-                "end": 858,
+                "commentStart": 895,
+                "end": 901,
                 "moduleId": 0,
-                "start": 852,
+                "start": 895,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1507,28 +1478,13 @@ description: Variables in memory after executing v-block.kcl
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.5,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -1.5,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "Custom",
+            "objectId": 0,
             "origin": {
               "x": -15.875,
               "y": 0.0,
@@ -1536,7 +1492,6 @@ description: Variables in memory after executing v-block.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -1640,6 +1595,7 @@ description: Variables in memory after executing v-block.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -1698,10 +1654,10 @@ description: Variables in memory after executing v-block.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 852,
-                      "end": 858,
+                      "commentStart": 895,
+                      "end": 901,
                       "moduleId": 0,
-                      "start": 852,
+                      "start": 895,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1870,10 +1826,10 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "tag": {
-                        "commentStart": 852,
-                        "end": 858,
+                        "commentStart": 895,
+                        "end": 901,
                         "moduleId": 0,
-                        "start": 852,
+                        "start": 895,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2036,28 +1992,13 @@ description: Variables in memory after executing v-block.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.5,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.5,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": -15.875,
                       "y": 0.0,
@@ -2065,7 +2006,6 @@ description: Variables in memory after executing v-block.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2191,6 +2131,7 @@ description: Variables in memory after executing v-block.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -2249,10 +2190,10 @@ description: Variables in memory after executing v-block.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 852,
-                      "end": 858,
+                      "commentStart": 895,
+                      "end": 901,
                       "moduleId": 0,
-                      "start": 852,
+                      "start": 895,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2421,10 +2362,10 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "tag": {
-                        "commentStart": 852,
-                        "end": 858,
+                        "commentStart": 895,
+                        "end": 901,
                         "moduleId": 0,
-                        "start": 852,
+                        "start": 895,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2587,28 +2528,13 @@ description: Variables in memory after executing v-block.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.5,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.5,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 0,
                     "origin": {
                       "x": -15.875,
                       "y": 0.0,
@@ -2616,7 +2542,6 @@ description: Variables in memory after executing v-block.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2771,10 +2696,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 852,
-            "end": 858,
+            "commentStart": 895,
+            "end": 901,
             "moduleId": 0,
-            "start": 852,
+            "start": 895,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2943,10 +2868,10 @@ description: Variables in memory after executing v-block.kcl
               2.375
             ],
             "tag": {
-              "commentStart": 852,
-              "end": 858,
+              "commentStart": 895,
+              "end": 901,
               "moduleId": 0,
-              "start": 852,
+              "start": 895,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3109,28 +3034,13 @@ description: Variables in memory after executing v-block.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -1.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
           "origin": {
             "x": -15.875,
             "y": 0.0,
@@ -3138,7 +3048,6 @@ description: Variables in memory after executing v-block.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3309,10 +3218,10 @@ description: Variables in memory after executing v-block.kcl
             2.375
           ],
           "tag": {
-            "commentStart": 852,
-            "end": 858,
+            "commentStart": 895,
+            "end": 901,
             "moduleId": 0,
-            "start": 852,
+            "start": 895,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3475,28 +3384,13 @@ description: Variables in memory after executing v-block.kcl
           ],
           "type": "ToPoint",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -1.5,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": -15.875,
           "y": 0.0,
@@ -3504,7 +3398,6 @@ description: Variables in memory after executing v-block.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3556,13 +3449,14 @@ description: Variables in memory after executing v-block.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 0,
       "origin": {
         "x": -15.875,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,

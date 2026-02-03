@@ -119,28 +119,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
-              -15.0
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -15.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -148,7 +133,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -314,28 +298,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              -5.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -343,7 +312,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -526,28 +494,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -555,7 +508,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -708,28 +660,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -737,7 +674,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -890,28 +826,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -919,7 +840,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1072,28 +992,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1101,7 +1006,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1254,28 +1158,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1283,7 +1172,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1436,28 +1324,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1465,7 +1338,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1618,28 +1490,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1647,7 +1504,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1800,28 +1656,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1829,7 +1670,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1982,28 +1822,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2011,7 +1836,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2164,28 +1988,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2193,7 +2002,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2346,28 +2154,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2375,7 +2168,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2528,28 +2320,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2557,7 +2334,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2710,28 +2486,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2739,7 +2500,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2892,28 +2652,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2921,7 +2666,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3074,28 +2818,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3103,7 +2832,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3256,28 +2984,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3285,7 +2998,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3438,28 +3150,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3467,7 +3164,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3676,28 +3372,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -25.0,
-              -25.0
-            ],
-            "tag": null,
-            "to": [
-              -25.0,
-              -25.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3705,7 +3386,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3894,28 +3574,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
-              -15.0
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -15.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3923,7 +3588,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4079,29 +3743,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4220,28 +3868,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4249,7 +3882,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4429,29 +4061,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4570,28 +4186,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4599,7 +4200,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4779,29 +4379,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4920,28 +4504,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4949,7 +4518,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5129,29 +4697,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5270,28 +4822,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5299,7 +4836,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5479,29 +5015,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5620,28 +5140,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5649,7 +5154,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -5829,29 +5333,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5970,28 +5458,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5999,7 +5472,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6179,29 +5651,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6320,28 +5776,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6349,7 +5790,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6529,29 +5969,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6670,28 +6094,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6699,7 +6108,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -6879,29 +6287,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7020,28 +6412,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7049,7 +6426,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7229,29 +6605,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7370,28 +6730,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7399,7 +6744,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7579,29 +6923,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7720,28 +7048,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7749,7 +7062,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7929,29 +7241,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8070,28 +7366,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8099,7 +7380,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8279,29 +7559,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8420,28 +7684,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8449,7 +7698,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8629,29 +7877,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8770,28 +8002,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8799,7 +8016,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8979,29 +8195,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -9120,28 +8320,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9149,7 +8334,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -9329,29 +8513,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -9470,28 +8638,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9499,7 +8652,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -9679,29 +8831,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -9820,28 +8956,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       ],
                       "type": "ToPoint",
                       "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
                     }
                   ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9849,7 +8970,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -10006,29 +9126,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -14.7,
-            -14.7
-          ],
-          "tag": null,
-          "to": [
-            -14.7,
-            -14.7
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -10147,28 +9251,13 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -15.0,
-                  -15.0
-                ],
-                "tag": null,
-                "to": [
-                  -15.0,
-                  -15.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10176,7 +9265,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

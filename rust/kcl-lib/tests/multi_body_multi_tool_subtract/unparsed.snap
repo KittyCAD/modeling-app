@@ -1,0 +1,102 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing multi_body_multi_tool_subtract.kcl
+---
+@settings(defaultLengthUnit = in)
+
+height = 2.5
+width = 2.5
+bodyLength = 6
+mountCenterToCenter = 1.625
+rodThreadLength = 0.75
+strokeLength = 1
+boreDiameter = 1.5
+rodDiameter = 0.625
+portCenterToCenter = 3.875
+rodThreadSize = 0.438
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [-width / 2, -height / 2])
+  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = height)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = -1.5)
+appearance(extrude001, color = '#9dcfed')
+
+sketch002 = startSketchOn(extrude001, face = START)
+profile002 = circle(sketch002, center = [0, 0], radius = boreDiameter / 2)
+profile003 = circle(sketch002, center = [0, 0], radius = boreDiameter / 2 + 0.1)
+  |> subtract2d(tool = profile002)
+extrude002 = extrude(profile003, length = 2.375, method = NEW)
+appearance(extrude002, color = '#9dcfed')
+
+sketch003 = startSketchOn(extrude002, face = END)
+profile004 = startProfile(sketch003, at = [-width / 2, -height / 2])
+  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = height)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(profile004, length = 1.75)
+
+sketch004 = startSketchOn(extrude003, face = END)
+profile005 = startProfile(sketch004, at = [-width / 2, -height / 2])
+  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) + 90deg, length = height)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude004 = extrude(profile005, length = 0.375, method = NEW)
+
+sketch005 = startSketchOn(extrude004, face = END)
+profile006 = circle(sketch005, center = [0, 0], radius = 0.625 / 2)
+profile007 = circle(sketch005, center = [0, 0], radius = 0.625 / 2 + 0.125)
+  |> subtract2d(tool = profile006)
+extrude005 = extrude(profile007, length = 0.252, method = NEW)
+
+sketch006 = startSketchOn(extrude001, face = END)
+profile008 = circle(
+  sketch006,
+  center = [
+    mountCenterToCenter / 2,
+    mountCenterToCenter / 2
+  ],
+  diameter = 0.375,
+)
+profile009 = circle(
+  sketch006,
+  center = [
+    -mountCenterToCenter / 2,
+    mountCenterToCenter / 2
+  ],
+  diameter = 0.375,
+)
+profile010 = circle(
+  sketch006,
+  center = [
+    -mountCenterToCenter / 2,
+    -mountCenterToCenter / 2
+  ],
+  diameter = 0.375,
+)
+profile011 = circle(
+  sketch006,
+  center = [
+    mountCenterToCenter / 2,
+    -mountCenterToCenter / 2
+  ],
+  diameter = 0.375,
+)
+extrude006 = extrude(
+  [
+    profile008,
+    profile009,
+    profile010,
+    profile011
+  ],
+  length = -10,
+  method = NEW,
+)
+subtract([extrude001, extrude003, extrude004], tools = extrude006)

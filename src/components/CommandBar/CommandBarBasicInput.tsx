@@ -1,10 +1,11 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef } from 'react'
+import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -22,6 +23,8 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const { commandBarActor, kclManager, useCommandBarState } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -37,7 +40,11 @@ function CommandBarBasicInput({
       previouslySetValue ||
       (arg.defaultValue
         ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          ? arg.defaultValue(
+              commandBarState.context,
+              argMachineContext,
+              wasmInstance
+            )
           : arg.defaultValue
         : ''),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -46,6 +53,7 @@ function CommandBarBasicInput({
       commandBarState.context,
       argMachineContext,
       previouslySetValue,
+      wasmInstance,
     ]
   )
 
@@ -62,7 +70,7 @@ function CommandBarBasicInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form id="arg-form" onSubmit={handleSubmit} className="flex flex-col">
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4"
@@ -85,6 +93,10 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          data-bwignore
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
@@ -93,6 +105,12 @@ function CommandBarBasicInput({
           autoFocus
         />
       </label>
+      {arg.description && (
+        <MarkdownText
+          text={arg.description}
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+        />
+      )}
     </form>
   )
 }

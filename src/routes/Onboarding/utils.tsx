@@ -1,21 +1,18 @@
-import { useCallback, useEffect, useState } from 'react'
+import { type PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { type SnapshotFrom, waitFor } from 'xstate'
+import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -32,14 +29,21 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
-import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
-
-export const kbdClasses =
-  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
+import {
+  defaultLayout,
+  setOpenPanes,
+  type DefaultLayoutPaneID,
+} from '@src/lib/layout'
+import { Themes } from '@src/lib/theme'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SystemIOActor } from '@src/lib/app'
+import { useSingletons } from '@src/lib/boot'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -63,6 +67,7 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
@@ -77,11 +82,12 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
-  }, [filePath, newStatus, navigate])
+    void navigate(targetRoute)
+  }, [filePath, newStatus, navigate, settingsActor])
 }
 
 export function useDismiss() {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const send = settingsActor.send
   const navigate = useNavigate()
@@ -98,7 +104,7 @@ export function useDismiss() {
       })
       waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -108,7 +114,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [send, filePath, navigate]
+    [send, filePath, navigate, settingsActor]
   )
 
   return settingsCallback
@@ -206,7 +212,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -239,7 +245,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -255,8 +263,8 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  codeManager: CodeManager
   kclManager: KclManager
+  systemIOActor: SystemIOActor
   navigate: NavigateFunction
 }
 
@@ -275,7 +283,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     /**
      * Bulk create the assembly and navigate to the project
      */
-    systemIOActor.send({
+    deps.systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
         files: fanParts.map((part) => ({
@@ -292,7 +300,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -306,7 +317,6 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  codeManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -315,20 +325,18 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(browserAxialFan)
-  codeManager.writeToFile().catch(reportRejection)
-  kclManager.executeCode().catch(reportRejection)
-  navigate(
+  kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
+  void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
   )
 }
 
-function hasResetReadyCode(codeManager: CodeManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) ||
-    codeManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
+    kclManager.codeSignal.value === browserAxialFan
   )
 }
 
@@ -343,7 +351,7 @@ export function needsToOnboard(
   )
 }
 
-export function onDismissOnboardingInvite() {
+export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -357,7 +365,26 @@ export function onDismissOnboardingInvite() {
   )
 }
 
-export function TutorialRequestToast(props: OnboardingUtilDeps) {
+interface TutorialToastCardProps extends PropsWithChildren {
+  src: string
+  alt: string
+}
+
+function TutorialToastCard(props: TutorialToastCardProps) {
+  return (
+    <figure className="border b-3 flex flex-col">
+      <img src={props.src} alt={props.alt} />
+      <figcaption className="p-2 text-sm border-t b-3">
+        {props.children}
+      </figcaption>
+    </figure>
+  )
+}
+
+export function TutorialRequestToast(
+  props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
+) {
+  const { settingsActor } = useSingletons()
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -366,42 +393,90 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
       .catch((reason) => catchOnboardingWarnError(reason, props))
   }
 
+  const quickTipSrc = (index: number) =>
+    `/quick-tip${props.theme === Themes.Light ? '-light' : ''}-${index}.jpg`
+
   return (
     <div
       data-testid="onboarding-toast"
-      className="flex items-center gap-6 min-w-md"
+      className="flex flex-col justify-between gap-6 text-default"
     >
-      <Logo className="w-auto h-8 flex-none" />
-      <div className="flex flex-col justify-between gap-6">
-        <section>
-          <h2>Welcome to Zoo Design Studio</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            Would you like a tutorial to show you around the app?
-          </p>
-        </section>
-        <div className="flex justify-between gap-8">
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'close',
-            }}
-            data-negative-button="dismiss"
-            name="dismiss"
-            onClick={onDismissOnboardingInvite}
-          >
-            Not right now
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'checkmark',
-            }}
-            name="accept"
-            onClick={onAccept}
-          >
-            Get started
-          </ActionButton>
+      <section className="flex items-center gap-4">
+        <img
+          src="/kitt-wink.png"
+          alt="Our mascot Kitt says hello!"
+          className="w-20"
+        />
+        <div>
+          <h2 className="font-bold text-2xl">Welcome to Zoo Design Studio</h2>
+          <p className="text-lg text-2">Quick tips</p>
         </div>
+      </section>
+      <div className="grid grid-cols-3 gap-4">
+        <TutorialToastCard
+          src={quickTipSrc(1)}
+          alt="a screenshot of the Design Studio interface highlighting the Zookeeper button in the right sidebar"
+        >
+          <strong>Zookeeper</strong> is in the right sidebar, where you can
+          create or modify parts with prompts.{' '}
+        </TutorialToastCard>
+        <TutorialToastCard
+          src={quickTipSrc(2)}
+          alt="a screenshot of the Design Studio interface highlighting the toolbar in the top center of the modeling area"
+        >
+          The top command bar also includes your{' '}
+          <strong>sketching & modeling tools</strong>... extrude, fillet, helix,
+          the works.
+        </TutorialToastCard>
+        <TutorialToastCard
+          src={quickTipSrc(3)}
+          alt="a screenshot of the Design Studio interface highlighting the left sidebar panes"
+        >
+          Navigate the left pane to view your{' '}
+          <strong>
+            Feature Tree, KCL code pane, manage and export files, or add files
+            to your project.
+          </strong>
+        </TutorialToastCard>
+      </div>
+      <div className="flex justify-between gap-8">
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'close',
+            iconClassName: 'bg-destroy-80 text-6',
+          }}
+          data-negative-button="dismiss"
+          name="dismiss"
+          onClick={() => onDismissOnboardingInvite(settingsActor)}
+        >
+          Not right now
+        </ActionButton>
+        <p className="text-center text-2 text-xs">
+          <em>
+            To view your account, manage payment methods, or change tiers,
+            simply{' '}
+            <a
+              href={props.accountUrl}
+              onClick={openExternalBrowserIfDesktop(props.accountUrl)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-default underline underline-offset-2"
+            >
+              click here.
+            </a>
+          </em>
+        </p>
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'arrowShortRight',
+          }}
+          name="accept"
+          onClick={onAccept}
+        >
+          Start tutorial
+        </ActionButton>
       </div>
     </div>
   )
@@ -428,6 +503,7 @@ export async function catchOnboardingWarnError(
 }
 
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
+  const { settingsActor } = useSingletons()
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
     resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
@@ -455,7 +531,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             }}
             data-negative-button="dismiss"
             name="dismiss"
-            onClick={onDismissOnboardingInvite}
+            onClick={() => onDismissOnboardingInvite(settingsActor)}
           >
             I'll save it
           </ActionButton>
@@ -485,7 +561,7 @@ export function useOnboardingHighlight(elementId: string) {
       `[data-${ONBOARDING_DATA_ATTRIBUTE}="${elementId}"`
     )
     if (elementToHighlight === null) {
-      console.error('Text-to-CAD dropdown element not found')
+      console.error('Dropdown element not found')
       return
     }
     // There is an ".onboarding-highlight" class defined in index.css
@@ -502,31 +578,25 @@ export function useOnboardingHighlight(elementId: string) {
  * Utility hook to set the pane state on mount and unmount.
  */
 export function useOnboardingPanes(
-  onMount: SidebarId[] | undefined = [],
-  onUnmount: SidebarId[] | undefined = []
+  onMount: DefaultLayoutPaneID[] | undefined = [],
+  onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
-  const { send } = useModelingContext()
+  const { getLayout, setLayout } = useSingletons()
   useEffect(() => {
-    send({
-      type: 'Set context',
-      data: {
-        openPanes: onMount,
-      },
-    })
+    setLayout(
+      setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
+    )
 
     return () =>
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: onUnmount,
-        },
-      })
+      setLayout(
+        setOpenPanes(structuredClone(getLayout() || defaultLayout), onUnmount)
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [send])
+  }, [onMount, onUnmount])
 }
 
 export function isModelingCmdGroupReady(
-  state: SnapshotFrom<typeof commandBarActor>
+  state: SnapshotFrom<ActorRefFrom<typeof commandBarMachine>>
 ) {
   // Ensure that the modeling command group is available
   if (
@@ -545,6 +615,7 @@ export function useOnModelingCmdGroupReadyOnce(
   callback: () => void,
   deps: React.DependencyList
 ) {
+  const { commandBarActor } = useSingletons()
   const [isReadyOnce, setReadyOnce] = useState(false)
 
   // Set up a subscription to the command bar actor's
@@ -561,7 +632,7 @@ export function useOnModelingCmdGroupReadyOnce(
       })
       return () => subscription.unsubscribe()
     }
-  }, [])
+  }, [commandBarActor])
 
   // Fire the callback when the modeling command group is ready
   useEffect(() => {
@@ -569,7 +640,7 @@ export function useOnModelingCmdGroupReadyOnce(
       callback()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [isReadyOnce, ...deps])
+  }, [isReadyOnce, callback, ...deps])
 }
 
 /**

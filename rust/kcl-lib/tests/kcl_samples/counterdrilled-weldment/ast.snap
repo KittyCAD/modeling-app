@@ -539,8 +539,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterdrill diameter to the bolt spacing"
         ],
         "start": 0,
@@ -1611,8 +1609,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Draw the base plate"
         ],
         "start": 0,
@@ -1988,25 +1984,6 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Define hole positions",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2448,6 +2425,9 @@ description: Result of parsing counterdrilled-weldment.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Define hole positions"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3267,6 +3247,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
+                                "type": "newLine"
+                              }
+                            },
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "NonCodeNode",
+                              "value": {
                                 "type": "blockComment",
                                 "value": "Use a chamfer to create a 90-degree counterdrill edge",
                                 "style": "line"
@@ -3317,6 +3307,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "counterdrill",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -3343,8 +3341,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         "kind": "fn",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Function to create a counterdrilled hole"
         ],
         "start": 0,
@@ -3430,8 +3426,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place a counterdrilled hole at each bolt hole position"
         ],
         "start": 0,
@@ -3661,25 +3655,6 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "2": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Model the central tube and subtract the pin hole",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -3692,8 +3667,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Drill a small pin hole in the side of the tube"
         ],
         "start": 0,
@@ -4261,25 +4234,6 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "4": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create a function to create a fin which spans from the central tube to the bolt hole",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -4291,6 +4245,9 @@ description: Result of parsing counterdrilled-weldment.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Model the central tube and subtract the pin hole"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5547,25 +5504,6 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "8": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Use a circular pattern to create an identical fin on the opposite side",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -5835,6 +5773,9 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "end": 0,
                   "kind": "const",
                   "moduleId": 0,
+                  "preComments": [
+                    "// Use a circular pattern to create an identical fin on the opposite side"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -5873,6 +5814,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "type": "newLine"
                       }
                     }
+                  ],
+                  "1": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
                   ]
                 },
                 "startNodes": []
@@ -5882,6 +5835,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "fin",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -5907,6 +5868,9 @@ description: Result of parsing counterdrilled-weldment.kcl
         "end": 0,
         "kind": "fn",
         "moduleId": 0,
+        "preComments": [
+          "// Create a function to create a fin which spans from the central tube to the bolt hole"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5955,8 +5919,6 @@ description: Result of parsing counterdrilled-weldment.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Place a pair of support fins along each diagonal axis of the bolt pattern"
         ],
         "start": 0,
@@ -6038,6 +6000,7 @@ description: Result of parsing counterdrilled-weldment.kcl
         "preComments": [
           "// Counterdrilled Weldment",
           "// A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"
@@ -6083,7 +6046,116 @@ description: Result of parsing counterdrilled-weldment.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,

@@ -40,9 +40,9 @@ export interface PerformanceMark {
 }
 
 export interface MarkHelpers {
-  mark(name: string, options?: PerformanceMark): void
-  markOnce(name: string, options?: PerformanceMark): void
-  getMarks(): PerformanceMark[]
+  mark(this: void, name: string, options?: PerformanceMark): void
+  markOnce(this: void, name: string, options?: PerformanceMark): void
+  getMarks(this: void): PerformanceMark[]
 }
 
 /**
@@ -69,17 +69,17 @@ function detectEnvironment(): MarkHelpers {
     }
 
     const _helpers: MarkHelpers = {
-      mark(name: string, options?: PerformanceMark) {
+      mark(this: void, name: string, options?: PerformanceMark) {
         _mark(name, options)
       },
-      markOnce(name: string, options?: PerformanceMark) {
+      markOnce(this: void, name: string, options?: PerformanceMark) {
         if (seenMarks[name]) {
           return
         }
         _mark(name, options)
         seenMarks[name] = true
       },
-      getMarks() {
+      getMarks(this: void) {
         let timeOrigin = performance.timeOrigin
         const result: PerformanceMark[] = [
           {

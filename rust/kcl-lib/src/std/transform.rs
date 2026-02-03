@@ -12,7 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, SolidOrSketchOrImportedGeometry,
+        ExecState, HideableGeometry, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
@@ -42,15 +42,35 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let scale_x: Option<TyF64> = args.get_kw_arg_opt("x", &RuntimeType::count(), exec_state)?;
     let scale_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::count(), exec_state)?;
     let scale_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::count(), exec_state)?;
-    let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
-
-    // Ensure at least one scale value is provided.
-    if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Expected `x`, `y`, or `z` to be provided.".to_string(),
-            vec![args.source_range],
-        )));
+    let factor: Option<TyF64> = args.get_kw_arg_opt("factor", &RuntimeType::count(), exec_state)?;
+    for scale_dim in [&scale_x, &scale_y, &scale_z, &factor] {
+        if let Some(num) = scale_dim
+            && num.n == 0.0
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot scale by 0".to_string(),
+                vec![args.source_range],
+            )));
+        }
     }
+    let (scale_x, scale_y, scale_z) = match (scale_x, scale_y, scale_z, factor) {
+        (None, None, None, Some(factor)) => (Some(factor.clone()), Some(factor.clone()), Some(factor)),
+        // Ensure at least one scale value is provided.
+        (None, None, None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Expected `x`, `y`, `z` or `factor` to be provided.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (x, y, z, None) => (x, y, z),
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "If you give `factor` then you cannot use  `x`, `y`, or `z`".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    };
+    let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
 
     let objects = inner_scale(
         objects,
@@ -77,7 +97,9 @@ async fn inner_scale(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let is_global = global.unwrap_or(false);
@@ -91,25 +113,27 @@ async fn inner_scale(
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        scale: Some(transform_by(
-                            Point3d {
-                                x: x.unwrap_or(1.0),
-                                y: y.unwrap_or(1.0),
-                                z: z.unwrap_or(1.0),
-                            },
-                            false,
-                            !is_global,
-                            origin,
-                        )),
-                        translate: None,
-                        rotate_rpy: None,
-                        rotate_angle_axis: None,
-                    }],
-                }),
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::SetObjectTransform::builder()
+                        .object_id(object_id)
+                        .transforms(vec![shared::ComponentTransform {
+                            scale: Some(transform_by(
+                                Point3d {
+                                    x: x.unwrap_or(1.0),
+                                    y: y.unwrap_or(1.0),
+                                    z: z.unwrap_or(1.0),
+                                },
+                                false,
+                                !is_global,
+                                origin,
+                            )),
+                            translate: None,
+                            rotate_rpy: None,
+                            rotate_angle_axis: None,
+                        }])
+                        .build(),
+                ),
             )
             .await?;
     }
@@ -182,7 +206,9 @@ async fn inner_translate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let is_global = global.unwrap_or(false);
@@ -192,29 +218,27 @@ async fn inner_translate(
         Some(OriginType::Local)
     };
 
+    let translation = shared::Point3d {
+        x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+    };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        translate: Some(transform_by(
-                            shared::Point3d {
-                                x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                                y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                                z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                            },
-                            false,
-                            !is_global,
-                            origin,
-                        )),
-                        scale: None,
-                        rotate_rpy: None,
-                        rotate_angle_axis: None,
-                    }],
-                }),
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::SetObjectTransform::builder()
+                        .object_id(object_id)
+                        .transforms(vec![shared::ComponentTransform {
+                            translate: Some(transform_by(translation, false, !is_global, origin)),
+                            scale: None,
+                            rotate_rpy: None,
+                            rotate_angle_axis: None,
+                        }])
+                        .build(),
+                ),
             )
             .await?;
     }
@@ -364,7 +388,9 @@ async fn inner_rotate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let origin = if let Some(origin) = origin {
@@ -386,54 +412,97 @@ async fn inner_rotate(
         if let (Some(axis), Some(angle)) = (&axis, angle) {
             exec_state
                 .batch_modeling_cmd(
-                    (&args).into(),
-                    ModelingCmd::from(mcmd::SetObjectTransform {
-                        object_id,
-                        transforms: vec![shared::ComponentTransform {
-                            rotate_angle_axis: Some(transform_by(
-                                shared::Point4d {
-                                    x: axis[0],
-                                    y: axis[1],
-                                    z: axis[2],
-                                    w: angle,
-                                },
-                                false,
-                                !global.unwrap_or(false),
-                                origin,
-                            )),
-                            scale: None,
-                            rotate_rpy: None,
-                            translate: None,
-                        }],
-                    }),
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(
+                        mcmd::SetObjectTransform::builder()
+                            .object_id(object_id)
+                            .transforms(vec![shared::ComponentTransform {
+                                rotate_angle_axis: Some(transform_by(
+                                    shared::Point4d {
+                                        x: axis[0],
+                                        y: axis[1],
+                                        z: axis[2],
+                                        w: angle,
+                                    },
+                                    false,
+                                    !global.unwrap_or(false),
+                                    origin,
+                                )),
+                                scale: None,
+                                rotate_rpy: None,
+                                translate: None,
+                            }])
+                            .build(),
+                    ),
                 )
                 .await?;
         } else {
             // Do roll, pitch, and yaw.
             exec_state
                 .batch_modeling_cmd(
-                    (&args).into(),
-                    ModelingCmd::from(mcmd::SetObjectTransform {
-                        object_id,
-                        transforms: vec![shared::ComponentTransform {
-                            rotate_rpy: Some(transform_by(
-                                shared::Point3d {
-                                    x: roll.unwrap_or(0.0),
-                                    y: pitch.unwrap_or(0.0),
-                                    z: yaw.unwrap_or(0.0),
-                                },
-                                false,
-                                !global.unwrap_or(false),
-                                origin,
-                            )),
-                            scale: None,
-                            rotate_angle_axis: None,
-                            translate: None,
-                        }],
-                    }),
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(
+                        mcmd::SetObjectTransform::builder()
+                            .object_id(object_id)
+                            .transforms(vec![shared::ComponentTransform {
+                                rotate_rpy: Some(transform_by(
+                                    shared::Point3d {
+                                        x: roll.unwrap_or(0.0),
+                                        y: pitch.unwrap_or(0.0),
+                                        z: yaw.unwrap_or(0.0),
+                                    },
+                                    false,
+                                    !global.unwrap_or(false),
+                                    origin,
+                                )),
+                                scale: None,
+                                rotate_angle_axis: None,
+                                translate: None,
+                            }])
+                            .build(),
+                    ),
                 )
                 .await?;
         }
+    }
+
+    Ok(objects)
+}
+
+/// Hide solids, sketches, or imported objects.
+pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let objects = args.get_unlabeled_kw_arg(
+        "objects",
+        &RuntimeType::Union(vec![
+            RuntimeType::solids(),
+            RuntimeType::helices(),
+            RuntimeType::imported(),
+        ]),
+        exec_state,
+    )?;
+
+    let objects = hide_inner(objects, true, exec_state, args).await?;
+    Ok(objects.into())
+}
+
+async fn hide_inner(
+    mut objects: HideableGeometry,
+    hidden: bool,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<HideableGeometry, KclError> {
+    for object_id in objects.ids(&args.ctx).await? {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(object_id)
+                        .hidden(hidden)
+                        .build(),
+                ),
+            )
+            .await?;
     }
 
     Ok(objects)
@@ -684,7 +753,43 @@ sweepSketch = startSketchOn(XY)
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().message(),
-            r#"Expected `x`, `y`, or `z` to be provided."#.to_string()
+            r#"Expected `x`, `y`, `z` or `factor` to be provided."#.to_string()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_pipe_solid_ok() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> hide()
+"#;
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_helix() {
+        let ast = r#"helixPath = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 3,
+  angleStart = 360,
+  ccw = false,
+)
+
+hide(helixPath)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_no_objects() {
+        let ast = r#"hidden = hide()"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().message(),
+            r#"This function expects an unlabeled first parameter, but you haven't passed it one."#.to_string()
         );
     }
 }

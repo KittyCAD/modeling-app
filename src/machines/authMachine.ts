@@ -2,7 +2,8 @@ import type { User } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
-  updateEnvironmentPool,
+  updateEnvironmentKittycadWebSocketUrl,
+  updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
@@ -12,8 +13,11 @@ import {
   COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
 import {
+  readEnvironmentConfigurationKittycadWebSocketUrl,
+  readEnvironmentConfigurationMlephantWebSocketUrl,
+} from '@src/lib/desktop'
+import {
   listAllEnvironments,
-  readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -47,13 +51,11 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie()
-const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie || ''
+export const persistedToken = getTokenFromEnvOrCookie()
 console.log('Initial persisted token')
 console.table([
-  ['cookie', !!persistedCookie],
-  ['api token', !!persistedDevToken],
+  ['cookie', !!getCookie()],
+  ['api token', !!env().VITE_ZOO_API_TOKEN],
 ])
 
 export const authMachine = setup({
@@ -174,16 +176,35 @@ async function getUser(input: { token?: string }) {
   if (window.electron) {
     const environment =
       (await readEnvironmentFile(window.electron)) ||
-      env().VITE_KITTYCAD_BASE_DOMAIN ||
+      env().VITE_ZOO_BASE_DOMAIN ||
       ''
     updateEnvironment(environment)
 
-    // Update the pool
-    const cachedPool = await readEnvironmentConfigurationPool(
-      window.electron,
-      environment
-    )
-    updateEnvironmentPool(environment, cachedPool)
+    // Update the Engine WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
+
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
+      )
+    }
   }
 
   let token = ''
@@ -198,7 +219,7 @@ async function getUser(input: { token?: string }) {
    * We do not want to store a token or a user since the developer is running
    * the application and dependencies locally. They know what they are doing.
    */
-  if (env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
+  if (env().VITE_ZOO_API_TOKEN === 'localhost') {
     return {
       user: undefined,
       token: 'localhost',
@@ -227,12 +248,24 @@ export function getCookie(): string | null {
     return null
   }
 
-  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
   if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
     return getCookieByName(LEGACY_COOKIE_NAME)
   } else {
     return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
   }
+}
+
+/**
+ * Get token from environment variable or cookie.
+ * This is a synchronous utility function that can be used in both
+ * React hooks and non-React contexts (like singleton initialization).
+ * @returns The token string, or empty string if neither source has a token
+ */
+export function getTokenFromEnvOrCookie(): string {
+  const envToken = env().VITE_ZOO_API_TOKEN
+  const cookieToken = getCookie()
+  return envToken || cookieToken || ''
 }
 
 function getCookieByName(cname: string): string | null {
@@ -254,15 +287,15 @@ function getCookieByName(cname: string): string | null {
 async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
-  // dev mode
-  const VITE_KITTYCAD_API_TOKEN = env().VITE_KITTYCAD_API_TOKEN
-  if (VITE_KITTYCAD_API_TOKEN) {
+  // Local mode
+  const localToken = env().VITE_ZOO_API_TOKEN
+  if (localToken) {
     console.log('Token used for authentication')
-    console.table([['api token', !!VITE_KITTYCAD_API_TOKEN]])
-    return VITE_KITTYCAD_API_TOKEN
+    console.table([['api token', !!localToken]])
+    return localToken
   }
 
-  const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const environmentName = env().VITE_ZOO_BASE_DOMAIN
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
@@ -281,7 +314,7 @@ async function getAndSyncStoredToken(input: {
   console.table([
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
-    ['api token', !!VITE_KITTYCAD_API_TOKEN],
+    ['api token', !!localToken],
     ['file token', !!fileToken],
   ])
 
@@ -323,7 +356,7 @@ async function logoutEnvironment(requestedDomain?: string) {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (window.electron) {
     try {
-      const domain = requestedDomain || env().VITE_KITTYCAD_BASE_DOMAIN
+      const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
       let token = ''
       if (domain) {
         token = await readEnvironmentConfigurationToken(window.electron, domain)

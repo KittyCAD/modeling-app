@@ -175,7 +175,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -214,10 +215,10 @@ description: Artifact commands sls.kcl
           "r": 0.03137255,
           "g": 0.03137255,
           "b": 0.03137255,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -628,7 +629,8 @@ description: Artifact commands sls.kcl
         "distance": 7100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -680,15 +682,20 @@ description: Artifact commands sls.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 500.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 500.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -703,10 +710,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -944,7 +951,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -983,10 +991,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 0.58431375,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1139,7 +1147,8 @@ description: Artifact commands sls.kcl
         "distance": 4000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1185,10 +1194,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1341,7 +1350,8 @@ description: Artifact commands sls.kcl
         "distance": 4000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1387,10 +1397,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1560,7 +1570,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1599,10 +1610,10 @@ description: Artifact commands sls.kcl
           "r": 0.039215688,
           "g": 0.039215688,
           "b": 0.039215688,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1772,7 +1783,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1811,10 +1823,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2273,7 +2285,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2312,10 +2325,10 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2611,7 +2624,8 @@ description: Artifact commands sls.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2650,26 +2664,12 @@ description: Artifact commands sls.kcl
           "r": 1.0,
           "g": 1.0,
           "b": 1.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

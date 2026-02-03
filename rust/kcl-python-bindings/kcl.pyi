@@ -82,6 +82,16 @@ class Finding:
     def description(self) -> builtins.str: ...
     @property
     def experimental(self) -> builtins.bool: ...
+    @property
+    def family(self) -> builtins.str: ...
+
+class FixedLints:
+    r"""
+    Result from linting and fixing automatically.
+    Shows the new code after applying fixes,
+    and any lints that couldn't be automatically applied.
+    """
+    ...
 
 class GltfExportOptions:
     r"""
@@ -414,6 +424,23 @@ class FileExportFormat(Enum):
     The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
     """
 
+class FindingFamily(Enum):
+    r"""
+    Lint families such as style or correctness.
+    """
+    Style = ...
+    r"""
+    KCL style guidelines, e.g. identifier casing.
+    """
+    Correctness = ...
+    r"""
+    The user is probably doing something incorrect or unintended.
+    """
+    Simplify = ...
+    r"""
+    The user has expressed something in a complex way that could be simplified.
+    """
+
 class GltfStorage(Enum):
     r"""
     Describes the storage format of a glTF 2.0 scene.
@@ -692,6 +719,19 @@ async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], for
 def lint(code:builtins.str) -> builtins.list[Discovered]:
     r"""
     Lint the kcl code.
+    """
+
+def lint_and_fix_all(code:builtins.str) -> FixedLints:
+    r"""
+    Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+    Returns any unfixed lints.
+    """
+
+def lint_and_fix_families(code:builtins.str, families_to_fix:typing.Sequence[FindingFamily]) -> FixedLints:
+    r"""
+    Lint the kcl code. Fix any lints that can be fixed with automatic suggestions,
+    and are in the list of families to fix.
+    Returns any unfixed lints.
     """
 
 async def mock_execute(path:builtins.str) -> builtins.bool:

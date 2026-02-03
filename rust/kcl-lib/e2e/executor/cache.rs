@@ -54,7 +54,7 @@ async fn cache_test(
         let outcome = match ctx.run_with_caching(program).await {
             Ok(outcome) => outcome,
             Err(error) => {
-                let report = error.clone().into_miette_report_with_outputs(variation.code).unwrap();
+                let report = error.into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);
                 panic!("{report:?}");
             }
@@ -400,10 +400,12 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden: false,
-                object_id: default_planes.xy,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(false)
+                    .object_id(default_planes.xy)
+                    .build(),
+            ),
         )
         .await
         .unwrap();
@@ -414,7 +416,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
-            &ModelingCmd::from(mcmd::SceneClearAll {}),
+            &ModelingCmd::from(mcmd::SceneClearAll::builder().build()),
         )
         .await
         .unwrap();
@@ -431,10 +433,12 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden: false,
-                object_id: default_planes.xz,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(false)
+                    .object_id(default_planes.xz)
+                    .build(),
+            ),
         )
         .await
         .unwrap();

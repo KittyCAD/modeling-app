@@ -50,6 +50,14 @@ expression: actual
           "commentStart": 6,
           "end": 26,
           "moduleId": 0,
+          "name": {
+            "commentStart": 3,
+            "end": 6,
+            "moduleId": 0,
+            "name": "foo",
+            "start": 3,
+            "type": "Identifier"
+          },
           "params": [
             {
               "type": "Parameter",

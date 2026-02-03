@@ -2,6 +2,7 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Create a new KCL file with the given initial content and default length unit.
@@ -9,7 +10,8 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
  */
 export function newKclFile(
   initialContent: string | undefined,
-  defaultLengthUnit: UnitLength
+  defaultLengthUnit: UnitLength,
+  wasmInstance: ModuleType
 ): string | Error {
   // If we're given initial content, we're loading a file that should already
   // have units in it.  Don't modify it.
@@ -22,5 +24,5 @@ export function newKclFile(
     return ''
   }
 
-  return changeDefaultUnits('', defaultLengthUnit)
+  return changeDefaultUnits('', defaultLengthUnit, wasmInstance)
 }

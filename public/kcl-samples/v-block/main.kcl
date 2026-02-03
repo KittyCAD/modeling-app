@@ -1,5 +1,6 @@
 // V-Block
 // Hold and support round workpieces.
+// Categories: Manufacturing, Construction
 
 // Set units in inches (in)
 @settings(defaultLengthUnit = in)

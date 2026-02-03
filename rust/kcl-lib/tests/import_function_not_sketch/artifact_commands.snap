@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands import_function_not_sketch.kcl
 ---
 {
-  "rust/kcl-lib/tests/import_function_not_sketch/input.kcl": [],
   "rust/kcl-lib/tests/import_function_not_sketch/my_functions.kcl": [
     {
       "cmdId": "[uuid]",
@@ -222,7 +221,8 @@ description: Artifact commands import_function_not_sketch.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -251,19 +251,5 @@ description: Artifact commands import_function_not_sketch.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

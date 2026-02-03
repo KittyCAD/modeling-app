@@ -256,7 +256,10 @@ mod tests {
                 digest: None,
             }),
             ModuleId::default(),
-            ModulePath::Local { value: "".into() },
+            ModulePath::Local {
+                value: "".into(),
+                original_import_path: None,
+            },
             ModuleRepr::Kcl(program, None),
         )
     }
@@ -278,6 +281,7 @@ import \"a.kcl\"
         let ctx = ExecutorContext::new_mock(None).await;
         let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()]], order);
+        ctx.close().await;
     }
 
     #[tokio::test]
@@ -301,6 +305,7 @@ x = 1
         let ctx = ExecutorContext::new_mock(None).await;
         let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned(), "b.kcl".to_owned()]], order);
+        ctx.close().await;
     }
 
     #[tokio::test]
@@ -330,6 +335,7 @@ import \"a.kcl\"
             vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()]],
             order
         );
+        ctx.close().await;
     }
 
     #[tokio::test]
@@ -352,5 +358,6 @@ import \"a.kcl\"
 
         let ctx = ExecutorContext::new_mock(None).await;
         import_graph(&modules, &ctx).unwrap_err();
+        ctx.close().await;
     }
 }

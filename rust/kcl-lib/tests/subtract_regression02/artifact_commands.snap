@@ -250,7 +250,8 @@ description: Artifact commands subtract_regression02.kcl
         "opposite": {
           "Other": 16.637
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -414,7 +415,8 @@ description: Artifact commands subtract_regression02.kcl
         "opposite": {
           "Other": 0.0
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -592,7 +594,8 @@ description: Artifact commands subtract_regression02.kcl
         "opposite": {
           "Other": 0.0
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -642,19 +645,5 @@ description: Artifact commands subtract_regression02.kcl
         "tolerance": 0.0000001
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

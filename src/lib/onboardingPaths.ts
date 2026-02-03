@@ -42,11 +42,6 @@ export const onboardingPaths = {
   desktop: desktopOnboardingPaths,
   browser: browserOnboardingPaths,
 }
-
-export const onboardingPathsArray = Object.values(onboardingPaths).flatMap(
-  (p) => Object.values(p)
-)
-
 /** Whatever the first onboarding path on the current platform is. */
 export const onboardingStartPath = Object.values(
   onboardingPaths[isDesktop() ? 'desktop' : 'browser']
@@ -56,20 +51,4 @@ export const isOnboardingPath = (input: string): input is OnboardingStatus => {
   return Object.values(onboardingPaths)
     .flatMap((o) => Object.values(o))
     .includes(input as OnboardingPath)
-}
-
-export const isDesktopOnboardingPath = (
-  input: string
-): input is OnboardingStatus => {
-  return Object.values(onboardingPaths.desktop).includes(
-    input as DesktopOnboardingPath
-  )
-}
-
-export const isBrowserOnboardingPath = (
-  input: string
-): input is OnboardingStatus => {
-  return Object.values(onboardingPaths.browser).includes(
-    input as BrowserOnboardingPath
-  )
 }

@@ -3,10 +3,11 @@ import * as assert from 'assert'
 // as well as import your extension to test it
 import * as vscode from 'vscode'
 
+import { suite, test } from 'mocha'
+
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
-  /* eslint-disable */
   vscode.window.showInformationMessage('Start all tests.')
 
   test('Sample test', () => {

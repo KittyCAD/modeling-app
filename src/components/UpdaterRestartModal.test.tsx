@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 
 import { UpdaterRestartModal } from '@src/components/UpdaterRestartModal'
 

@@ -155,29 +155,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              27.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              27.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 33,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -208,10 +192,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -222,10 +206,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -270,10 +254,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -294,10 +278,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -324,28 +308,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -353,7 +322,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -543,29 +511,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              27.0,
-              11.0
-            ],
-            "tag": null,
-            "to": [
-              27.0,
-              11.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 34,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -596,10 +548,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -610,10 +562,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -658,10 +610,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -682,10 +634,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -712,28 +664,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -741,7 +678,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -931,29 +867,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 35,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -984,10 +904,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -998,10 +918,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1046,10 +966,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1070,10 +990,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1100,28 +1020,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1129,7 +1034,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1319,29 +1223,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              12.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              12.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 36,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1372,10 +1260,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1386,10 +1274,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1434,10 +1322,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1458,10 +1346,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1488,28 +1376,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1517,7 +1390,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1707,29 +1579,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 37,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -1760,10 +1616,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1774,10 +1630,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1822,10 +1678,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1846,10 +1702,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1876,28 +1732,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1905,7 +1746,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2095,29 +1935,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              23.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              23.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 38,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -2148,10 +1972,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2162,10 +1986,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2210,10 +2034,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2234,10 +2058,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2264,28 +2088,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2293,7 +2102,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2483,29 +2291,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              23.0,
-              11.0
-            ],
-            "tag": null,
-            "to": [
-              23.0,
-              11.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 39,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -2536,10 +2328,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2550,10 +2342,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2598,10 +2390,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2622,10 +2414,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2652,28 +2444,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2681,7 +2458,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2925,29 +2701,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              7.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              7.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 12,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2978,10 +2738,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2992,10 +2752,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3040,10 +2800,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -3064,10 +2824,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3094,28 +2854,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3123,7 +2868,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3313,29 +3057,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -9.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              -9.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 17,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3366,10 +3094,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3380,10 +3108,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3428,10 +3156,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -3452,10 +3180,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3482,28 +3210,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3511,7 +3224,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3694,10 +3406,10 @@ description: Variables in memory after executing kitt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 766,
-            "end": 772,
+            "commentStart": 787,
+            "end": 793,
             "moduleId": 0,
-            "start": 766,
+            "start": 787,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3708,10 +3420,10 @@ description: Variables in memory after executing kitt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 817,
-            "end": 823,
+            "commentStart": 838,
+            "end": 844,
             "moduleId": 0,
-            "start": 817,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -3756,10 +3468,10 @@ description: Variables in memory after executing kitt.kcl
               31.0
             ],
             "tag": {
-              "commentStart": 766,
-              "end": 772,
+              "commentStart": 787,
+              "end": 793,
               "moduleId": 0,
-              "start": 766,
+              "start": 787,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3780,10 +3492,10 @@ description: Variables in memory after executing kitt.kcl
               31.0
             ],
             "tag": {
-              "commentStart": 817,
-              "end": 823,
+              "commentStart": 838,
+              "end": 844,
               "moduleId": 0,
-              "start": 817,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3810,28 +3522,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -13.0,
-              6.0
-            ],
-            "tag": null,
-            "to": [
-              -13.0,
-              6.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3839,7 +3536,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4038,29 +3734,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              11.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              11.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 18,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -4179,29 +3859,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -4232,10 +3896,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4246,10 +3910,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4294,10 +3958,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -4318,10 +3982,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4348,28 +4012,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4377,7 +4026,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -4594,29 +4242,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              9.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 19,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -4735,29 +4367,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -4788,10 +4404,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4802,10 +4418,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4850,10 +4466,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -4874,10 +4490,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4904,28 +4520,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4933,7 +4534,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -5150,29 +4750,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 20,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -5291,29 +4875,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -5344,10 +4912,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5358,10 +4926,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5406,10 +4974,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -5430,10 +4998,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -5460,28 +5028,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -5489,7 +5042,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6010,29 +5562,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              16.0
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              16.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -6151,29 +5687,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    14.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    14.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 1,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -6204,10 +5724,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6218,10 +5738,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -6266,10 +5786,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -6290,10 +5810,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -6320,28 +5840,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -6349,7 +5854,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6602,29 +6106,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -11.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              -11.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 14,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -6743,29 +6231,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -6796,10 +6268,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6810,10 +6282,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -6858,10 +6330,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -6882,10 +6354,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -6912,28 +6384,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -6941,7 +6398,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -7158,29 +6614,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -11.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              -11.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 15,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -7299,29 +6739,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -7352,10 +6776,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7366,10 +6790,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7414,10 +6838,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -7438,10 +6862,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -7468,28 +6892,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -7497,7 +6906,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -7714,29 +7122,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              11.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              11.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 16,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -7855,29 +7247,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -7908,10 +7284,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7922,10 +7298,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7970,10 +7346,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -7994,10 +7370,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -8024,28 +7400,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -8053,7 +7414,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -8315,29 +7675,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -8368,10 +7712,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8382,10 +7726,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -8430,10 +7774,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -8454,10 +7798,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -8484,28 +7828,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -8513,7 +7842,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8748,29 +8076,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 29,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -8801,10 +8113,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8815,10 +8127,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -8863,10 +8175,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -8887,10 +8199,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -8917,28 +8229,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -8946,7 +8243,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9136,29 +8432,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -7.0,
-              23.0
-            ],
-            "tag": null,
-            "to": [
-              -7.0,
-              23.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -9469,29 +8749,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -9610,29 +8874,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -9663,10 +8911,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -9677,10 +8925,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -9725,10 +8973,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -9749,10 +8997,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -9779,28 +9027,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -9808,7 +9041,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -10052,29 +9284,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -6.0,
-              24.0
-            ],
-            "tag": null,
-            "to": [
-              -6.0,
-              24.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -10385,29 +9601,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -10526,29 +9726,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -10579,10 +9763,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -10593,10 +9777,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -10641,10 +9825,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -10665,10 +9849,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -10695,28 +9879,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -10724,7 +9893,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -10968,29 +10136,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
-              23.0
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              23.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -11301,29 +10453,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -11442,29 +10578,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -11495,10 +10615,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -11509,10 +10629,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -11557,10 +10677,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -11581,10 +10701,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -11611,28 +10731,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -11640,7 +10745,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -11884,28 +10988,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 23,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -11913,7 +11002,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -12079,29 +11167,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
-              19.0
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              19.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 9,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -12412,29 +11484,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -12553,29 +11609,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -12606,10 +11646,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -12620,10 +11660,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -12668,10 +11708,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -12692,10 +11732,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -12722,28 +11762,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -12751,7 +11776,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -12995,29 +12019,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.0,
-              19.0
-            ],
-            "tag": null,
-            "to": [
-              3.0,
-              19.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 11,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -13328,29 +12336,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -13469,29 +12461,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -13522,10 +12498,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -13536,10 +12512,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -13584,10 +12560,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -13608,10 +12584,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -13638,28 +12614,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -13667,7 +12628,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -13929,29 +12889,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
-              20.0
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              20.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 8,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -14262,29 +13206,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -14403,29 +13331,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -14456,10 +13368,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -14470,10 +13382,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -14518,10 +13430,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -14542,10 +13454,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -14572,28 +13484,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -14601,7 +13498,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -14845,29 +13741,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              20.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              20.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 10,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -15178,29 +14058,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -15319,29 +14183,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -15372,10 +14220,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -15386,10 +14234,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -15434,10 +14282,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -15458,10 +14306,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -15488,28 +14336,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -15517,7 +14350,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -15953,29 +14785,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.0,
-              18.0
-            ],
-            "tag": null,
-            "to": [
-              -2.0,
-              18.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 7,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -16286,29 +15102,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -16427,29 +15227,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -16480,10 +15264,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -16494,10 +15278,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -16542,10 +15326,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -16566,10 +15350,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -16596,28 +15380,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -16625,7 +15394,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -16878,29 +15646,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 25,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -16931,10 +15683,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -16945,10 +15697,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -16993,10 +15745,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -17017,10 +15769,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -17047,28 +15799,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -17076,7 +15813,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -17266,29 +16002,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              22.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              22.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -17599,29 +16319,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -17740,29 +16444,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 1,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -17793,10 +16481,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 766,
-                              "end": 772,
+                              "commentStart": 787,
+                              "end": 793,
                               "moduleId": 0,
-                              "start": 766,
+                              "start": 787,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -17807,10 +16495,10 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 817,
-                              "end": 823,
+                              "commentStart": 838,
+                              "end": 844,
                               "moduleId": 0,
-                              "start": 817,
+                              "start": 838,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -17855,10 +16543,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 766,
-                                "end": 772,
+                                "commentStart": 787,
+                                "end": 793,
                                 "moduleId": 0,
-                                "start": 766,
+                                "start": 787,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -17879,10 +16567,10 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 817,
-                                "end": 823,
+                                "commentStart": 838,
+                                "end": 844,
                                 "moduleId": 0,
-                                "start": 817,
+                                "start": 838,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -17909,28 +16597,13 @@ description: Variables in memory after executing kitt.kcl
                               ],
                               "type": "ToPoint",
                               "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
                             }
                           ],
                           "on": {
                             "artifactId": "[uuid]",
                             "id": "[uuid]",
+                            "kind": "XZ",
+                            "objectId": 0,
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -17938,7 +16611,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": "mm"
                             },
                             "type": "plane",
-                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -18182,28 +16854,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              3.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 21,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -18211,7 +16868,6 @@ description: Variables in memory after executing kitt.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -18391,29 +17047,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 13,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -18532,29 +17172,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 12,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -18585,10 +17209,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 766,
-                        "end": 772,
+                        "commentStart": 787,
+                        "end": 793,
                         "moduleId": 0,
-                        "start": 766,
+                        "start": 787,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -18599,10 +17223,10 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 817,
-                        "end": 823,
+                        "commentStart": 838,
+                        "end": 844,
                         "moduleId": 0,
-                        "start": 817,
+                        "start": 838,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -18647,10 +17271,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 766,
-                          "end": 772,
+                          "commentStart": 787,
+                          "end": 793,
                           "moduleId": 0,
-                          "start": 766,
+                          "start": 787,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -18671,10 +17295,10 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 817,
-                          "end": 823,
+                          "commentStart": 838,
+                          "end": 844,
                           "moduleId": 0,
-                          "start": 817,
+                          "start": 838,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -18701,28 +17325,13 @@ description: Variables in memory after executing kitt.kcl
                         ],
                         "type": "ToPoint",
                         "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
                       }
                     ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XZ",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -18730,7 +17339,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -18983,29 +17591,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              1.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 40,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -19036,10 +17628,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -19050,10 +17642,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -19098,10 +17690,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -19122,10 +17714,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -19152,28 +17744,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -19181,7 +17758,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -19371,29 +17947,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              3.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 41,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -19424,10 +17984,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -19438,10 +17998,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -19486,10 +18046,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -19510,10 +18070,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -19540,28 +18100,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -19569,7 +18114,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -19759,29 +18303,13 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              5.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 42,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -19812,10 +18340,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 766,
-                  "end": 772,
+                  "commentStart": 787,
+                  "end": 793,
                   "moduleId": 0,
-                  "start": 766,
+                  "start": 787,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -19826,10 +18354,10 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 817,
-                  "end": 823,
+                  "commentStart": 838,
+                  "end": 844,
                   "moduleId": 0,
-                  "start": 817,
+                  "start": 838,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -19874,10 +18402,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 766,
-                    "end": 772,
+                    "commentStart": 787,
+                    "end": 793,
                     "moduleId": 0,
-                    "start": 766,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -19898,10 +18426,10 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 817,
-                    "end": 823,
+                    "commentStart": 838,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 817,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -19928,28 +18456,13 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -19957,7 +18470,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

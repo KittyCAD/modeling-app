@@ -12,26 +12,45 @@ import {
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import {
-  codeManager,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
 import { err, isErr } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
-import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 
-export async function deleteSegmentOrProfile({
-  pathToNode,
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import {
+  getEventForSegmentSelection,
+  updateExtraSegments,
+} from '@src/lib/selections'
+
+import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+export async function deleteSegmentsOrProfiles({
+  pathToNodes,
   sketchDetails,
+  dependencies,
 }: {
-  pathToNode: PathToNode
+  pathToNodes: PathToNode[]
   sketchDetails: SketchDetails | null
+  dependencies: {
+    kclManager: KclManager
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+    sceneInfra: SceneInfra
+  }
 }) {
-  let modifiedAst: Node<Program> | Error = kclManager.ast
-  const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
+  let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
+  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
+  const dependentRanges = pathToNodes.flatMap((pathToNode) =>
+    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode, wasmInstance)
+  )
 
   const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
@@ -40,26 +59,34 @@ export async function deleteSegmentOrProfile({
       })
     : true
 
-  if (!shouldContinueSegDelete) return
+  if (!shouldContinueSegDelete) {
+    return
+  }
 
   modifiedAst = deleteSegmentOrProfileFromPipeExpression(
     dependentRanges,
     modifiedAst,
-    kclManager.variables,
-    codeManager.code,
-    pathToNode
+    dependencies.kclManager.variables,
+    dependencies.kclManager.code,
+    pathToNodes,
+    getConstraintInfoKw,
+    removeSingleConstraint,
+    transformAstSketchLines,
+    await dependencies.kclManager.wasmInstancePromise
   )
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  if (err(modifiedAst)) {
+    return Promise.reject(modifiedAst)
+  }
 
-  const newCode = recast(modifiedAst)
-  const pResult = parse(newCode)
+  const newCode = recast(modifiedAst, wasmInstance)
+  const pResult = parse(newCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
   const testExecute = await executeAstMock({
     ast: modifiedAst,
     usePrevMemory: false,
-    rustContext: rustContext,
+    rustContext: dependencies.rustContext,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -73,21 +100,24 @@ export async function deleteSegmentOrProfile({
   sketchDetails = updateSketchDetails(
     modifiedAst,
     testExecute.execState.artifactGraph,
-    sketchDetails
+    sketchDetails,
+    await dependencies.kclManager.wasmInstancePromise
   )
 
-  await sceneEntitiesManager.updateAstAndRejigSketch(
+  await dependencies.sceneEntitiesManager.updateAstAndRejigSketch(
     sketchDetails.sketchEntryNodePath,
     sketchDetails.sketchNodePaths,
     sketchDetails.planeNodePath,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
-    sketchDetails.origin
+    sketchDetails.origin,
+    getEventForSegmentSelection,
+    updateExtraSegments
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths
-  sceneInfra.modelingSend({
+  dependencies.sceneInfra.modelingSend({
     type: 'Update sketch details',
     data: {
       sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
@@ -103,7 +133,8 @@ export async function deleteSegmentOrProfile({
 function updateSketchDetails(
   modifiedAst: Node<Program>,
   artifactGraph: ArtifactGraph,
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails,
+  wasmInstance: ModuleType
 ): SketchDetails {
   const planeNodePath = stringifyPathToNode(sketchDetails.planeNodePath)
   let planeArtifact = artifactGraph.values().find((artifact) => {
@@ -131,6 +162,7 @@ function updateSketchDetails(
     const entryNode = getNodeFromPath(
       modifiedAst,
       sketchEntryNodePath,
+      wasmInstance,
       undefined,
       undefined,
       true

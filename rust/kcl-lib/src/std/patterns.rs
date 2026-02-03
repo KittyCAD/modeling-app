@@ -19,7 +19,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
+        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
         fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -153,12 +153,14 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
     let resp = exec_state
         .send_modeling_cmd(
-            args.into(),
-            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: if use_original { solid.original_id() } else { solid.id() },
-                transform: Default::default(),
-                transforms,
-            }),
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::EntityLinearPatternTransform::builder()
+                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .transform(Default::default())
+                    .transforms(transforms)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -209,6 +211,7 @@ async fn make_transform<T: GeometryTrait>(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("transform closure".to_owned()),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
@@ -222,6 +225,19 @@ async fn make_transform<T: GeometryTrait>(
             source_ranges.clone(),
         ))
     })?;
+
+    let transform_fn_return = match transform_fn_return.control {
+        ControlFlowKind::Continue => transform_fn_return.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside pattern transform function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
+
     let transforms = match transform_fn_return {
         KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
@@ -239,7 +255,7 @@ async fn make_transform<T: GeometryTrait>(
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         }
     };
@@ -262,7 +278,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         Some(_) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'replicate' key must be a bool".to_string(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         }
         None => true,
@@ -273,6 +289,14 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
+    for (dim, name) in [(scale.x, "x"), (scale.y, "y"), (scale.z, "z")] {
+        if dim == 0.0 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("cannot set {name} = 0, scale factor must be nonzero"),
+                source_ranges,
+            )));
+        }
+    }
     let translate = match transform.get("translate") {
         Some(x) => {
             let arr = point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
@@ -294,7 +318,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         let KclValue::Object { value: rot, .. } = rot else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')".to_owned(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         };
         if let Some(axis) = rot.get("axis") {
@@ -308,7 +332,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 _ => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "The 'rotation.angle' key must be a number (of degrees)".to_owned(),
-                        source_ranges.clone(),
+                        source_ranges,
                     )));
                 }
             }
@@ -318,7 +342,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
                 KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
                 other => {
-                    let origin = point_3d_to_mm(T::array_to_point3d(other, source_ranges.clone(), exec_state)?).into();
+                    let origin = point_3d_to_mm(T::array_to_point3d(other, source_ranges, exec_state)?).into();
                     OriginType::Custom { origin }
                 }
             };
@@ -345,7 +369,7 @@ fn array_to_point3d(
                     "Expected an array of 3 numbers (i.e., a 3D point), found {}",
                     e.found
                         .map(|t| t.human_friendly_type())
-                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                        .unwrap_or_else(|| val.human_friendly_type())
                 ),
                 source_ranges,
             ))
@@ -365,7 +389,7 @@ fn array_to_point2d(
                     "Expected an array of 2 numbers (i.e., a 2D point), found {}",
                     e.found
                         .map(|t| t.human_friendly_type())
-                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                        .unwrap_or_else(|| val.human_friendly_type())
                 ),
                 source_ranges,
             ))
@@ -438,7 +462,9 @@ impl GeometryTrait for Solid {
     }
 
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
-        exec_state.flush_batch_for_solids(args.into(), solid_set).await
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, args), solid_set)
+            .await
     }
 }
 
@@ -449,7 +475,8 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
@@ -477,11 +504,13 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_tuple_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
@@ -509,6 +538,7 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 }
 
@@ -869,7 +899,9 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .await?;
 
     let starting_solids = solids;
 
@@ -930,23 +962,25 @@ async fn pattern_circular(
     let center = data.center_mm();
     let resp = exec_state
         .send_modeling_cmd(
-            (&args).into(),
-            ModelingCmd::from(mcmd::EntityCircularPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: if data.use_original() {
-                    geometry.original_id()
-                } else {
-                    geometry.id()
-                },
-                center: kcmc::shared::Point3d {
-                    x: LengthUnit(center[0]),
-                    y: LengthUnit(center[1]),
-                    z: LengthUnit(center[2]),
-                },
-                num_repetitions,
-                arc_degrees: data.arc_degrees().unwrap_or(360.0),
-                rotate_duplicates: data.rotate_duplicates().unwrap_or(true),
-            }),
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+                mcmd::EntityCircularPattern::builder()
+                    .axis(kcmc::shared::Point3d::from(data.axis()))
+                    .entity_id(if data.use_original() {
+                        geometry.original_id()
+                    } else {
+                        geometry.id()
+                    })
+                    .center(kcmc::shared::Point3d {
+                        x: LengthUnit(center[0]),
+                        y: LengthUnit(center[1]),
+                        z: LengthUnit(center[2]),
+                    })
+                    .num_repetitions(num_repetitions)
+                    .arc_degrees(data.arc_degrees().unwrap_or(360.0))
+                    .rotate_duplicates(data.rotate_duplicates().unwrap_or(true))
+                    .build(),
+            ),
         )
         .await?;
 

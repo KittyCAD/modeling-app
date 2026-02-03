@@ -2,25 +2,43 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds as kcmc;
+use kcl_error::SourceRange;
 use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
+    exec::KclValue,
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, normalize_to_solver_unit,
         types::{NumericType, adjust_length},
     },
+    front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;
+
+/// A GD&T annotation.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct GdtAnnotation {
+    /// The engine ID.
+    pub id: uuid::Uuid,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
 
 /// A geometry.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -148,6 +166,73 @@ impl ImportedGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
+pub enum HideableGeometry {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    HelixSet(Vec<Helix>),
+    // TODO: Sketches should be groups of profiles that relate to a plane,
+    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
+    // are not hideable.
+    // SketchSet(Vec<Sketch>),
+}
+
+impl From<HideableGeometry> for crate::execution::KclValue {
+    fn from(value: HideableGeometry) -> Self {
+        match value {
+            HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HideableGeometry {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            HideableGeometry::ImportedGeometry(s) => {
+                let id = s.id(ctx).await?;
+
+                Ok(vec![id])
+            }
+            HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
+        }
+    }
+}
+
+/// Data for a solid, sketch, or an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
@@ -159,10 +244,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -174,10 +259,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                 }
             }
             SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Sketch {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -221,10 +306,10 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -282,8 +367,12 @@ pub struct Plane {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
-    // The code for the plane either a string or custom.
-    pub value: PlaneType,
+    /// The scene object ID. If this is None, then the plane has not been
+    /// sent to the engine yet. It must be sent before it is used.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub object_id: Option<ObjectId>,
+    /// The kind of plane or custom.
+    pub kind: PlaneKind,
     /// The information for the plane.
     #[serde(flatten)]
     pub info: PlaneInfo,
@@ -503,9 +592,6 @@ impl TryFrom<PlaneData> for PlaneInfo {
     type Error = KclError;
 
     fn try_from(value: PlaneData) -> Result<Self, Self::Error> {
-        if let PlaneData::Plane(info) = value {
-            return Ok(info);
-        }
         let name = match value {
             PlaneData::XY => PlaneName::Xy,
             PlaneData::NegXY => PlaneName::NegXy,
@@ -513,12 +599,8 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::NegXZ => PlaneName::NegXz,
             PlaneData::YZ => PlaneName::Yz,
             PlaneData::NegYZ => PlaneName::NegYz,
-            PlaneData::Plane(_) => {
-                // We will never get here since we already checked for PlaneData::Plane.
-                return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("PlaneData {value:?} not found"),
-                    Default::default(),
-                )));
+            PlaneData::Plane(info) => {
+                return Ok(info);
             }
         };
 
@@ -533,35 +615,68 @@ impl TryFrom<PlaneData> for PlaneInfo {
     }
 }
 
-impl From<PlaneData> for PlaneType {
-    fn from(value: PlaneData) -> Self {
+impl From<&PlaneData> for PlaneKind {
+    fn from(value: &PlaneData) -> Self {
         match value {
-            PlaneData::XY => PlaneType::XY,
-            PlaneData::NegXY => PlaneType::XY,
-            PlaneData::XZ => PlaneType::XZ,
-            PlaneData::NegXZ => PlaneType::XZ,
-            PlaneData::YZ => PlaneType::YZ,
-            PlaneData::NegYZ => PlaneType::YZ,
-            PlaneData::Plane(_) => PlaneType::Custom,
+            PlaneData::XY => PlaneKind::XY,
+            PlaneData::NegXY => PlaneKind::XY,
+            PlaneData::XZ => PlaneKind::XZ,
+            PlaneData::NegXZ => PlaneKind::XZ,
+            PlaneData::YZ => PlaneKind::YZ,
+            PlaneData::NegYZ => PlaneKind::YZ,
+            PlaneData::Plane(_) => PlaneKind::Custom,
         }
     }
 }
 
+impl From<&PlaneInfo> for PlaneKind {
+    fn from(value: &PlaneInfo) -> Self {
+        let data = PlaneData::Plane(value.clone());
+        PlaneKind::from(&data)
+    }
+}
+
+impl From<PlaneInfo> for PlaneKind {
+    fn from(value: PlaneInfo) -> Self {
+        let data = PlaneData::Plane(value);
+        PlaneKind::from(&data)
+    }
+}
+
 impl Plane {
-    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Result<Self, KclError> {
+    #[cfg(test)]
+    pub(crate) fn from_plane_data_skipping_engine(
+        value: PlaneData,
+        exec_state: &mut ExecState,
+    ) -> Result<Self, KclError> {
         let id = exec_state.next_uuid();
+        let kind = PlaneKind::from(&value);
         Ok(Plane {
             id,
             artifact_id: id.into(),
-            info: PlaneInfo::try_from(value.clone())?,
-            value: value.into(),
+            info: PlaneInfo::try_from(value)?,
+            object_id: None,
+            kind,
             meta: vec![],
         })
     }
 
+    /// Returns true if the plane has been sent to the engine.
+    pub fn is_initialized(&self) -> bool {
+        self.object_id.is_some()
+    }
+
+    /// Returns true if the plane has not been sent to the engine yet.
+    pub fn is_uninitialized(&self) -> bool {
+        !self.is_initialized()
+    }
+
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
     pub fn is_standard(&self) -> bool {
-        !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
+        match &self.kind {
+            PlaneKind::XY | PlaneKind::YZ | PlaneKind::XZ => true,
+            PlaneKind::Custom => false,
+        }
     }
 
     /// Project a point onto a plane by calculating how far away it is and moving it along the
@@ -583,6 +698,8 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
+    /// The scene object ID.
+    pub object_id: ObjectId,
     /// The tag of the face.
     pub value: String,
     /// What should the face's X axis be?
@@ -596,11 +713,11 @@ pub struct Face {
     pub meta: Vec<Metadata>,
 }
 
-/// Type for a plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
+/// Kind of plane.
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[display(style = "camelCase")]
-pub enum PlaneType {
+pub enum PlaneKind {
     #[serde(rename = "XY", alias = "xy")]
     #[display("XY")]
     XY,
@@ -613,9 +730,6 @@ pub enum PlaneType {
     /// A custom plane.
     #[display("Custom")]
     Custom,
-    /// A custom plane which has not been sent to the engine. It must be sent before it is used.
-    #[display("Uninit")]
-    Uninit,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -646,17 +760,45 @@ pub struct Sketch {
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
+    /// If the sketch is a clone of another sketch.
+    #[serde(skip)]
+    pub clone: Option<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
-    /// If not given, defaults to true.
-    #[serde(default = "very_true", skip_serializing_if = "is_true")]
-    pub is_closed: bool,
+    /// Has the profile been closed?
+    /// If not given, defaults to yes, closed explicitly.
+    #[serde(
+        default = "ProfileClosed::explicitly",
+        skip_serializing_if = "ProfileClosed::is_explicitly"
+    )]
+    pub is_closed: ProfileClosed,
 }
 
-fn is_true(b: &bool) -> bool {
-    *b
+impl ProfileClosed {
+    #[expect(dead_code, reason = "it's not actually dead, it's called by serde")]
+    fn explicitly() -> Self {
+        Self::Explicitly
+    }
+
+    fn is_explicitly(&self) -> bool {
+        matches!(self, ProfileClosed::Explicitly)
+    }
+}
+
+/// Has the profile been closed?
+#[derive(Debug, Serialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+pub enum ProfileClosed {
+    /// It's definitely open.
+    No,
+    /// Unknown.
+    Maybe,
+    /// Yes, by adding a segment which loops back to the start.
+    Implicitly,
+    /// Yes, by calling `close()` or by making a closed shape (e.g. circle).
+    Explicitly,
 }
 
 impl Sketch {
@@ -671,24 +813,26 @@ impl Sketch {
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
             ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
-                }),
+                cmd: ModelingCmd::from(
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .maybe_planar_normal(if let SketchSurface::Plane(plane) = &self.on {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            Some(normal.into())
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
                 cmd_id: exec_state.next_uuid().into(),
             },
             inner_cmd,
             ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build()),
                 cmd_id: exec_state.next_uuid().into(),
             },
         ]
@@ -722,6 +866,72 @@ impl SketchSurface {
             SketchSurface::Plane(plane) => plane.info.y_axis,
             SketchSurface::Face(face) => face.y_axis,
         }
+    }
+
+    pub(crate) fn object_id(&self) -> Option<ObjectId> {
+        match self {
+            SketchSurface::Plane(plane) => plane.object_id,
+            SketchSurface::Face(face) => Some(face.object_id),
+        }
+    }
+
+    pub(crate) fn set_object_id(&mut self, object_id: ObjectId) {
+        match self {
+            SketchSurface::Plane(plane) => plane.object_id = Some(object_id),
+            SketchSurface::Face(face) => face.object_id = object_id,
+        }
+    }
+}
+
+/// A Sketch, Face, or TaggedFace.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Extrudable {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Face.
+    Face(FaceTag),
+}
+
+impl Extrudable {
+    /// Get the relevant id.
+    pub async fn id_to_extrude(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+        }
+    }
+
+    pub fn as_sketch(&self) -> Option<Sketch> {
+        match self {
+            Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => Some(solid.sketch),
+                None => None,
+            },
+        }
+    }
+
+    pub fn is_closed(&self) -> ProfileClosed {
+        match self {
+            Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid.sketch.is_closed,
+                _ => ProfileClosed::Maybe,
+            },
+        }
+    }
+}
+
+impl From<Sketch> for Extrudable {
+    fn from(value: Sketch) -> Self {
+        Extrudable::Sketch(Box::new(value))
     }
 }
 
@@ -777,11 +987,13 @@ impl Sketch {
     ) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
+        let mut sketch_copy = self.clone();
+        sketch_copy.tags.clear();
         tag_identifier.info.push((
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                sketch: self.id,
+                geometry: Geometry::Sketch(sketch_copy),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
@@ -926,7 +1138,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
+#[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -1290,6 +1502,17 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A cubic Bezier curve.
+    Bezier {
+        #[serde(flatten)]
+        base: BasePath,
+        /// First control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control1: [f64; 2],
+        /// Second control point (absolute coordinates).
+        #[ts(type = "[number, number]")]
+        control2: [f64; 2],
+    },
 }
 
 impl Path {
@@ -1307,6 +1530,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
             Path::Ellipse { base, .. } => base.geo_meta.id,
             Path::Conic { base, .. } => base.geo_meta.id,
+            Path::Bezier { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1324,6 +1548,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Ellipse { base, .. } => base.geo_meta.id = id,
             Path::Conic { base, .. } => base.geo_meta.id = id,
+            Path::Bezier { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1341,6 +1566,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
             Path::Ellipse { base, .. } => base.tag.clone(),
             Path::Conic { base, .. } => base.tag.clone(),
+            Path::Bezier { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1358,6 +1584,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => base,
             Path::Ellipse { base, .. } => base,
             Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 
@@ -1442,6 +1669,10 @@ impl Path {
                 // Not supported.
                 None
             }
+            Self::Bezier { .. } => {
+                // Not supported - Bezier curve length requires numerical integration.
+                None
+            }
         };
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
@@ -1460,6 +1691,7 @@ impl Path {
             Path::ArcThreePoint { base, .. } => Some(base),
             Path::Ellipse { base, .. } => Some(base),
             Path::Conic { base, .. } => Some(base),
+            Path::Bezier { base, .. } => Some(base),
         }
     }
 
@@ -1512,7 +1744,8 @@ impl Path {
             | Path::ToPoint { .. }
             | Path::Horizontal { .. }
             | Path::AngledLineTo { .. }
-            | Path::Base { .. } => {
+            | Path::Base { .. }
+            | Path::Bezier { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
@@ -1638,6 +1871,231 @@ impl ExtrudeSurface {
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
             ExtrudeSurface::Fillet(f) => f.tag.clone(),
             ExtrudeSurface::Chamfer(c) => c.tag.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS)]
+pub struct SketchVarId(pub usize);
+
+impl SketchVarId {
+    pub fn to_constraint_id(self, range: SourceRange) -> Result<kcl_ezpz::Id, KclError> {
+        self.0.try_into().map_err(|_| {
+            KclError::new_type(KclErrorDetails::new(
+                "Cannot convert to constraint ID since the sketch variable ID is too large".to_owned(),
+                vec![range],
+            ))
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVar {
+    pub id: SketchVarId,
+    pub initial_value: f64,
+    pub ty: NumericType,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+impl SketchVar {
+    pub fn initial_value_to_solver_units(
+        &self,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+        description: &str,
+    ) -> Result<TyF64, KclError> {
+        let x_initial_value = KclValue::Number {
+            value: self.initial_value,
+            ty: self.ty,
+            meta: vec![source_range.into()],
+        };
+        let normalized_value = normalize_to_solver_unit(&x_initial_value, source_range, exec_state, description)?;
+        normalized_value.as_ty_f64().ok_or_else(|| {
+            let message = format!(
+                "Expected number after coercion, but found {}",
+                normalized_value.human_friendly_type()
+            );
+            debug_assert!(false, "{}", &message);
+            KclError::new_internal(KclErrorDetails::new(message, vec![source_range]))
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(tag = "type")]
+pub enum UnsolvedExpr {
+    Known(TyF64),
+    Unknown(SketchVarId),
+}
+
+impl UnsolvedExpr {
+    pub fn var(&self) -> Option<SketchVarId> {
+        match self {
+            UnsolvedExpr::Known(_) => None,
+            UnsolvedExpr::Unknown(id) => Some(*id),
+        }
+    }
+}
+
+pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ConstrainablePoint2d {
+    pub vars: crate::front::Point2d<SketchVarId>,
+    pub object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct UnsolvedSegment {
+    /// The engine ID.
+    pub id: Uuid,
+    pub object_id: ObjectId,
+    pub kind: UnsolvedSegmentKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum UnsolvedSegmentKind {
+    Point {
+        position: UnsolvedPoint2dExpr,
+        ctor: Box<PointCtor>,
+    },
+    Line {
+        start: UnsolvedPoint2dExpr,
+        end: UnsolvedPoint2dExpr,
+        ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        construction: bool,
+    },
+    Arc {
+        start: UnsolvedPoint2dExpr,
+        end: UnsolvedPoint2dExpr,
+        center: UnsolvedPoint2dExpr,
+        ctor: Box<ArcCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        center_object_id: ObjectId,
+        construction: bool,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Segment {
+    /// The engine ID.
+    pub id: Uuid,
+    pub object_id: ObjectId,
+    pub kind: SegmentKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+impl Segment {
+    pub fn is_construction(&self) -> bool {
+        match &self.kind {
+            SegmentKind::Point { .. } => true,
+            SegmentKind::Line { construction, .. } => *construction,
+            SegmentKind::Arc { construction, .. } => *construction,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SegmentKind {
+    Point {
+        position: [TyF64; 2],
+        ctor: Box<PointCtor>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        freedom: Option<Freedom>,
+    },
+    Line {
+        start: [TyF64; 2],
+        end: [TyF64; 2],
+        ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    Arc {
+        start: [TyF64; 2],
+        end: [TyF64; 2],
+        center: [TyF64; 2],
+        ctor: Box<ArcCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        center_object_id: ObjectId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct AbstractSegment {
+    pub repr: SegmentRepr,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+pub enum SegmentRepr {
+    Unsolved { segment: UnsolvedSegment },
+    Solved { segment: Segment },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchConstraint {
+    pub kind: SketchConstraintKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SketchConstraintKind {
+    Distance { points: [ConstrainablePoint2d; 2] },
+    Radius { points: [ConstrainablePoint2d; 2] },
+    Diameter { points: [ConstrainablePoint2d; 2] },
+    HorizontalDistance { points: [ConstrainablePoint2d; 2] },
+    VerticalDistance { points: [ConstrainablePoint2d; 2] },
+}
+
+impl SketchConstraintKind {
+    pub fn name(&self) -> &'static str {
+        match self {
+            SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::Radius { .. } => "radius",
+            SketchConstraintKind::Diameter { .. } => "diameter",
+            SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
+            SketchConstraintKind::VerticalDistance { .. } => "verticalDistance",
         }
     }
 }

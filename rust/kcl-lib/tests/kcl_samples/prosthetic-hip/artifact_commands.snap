@@ -1313,7 +1313,8 @@ description: Artifact commands prosthetic-hip.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -1403,7 +1404,8 @@ description: Artifact commands prosthetic-hip.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -1457,7 +1459,8 @@ description: Artifact commands prosthetic-hip.kcl
         "distance": 6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1690,7 +1693,8 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1783,10 +1787,10 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.8392157,
           "g": 0.2627451,
           "b": 0.59607846,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1990,7 +1994,8 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2083,10 +2088,10 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.23529412,
           "g": 0.6784314,
           "b": 0.827451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2290,7 +2295,8 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2383,26 +2389,12 @@ description: Artifact commands prosthetic-hip.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -17,7 +17,8 @@ import { PNG } from 'pngjs'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
-export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
+export const token =
+  process.env.VITE_ZOO_API_TOKEN || process.env.VITE_KITTYCAD_API_TOKEN || ''
 
 /** A string version of a RegExp to get a number that may include a decimal point */
 export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
@@ -29,6 +30,12 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
+import {
+  type LayoutWithMetadata,
+  setOpenPanes,
+  getLayoutPersistKey,
+} from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -154,12 +161,12 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // editorManager is available on the window object.
+    // kclManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager.getEditorView().dispatch({
+    kclManager.editorView.dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager.getEditorView().docView.length,
+        anchor: kclManager.editorView.docView.length,
       },
       scrollIntoView: true,
     })
@@ -353,18 +360,6 @@ async function waitForAuthAndLsp(page: Page) {
   return waitForLspPromise
 }
 
-export function normaliseKclNumbers(code: string, ignoreZero = true): string {
-  const numberRegexp = /(?<!\w)-?\b\d+(\.\d+)?\b(?!\w)/g
-  const replaceNumber = (number: string) => {
-    if (ignoreZero && (number === '0' || number === '-0')) return number
-    const sign = number.startsWith('-') ? '-' : ''
-    return `${sign}12.34`
-  }
-  const replaceNumbers = (text: string) =>
-    text.replace(numberRegexp, replaceNumber)
-  return replaceNumbers(code)
-}
-
 /**
  * We've written a lot of tests using hard-coded pixel coordinates.
  * This function translates those to stream-relative ones,
@@ -473,11 +468,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const code = await page.locator('.cm-content').innerText()
       return code.replaceAll(' ', '').replaceAll('\n', '')
     },
-    normalisedEditorCode: async () => {
-      const code = await page.locator('.cm-content').innerText()
-      return normaliseKclNumbers(code)
-    },
-    normalisedCode: (code: string) => normaliseKclNumbers(code),
     canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
@@ -549,7 +539,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return toNormalizedCode(text)
     },
 
-    async editorTextMatches(code: string) {
+    async editorTextMatches(this: void, code: string) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
@@ -675,16 +665,22 @@ export async function getUtils(page: Page, test_?: typeof test) {
      * but having a separate initScript does not seem to work reliably.
      * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
      */
-    panesOpen: async (paneIds: PaneId[]) => {
+    panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
-            localStorage.setItem(
-              PERSIST_MODELING_CONTEXT,
-              JSON.stringify({ openPanes: paneIds })
-            )
+          ({ layoutName, layoutPayload }) => {
+            localStorage.setItem(layoutName, layoutPayload)
           },
-          { PERSIST_MODELING_CONTEXT, paneIds }
+          {
+            layoutName: getLayoutPersistKey(),
+            layoutPayload: JSON.stringify({
+              version: 'v1',
+              layout: setOpenPanes(
+                structuredClone(playwrightLayoutConfig),
+                paneIds
+              ),
+            } satisfies LayoutWithMetadata),
+          }
         )
         await page.reload()
       })
@@ -829,12 +825,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByRole('option', {
+    const exportCommand = page.getByRole('option', {
       name: 'floppy disk arrow Export',
     })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
+    await expect(exportCommand.first()).toBeVisible()
+    await exportCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
@@ -919,19 +914,24 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      layoutName,
+      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(
-        PERSIST_MODELING_CONTEXT,
-        JSON.stringify({ openPanes: ['code'] })
+        layoutName,
+        JSON.stringify({
+          version: 'v1',
+          layout: layoutPayload,
+        } satisfies LayoutWithMetadata)
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -955,7 +955,8 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      layoutName: getLayoutPersistKey(),
+      layoutPayload: playwrightLayoutConfig,
     }
   )
 
@@ -1440,95 +1441,4 @@ export async function pinchFromCenter(
   }
 
   await locator.dispatchEvent('touchend')
-}
-
-// Primarily machinery to click and drag a slider.
-// THIS ASSUMES THE SLIDER IS ALWAYS HORIZONTAL.
-export const inputRangeValueToCoordinate = async function (
-  locator: Locator,
-  valueTargetStr: string
-): Promise<{
-  startPoint: { x: number; y: number }
-  offsetFromStartPoint: { x: number; y: number }
-}> {
-  const bb = await locator.boundingBox()
-  if (bb === null)
-    throw new Error("Bounding box is null, can't do fucking shit")
-  const editable = await locator.isEditable()
-  if (!editable) throw new Error('Cannot slide range, element is not editable')
-  const visible = await locator.isVisible()
-  if (!visible) throw new Error('Cannot slide range, element is not visible')
-  await locator.scrollIntoViewIfNeeded()
-  const maybeMin = await locator.getAttribute('min')
-  const maybeMax = await locator.getAttribute('max')
-  const maybeStep = await locator.getAttribute('step')
-
-  let low = maybeMin ? Number(maybeMin) : 0
-  low = Number.isNaN(low) ? 0 : low
-
-  let upp = maybeMax ? Number(maybeMax) : 10
-  upp = Number.isNaN(upp) ? 10 : upp
-
-  let step = maybeMax ? Number(maybeStep) : 1
-  step = Number.isNaN(step) ? 1 : step
-
-  let value = Number(valueTargetStr)
-  if (Number.isNaN(value)) throw new Error('value must be a number')
-
-  // into step
-  value = value - (value % step)
-
-  // half step down
-  value -= Math.trunc(step / 2)
-
-  const scale = await locator.page().evaluate(() => window.devicePixelRatio)
-  // measured this value in gimp
-  const nub = { width: 14 * scale }
-
-  // 4 is the internal border + padding of the slider
-  let offsetX = (bb.width - 4 - nub.width / 2) * (value / (upp + low))
-
-  // map to coordinate
-  // relative to element
-  const offsetFromStartPoint = {
-    x: Math.trunc(offsetX + 0.5),
-    // need to land on the scroll nub
-    y: bb.height * 0.5,
-  }
-
-  const startPoint = {
-    x: bb.x + nub.width / 2,
-    y: bb.y,
-  }
-
-  return {
-    startPoint,
-    offsetFromStartPoint,
-  }
-}
-
-export const inputRangeSlideFromCurrentTo = async function (
-  locator: Locator,
-  valueNext: string
-) {
-  const valueCurrent = await locator.inputValue()
-  // Can't click it if the computer can't see it!
-  await locator.scrollIntoViewIfNeeded()
-  const from = await inputRangeValueToCoordinate(locator, valueCurrent)
-  const to = await inputRangeValueToCoordinate(locator, valueNext)
-  // I (lee) want to force the mouse to be up, but who knows who needs otherwise.
-  // await locator.page.mouse.up()
-  const page = locator.page()
-  await page.mouse.move(
-    from.startPoint.x + from.offsetFromStartPoint.x,
-    from.startPoint.y + from.offsetFromStartPoint.y,
-    { steps: 10 }
-  )
-  await page.mouse.down()
-  await page.mouse.move(
-    to.startPoint.x + to.offsetFromStartPoint.x,
-    to.startPoint.y + to.offsetFromStartPoint.y,
-    { steps: 10 }
-  )
-  await page.mouse.up()
 }

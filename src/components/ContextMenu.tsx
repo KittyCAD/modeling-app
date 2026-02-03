@@ -1,18 +1,26 @@
 import { Dialog } from '@headlessui/react'
 import type { MouseEvent, RefObject } from 'react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  memo,
+} from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
   items?: React.ReactElement[]
-  menuTargetElement?: RefObject<HTMLElement>
+  menuTargetElement?: RefObject<HTMLElement | null>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
   callback?: (event: globalThis.MouseEvent) => void
@@ -23,7 +31,7 @@ const DefaultContextMenuItems = [
   // add more default context menu items here
 ]
 
-export function ContextMenu({
+export const ContextMenu = memo(function ContextMenu({
   items = DefaultContextMenuItems,
   menuTargetElement,
   className,
@@ -151,13 +159,17 @@ export function ContextMenu({
             className="relative flex flex-col gap-0.5 items-stretch content-stretch"
             onClick={() => setOpen(false)}
           >
-            {...items}
+            {items.map((item, i) => (
+              <Fragment key={`${i}-${item.key}`}>{item}</Fragment>
+            ))}
           </ul>
         </Dialog.Panel>
       </div>
     </Dialog>
   )
-}
+  // ContextMenu's items prop always sets a static array, but it's a new ref each time.
+  // This prevents the unnecessary rerender.
+})
 
 export function ContextMenuDivider() {
   return <hr className="border-chalkboard-20 dark:border-chalkboard-80" />

@@ -1,4 +1,4 @@
-import env from '@src/env'
+import env, { viteEnv } from '@src/env'
 import {
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
   IS_PLAYWRIGHT_KEY,
@@ -7,15 +7,19 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
-const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+const hasWindow = typeof window !== 'undefined'
+const isTestEnv =
+  hasWindow && window.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export function getAppVersion({
   isTestEnvironment,
   NODE_ENV,
+  VERCEL_ENV,
   isDesktop,
 }: {
   isTestEnvironment: boolean
   NODE_ENV: string | undefined
+  VERCEL_ENV: string | undefined
   isDesktop: boolean
 }) {
   if (isTestEnvironment && NODE_ENV === 'development') {
@@ -23,12 +27,15 @@ export function getAppVersion({
   }
 
   if (isDesktop) {
-    // @ts-ignore
-    return window.electron.packageJson.version
+    if (hasWindow && window.electron) {
+      // @ts-ignore
+      return window.electron.packageJson.version
+    }
+    return '0.0.0'
   }
 
   // Web based runtimes
-  if (NODE_ENV === 'development') {
+  if (NODE_ENV === 'development' || VERCEL_ENV === 'preview') {
     return 'dev'
   }
 
@@ -38,12 +45,14 @@ export function getAppVersion({
 export const APP_VERSION = getAppVersion({
   isTestEnvironment: isTestEnv,
   NODE_ENV: env().NODE_ENV,
+  VERCEL_ENV: viteEnv().VERCEL_ENV,
   isDesktop: isDesktop(),
 })
 
-export const PACKAGE_NAME = window.electron
-  ? window.electron.packageJson.name
-  : 'zoo-modeling-app'
+export const PACKAGE_NAME =
+  hasWindow && window.electron
+    ? window.electron.packageJson.name
+    : 'zoo-modeling-app'
 
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 

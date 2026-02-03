@@ -1,6 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIdentifiersInProgram'
 import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
 import type { Expr, Program } from '@src/lang/wasm'
 

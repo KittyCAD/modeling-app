@@ -9,7 +9,8 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
+import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -22,6 +23,7 @@ export type SettingsSearchItem = {
 }
 
 export function SettingsSearchBar() {
+  const { useSettings } = useSingletons()
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
     'Ctrl+.',
@@ -41,10 +43,7 @@ export function SettingsSearchBar() {
           const s = setting
           return (['project', 'user'] satisfies SettingsLevel[])
             .filter(
-              (l) =>
-                s.hideOnLevel !== l &&
-                s.hideOnPlatform !== 'both' &&
-                s.hideOnPlatform !== (isDesktop() ? 'desktop' : 'web')
+              (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
             )
             .map((l) => ({
               category: decamelize(category, { separator: ' ' }),
@@ -82,7 +81,7 @@ export function SettingsSearchBar() {
   }, [query])
 
   function handleSelection({ level, name }: SettingsSearchItem) {
-    navigate(`?tab=${level}#${name}`)
+    void navigate(`?tab=${level}#${name}`)
   }
 
   return (

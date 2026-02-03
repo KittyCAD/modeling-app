@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints parametric.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'FOS'",
+    "pos": [
+      99,
+      102,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'FOS' to 'fos'",
+      "insert": "sigmaAllow = 35000 // psi\nwidth = 9 // inch\np = 150 // Force on shelf - lbs\ndistance = 6 // inches\nfos = 2\n\nleg1 = 5 // inches\nleg2 = 8 // inches\nthickness = sqrt(distance * p * fos * 6 / sigmaAllow / width) // inches\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, leg1])\n  |> line(end = [leg2, 0])\n  |> line(end = [0, -thickness])\n  |> line(end = [-leg2 + thickness, 0])\n  |> line(end = [0, -leg1 + thickness])\n  |> close(%)\n  |> extrude(length = width)\n",
+      "source_range": [
+        0,
+        487,
+        0
+      ]
+    }
+  }
+]

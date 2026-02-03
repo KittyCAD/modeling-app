@@ -1,0 +1,133 @@
+// Hand Trolley Weldment
+// A weldment is a frame constructed from welded metal pieces
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Model the lifting grate as a sheet metal part
+grate = startSketchOn(-YZ)
+  |> startProfile(at = [-grateDepth, 0])
+  |> yLine(length = grateThickness, tag = $seg11)
+  |> xLine(endAbsolute = tubeDiameter)
+  |> tangentialArc(angle = 90deg, radius = bendRadius)
+  |> yLine(length = 1.5, tag = $seg01)
+  |> xLine(length = grateThickness, tag = $seg10)
+  |> yLine(length = -segLen(seg01))
+  |> tangentialArc(angle = -90deg, radius = bendRadius + grateThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(
+       length = frameWidth + tubeDiameter,
+       symmetric = true,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [seg10, capStart001]),
+         getCommonEdge(faces = [seg11, capEnd001]),
+         getCommonEdge(faces = [seg10, capEnd001]),
+         getCommonEdge(faces = [seg11, capStart001])
+       ],
+     )
+
+// Model the path of the outer rail of the trolley frame
+outerRail = startSketchOn(offsetPlane(XZ, offset = tubeDiameter / 2))
+  |> startProfile(at = [-frameWidth / 2, grateThickness])
+  |> yLine(endAbsolute = height - tubeBend)
+  |> tangentialArc(angle = -90deg, radius = tubeBend)
+  |> xLine(endAbsolute = 0, tag = $seg02)
+  |> xLine(length = segLen(seg02))
+  |> tangentialArc(angle = -90deg, radius = tubeBend)
+  |> yLine(endAbsolute = profileStartY())
+
+// Sweep the tube profile around the outer rail path to give it a thickness
+outerRailThicken = startSketchOn(offsetPlane(XY, offset = grateThickness))
+  |> circle(center = [-frameWidth / 2, -tubeDiameter / 2], diameter = tubeDiameter)
+  |> sweep(path = outerRail)
+
+// The minimum allowable straight length should equal double the bend radius
+centerRail = startSketchOn(YZ)
+  |> startProfile(at = [-tubeDiameter / 2, grateThickness])
+  |> yLine(length = tubeBend * 2)
+  |> tangentialArc(angle = 30deg, radius = tubeBend, tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg03), length = tubeBend * 2)
+  |> tangentialArc(angle = -30deg, radius = tubeBend, tag = $seg04)
+  |> angledLine(angle = tangentToEnd(seg04), endAbsoluteY = height - (tubeBend * 3.835), tag = $seg27)
+  |> tangentialArc(angle = 45deg, radius = tubeBend, tag = $seg05)
+  |> angledLine(angle = tangentToEnd(seg05), length = tubeBend * 2)
+  |> tangentialArc(angle = -135deg, radius = tubeBend, tag = $seg06)
+  |> angledLine(angle = tangentToEnd(seg06), endAbsoluteX = -tubeDiameter / 2)
+
+// Sweep the tube profile around the center rail path to give it a thickness
+centerRailThicken = startSketchOn(XY)
+  |> circle(center = [0, -tubeDiameter / 2], diameter = tubeDiameter)
+  |> sweep(path = centerRail)
+
+// Model supporting ribs for the trolley frame
+rib = startSketchOn(offsetPlane(XY, offset = 14))
+  |> startProfile(at = [
+       -(frameWidth - tubeDiameter) / 2 - .05,
+       -.6
+     ])
+  |> arc(interiorAbsolute = [0, -3.15], endAbsolute = [-profileStartX(), profileStartY()], tag = $seg14)
+  |> angledLine(angle = tangentToEnd(seg14) + 90, length = grateThickness)
+  |> arc(interiorAbsolute = [0, -3.15 + grateThickness], endAbsolute = [-lastSegX(), lastSegY()])
+  |> line(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> extrude(length = 1)
+  |> patternLinear3d(instances = 3, distance = segLen(seg27) / 3, axis = [0, 0, 1])
+
+// Create welded brackets to support the axle
+brackets = startSketchOn(offsetPlane(YZ, offset = frameWidth / 2))
+  |> startProfile(at = [-tubeDiameter, wheelDiameter / 2 - 3])
+  |> yLine(length = 0.54, tag = $seg16)
+  |> tangentialArc(angle = 60deg, radius = bendRadius, tag = $seg07)
+  |> angledLine(angle = tangentToEnd(seg07), length = 2.58, tag = $seg15)
+  |> tangentialArc(angle = -90deg, radius = bendRadius + grateThickness)
+  |> tangentialArc(angle = 60deg, radius = 1.5)
+  |> tangentialArc(angle = -90deg, radius = bendRadius + grateThickness, tag = $seg08)
+  |> angledLine(angle = tangentToEnd(seg08), length = segLen(seg15))
+  |> tangentialArc(angle = 60deg, radius = bendRadius, tag = $seg09)
+  |> yLine(length = segLen(seg16))
+  |> xLine(length = grateThickness)
+  |> yLine(length = -segLen(seg16))
+  |> tangentialArc(angle = -60deg, radius = bendRadius + grateThickness, tag = $seg17)
+  |> angledLine(angle = tangentToEnd(seg17), length = segLen(seg15))
+  |> tangentialArc(angle = 90deg, radius = bendRadius)
+  |> tangentialArc(angle = -60deg, radius = 1.5 + grateThickness)
+  |> tangentialArc(angle = 90deg, radius = bendRadius, tag = $seg18)
+  |> angledLine(angle = tangentToEnd(seg18), length = segLen(seg15))
+  |> tangentialArc(angle = -60deg, radius = bendRadius + grateThickness, tag = $seg19)
+  |> yLine(length = -segLen(seg16))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 0.75 * tubeDiameter, symmetric = true)
+
+// Model a bearing for the axle on each bracket
+axlebearing = startSketchOn(offsetPlane(YZ, offset = frameWidth / 2))
+  |> circle(center = [-3.67, wheelDiameter / 2], diameter = 1)
+  |> subtract2d(tool = circle(center = [-3.67, wheelDiameter / 2], diameter = .75))
+  |> extrude(length = tubeDiameter, symmetric = true)
+
+a = patternLinear3d(
+  [brackets, axlebearing],
+  instances = 2,
+  distance = frameWidth,
+  axis = [-1, 0, 0],
+)
+
+[
+       grate,
+       brackets,
+       axlebearing,
+       outerRailThicken,
+       centerRailThicken,
+       rib,
+       a
+     ]
+  |> appearance(color, metalness = 40, roughness)

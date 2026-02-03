@@ -9,6 +9,7 @@
 import type {
   base64_decode as Base64Decode,
   change_default_units as ChangeDefaultUnits,
+  change_experimental_features as ChangeExperimentalFeatures,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
@@ -20,6 +21,7 @@ import type {
   import_file_extensions as ImportFileExtensions,
   is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   is_points_ccw as IsPointsCcw,
+  point_to_unit as PointToUnit,
   kcl_lint as KclLint,
   kcl_settings as KclSettings,
   node_path_from_range as NodePathFromRange,
@@ -75,6 +77,9 @@ export const node_path_from_range: typeof NodePathFromRange = (...args) => {
 export const is_points_ccw: typeof IsPointsCcw = (...args) => {
   return getModule().is_points_ccw(...args)
 }
+export const point_to_unit: typeof PointToUnit = (...args) => {
+  return getModule().point_to_unit(...args)
+}
 export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
@@ -107,6 +112,11 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
   return getModule().change_default_units(...args)
+}
+export const change_experimental_features: typeof ChangeExperimentalFeatures = (
+  ...args
+) => {
+  return getModule().change_experimental_features(...args)
 }
 export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
   ...args

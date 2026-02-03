@@ -30,6 +30,10 @@ impl IdGenerator {
 
         next_uuid
     }
+
+    pub fn next_artifact_id(&mut self) -> ArtifactId {
+        ArtifactId::new(self.next_uuid())
+    }
 }
 
 const ENGINE_NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("22b85cda-1c8d-57c4-88b5-3fd71846f31e");

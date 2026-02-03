@@ -59,8 +59,8 @@ description: Artifact commands kittycad_svg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": 2.52,
+          "y": -26.04,
           "z": 0.0
         }
       }
@@ -70,23 +70,6 @@ description: Artifact commands kittycad_svg.kcl
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.52,
-            "y": -26.04,
-            "z": 0.0
-          },
-          "relative": false
-        }
       }
     },
     {
@@ -2053,40 +2036,6 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.28,
-            "y": -13.44,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 9.24,
-            "y": -13.44,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 11.76,
             "y": -13.44,
             "z": 0.0
@@ -4723,23 +4672,6 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 11.76,
-            "y": -5.88,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.92,
             "y": -5.88,
             "z": 0.0
           },
@@ -4882,7 +4814,8 @@ description: Artifact commands kittycad_svg.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4918,19 +4851,5 @@ description: Artifact commands kittycad_svg.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -9,8 +9,9 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata,
-        Plane, Sketch, Solid, TagIdentifier,
+        AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier,
+        UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -49,6 +50,12 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+    SketchVar {
+        value: Box<SketchVar>,
+    },
+    SketchConstraint {
+        value: Box<SketchConstraint>,
+    },
     Tuple {
         value: Vec<KclValue>,
         #[serde(skip)]
@@ -69,11 +76,17 @@ pub enum KclValue {
     },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
+    GdtAnnotation {
+        value: Box<GdtAnnotation>,
+    },
     Plane {
         value: Box<Plane>,
     },
     Face {
         value: Box<Face>,
+    },
+    Segment {
+        value: Box<AbstractSegment>,
     },
     Sketch {
         value: Box<Sketch>,
@@ -132,11 +145,17 @@ pub struct FunctionSource {
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
 }
 
+pub struct KclFunctionSourceParams {
+    pub is_std: bool,
+    pub experimental: bool,
+    pub include_in_feature_tree: bool,
+}
+
 impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
         ast: Box<Node<FunctionExpression>>,
-        props: StdFnProps,
+        _props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
@@ -147,22 +166,27 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: attrs.deprecated,
             experimental: attrs.experimental,
-            include_in_feature_tree: props.include_in_feature_tree,
+            include_in_feature_tree: attrs.include_in_feature_tree,
             is_std: true,
             body: FunctionBody::Rust(func),
             ast,
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool) -> Self {
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+        let KclFunctionSourceParams {
+            is_std,
+            experimental,
+            include_in_feature_tree,
+        } = params;
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: false,
-            experimental: false,
-            include_in_feature_tree: true,
+            experimental,
+            include_in_feature_tree,
             is_std,
             body: FunctionBody::Kcl(memory),
             ast,
@@ -212,12 +236,29 @@ pub enum TypeDef {
     Alias(RuntimeType),
 }
 
+impl From<Vec<GdtAnnotation>> for KclValue {
+    fn from(mut values: Vec<GdtAnnotation>) -> Self {
+        if values.len() == 1 {
+            let value = values.pop().expect("Just checked len == 1");
+            KclValue::GdtAnnotation { value: Box::new(value) }
+        } else {
+            KclValue::HomArray {
+                value: values
+                    .into_iter()
+                    .map(|s| KclValue::GdtAnnotation { value: Box::new(s) })
+                    .collect(),
+                ty: RuntimeType::Primitive(PrimitiveType::GdtAnnotation),
+            }
+        }
+    }
+}
+
 impl From<Vec<Sketch>> for KclValue {
     fn from(mut eg: Vec<Sketch>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Sketch {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Sketch { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg
@@ -232,10 +273,10 @@ impl From<Vec<Sketch>> for KclValue {
 
 impl From<Vec<Solid>> for KclValue {
     fn from(mut eg: Vec<Solid>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Solid {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Solid { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
@@ -250,6 +291,7 @@ impl From<KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -257,9 +299,12 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -280,6 +325,7 @@ impl From<&KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -287,9 +333,12 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
@@ -315,13 +364,17 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
+            KclValue::SketchVar { value, .. } => value.meta.clone(),
+            KclValue::SketchConstraint { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
             KclValue::Object { meta, .. } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
+            KclValue::GdtAnnotation { value } => value.meta.clone(),
             KclValue::Plane { value } => value.meta.clone(),
             KclValue::Face { value } => value.meta.clone(),
+            KclValue::Segment { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
@@ -348,13 +401,17 @@ impl KclValue {
         match self {
             KclValue::Uuid { .. } => false,
             KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
-            KclValue::Tuple { .. }
+            KclValue::SketchVar { .. }
+            | KclValue::SketchConstraint { .. }
+            | KclValue::Tuple { .. }
             | KclValue::HomArray { .. }
             | KclValue::Object { .. }
             | KclValue::TagIdentifier(_)
             | KclValue::TagDeclarator(_)
+            | KclValue::GdtAnnotation { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
             | KclValue::Helix { .. }
@@ -373,6 +430,7 @@ impl KclValue {
             KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
             KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
             KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
+            KclValue::GdtAnnotation { .. } => "an annotation".to_owned(),
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
@@ -380,6 +438,7 @@ impl KclValue {
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
             KclValue::Face { .. } => "a face".to_owned(),
+            KclValue::Segment { .. } => "a segment".to_owned(),
             KclValue::Bool { .. } => "a boolean (`true` or `false`)".to_owned(),
             KclValue::Number {
                 ty: NumericType::Unknown,
@@ -391,6 +450,8 @@ impl KclValue {
             } => format!("a number ({units})"),
             KclValue::Number { .. } => "a number".to_owned(),
             KclValue::String { .. } => "a string".to_owned(),
+            KclValue::SketchVar { .. } => "a sketch variable".to_owned(),
+            KclValue::SketchConstraint { .. } => "a sketch constraint".to_owned(),
             KclValue::Object { .. } => "an object".to_owned(),
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
@@ -422,13 +483,20 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_numeric_literal(literal: &Node<NumericLiteral>, exec_state: &mut ExecState) -> Self {
+    pub(crate) fn from_sketch_var_literal(
+        literal: &Node<NumericLiteral>,
+        id: SketchVarId,
+        exec_state: &ExecState,
+    ) -> Self {
         let meta = vec![literal.metadata()];
         let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
-        KclValue::Number {
-            value: literal.value,
-            meta,
-            ty,
+        KclValue::SketchVar {
+            value: Box::new(SketchVar {
+                id,
+                initial_value: literal.value,
+                meta,
+                ty,
+            }),
         }
     }
 
@@ -473,7 +541,7 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
+    pub(crate) fn map_env_ref(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
         let mut result = self.clone();
         if let KclValue::Function { ref mut value, .. } = result
             && let FunctionSource {
@@ -482,6 +550,20 @@ impl KclValue {
             } = &mut **value
         {
             memory.replace_env(old_env, new_env);
+        }
+
+        result
+    }
+
+    pub(crate) fn map_env_ref_and_epoch(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
+        let mut result = self.clone();
+        if let KclValue::Function { ref mut value, .. } = result
+            && let FunctionSource {
+                body: FunctionBody::Kcl(memory),
+                ..
+            } = &mut **value
+        {
+            memory.replace_env_and_epoch(old_env, new_env);
         }
 
         result
@@ -537,6 +619,22 @@ impl KclValue {
     }
 
     /// Put the point into a KCL point.
+    pub(crate) fn array_from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y] = p;
+        Self::HomArray {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number { value: y, meta, ty },
+            ],
+            ty: ty.into(),
+        }
+    }
+
+    /// Put the point into a KCL point.
     pub fn array_from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
         let [x, y, z] = p;
         Self::HomArray {
@@ -551,13 +649,28 @@ impl KclValue {
                     meta: meta.clone(),
                     ty,
                 },
-                Self::Number {
-                    value: z,
-                    meta: meta.clone(),
-                    ty,
-                },
+                Self::Number { value: z, meta, ty },
             ],
             ty: ty.into(),
+        }
+    }
+
+    pub(crate) fn from_unsolved_expr(expr: UnsolvedExpr, meta: Vec<Metadata>) -> Self {
+        match expr {
+            UnsolvedExpr::Known(v) => crate::execution::KclValue::Number {
+                value: v.n,
+                ty: v.ty,
+                meta,
+            },
+            UnsolvedExpr::Unknown(var_id) => crate::execution::KclValue::SketchVar {
+                value: Box::new(SketchVar {
+                    id: var_id,
+                    initial_value: Default::default(),
+                    // TODO: Should this be the solver units?
+                    ty: Default::default(),
+                    meta,
+                }),
+            },
         }
     }
 
@@ -596,6 +709,28 @@ impl KclValue {
         }
     }
 
+    pub fn as_unsolved_expr(&self) -> Option<UnsolvedExpr> {
+        match self {
+            KclValue::Number { value, ty, .. } => Some(UnsolvedExpr::Known(TyF64::new(*value, *ty))),
+            KclValue::SketchVar { value, .. } => Some(UnsolvedExpr::Unknown(value.id)),
+            _ => None,
+        }
+    }
+
+    pub fn to_sketch_expr(&self) -> Option<crate::front::Expr> {
+        match self {
+            KclValue::Number { value, ty, .. } => Some(crate::front::Expr::Number(crate::front::Number {
+                value: *value,
+                units: (*ty).try_into().ok()?,
+            })),
+            KclValue::SketchVar { value, .. } => Some(crate::front::Expr::Var(crate::front::Number {
+                value: value.initial_value,
+                units: value.ty.try_into().ok()?,
+            })),
+            _ => None,
+        }
+    }
+
     pub fn as_str(&self) -> Option<&str> {
         match self {
             KclValue::String { value, .. } => Some(value),
@@ -616,11 +751,11 @@ impl KclValue {
             _ => return None,
         };
 
-        if value.len() != 2 {
+        let [x, y] = value.as_slice() else {
             return None;
-        }
-        let x = value[0].as_ty_f64()?;
-        let y = value[1].as_ty_f64()?;
+        };
+        let x = x.as_ty_f64()?;
+        let y = y.as_ty_f64()?;
         Some([x, y])
     }
 
@@ -630,12 +765,12 @@ impl KclValue {
             _ => return None,
         };
 
-        if value.len() != 3 {
+        let [x, y, z] = value.as_slice() else {
             return None;
-        }
-        let x = value[0].as_ty_f64()?;
-        let y = value[1].as_ty_f64()?;
-        let z = value[2].as_ty_f64()?;
+        };
+        let x = x.as_ty_f64()?;
+        let y = y.as_ty_f64()?;
+        let z = z.as_ty_f64()?;
         Some([x, y, z])
     }
 
@@ -670,6 +805,13 @@ impl KclValue {
     pub fn as_mut_sketch(&mut self) -> Option<&mut Sketch> {
         match self {
             KclValue::Sketch { value } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_sketch_var(&self) -> Option<&SketchVar> {
+        match self {
+            KclValue::SketchVar { value, .. } => Some(value),
             _ => None,
         }
     }
@@ -753,8 +895,11 @@ impl KclValue {
     pub fn value_str(&self) -> Option<String> {
         match self {
             KclValue::Bool { value, .. } => Some(format!("{value}")),
+            // TODO: Show units.
             KclValue::Number { value, .. } => Some(format!("{value}")),
             KclValue::String { value, .. } => Some(format!("'{value}'")),
+            // TODO: Show units.
+            KclValue::SketchVar { value, .. } => Some(format!("var {}", value.initial_value)),
             KclValue::Uuid { value, .. } => Some(format!("{value}")),
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
@@ -763,6 +908,8 @@ impl KclValue {
             KclValue::HomArray { .. } => Some("[...]".to_owned()),
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
+            | KclValue::GdtAnnotation { .. }
+            | KclValue::SketchConstraint { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
@@ -770,6 +917,7 @@ impl KclValue {
             | KclValue::Function { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
         }
@@ -856,7 +1004,7 @@ mod tests {
             meta: vec![],
         };
         let array4 = KclValue::HomArray {
-            value: vec![mm.clone(), mm.clone(), inches.clone(), mm.clone()],
+            value: vec![mm.clone(), mm.clone(), inches, mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(
@@ -871,7 +1019,7 @@ mod tests {
         assert_eq!(empty_array.human_friendly_type(), "an empty array".to_string());
 
         let array_nested = KclValue::HomArray {
-            value: vec![array2_mm.clone()],
+            value: vec![array2_mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(

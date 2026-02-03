@@ -16,7 +16,7 @@ test.describe(
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
     test('Home page', async ({ tronApp, cmdBar, page, homePage }) => {
-      if (!tronApp) fail()
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await test.step('Home.File.Create project', async () => {
         await page.reload()
@@ -69,16 +69,6 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
-      })
-      await test.step('Home.File.Preferences.Theme color', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Preferences.Theme color'
-        )
-        await openSettingsExpectLocator(page, '#themeColor')
       })
       await test.step('Home.Edit.Rename project', async () => {
         await page.reload()
@@ -205,7 +195,7 @@ test.describe(
         )
         await openSettingsExpectText(
           page,
-          'The hue of the primary theme color for the app'
+          'Set the default length unit setting value to give any new files.'
         )
       })
       await test.step('Modeling.File.Preferences.User settings', async () => {
@@ -237,14 +227,6 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
-      })
-      await test.step('Modeling.File.Preferences.Theme color', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Preferences.Theme color'
-        )
-        await openSettingsExpectLocator(page, '#themeColor')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
@@ -280,7 +262,7 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
           'Set camera projection to "orthographic" as a user default'
-        const toast = page.locator('#_rht_toaster')
+        const toast = page.locator('[data-rht-toaster]')
         // Let the previous toast clear
         await expect(toast).toHaveText(textToCheck)
       })
@@ -291,7 +273,7 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
           'Set camera projection to "perspective" as a user default'
-        const toast = page.locator('#_rht_toaster')
+        const toast = page.locator('[data-rht-toaster]')
         await expect(toast).toHaveText(textToCheck)
       })
       await test.step('Modeling.View.Standard views.Right view', async () => {
@@ -412,6 +394,13 @@ test.describe(
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
+      await test.step('Modeling.View.Panes.Zookeeper', async () => {
+        await page.waitForTimeout(250)
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Zookeeper')
+        const button = page.getByTestId('ttc-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
       await test.step('Modeling.Design.Create an offset plane', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
@@ -497,16 +486,6 @@ test.describe(
         )
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Shell')
-      })
-
-      await test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Design.Create with Zoo Text-To-CAD'
-        )
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Create Project using Text-to-CAD')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {

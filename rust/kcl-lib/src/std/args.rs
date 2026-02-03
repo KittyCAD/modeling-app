@@ -1,20 +1,25 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+use kcmc::{
+    shared::BodyType,
+    units::{UnitAngle, UnitLength},
+};
+use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    CompilationError, ModuleId, SourceRange,
+    CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
-        Solid, TagIdentifier, annotations,
+        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
+        types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
+    front::Number,
     parsing::ast::types::TagNode,
     std::{
         shapes::{PolygonType, SketchOrSurface},
@@ -35,8 +40,15 @@ pub struct TyF64 {
 }
 
 impl TyF64 {
-    pub fn new(n: f64, ty: NumericType) -> Self {
+    pub const fn new(n: f64, ty: NumericType) -> Self {
         Self { n, ty }
+    }
+
+    pub fn from_number(n: Number, settings: &MetaSettings) -> Self {
+        Self {
+            n: n.value,
+            ty: NumericType::from_parsed(n.units, settings),
+        }
     }
 
     pub fn to_mm(&self) -> f64 {
@@ -99,6 +111,21 @@ impl TyF64 {
         self.n = n;
         self
     }
+
+    // This can't be a TryFrom impl because `Point2d` is defined in another
+    // crate.
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, NumericSuffixTypeConvertError> {
+        Ok(crate::front::Point2d {
+            x: Number {
+                value: value[0].n,
+                units: value[0].ty.try_into()?,
+            },
+            y: Number {
+                value: value[1].n,
+                units: value[1].ty.try_into()?,
+            },
+        })
+    }
 }
 
 impl Args {
@@ -129,7 +156,11 @@ impl Args {
     {
         let Some(arg) = self.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument `{label}`"),
+                if let Some(ref fname) = self.fn_name {
+                    format!("The `{fname}` function requires a keyword argument `{label}`")
+                } else {
+                    format!("This function requires a keyword argument `{label}`")
+                },
                 vec![self.source_range],
             )));
         };
@@ -139,11 +170,12 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
-            let msg_base = format!(
-                "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
-                ty.human_friendly_type(),
-            );
+                .unwrap_or_else(|| arg.value.human_friendly_type());
+            let msg_base = if let Some(ref fname) = self.fn_name {
+                format!("The `{fname}` function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())
+            } else {
+                format!("This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())
+            };
             let suggestion = match (ty, actual_type) {
                 (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
@@ -181,7 +213,11 @@ impl Args {
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.labeled.get(label) else {
             let err = KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
+                if let Some(ref fname) = self.fn_name {
+                    format!("The `{fname}` function requires a keyword argument '{label}'")
+                } else {
+                    format!("This function requires a keyword argument '{label}'")
+                },
                 vec![self.source_range],
             ));
             return Err(err);
@@ -230,7 +266,13 @@ impl Args {
         let arg = self
             .unlabeled_kw_arg_unconverted()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+                if let Some(ref fname) = self.fn_name {
+                    format!(
+                        "The `{fname}` function requires a value for the special unlabeled first parameter, '{label}'"
+                    )
+                } else {
+                    format!("This function requires a value for the special unlabeled first parameter, '{label}'")
+                },
                 vec![self.source_range],
             )))?;
 
@@ -239,11 +281,18 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
-            let msg_base = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
-                ty.human_friendly_type(),
-            );
+                .unwrap_or_else(|| arg.value.human_friendly_type());
+            let msg_base = if let Some(ref fname) = self.fn_name {
+                format!(
+                    "The `{fname}` function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                    ty.human_friendly_type(),
+                )
+            } else {
+                format!(
+                    "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                    ty.human_friendly_type(),
+                )
+            };
             let suggestion = match (ty, actual_type) {
                 (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
@@ -487,6 +536,18 @@ impl<'a> FromKclValue<'a> for Vec<KclValue> {
     }
 }
 
+impl<'a> FromKclValue<'a> for Vec<Extrudable> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let items = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(Extrudable::from_kcl_val)
+            .collect::<Option<Vec<_>>>()?;
+        Some(items)
+    }
+}
+
 impl<'a> FromKclValue<'a> for KclValue {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone())
@@ -518,7 +579,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Plane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
+impl<'a> FromKclValue<'a> for crate::execution::PlaneKind {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let plane_type = match arg.as_str()? {
             "XY" | "xy" => Self::XY,
@@ -528,6 +589,17 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
             _ => return None,
         };
         Some(plane_type)
+    }
+}
+
+impl<'a> FromKclValue<'a> for BodyType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let body_type = match arg.as_str()? {
+            "solid" => Self::Solid,
+            "surface" => Self::Surface,
+            _ => return None,
+        };
+        Some(body_type)
     }
 }
 
@@ -828,12 +900,9 @@ impl<'a> FromKclValue<'a> for SourceRange {
                 return None;
             }
         };
-        if value.len() != 3 {
+        let [v0, v1, v2] = value.as_slice() else {
             return None;
-        }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
+        };
         Some(SourceRange::new(
             v0.as_usize()?,
             v1.as_usize()?,
@@ -873,6 +942,33 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                     Some(Self::SolidSet(solids))
                 } else {
                     Some(Self::SketchSet(sketches))
+                }
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut helices = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::HelixSet(helices))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
@@ -1004,6 +1100,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
+impl<'a> FromKclValue<'a> for Extrudable {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = FaceTag::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
@@ -1077,11 +1181,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 2 {
+                let [v0, v1] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
+                };
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?];
                 Some(array)
             }
@@ -1094,12 +1196,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 3 {
+                let [v0, v1, v2] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
-                let v2 = value.get(2)?;
+                };
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?, v2.as_ty_f64()?];
                 Some(array)
             }
@@ -1112,15 +1211,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 6] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 6 {
+                let [v0, v1, v2, v3, v4, v5] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
-                let v2 = value.get(2)?;
-                let v3 = value.get(3)?;
-                let v4 = value.get(4)?;
-                let v5 = value.get(5)?;
+                };
                 let array = [
                     v0.as_ty_f64()?,
                     v1.as_ty_f64()?,
@@ -1211,6 +1304,15 @@ impl<'a> FromKclValue<'a> for Box<Plane> {
 impl<'a> FromKclValue<'a> for Box<Sketch> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::TagIdentifier(value) = arg else {
             return None;
         };
         Some(value.to_owned())

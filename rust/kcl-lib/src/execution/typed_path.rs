@@ -111,7 +111,7 @@ impl TypedPath {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub fn canonicalize(&self) -> Result<Self, std::io::Error> {
-        self.0.canonicalize().map(|p| TypedPath(p.to_path_buf()))
+        self.0.canonicalize().map(TypedPath)
     }
 
     pub fn to_string_lossy(&self) -> String {

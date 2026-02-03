@@ -1,10 +1,8 @@
-import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
-import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import * as THREE from 'three'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
 
@@ -142,6 +140,42 @@ export function normaliseAngle(angle: number): number {
   return result > 180 ? result - 360 : result
 }
 
+/**
+ * Computes the directed angular distance from startAngle to endAngle
+ * in radians, going either CCW or CW.
+ *
+ * Notes:
+ * - If startAngle === endAngle, the result is 0 for both directions (not 2π).
+ * - Inputs are typically within [-π, π], but any value work,
+ *
+ * @param startAngle - Start angle in radians.
+ * @param endAngle - End angle in radians.
+ * @param ccw - If true, measure the CCW distance from start to end. If false, measure CW.
+ * @returns Angular distance in radians in the range [0, 2π).
+ *
+ * @example
+ * getAngleDiff(0, Math.PI / 2, true)  => Math.PI / 2
+ * getAngleDiff(0, Math.PI / 2, false) => 3 * Math.PI / 2
+ * getAngleDiff(0.1, -0.1, true)       => 2 * Math.PI - 0.2
+ * getAngleDiff(0.1, -0.1, false)      => 0.2
+ * getAngleDiff(-0.1, 0.1, true)       => 0.2
+ */
+export function getAngleDiff(
+  startAngle: number,
+  endAngle: number,
+  ccw: boolean
+) {
+  const TWO_PI = Math.PI * 2
+
+  let d = endAngle - startAngle
+
+  // Wrap into [0, 2π)
+  d = ((d % TWO_PI) + TWO_PI) % TWO_PI
+
+  // If going CW, take the other way around (but still wrap into [0, 2π))
+  return ccw ? d : (TWO_PI - d) % TWO_PI
+}
+
 export function throttle<T>(
   func: (args: T) => any,
   wait: number
@@ -171,7 +205,7 @@ export function throttle<T>(
 }
 
 // takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
-export function deferExecution<T>(func: (args: T) => any, wait: number) {
+export function deferredCallback<T>(func: (args: T) => any, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | null
   let latestArgs: T
 
@@ -204,9 +238,7 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
  */
 export function toSync<F extends AsyncFn<F>>(
   fn: F,
-  onReject: (
-    reason: any
-  ) => void | PromiseLike<void | null | undefined> | null | undefined
+  onReject: (reason: any) => PromiseLike<null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
     void fn(...args).catch((...args) => {
@@ -312,6 +344,19 @@ export function isReducedMotion(): boolean {
     // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
     window.matchMedia('(prefers-reduced-motion)').matches
   )
+}
+
+/**
+ * Get the list of delete key names for the current platform.
+ * Backspace only on macOS as Windows and Linux have dedicated Delete key.
+ * `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
+ *
+ * @returns Array of key names that should be treated as delete keys for the current platform
+ */
+export function getDeleteKeys(): string[] {
+  return platform() === 'macos'
+    ? ['backspace', 'delete', 'del']
+    : ['delete', 'del']
 }
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
@@ -502,35 +547,18 @@ export function capitaliseFC(str: string): string {
  * @param buffer - The binary buffer containing the UUID bytes.
  * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
  */
-export function binaryToUuid(
-  binaryData: Buffer | Uint8Array | BSONBinary | string
-): string {
+export function binaryToUuid(binaryData: Buffer | Uint8Array | string): string {
   if (typeof binaryData === 'string') {
     return binaryData
   }
 
   let buffer: Uint8Array
 
-  // Handle MongoDB BSON Binary object
-  if (
-    binaryData &&
-    '_bsontype' in binaryData &&
-    binaryData._bsontype === 'Binary'
-  ) {
-    // Extract the buffer from the BSON Binary object
-    buffer = binaryData.buffer
-  }
-  // Handle case where buffer property exists (some MongoDB drivers structure)
-  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
-    buffer = binaryData.buffer
-  }
   // Handle direct Buffer or Uint8Array
-  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+  if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
     buffer = binaryData
   } else {
-    console.error(
-      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
-    )
+    console.error('Invalid input type: expected Uint8Array')
     return ''
   }
 
@@ -562,20 +590,6 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
-export function getModuleIdByFileName(
-  fileName: string,
-  fileNames: ExecState['filenames']
-) {
-  const module = Object.entries(fileNames).find(
-    ([, moduleInfo]) =>
-      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
-  )
-  if (module) {
-    return Number(module[0]) // Return the module ID
-  }
-  return -1
-}
-
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -598,30 +612,11 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
 }
 
-export function computeIsometricQuaternionForEmptyScene() {
-  // Create the direction vector you want to look from
-  const isoDir = new THREE.Vector3(1, 1, 1).normalize() // isometric look direction
-
-  // Target is the point you want to look at (e.g., origin)
-  const target = new THREE.Vector3(0, 0, 0)
-
-  // Compute quaternion for isometric view
-  const up = new THREE.Vector3(0, 0, 1) // default up direction
-  const quaternion = new THREE.Quaternion()
-  quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
-
-  // Align up vector using a lookAt matrix
-  const m = new THREE.Matrix4()
-  m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
-  quaternion.setFromRotationMatrix(m)
-  return quaternion
-}
-
 export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
@@ -643,7 +638,7 @@ export async function engineViewIsometric({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   /**
@@ -694,4 +689,49 @@ export function promiseFactory<T = void>() {
     reject = _reject
   })
   return { promise, resolve, reject }
+}
+
+/**
+ * Strips leading and trailing quotes (both single and double) from a string.
+ * Removes any quote character from the beginning AND any quote character from the end,
+ * regardless of whether they match. If the input is null/undefined, returns an empty string.
+ *
+ * @param str - The string to strip quotes from
+ * @returns The string with quotes removed, or empty string if input is null/undefined
+ *
+ * @example
+ * stripQuotes('"hello"') // returns 'hello'
+ * stripQuotes("'world'") // returns 'world'
+ * stripQuotes('"mixed\'') // returns 'mixed' (mismatched quotes)
+ * stripQuotes('"only-leading') // returns 'only-leading'
+ * stripQuotes('no-quotes') // returns 'no-quotes'
+ * stripQuotes(null) // returns ''
+ */
+export function stripQuotes(str: string | null | undefined): string {
+  return str?.replace(/^["']|["']$/g, '') || ''
+}
+
+/**
+ * Type predicate to check if an object has a specific property.
+ * Uses runtime checks without type assertions.
+ */
+export function hasProperty<K extends string>(
+  obj: unknown,
+  key: K
+): obj is Record<K, unknown> {
+  return typeof obj === 'object' && obj !== null && key in obj
+}
+
+/**
+ * Type guard to check if a value is a Record with string keys.
+ * More strict than a simple object check - excludes arrays and ensures
+ * the object has Object.prototype as its prototype.
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !isArray(value) &&
+    Object.getPrototypeOf(value) === Object.prototype
+  )
 }

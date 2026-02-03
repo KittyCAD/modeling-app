@@ -173,7 +173,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "distance": 127.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -380,7 +381,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -416,20 +418,5 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "rust/kcl-lib/tests/assembly_mixed_units_cubes/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

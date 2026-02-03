@@ -1,5 +1,6 @@
 // Starlink Mini Bracket
 // Bracket for holding a starlink device
+// Categories: Maker
 
 // Set units in inches (in)
 @settings(defaultLengthUnit = in)

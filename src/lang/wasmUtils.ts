@@ -1,9 +1,6 @@
-import {
-  import_file_extensions,
-  relevant_file_extensions,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
-import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
 export const wasmUrl = () => {
   const wasmFile = '/kcl_wasm_lib_bg.wasm'
@@ -23,27 +20,28 @@ export const wasmUrl = () => {
       wasmFile
   return fullUrl
 }
-
 // Initialise the wasm module.
-const initialise = async () => {
+export const initialiseWasm = async (): Promise<ModuleType> => {
   try {
     await reloadModule()
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
-    return await init({ module_or_path: buffer })
+    await init({ module_or_path: buffer })
+    return getModule()
   } catch (e) {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }
 }
 
-export const initPromise = initialise()
-
-export function importFileExtensions(): string[] {
-  return import_file_extensions()
+export function importFileExtensions(wasmInstance: ModuleType): string[] {
+  return wasmInstance.import_file_extensions()
 }
 
-export function relevantFileExtensions(): string[] {
-  return relevant_file_extensions()
+/**
+ * All of these file extensions will be lowercase
+ */
+export function relevantFileExtensions(wasmInstance: ModuleType): string[] {
+  return wasmInstance.relevant_file_extensions()
 }

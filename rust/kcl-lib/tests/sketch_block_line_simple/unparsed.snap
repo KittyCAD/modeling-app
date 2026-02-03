@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_line_simple.kcl
+---
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  x = var 5mm
+  y = var
+  l1 = sketch2::line(start = [x, y], end = [10mm, 0mm])
+x == 1mm
+y == 2mm
+}
+
+assert(s.l1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001mm)
+assert(s.l1.start.at[1], isEqualTo = 2mm, tolerance = 0.00000001mm)

@@ -2,22 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands import_cycle1.kcl
 ---
-{
-  "rust/kcl-lib/tests/import_cycle1/import_cycle2.kcl": [],
-  "rust/kcl-lib/tests/import_cycle1/import_cycle3.kcl": [],
-  "rust/kcl-lib/tests/import_cycle1/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
-}
+{}

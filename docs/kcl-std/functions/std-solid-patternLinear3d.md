@@ -23,7 +23,7 @@ patternLinear3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to duplicate. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The solid(s) to duplicate. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `distance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Distance between each repetition. Also known as 'spacing'. | Yes |
 | `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis of the pattern. A 3D vector. | Yes |
@@ -31,14 +31,13 @@ patternLinear3d(
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
 
 ```kcl
 // / Pattern using a named axis.
-
 
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -68,7 +67,6 @@ example = extrude(exampleSketch, length = 1)
 
 ```kcl
 // / Pattern using a raw axis.
-
 
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
@@ -115,7 +113,7 @@ thing2 = startSketchOn(case, face = END)
   |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
-  // We pass in the "case" here since we want to pattern the whole sketch.
+// We pass in the "case" here since we want to pattern the whole sketch.
 // And the case was the base of the sketch.
 patternLinear3d(
   case,

@@ -2,9 +2,8 @@ import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
-import { useKclContext } from '@src/lang/KclProvider'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
-import { billingActor, commandBarActor } from '@src/lib/singletons'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { useSingletons } from '@src/lib/boot'
 import { useSelector } from '@xstate/react'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -13,6 +12,7 @@ const shareHotkey = 'mod+alt+s'
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
+  const { billingActor, commandBarActor, kclManager } = useSingletons()
   const platform = usePlatform()
 
   const [showOptions, setShowOptions] = useState(false)
@@ -41,7 +41,7 @@ export const ShareButton = memo(function ShareButton() {
         isRestrictedToOrg: false,
       },
     })
-  }, [hasOptions])
+  }, [hasOptions, commandBarActor])
 
   const onShareClickProOrOrganization = useCallback(() => {
     setShowOptions(false)
@@ -55,18 +55,18 @@ export const ShareButton = memo(function ShareButton() {
         password,
       },
     })
-  }, [isRestrictedToOrg, password])
+  }, [isRestrictedToOrg, password, commandBarActor])
 
   useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
     scopes: ['modeling'],
   })
 
-  const kclContext = useKclContext()
+  const ast = kclManager.astSignal.value
 
   // It doesn't make sense for the user to be able to click on this
   // until we get what their subscription allows for.
   const disabled =
-    kclContext.ast.body.some((n) => n.type === 'ImportStatement') ||
+    ast.body.some((n) => n.type === 'ImportStatement') ||
     billingContext.hasSubscription === undefined
 
   return (

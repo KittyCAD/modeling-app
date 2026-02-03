@@ -1585,6 +1585,14 @@ description: Result of parsing angle-gauge.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "gauge",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2420,6 +2428,7 @@ description: Result of parsing angle-gauge.kcl
         "preComments": [
           "// Angle Gauge",
           "// Simple angle gauge function to generate a gauge given an angle",
+          "// Categories: Construction",
           "",
           "",
           "// Set units in inches (in)"
