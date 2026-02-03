@@ -839,7 +839,6 @@ const OperationItem = ({
       }
       menuItems={menuItems}
       onClick={() => {
-        console.log('FRANK CLICK')
         void selectOperation()
       }}
       onContextMenu={() => {
