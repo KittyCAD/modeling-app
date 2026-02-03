@@ -97,16 +97,14 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  let vars:
-    | undefined
-    | {
-        exprs: Expr[]
-        pathIfPipe?: PathToNode
-      } = { exprs: [] }
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
   const faceSelections = sketches.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
   )
-  // Handle the face selection case (vs. regular sketches below)
   for (const faceSelection of faceSelections) {
     const res = modifyAstWithTagsForSelection(
       modifiedAst,
@@ -129,7 +127,6 @@ export function addExtrude({
     otherSelections: sketches.otherSelections,
   }
   if (nonFaceSelections.graphSelections.length > 0) {
-    // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
     const res = getVariableExprsFromSelection(
       nonFaceSelections,
       modifiedAst,
