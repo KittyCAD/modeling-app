@@ -1,8 +1,16 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[45, 371, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+    3["Segment<br>[45, 371, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
+  end
   1["Plane<br>[45, 371, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  2["SketchBlock<br>[45, 371, 0]"]
+  4["SketchBlock<br>[45, 371, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
-  1 <--x 2
+  1 --- 2
+  1 <--x 4
+  2 --- 3
 ```

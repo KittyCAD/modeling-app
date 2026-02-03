@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.122"
+version = "0.1.123"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -16,7 +16,7 @@ dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dependencies]
 rayon = { workspace = true }
-typed-path = "0.12.0"
+typed-path = "0.12.1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
