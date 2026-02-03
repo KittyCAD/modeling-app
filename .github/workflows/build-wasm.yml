@@ -48,12 +48,15 @@ jobs:
 
       - name: Build Wasm condition
         id: wasm
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
+          RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
         run: |
           # Build Wasm with Rust changes, cache misses, or for stacked PRs
-          BASE_REF="${{ github.event.pull_request.base.ref }}"
-          if [[ ${{ steps.filter.outputs.rust || 'false' }} == 'true' || \
-                ${{ steps.download-wasm.outcome }} == 'failure' || \
-                ( -n "$BASE_REF" && "$BASE_REF" != 'main' ) ]]; then
+          if [[ "${RUST_CHANGES}" == 'true' || \
+                "${DOWNLOAD_OUTCOME}" == 'failure' || \
+                ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT

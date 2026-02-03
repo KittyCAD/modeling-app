@@ -226,7 +226,7 @@ function TextToCadPrompt() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Zookeeper prompt</h1>
         <p className="my-4">
-          To save you compute time, we are going to use a pre-rolled Zookeeper
+          To save you reasoning time, we are going to use a pre-rolled Zookeeper
           prompt for this example. Click next to see an example of what
           Zookeeper can generate.
         </p>
@@ -376,7 +376,7 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          To save you compute time, we are using a pre-rolled Zookeeper prompt
+          To save you reasoning time, we are using a pre-rolled Zookeeper prompt
           to edit your existing fan housing. You can see the prompt in the
           window above. Click next to see an example of what modifying with
           Zookeeper would look like.

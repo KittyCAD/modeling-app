@@ -24,9 +24,10 @@ jobs:
       - name: Find tag workflow ID
         id: tag_workflow_id
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
+          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch "${RELEASE_TAG_NAME}" --json databaseId | jq '.[0].databaseId')
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v4
