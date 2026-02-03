@@ -452,11 +452,7 @@ export class ConstraintUtils {
           ctx.textAlign = 'left'
           ctx.textBaseline = 'middle'
           ctx.fillStyle = fillColor
-          ctx.fillText(
-            dimensionLabel,
-            contentX + iconWidth,
-            canvas.height / 2
-          )
+          ctx.fillText(dimensionLabel, contentX + iconWidth, canvas.height / 2)
 
           label.userData.textWidth = totalWidth
           label.userData.textHeight = 24 // Font size approximation
@@ -505,16 +501,19 @@ export class ConstraintUtils {
   }
 }
 
-type SpriteLabel = TypedObject3D<{
-  type: typeof DISTANCE_CONSTRAINT_LABEL,
-  dimensionLabel: string,
-  constraintColor: number,
-  showFnIcon: boolean,
-}, Sprite & {
-  material: SpriteMaterial & {
-    map: Texture<HTMLCanvasElement>
+type SpriteLabel = TypedObject3D<
+  {
+    type: typeof DISTANCE_CONSTRAINT_LABEL
+    dimensionLabel: string
+    constraintColor: number
+    showFnIcon: boolean
+  },
+  Sprite & {
+    material: SpriteMaterial & {
+      map: Texture<HTMLCanvasElement>
+    }
   }
-}>
+>
 type TypedObject3D<D, T = Object3D> = T & {
   userData: D
 }
