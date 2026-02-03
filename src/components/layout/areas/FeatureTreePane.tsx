@@ -82,7 +82,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
         Menu={FeatureTreeMenu}
         onClose={() => {
           // Gotcha: because our layout system is a goofy first draft,
-          // it doesn't know how to handle Splits as childs of Panes very well,
+          // it doesn't know how to handle Splits as children of Panes very well,
           // so the onClose here needs to explicitly state the Split to close,
           // since this layout will be used in a Simple layout now.
           props.onClose?.('feature-tree')
