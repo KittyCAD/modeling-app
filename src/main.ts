@@ -30,9 +30,11 @@ import {
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
+  ENVIRONMENT_FILE_NAME,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { getAppFolderName } from '@src/lib/appFolderName'
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -76,6 +78,66 @@ const scheduleMenuGC = () => {
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
+
+const getEnvironmentFilePathForMain = () => {
+  const isStaging = packageJSON.name.includes('-staging')
+  const isStagingOrDebug =
+    isStaging ||
+    packageJSON.version === '0.0.0' ||
+    packageJSON.version === 'dev'
+  const appFolderName = getAppFolderName({
+    packageName: packageJSON.name,
+    platform: os.platform(),
+    isStaging,
+    isStagingOrDebug,
+  })
+  const appConfig = app.getPath('appData')
+  const fullPath = path.join(appConfig, appFolderName)
+  try {
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true })
+    }
+  } catch (error) {
+    console.error('Failed to ensure environment folder', error)
+  }
+  return path.join(fullPath, ENVIRONMENT_FILE_NAME)
+}
+
+const writeEnvironmentFromDeepLink = (environment: string) => {
+  const trimmed = environment.trim()
+  if (!trimmed) return
+  try {
+    const envPath = getEnvironmentFilePathForMain()
+    fs.writeFileSync(envPath, trimmed, 'utf8')
+  } catch (error) {
+    console.error('Failed to persist environment from deep link', error)
+  }
+}
+
+const parseDeepLink = (
+  pathToOpen?: string
+): { filteredPath: string; environment?: string } => {
+  if (!pathToOpen || !pathToOpen.startsWith(`${ZOO_STUDIO_PROTOCOL}://`)) {
+    return { filteredPath: '' }
+  }
+  const urlNoProtocol = pathToOpen
+    .replace(ZOO_STUDIO_PROTOCOL + '://', '')
+    .replaceAll('%3D', '')
+    .replaceAll('%3', '')
+  const trimmed = urlNoProtocol.replace(/^\/+/, '')
+  if (trimmed.startsWith('env/')) {
+    const afterEnv = trimmed.slice('env/'.length)
+    const envEndIndex = afterEnv.search(/[/?#]/)
+    const envValue =
+      envEndIndex === -1 ? afterEnv : afterEnv.slice(0, envEndIndex)
+    const remainder = envEndIndex === -1 ? '' : afterEnv.slice(envEndIndex)
+    return {
+      environment: decodeURIComponent(envValue),
+      filteredPath: decodeURI(remainder),
+    }
+  }
+  return { filteredPath: decodeURI(urlNoProtocol) }
+}
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -199,23 +261,23 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+  let filteredPath = ''
+  if (pathIsCustomProtocolLink) {
+    const deepLink = parseDeepLink(pathToOpen)
+    if (deepLink.environment) {
+      writeEnvironmentFromDeepLink(deepLink.environment)
+    }
+    filteredPath = deepLink.filteredPath
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    const filteredPath = pathToOpen
-      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
-      : ''
     const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
     newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
       // TODO: fix the replace %3 thing
-      const urlNoProtocol = pathToOpen
-        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
-        .replaceAll('%3D', '')
-        .replaceAll('%3', '')
-      const filteredPath = decodeURI(urlNoProtocol)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
