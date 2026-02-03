@@ -1,5 +1,6 @@
 // Race Car Seat Brackets
 // Two of these modular brackets are used to mount a race car seat
+// Categories: Automotive
 
 // Define units
 @settings(defaultLengthUnit = mm)
