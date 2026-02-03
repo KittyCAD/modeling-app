@@ -942,20 +942,6 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
     [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
   )
 
-  const visibilityToggle = useCallback(
-    (plane: (typeof planes)[number]) => ({
-      visible: modelingState.context.defaultPlaneVisibility[plane.key],
-      onVisibilityChange: () => {
-        send({
-          type: 'Toggle default plane visibility',
-          planeId: plane.id,
-          planeKey: plane.key,
-        })
-      },
-    }),
-    [modelingState.context.defaultPlaneVisibility, send]
-  )
-
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
@@ -1000,7 +986,16 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
               Start Sketch
             </ContextMenuItem>,
           ]}
-          visibilityToggle={visibilityToggle(plane)}
+          visibilityToggle={{
+            visible: modelingState.context.defaultPlaneVisibility[plane.key],
+            onVisibilityChange: () => {
+              send({
+                type: 'Toggle default plane visibility',
+                planeId: plane.id,
+                planeKey: plane.key,
+              })
+            },
+          }}
         />
       ))}
       <div className="h-px bg-chalkboard-50/20 my-2" />
