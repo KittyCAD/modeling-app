@@ -339,6 +339,9 @@ pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: 
 
     // Normalize angles to [0, 2π]
     let normalize_angle = |angle: f64| -> f64 {
+        if !angle.is_finite() {
+            return angle;
+        }
         let mut normalized = angle;
         while normalized < 0.0 {
             normalized += TAU;
@@ -469,6 +472,9 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
 
     // Normalize angles to [0, 2π]
     let normalize_angle = |angle: f64| -> f64 {
+        if !angle.is_finite() {
+            return angle;
+        }
         let mut normalized = angle;
         while normalized < 0.0 {
             normalized += TAU;
