@@ -501,21 +501,16 @@ export class ConstraintUtils {
   }
 }
 
-type SpriteLabel = TypedObject3D<
-  {
+type SpriteLabel = Sprite & {
+  userData: {
     type: typeof DISTANCE_CONSTRAINT_LABEL
     dimensionLabel: string
     constraintColor: number
     showFnIcon: boolean
-  },
-  Sprite & {
-    material: SpriteMaterial & {
-      map: Texture<HTMLCanvasElement>
-    }
   }
->
-type TypedObject3D<D, T = Object3D> = T & {
-  userData: D
+  material: SpriteMaterial & {
+    map: Texture<HTMLCanvasElement>
+  }
 }
 
 // Arrow with tip at origin, pointing +Y, base extends into -Y
