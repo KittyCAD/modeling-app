@@ -284,7 +284,7 @@ export const MlEphantConversationInput = (
 
     if (window.electron?.open) {
       try {
-        const result = await window.electron!.open({
+        const result = await window.electron.open({
           properties: ['openFile', 'multiSelections'],
           title: 'Attach files',
           filters: [
@@ -499,7 +499,7 @@ export const MlEphantConversationInput = (
             context={selectionsContext}
             mode={mode}
             onSetMode={setMode}
-            onAttachFiles={onAttachFiles}
+            onAttachFiles={() => void onAttachFiles()}
             attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">

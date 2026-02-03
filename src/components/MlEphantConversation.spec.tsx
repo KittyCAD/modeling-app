@@ -210,10 +210,7 @@ describe('MlEphantConversation', () => {
       return new File([content], name, { type })
     }
 
-    const renderConversation = (
-      handleProcess = vi.fn(),
-      disabled = false
-    ) => {
+    const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
         <MlEphantConversation
           isLoading={false}
