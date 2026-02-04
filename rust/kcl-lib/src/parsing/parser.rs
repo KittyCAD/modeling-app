@@ -2178,6 +2178,10 @@ fn is_char_ascii_digit(c: char) -> bool {
     c.is_ascii_digit()
 }
 
+fn is_stdlib_import_path(path_string: &str) -> bool {
+    path_string.starts_with("std") && !path_string.ends_with(".kcl")
+}
+
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -2191,7 +2195,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     if var_name
         && (path_string.starts_with("_")
             || path_string.starts_with(is_char_ascii_digit)
-            || !path_string.chars().all(|c| c.is_alphanumeric() || c == '_'))
+            || (!is_stdlib_import_path(&path_string) && !path_string.chars().all(|c| c.is_alphanumeric() || c == '_')))
     {
         return Err(ErrMode::Cut(
             CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
@@ -2232,7 +2236,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std") {
+    } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
         let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
