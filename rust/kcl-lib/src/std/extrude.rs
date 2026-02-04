@@ -471,15 +471,9 @@ pub(crate) async fn do_post_extrude<'a>(
             // Merge the IDs.
             // If we were sketching on a face, we need the original face id.
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch.id;
             }
         }
         (ExtrudeMethod::New, BeingExtruded::Face) => {
@@ -493,15 +487,9 @@ pub(crate) async fn do_post_extrude<'a>(
         }
         (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch.id;
             }
         }
     }
