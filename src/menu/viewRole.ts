@@ -96,8 +96,29 @@ export const modelingViewRole = (
         id: 'View.Standard views',
         submenu: [
           {
+            label: 'Front View',
+            id: 'View.Standard views.Front view',
+            accelerator: '1',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Front view',
+              })
+            },
+          },
+          {
+            label: 'Top View',
+            id: 'View.Standard views.Top view',
+            accelerator: '2',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Top view',
+              })
+            },
+          },
+          {
             label: 'Right View',
             id: 'View.Standard views.Right view',
+            accelerator: '3',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Right view',
@@ -107,6 +128,7 @@ export const modelingViewRole = (
           {
             label: 'Back View',
             id: 'View.Standard views.Back view',
+            accelerator: '4',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Back view',
@@ -114,38 +136,22 @@ export const modelingViewRole = (
             },
           },
           {
-            label: 'Top View',
-            id: 'View.Standard views.Top view',
+            label: 'Bottom View',
+            id: 'View.Standard views.Bottom view',
+            accelerator: '5',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Top view',
+                menuLabel: 'View.Standard views.Bottom view',
               })
             },
           },
           {
             label: 'Left View',
             id: 'View.Standard views.Left view',
+            accelerator: '6',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Left view',
-              })
-            },
-          },
-          {
-            label: 'Front View',
-            id: 'View.Standard views.Front view',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Front view',
-              })
-            },
-          },
-          {
-            label: 'Bottom View',
-            id: 'View.Standard views.Bottom view',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Bottom view',
               })
             },
           },
@@ -153,6 +159,7 @@ export const modelingViewRole = (
           {
             label: 'Reset View',
             id: 'View.Standard views.Reset view',
+            accelerator: 'Home',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Reset view',
