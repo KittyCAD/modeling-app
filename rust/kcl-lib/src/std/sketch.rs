@@ -33,7 +33,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
-        faces::make_face,
+        faces::{FaceSpecifier, make_face},
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -897,7 +897,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
     let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
     let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
     let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
@@ -910,8 +910,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
-    face: Option<FaceTag>,
-    normal_to_face: Option<FaceTag>,
+    face: Option<FaceSpecifier>,
+    normal_to_face: Option<FaceSpecifier>,
     align_axis: Option<Axis2dOrEdgeReference>,
     normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,

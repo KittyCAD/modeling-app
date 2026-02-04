@@ -464,7 +464,21 @@ impl ExecutorContext {
                         last_expr = Some(rhs);
                         break;
                     }
-                    let rhs = rhs.into_value();
+                    let mut rhs = rhs.into_value();
+
+                    // Attach the variable name to unsolved segments as a tag.
+                    // While executing the body of a sketch block, the segments
+                    // won't have been solved yet.
+                    if let KclValue::Segment { value } = &mut rhs
+                        && let SegmentRepr::Unsolved { segment } = &mut value.repr
+                    {
+                        segment.tag = Some(TagIdentifier {
+                            value: variable_declaration.declaration.id.name.clone(),
+                            info: Default::default(),
+                            meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
+                        });
+                    }
+                    let rhs = rhs; // Remove mutability.
 
                     let should_bind_name =
                         if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
@@ -1831,6 +1845,7 @@ impl Node<MemberExpression> {
                                                 position: ctor.start.clone(),
                                             }),
                                         },
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -1855,6 +1870,7 @@ impl Node<MemberExpression> {
                                                 position: ctor.start.clone(),
                                             }),
                                         },
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -1893,6 +1909,7 @@ impl Node<MemberExpression> {
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
                                         sketch: None,
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -1922,6 +1939,7 @@ impl Node<MemberExpression> {
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
                                         sketch: None,
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -1957,6 +1975,7 @@ impl Node<MemberExpression> {
                                                 position: ctor.end.clone(),
                                             }),
                                         },
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -1981,6 +2000,7 @@ impl Node<MemberExpression> {
                                                 position: ctor.end.clone(),
                                             }),
                                         },
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2019,6 +2039,7 @@ impl Node<MemberExpression> {
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
                                         sketch: None,
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2048,6 +2069,7 @@ impl Node<MemberExpression> {
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
                                         sketch: None,
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2076,6 +2098,7 @@ impl Node<MemberExpression> {
                                                 position: ctor.center.clone(),
                                             }),
                                         },
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },
@@ -2114,6 +2137,7 @@ impl Node<MemberExpression> {
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
                                         sketch: None,
+                                        tag: segment.tag.clone(),
                                         meta: segment.meta.clone(),
                                     }),
                                 },

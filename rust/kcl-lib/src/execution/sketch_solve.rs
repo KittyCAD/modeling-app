@@ -232,6 +232,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 surface: surface.clone(),
                 sketch_id,
                 sketch,
+                tag: segment.tag,
                 meta: segment.meta,
             })
         }
@@ -269,6 +270,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 surface: surface.clone(),
                 sketch_id,
                 sketch,
+                tag: segment.tag,
                 meta: segment.meta,
             })
         }
@@ -316,6 +318,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 surface: surface.clone(),
                 sketch_id,
                 sketch,
+                tag: segment.tag,
                 meta: segment.meta,
             })
         }
