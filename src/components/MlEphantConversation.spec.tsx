@@ -300,7 +300,7 @@ describe('MlEphantConversation', () => {
       })
 
       expect(toast.error).toHaveBeenCalledWith(
-        'Only PDF, Markdown, and image files are supported.'
+        'Only PDF, Markdown, DXF, and image files are supported.'
       )
     })
 
@@ -318,7 +318,7 @@ describe('MlEphantConversation', () => {
       })
 
       expect(toast.error).toHaveBeenCalledWith(
-        'Only PDF, Markdown, and image files are supported.'
+        'Only PDF, Markdown, DXF, and image files are supported.'
       )
     })
 
@@ -482,10 +482,11 @@ describe('MlEphantConversation', () => {
       const pngFile = createMockFile('image.png', 'image/png')
       const pdfFile = createMockFile('doc.pdf', 'application/pdf')
       const mdFile = createMockFile('readme.md', 'text/markdown')
+      const dxfFile = createMockFile('drawing.dxf', 'application/dxf')
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
-          files: [pngFile, pdfFile, mdFile],
+          files: [pngFile, pdfFile, mdFile, dxfFile],
           types: ['Files'],
         },
       })
@@ -493,6 +494,7 @@ describe('MlEphantConversation', () => {
       expect(await screen.findByText('image.png')).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
       expect(screen.getByText('readme.md')).toBeInTheDocument()
+      expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
     })
   })
 })

@@ -20,7 +20,7 @@ import toast from 'react-hot-toast'
 const noop = () => {}
 
 const ATTACHMENT_ACCEPT =
-  'application/pdf,text/markdown,text/x-markdown,.md,.markdown,image/*'
+  'application/pdf,text/markdown,text/x-markdown,.md,.markdown,image/*,application/dxf,.dxf'
 const ATTACHMENT_EXTENSIONS = new Set([
   '.pdf',
   '.md',
@@ -34,6 +34,7 @@ const ATTACHMENT_EXTENSIONS = new Set([
   '.tif',
   '.tiff',
   '.svg',
+  '.dxf',
 ])
 
 const isSupportedAttachment = (file: File): boolean => {
@@ -41,6 +42,7 @@ const isSupportedAttachment = (file: File): boolean => {
   if (file.type === 'application/pdf') return true
   if (file.type === 'text/markdown' || file.type === 'text/x-markdown')
     return true
+  if (file.type === 'application/dxf') return true
 
   return isSupportedAttachmentName(file.name)
 }
@@ -64,6 +66,7 @@ const resolveAttachmentMimeType = (name: string): string => {
   if (lower.endsWith('.bmp')) return 'image/bmp'
   if (lower.endsWith('.tif') || lower.endsWith('.tiff')) return 'image/tiff'
   if (lower.endsWith('.svg')) return 'image/svg+xml'
+  if (lower.endsWith('.dxf')) return 'application/dxf'
   return 'application/octet-stream'
 }
 
@@ -302,7 +305,7 @@ export const MlEphantConversationInput = (
         const selectedPaths = result.filePaths ?? []
         const supportedPaths = selectedPaths.filter(isSupportedAttachmentName)
         if (supportedPaths.length !== selectedPaths.length) {
-          toast.error('Only PDF, Markdown, and image files are supported.')
+          toast.error('Only PDF, Markdown, DXF, and image files are supported.')
         }
 
         const files = await Promise.all(
@@ -350,7 +353,7 @@ export const MlEphantConversationInput = (
 
     const supported = files.filter(isSupportedAttachment)
     if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, and image files are supported.')
+      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
     }
     appendAttachments(supported)
 
@@ -398,7 +401,7 @@ export const MlEphantConversationInput = (
 
     const supported = files.filter(isSupportedAttachment)
     if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, and image files are supported.')
+      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
     }
     appendAttachments(supported)
   }
@@ -413,7 +416,7 @@ export const MlEphantConversationInput = (
 
     const supported = files.filter(isSupportedAttachment)
     if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, and image files are supported.')
+      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
     }
     appendAttachments(supported)
   }
