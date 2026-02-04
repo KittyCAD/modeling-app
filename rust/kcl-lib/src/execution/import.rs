@@ -78,10 +78,12 @@ pub async fn import_foreign(
             vec![source_range],
         ))
     })?;
-    let mut import_files = vec![kcmc::ImportFile {
-        path: file_name.to_string(),
-        data: file_contents.clone(),
-    }];
+    let mut import_files = vec![
+        kcmc::ImportFile::builder()
+            .path(file_name.to_string())
+            .data(file_contents.clone())
+            .build(),
+    ];
 
     // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
@@ -110,10 +112,7 @@ pub async fn import_foreign(
                             KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range]))
                         })?;
 
-                    import_files.push(ImportFile {
-                        path: uri.to_string(),
-                        data: bin_contents,
-                    });
+                    import_files.push(ImportFile::builder().path(uri.to_string()).data(bin_contents).build());
                 }
             }
         }
@@ -331,6 +330,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
         FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(kcmc::format::sldprt::import::Options {
             split_closed_faces: false,
         })),
+        other => anyhow::bail!("Unknown format {other}"),
     }
 }
 

@@ -62,7 +62,8 @@ pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_INVALID_MATH: &str = "invalidMath";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
-pub(super) const WARN_VALUES: [&str; 9] = [
+pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "unusedTags";
+pub(super) const WARN_VALUES: [&str; 10] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -72,6 +73,7 @@ pub(super) const WARN_VALUES: [&str; 9] = [
     WARN_SOLVER,
     WARN_INVALID_MATH,
     WARN_UNNECESSARY_CLOSE,
+    WARN_NOT_YET_SUPPORTED,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
