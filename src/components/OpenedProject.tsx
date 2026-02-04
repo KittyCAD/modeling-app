@@ -29,6 +29,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
+  AxisNames,
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
@@ -191,6 +192,60 @@ export function OpenedProject() {
     },
     kclManager
   )
+
+  // Enable standard view keybinds for Web only.
+  // Desktop uses the electron accelerator attribute to bind the keys to actions
+  useHotkeys('1', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_Y)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('2', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.Z)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('3', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.X)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('4', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.Y)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('5', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_Z)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('6', (e) => {
+    if (isDesktop()) return
+
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_X)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('Home', (e) => {
+    if (isDesktop()) return
+    resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    }).catch(reportRejection)
+  })
 
   useEngineConnectionSubscriptions()
 

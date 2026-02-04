@@ -145,3 +145,13 @@ export async function runNewAstAndCheckForSweep(
   const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
   expect(sweepArtifact).toBeDefined()
 }
+
+export async function runNewAstAndCountSweeps(
+  ast: Node<Program>,
+  rustContext: RustContext,
+  count: number
+) {
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+  const sweeps = [...artifactGraph.values()].filter((a) => a.type === 'sweep')
+  expect(sweeps.length).toBe(count)
+}
