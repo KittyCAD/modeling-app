@@ -943,6 +943,25 @@ impl From<GeometryWithImportedGeometry> for KclValue {
     }
 }
 
+impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
+    fn from(mut values: Vec<GeometryWithImportedGeometry>) -> Self {
+        if values.len() == 1
+            && let Some(v) = values.pop()
+        {
+            KclValue::from(v)
+        } else {
+            KclValue::HomArray {
+                value: values.into_iter().map(KclValue::from).collect(),
+                ty: RuntimeType::Union(vec![
+                    RuntimeType::Primitive(PrimitiveType::Sketch),
+                    RuntimeType::Primitive(PrimitiveType::Solid),
+                    RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+                ]),
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
