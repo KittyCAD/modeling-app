@@ -21,6 +21,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
 export function addTranslate({
   ast,
@@ -430,13 +431,11 @@ export function addHide({
   ast,
   artifactGraph,
   objects,
-  variableName,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  variableName: string
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
@@ -461,12 +460,13 @@ export function addHide({
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('hide', objectsExpr, [])
 
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
-  const declaration = createVariableDeclaration(variableName, call)
-  modifiedAst.body.push(declaration)
-  const toFirstKwarg = false
-  const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
+  // 3. Just push the new function call declaration to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN,
+    wasmInstance,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }

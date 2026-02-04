@@ -58,8 +58,6 @@ import {
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { findUniqueName } from '@src/lang/create'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ActorRefFrom } from 'xstate'
 import {
@@ -2879,17 +2877,12 @@ export function onHide(props: {
   artifactGraph: ArtifactGraph
   modelingActor: ActorRefFrom<typeof modelingMachine>
 }) {
-  const variableName = findUniqueName(
-    props.ast,
-    KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN
-  )
   const selection = props.modelingActor.getSnapshot().context.selectionRanges
 
   props.modelingActor.send({
     type: 'Hide',
     data: {
       objects: selection,
-      variableName,
     },
   })
 }
