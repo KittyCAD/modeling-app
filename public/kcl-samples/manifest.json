@@ -271,6 +271,25 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
+    "multipleFiles": true,
+    "title": "Contra-Rotor Assembly",
+    "description": "Entry point and module imports",
+    "files": [
+      "contra.kcl",
+      "helical.kcl",
+      "main.kcl",
+      "primary.kcl",
+      "propeller.kcl",
+      "secondary.kcl",
+      "tertiary.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Manufacturing",
       "Construction"
     ],
@@ -1186,6 +1205,19 @@
     "multipleFiles": false,
     "title": "Prosthetic Hip",
     "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "racing-seat-brackets/main.kcl",
+    "multipleFiles": false,
+    "title": "Race Car Seat Brackets",
+    "description": "Two of these modular brackets are used to mount a race car seat",
     "files": [
       "main.kcl"
     ]
