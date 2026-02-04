@@ -275,7 +275,19 @@ export const MlEphantConversationInput = (
               file.lastModified === 0)
         )
         if (!exists) {
-          next.push(file)
+          // Normalize mime type for files where the browser doesn't recognize the type
+          const normalizedType =
+            !file.type || file.type === 'application/octet-stream'
+              ? resolveAttachmentMimeType(file.name)
+              : file.type
+          const normalizedFile =
+            normalizedType !== file.type
+              ? new File([file], file.name, {
+                  type: normalizedType,
+                  lastModified: file.lastModified,
+                })
+              : file
+          next.push(normalizedFile)
         }
       }
       return next
