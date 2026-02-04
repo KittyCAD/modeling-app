@@ -18,6 +18,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -97,7 +99,8 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commandBarActor, engineCommandManager, kclManager } = useSingletons()
+  const { commandBarActor, engineCommandManager, kclManager, settingsActor } =
+    useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
@@ -108,7 +111,7 @@ function ProjectMenuPopover({
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
-  const insertCommandInfo = { name: 'Insert', groupId: 'code' }
+  const addCommandInfo = { name: 'Add file to project', groupId: 'application' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
@@ -129,9 +132,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isDesktop() ? '' : '⬆'
-              },`}</kbd>
+              <kbd className="hotkey">
+                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'up'}+,`, platform)}
+              </kbd>
             </>
           ),
           onClick: () => {
@@ -143,12 +146,15 @@ function ProjectMenuPopover({
         },
         'break',
         {
-          id: 'insert',
+          id: 'importFile',
           Element: 'button',
           children: (
             <>
-              <span>Insert from project file</span>
-              {!findCommand(insertCommandInfo) && (
+              <span className="flex-1">Add file to project</span>
+              <kbd className="hotkey">
+                {hotkeyDisplay('mod+alt+l', platform)}
+              </kbd>
+              {!findCommand(addCommandInfo) && (
                 <Tooltip
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
@@ -158,19 +164,21 @@ function ProjectMenuPopover({
               )}
             </>
           ),
-          disabled: !findCommand(insertCommandInfo),
           onClick: () =>
-            commandBarActor.send({
-              type: 'Find and select command',
-              data: insertCommandInfo,
-            }),
+            sendAddFileToProjectCommandForCurrentProject(
+              settingsActor,
+              commandBarActor
+            ),
         },
         {
           id: 'export',
           Element: 'button',
           children: (
             <>
-              <span>Export current part</span>
+              <span className="flex-1">Export current part</span>
+              <kbd className="hotkey">
+                {hotkeyDisplay('ctrl+shift+e', platform)}
+              </kbd>
               {!findCommand(exportCommandInfo) && (
                 <Tooltip
                   position="right"
