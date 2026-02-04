@@ -27,6 +27,8 @@ export function KclInput(props: {
   const settings = useSettings()
   const wasmInstance = use(rustContext.wasmInstancePromise)
 
+  const variables = kclManager.variablesSignal.value
+
   const containerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<EditorView | null>(null)
   const compartmentsRef = useRef({
@@ -51,7 +53,7 @@ export function KclInput(props: {
           ),
           compartments.varMentions.of(
             varMentions(
-              Object.keys(kclManager.variablesSignal.value).map((key) => ({
+              Object.keys(variables).map((key) => ({
                 label: key,
               }))
             )
@@ -126,6 +128,9 @@ export function KclInput(props: {
       editor.destroy()
       editorRef.current = null
     }
+    // This useEffect is mount-only: editor is created once on mount, updates are handled via compartment reconfiguration,
+    // so deliberately no dependencies are listed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -136,6 +141,19 @@ export function KclInput(props: {
       ),
     })
   }, [settings.app.theme])
+
+  useEffect(() => {
+    if (!editorRef.current) return
+    editorRef.current.dispatch({
+      effects: compartmentsRef.current.varMentions.reconfigure(
+        varMentions(
+          Object.keys(variables).map((key) => ({
+            label: key,
+          }))
+        )
+      ),
+    })
+  }, [variables])
 
   return (
     <div
