@@ -127,6 +127,13 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::TaggedFace)
     }
 
+    pub fn tagged_face_or_segment() -> Self {
+        RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::TaggedFace),
+            RuntimeType::Primitive(PrimitiveType::Segment),
+        ])
+    }
+
     pub fn tagged_edge() -> Self {
         RuntimeType::Primitive(PrimitiveType::TaggedEdge)
     }

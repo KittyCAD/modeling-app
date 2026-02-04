@@ -708,6 +708,30 @@ impl<'a> FromKclValue<'a> for FaceTag {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::faces::FaceSpecifier {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        FaceTag::from_kcl_val(arg)
+            .map(super::faces::FaceSpecifier::FaceTag)
+            .or_else(|| {
+                crate::execution::Segment::from_kcl_val(arg)
+                    .map(Box::new)
+                    .map(super::faces::FaceSpecifier::Segment)
+            })
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Segment {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Segment { value } => match &value.repr {
+                crate::execution::SegmentRepr::Unsolved { .. } => None,
+                crate::execution::SegmentRepr::Solved { segment, .. } => Some(segment.as_ref().to_owned()),
+            },
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;

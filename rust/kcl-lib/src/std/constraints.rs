@@ -69,6 +69,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             position: [at_x, at_y],
             ctor: Box::new(ctor),
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -216,6 +217,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             end_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -433,6 +435,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             center_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
