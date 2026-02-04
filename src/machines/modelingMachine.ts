@@ -267,7 +267,6 @@ export type ModelingMachineEvent =
       type: 'Hide'
       data: {
         objects: Selections
-        variableName: string
       }
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
@@ -3421,7 +3420,6 @@ export const modelingMachine = setup({
               data:
                 | {
                     objects: Selections
-                    variableName: string
                   }
                 | undefined
               kclManager: KclManager
