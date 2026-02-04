@@ -47,7 +47,6 @@ import {
   onCameraScaleChange,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import { constraintUtils } from '@src/machines/sketchSolve/segments'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -704,13 +703,26 @@ export const sketchSolveMachine = setup({
           return
         }
 
-        // Call deleteObjects with the selected segment IDs
+        // Partition selectedIds into constraints and segments
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const constraintIds: number[] = []
+        const segmentIds: number[] = []
+        for (const id of selectedIds) {
+          const obj = objects[id]
+          if (obj?.kind.type === 'Constraint') {
+            constraintIds.push(id)
+          } else {
+            segmentIds.push(id)
+          }
+        }
+
         const result = await context.rustContext
           .deleteObjects(
             0,
             context.sketchId,
-            [],
-            selectedIds,
+            constraintIds,
+            segmentIds,
             await jsAppSettings(context.rustContext.settingsActor)
           )
           .catch((err) => {

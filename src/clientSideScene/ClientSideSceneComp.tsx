@@ -1,7 +1,5 @@
 import { Popover } from '@headlessui/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
-import { useSelector } from '@xstate/react'
-import type { SnapshotFrom } from 'xstate'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -44,7 +42,6 @@ import {
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {

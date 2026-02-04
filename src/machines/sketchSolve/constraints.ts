@@ -37,7 +37,6 @@ import {
 import type { SnapshotFrom, StateFrom } from 'xstate'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { EditorView } from '@codemirror/view'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { Number } from '@rust/kcl-api/bindings/Number'
