@@ -57,6 +57,9 @@ jobs:
           mv -f public/kcl-samples/* documentation/content/pages/docs/kcl-samples/
       - name: Commit changes
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
           cd documentation
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -69,9 +72,7 @@ jobs:
           git switch --create "$NEW_BRANCH"
           git push --force origin "$NEW_BRANCH"
           gh pr create --title "Update KCL docs" \
-              --body "Applies the latest changes from: ${{ github.server_url }}/${{ github.repository }} cc @KittyCAD/kcl" \
+              --body "Applies the latest changes from: ${GITHUB_URL} cc @KittyCAD/kcl" \
               --head "$NEW_BRANCH" \
               --base main || echo "PR already exists, updated via force push"
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
