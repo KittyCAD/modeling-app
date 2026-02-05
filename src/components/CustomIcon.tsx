@@ -252,6 +252,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  body: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 7C16 8.65685 13.3137 10 10 10C6.68629 10 4 8.65685 4 7M16 7C16 5.34315 13.3137 4 10 4C6.68629 4 4 5.34315 4 7M16 7V13C16 14.6569 13.3137 16 10 16C6.68629 16 4 14.6569 4 13V7"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   booleanExclude: (
     <svg
       viewBox="0 0 20 20"
