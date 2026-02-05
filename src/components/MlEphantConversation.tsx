@@ -221,7 +221,7 @@ export const MlEphantConversationInput = (
           className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
@@ -355,7 +355,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.userBlockedOnPayment ? (
                 <StarterCard
-                  text={`Zookeeper is unavailable because your balance is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
+                  text={`Zookeeper is unavailable because your remaining reasoning time is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
                 />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (

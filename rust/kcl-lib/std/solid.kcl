@@ -1353,6 +1353,8 @@ export fn flipSurface(
 ): [Solid; 1+] {}
 
 /// Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
+/// NOTE: Currently `merge = true` is required. You must set this argument.
+/// In the future, this restriction will be removed.
 ///
 /// ```kcl
 /// sideLen = 4

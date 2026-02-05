@@ -1,0 +1,83 @@
+// Propeller Generator
+// Rotating blade set with hub and twisted blades
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Propeller function
+export fn propeller(twistAngle, toothWidth, toothHeight, shaftDiameter) {
+  // Hub parameters
+  bladeCount = 5
+  bladeDiameter = 2500
+  hubDiameter = 200
+  hubThickness = 150
+
+  // Spline shaft mounting parameters
+  toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+  toothCount = round(180deg / toothAngleDeg)
+
+  // Sketch the spline mounting interface
+  toothSketch = startSketchOn(XZ)
+    |> startProfile(at = [shaftDiameter / 2, 0])
+    |> arc(angleStart = 0deg, angleEnd = toothAngleDeg, diameter = shaftDiameter)
+    |> angledLine(angle = toothAngleDeg, length = toothHeight)
+    |> arc(angleStart = toothAngleDeg, angleEnd = 2 * toothAngleDeg, diameter = shaftDiameter + 2 * toothHeight)
+    |> angledLine(angle = 2 * toothAngleDeg, length = -toothHeight)
+    |> line(endAbsolute = polar(angle = 360deg / toothCount, length = shaftDiameter / 2))
+    |> patternCircular2d(instances = toothCount, center = [0, 0])
+    |> close()
+
+  // Create a central hub with a spline interior
+  hub = startSketchOn(XZ)
+    |> circle(diameter = hubDiameter, tag = $seg01)
+    |> subtract2d(tool = toothSketch)
+    |> extrude(
+         length = hubThickness,
+         symmetric = true,
+         tagEnd = $capEnd001,
+         tagStart = $capStart001,
+       )
+    |> fillet(
+         tags = [
+           getCommonEdge(faces = [seg01, capEnd001]),
+           getCommonEdge(faces = [seg01, capStart001])
+         ],
+         radius = hubThickness / 10,
+       )
+
+  // Blade design space
+  bladeRevolve = startSketchOn(XZ)
+    |> startProfile(at = polar(angle = 40deg, length = hubDiameter / 2.01))
+    |> arc(angleStart = 200, angleEnd = 290, radius = bladeDiameter / 50)
+    |> tangentialArc(end = [
+         bladeDiameter / 2.6,
+         bladeDiameter / 30
+       ])
+    |> tangentialArc(endAbsolute = [bladeDiameter / 2, 0.01])
+    |> yLine(endAbsolute = 0)
+    |> xLine(endAbsolute = profileStartX())
+    |> yLine(endAbsolute = profileStartY())
+    |> close()
+    |> revolve(axis = X)
+    |> subtract(tools =     startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true))
+
+  // Blade section and twist
+  bladeTwist = startSketchOn(YZ)
+    |> startProfile(at = [bladeDiameter / 10, 0])
+    |> arc(angleStart = 0, angleEnd = 83, radius = 0.05)
+    |> tangentialArc(endAbsolute = [-lastSegX(), lastSegY()])
+    |> tangentialArc(angle = 83deg, radius = 0.05)
+    |> mirror2d(axis = X)
+    |> close()
+    |> extrude(length = bladeDiameter / 1.9, twistAngle = twistAngle)
+
+  // Blades pattern
+  blades = intersect([bladeRevolve, bladeTwist])
+    |> patternCircular3d(instances = bladeCount, axis = Y, center = [0, 0, 0])
+
+  // Return assembly
+  return [hub, blades]
+    |> appearance(color = "#e88811", metalness = 10, roughness = 80)
+}

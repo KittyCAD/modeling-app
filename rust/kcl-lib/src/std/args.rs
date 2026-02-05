@@ -14,8 +14,8 @@ use crate::{
     CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
-        Solid, TagIdentifier, annotations,
+        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -536,6 +536,18 @@ impl<'a> FromKclValue<'a> for Vec<KclValue> {
     }
 }
 
+impl<'a> FromKclValue<'a> for Vec<Extrudable> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let items = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(Extrudable::from_kcl_val)
+            .collect::<Option<Vec<_>>>()?;
+        Some(items)
+    }
+}
+
 impl<'a> FromKclValue<'a> for KclValue {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone())
@@ -879,6 +891,7 @@ impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
+impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -930,6 +943,33 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                     Some(Self::SolidSet(solids))
                 } else {
                     Some(Self::SketchSet(sketches))
+                }
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut helices = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::HelixSet(helices))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
@@ -1058,6 +1098,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
             .or_else(|| case6(arg).map(Self::TaggedEdgeOrFace))
             .or_else(|| case7(arg).map(Self::Plane))
             .or_else(|| case8(arg).map(Self::Sketch))
+    }
+}
+
+impl<'a> FromKclValue<'a> for Extrudable {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = FaceTag::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
     }
 }
 
@@ -1257,6 +1305,15 @@ impl<'a> FromKclValue<'a> for Box<Plane> {
 impl<'a> FromKclValue<'a> for Box<Sketch> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::TagIdentifier(value) = arg else {
             return None;
         };
         Some(value.to_owned())

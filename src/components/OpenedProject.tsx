@@ -29,6 +29,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
+  AxisNames,
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
@@ -65,6 +66,7 @@ import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -77,6 +79,9 @@ export function OpenedProject() {
     billingActor,
     systemIOActor,
     getSettings,
+    settingsActor,
+    engineCommandManager,
+    sceneInfra,
     kclManager,
     useLayout,
     setLayout,
@@ -115,9 +120,24 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') return
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
       return
-    void kclManager.executeCode()
+    kclManager
+      .executeCode()
+      .then(async () => {
+        await resetCameraPosition({
+          sceneInfra,
+          engineCommandManager,
+          settingsActor,
+        })
+      })
+      .catch(reportRejection)
     kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [systemIOState, kclManager])
+  }, [
+    systemIOState,
+    kclManager,
+    sceneInfra,
+    engineCommandManager,
+    settingsActor,
+  ])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -172,6 +192,60 @@ export function OpenedProject() {
     },
     kclManager
   )
+
+  // Enable standard view keybinds for Web only.
+  // Desktop uses the electron accelerator attribute to bind the keys to actions
+  useHotkeys('1', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_Y)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('2', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.Z)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('3', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.X)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('4', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.Y)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('5', (e) => {
+    if (isDesktop()) return
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_Z)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('6', (e) => {
+    if (isDesktop()) return
+
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_X)
+      .catch(reportRejection)
+  })
+
+  useHotkeys('Home', (e) => {
+    if (isDesktop()) return
+    resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    }).catch(reportRejection)
+  })
 
   useEngineConnectionSubscriptions()
 
@@ -255,7 +329,6 @@ export function OpenedProject() {
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   })
 
   // Only create the native file menus on desktop
