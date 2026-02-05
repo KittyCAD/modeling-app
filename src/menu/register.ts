@@ -12,7 +12,6 @@ import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export function modelingMenuCallbackMostActions({
   settings,
@@ -194,11 +193,7 @@ export function modelingMenuCallbackMostActions({
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-      resetCameraPosition({
-        sceneInfra,
-        engineCommandManager,
-        settingsActor,
-      }).catch(reportRejection)
+      sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {

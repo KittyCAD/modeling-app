@@ -5,6 +5,8 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import { useSingletons } from '@src/lib/boot'
 
 import styles from './KclEditorMenu.module.css'
+import { isDesktop } from '@src/lib/isDesktop'
+import Tooltip from '@src/components/Tooltip'
 
 export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
   const { commandBarActor } = useSingletons()
@@ -45,6 +47,28 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
               className={styles.button}
             >
               <span>Create parameter</span>
+            </button>
+          </Menu.Item>
+          <Menu.Item>
+            <button
+              onClick={() =>
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'code',
+                    name: 'Insert',
+                  },
+                })
+              }
+              disabled={!isDesktop()}
+              className={styles.button}
+            >
+              <span>Insert from a file</span>
+              {!isDesktop() && (
+                <Tooltip position="right">
+                  Available only in the desktop app
+                </Tooltip>
+              )}
             </button>
           </Menu.Item>
         </Menu.Items>
