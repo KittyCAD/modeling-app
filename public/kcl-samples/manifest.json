@@ -276,7 +276,7 @@
     "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
     "multipleFiles": true,
     "title": "Contra-Rotor Assembly",
-    "description": "Entry point and module imports",
+    "description": "A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
     "files": [
       "contra.kcl",
       "helical.kcl",
