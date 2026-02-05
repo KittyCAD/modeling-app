@@ -2595,8 +2595,6 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::execution::ArtifactId;
-
                                 // Find the arc segment object ID from the sketch block state
                                 let arc_object_id = sketch_block_state
                                     .needed_by_engine
