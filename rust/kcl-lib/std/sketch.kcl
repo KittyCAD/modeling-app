@@ -1304,6 +1304,9 @@ export fn sweep(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
