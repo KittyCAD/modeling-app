@@ -1886,6 +1886,14 @@ impl Annotation {
             None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
+
+    /// Get a property by name. This is O(n) in the number of properties.
+    pub(crate) fn property(&self, name: &str) -> Option<&Node<ObjectProperty>> {
+        match &self.properties {
+            Some(props) => props.iter().find(|p| p.key.name == name),
+            None => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -3688,6 +3696,9 @@ impl DefaultParamVal {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
+    /// Whether it's experimental.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub experimental: bool,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -3732,6 +3743,10 @@ impl From<&Parameter> for SourceRange {
         }
         sr
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 fn is_true(b: &bool) -> bool {
@@ -4412,6 +4427,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4432,6 +4448,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4453,6 +4470,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4463,6 +4481,7 @@ cylinder = startSketchOn(-XZ)
                             digest: None,
                         },
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

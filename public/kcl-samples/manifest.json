@@ -1930,6 +1930,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wood-screw/main.kcl",
+    "multipleFiles": false,
+    "title": "Wood Screw",
+    "description": "An Oval Head Phillips Wood Screw flange is a threaded fastener with a slightly domed head, a cross‑shaped (Phillips) drive, and a sharp point for entering wood. This kind of wood screw is often used for furniture assembly and household construction projects, like attaching hinges and trims.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
