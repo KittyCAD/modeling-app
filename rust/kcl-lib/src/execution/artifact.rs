@@ -853,6 +853,7 @@ fn flatten_modeling_command_responses(
             | OkWebSocketResponseData::ModelingSessionData { .. }
             | OkWebSocketResponseData::Debug { .. }
             | OkWebSocketResponseData::Pong { .. } => {}
+            _other => {}
         }
     }
 
