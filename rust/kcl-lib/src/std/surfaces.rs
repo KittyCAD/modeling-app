@@ -3,7 +3,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
     self as kcmc, ok_response::OkModelingCmdResponse, output as mout, shared::BodyType,
     websocket::OkWebSocketResponseData,
@@ -88,6 +88,31 @@ async fn inner_is_equal_body_type(
     };
 
     Ok(expected == body.body_type)
+}
+
+pub async fn offset(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let distance = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
+
+    inner_offset(body, distance, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_offset(body: Solid, distance: TyF64, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+    let _ = exec_state
+        .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), 
+            ModelingCmd::from(
+                mcmd::OffsetSurface::builder()
+                .surface_id(body.id)
+                .new_surface(true)
+                .distance(LengthUnit(distance.to_mm()))
+                .build(),
+            ),
+        ).await?;
+
+    Ok(body)
 }
 
 pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

@@ -1550,3 +1550,12 @@ export fn deleteFace(
   /// usual ID (UUID) of a face.
   faceIndices?: [number(Count); 1+],
 ): Solid {}
+
+/// Create a new surface that is a copy of an existing surface, offset by a given distance
+@(impl = std_rust, feature_tree = true)
+export fn offset(
+  /// The surface that will be offset
+  @body: Solid,
+  /// The distance to offset the surface by
+  distance: number(Length),
+): Solid {}

@@ -561,6 +561,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::delete_face(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::deleteFace"),
         ),
+        ("solid", "offset") => (
+            |e, a| Box::pin(crate::std::surfaces::offset(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::offset"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
