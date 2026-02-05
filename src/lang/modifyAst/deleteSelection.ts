@@ -1,7 +1,7 @@
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
-import { EXECUTION_TYPE_REAL, SKETCH_API_VERSION } from '@src/lib/constants'
+import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
@@ -46,14 +46,14 @@ export async function deleteSelectionPromise({
       switch (selection.artifact.type) {
         case 'sketchBlock':
           result = await systemDeps.rustContext.deleteSketch(
-            SKETCH_API_VERSION,
+            SKETCH_FILE_VERSION,
             selection.artifact.sketchId,
             settings
           )
           break
         case 'sketchConstraint':
           result = await systemDeps.rustContext.deleteObjects(
-            SKETCH_API_VERSION,
+            SKETCH_FILE_VERSION,
             selection.artifact.sketchId,
             [selection.artifact.constraintId],
             [],
