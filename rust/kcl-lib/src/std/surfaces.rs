@@ -252,7 +252,18 @@ async fn inner_blend(
             ),
         )
         .await?;
-
+    let solid = Solid {
+        id,
+        artifact_id: id.into(),
+        value: vec![],
+        sketch: Sketch{},
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: vec![],
+        units: exec_state.length_unit(),
+        sectional: false,
+        meta: vec![],
+    };
     //TODO: Ben do this properly by returning the new surface that is created
     Ok(surfaces)
 }
