@@ -37,7 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -66,6 +66,8 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { statusBarField, versionClicky } from '@src/lib/extension'
+import { useAppState } from '@src/AppState'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -88,6 +90,7 @@ export function OpenedProject() {
     useSettings,
     useToken,
   } = useSingletons()
+  const app = useApp()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
@@ -336,7 +339,10 @@ export function OpenedProject() {
   )
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden select-none">
+    <div
+      onClick={() => versionClicky.value++}
+      className="h-screen flex flex-col overflow-hidden select-none"
+    >
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
@@ -364,11 +370,7 @@ export function OpenedProject() {
           />
         </section>
         <StatusBar
-          globalItems={[
-            networkHealthStatus,
-            ...(isDesktop() ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
-          ]}
+          globalItems={app.stateFields.get(statusBarField).global}
           localItems={[
             ...(getSettings().app.showDebugPanel.current
               ? ([

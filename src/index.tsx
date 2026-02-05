@@ -117,7 +117,7 @@ function mountAppToReact(app: App) {
   )
 
   root.render(
-    <app.ReactContext.Provider value={app.singletons}>
+    <app.ReactContext.Provider value={app}>
       <HotkeysProvider>
         <AppStreamProvider>
           <Router />

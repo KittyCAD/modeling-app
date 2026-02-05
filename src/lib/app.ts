@@ -1,7 +1,7 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -52,6 +52,17 @@ import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import React from 'react'
+import {
+  ExtensionConfig,
+  StatusBarConfig,
+  statusBarField,
+} from '@src/lib/extension'
+import { Signal, signal } from '@preact/signals-core'
+import { computed } from '@preact/signals-core'
+import { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { appVerionStatusExtension } from '@src/components/StatusBar/defaultStatusBarItems'
+import { Extension, ZDSFacet } from './facet'
+import { Field, FieldSet } from './field'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -66,11 +77,17 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
-  ReactContext: React.Context<typeof this.singletons>
+  ReactContext: React.Context<typeof this>
+  extensions: Extension[]
+  stateFields: FieldSet
 
-  constructor() {
+  constructor(extensions: Extension[] = []) {
     this.singletons = this.buildSingletons()
     this.ReactContext = React.createContext(this.singletons)
+    this.extensions = extensions
+    this.stateFields = FieldSet.fromFields(
+      ...this.extensions.flat(10).filter((ext) => ext instanceof Field)
+    )
   }
 
   /**

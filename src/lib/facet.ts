@@ -1,22 +1,21 @@
 // Trying to learn lessons from the incredible work by
 // @marijnh on CodeMirror V6: https://github.com/codemirror/state/blob/main/src/facet.ts
 
-import { Signal } from '@preact/signals-core'
+import { computed, ReadonlySignal, signal, Signal } from '@preact/signals-core'
+import { StatusBarConfig } from './extension'
 
 // and from https://marijnhaverbeke.nl/blog/facets.html
 let nextID = 0
 
-type FacetConfig<Input, Output> = {
-  combine?: (value: Input[]) => Output
-  compare?: (a: Output, b: Output) => boolean
-  compareInput?: (a: Input, b: Input) => boolean
+export type FacetConfig<Input, Output> = {
+  combine?: (value: Signal<Input>[]) => Output
 }
 
-export type FacetReader<Output> = {
+export type ZDSFacetReader<Output> = {
   /// @internal
   id: number
   /// @internal
-  default: Output
+  signal: ReadonlySignal<Output>
   /// Dummy tag that makes sure TypeScript doesn't consider all object
   /// types as conforming to this type. Not actually present on the
   /// object.
@@ -28,25 +27,43 @@ function sameArray<T>(a: readonly T[], b: readonly T[]) {
   return a == b || (a.length == b.length && a.every((e, i) => e === b[i]))
 }
 
-export class Facet<Input, Output = readonly (Input | Signal<Input>)[]>
-  implements FacetReader<Output>
+export class ZDSFacet<Input = unknown, Output = readonly Input[]>
+  implements ZDSFacetReader<Output>
 {
   readonly id = nextID++
-  readonly default: Output
+  readonly signal: ReadonlySignal<Output>
+  private inputs: Signal<Input>[] = []
 
   constructor(config: Required<FacetConfig<Input, Output>>) {
-    this.default = config.combine([])
+    this.signal = computed(() => config.combine(this.inputs))
   }
 
-  static define<I, O = readonly I[]>(config: FacetConfig<I, O>) {
-    return new Facet({
-      combine: config.combine || (((a: any) => a) as any),
-      compareInput: config.compareInput || ((a: I, b: I) => a === b),
-      compare:
-        config.compare ||
-        (!config.combine ? (sameArray as any) : (a, b) => a === b),
+  static define<I, O = readonly I[]>(config?: FacetConfig<I, O>) {
+    return new ZDSFacet({
+      combine:
+        config?.combine ||
+        ((a: Signal<I>[]) => a.map((a: Signal<I>) => a.value) as O),
     })
   }
 
-  declare tag: Output
+  extendDynamic(input: Signal<Input>) {
+    this.inputs.push(input)
+    return this
+  }
+  extendStatic(input: Input) {
+    this.inputs.push(signal(input))
+    return this
+  }
+
+  declare extension: Extension
 }
+
+/// Extension values can be
+/// [provided](#state.EditorStateConfig.extensions) when creating a
+/// state to attach various kinds of configuration and behavior
+/// information. They can either be built-in extension-providing
+/// objects, such as [state fields](#state.StateField) or [facet
+/// providers](#state.Facet.of), or objects with an extension in its
+/// `extension` property. Extensions can be nested in arrays
+/// arbitrarily deep—they will be flattened when processed.
+export type Extension = { extension: Extension } | readonly Extension[]
