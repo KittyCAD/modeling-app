@@ -5,7 +5,10 @@ use std::collections::HashSet;
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, output as mout, shared::BodyType,
+    self as kcmc,
+    ok_response::OkModelingCmdResponse,
+    output as mout,
+    shared::{BodyType, SurfaceEdgeReference},
     websocket::OkWebSocketResponseData,
 };
 
@@ -233,37 +236,40 @@ async fn inner_blend(
 ) -> Result<Vec<Solid>, KclError> {
     let id = exec_state.next_uuid();
 
-    let object_ids = surfaces.iter().map(|surface| surface.id).collect();
+    let object_ids: Vec<_> = surfaces.iter().map(|surface| surface.id).collect();
 
     let edge_ids = edges
         .into_iter()
         .map(|edge_tag| edge_tag.get_engine_id(exec_state, &args))
         .collect::<Result<Vec<_>, _>>()?;
 
+    let surface_refs: Vec<SurfaceEdgeReference> = object_ids
+        .iter()
+        .zip(edge_ids)
+        .map(|(obj, edg)| SurfaceEdgeReference {
+            object_id: *obj,
+            edge_ids: vec![edg],
+        })
+        .collect();
+
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::SurfaceBlend::builder()
-                    .object_ids(object_ids)
-                    .edge_ids(edge_ids.clone())
-                    .blend_type(kittycad_modeling_cmds::shared::BlendType::Tangent)
-                    .build(),
-            ),
+            ModelingCmd::from(mcmd::SurfaceBlend::builder().surfaces(surface_refs).build()),
         )
         .await?;
-    let solid = Solid {
-        id,
-        artifact_id: id.into(),
-        value: vec![],
-        sketch: Sketch{},
-        start_cap_id: None,
-        end_cap_id: None,
-        edge_cuts: vec![],
-        units: exec_state.length_unit(),
-        sectional: false,
-        meta: vec![],
-    };
+    // let solid = Solid {
+    //     id,
+    //     artifact_id: id.into(),
+    //     value: vec![],
+    //     sketch: Sketch{},
+    //     start_cap_id: None,
+    //     end_cap_id: None,
+    //     edge_cuts: vec![],
+    //     units: exec_state.length_unit(),
+    //     sectional: false,
+    //     meta: vec![],
+    // };
     //TODO: Ben do this properly by returning the new surface that is created
     Ok(surfaces)
 }
