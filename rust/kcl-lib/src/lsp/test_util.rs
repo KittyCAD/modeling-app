@@ -9,6 +9,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&kcl_std)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&kcl_std);
     let stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib(&kcl_std);
+    let kcl_keywords = crate::lsp::kcl::get_keywords();
 
     let zoo_client = crate::engine::new_zoo_client(None, None)?;
 
@@ -40,6 +41,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),
+        kcl_keywords,
     })
     .custom_method("kcl/updateCanExecute", crate::lsp::kcl::Backend::update_can_execute)
     .finish();
