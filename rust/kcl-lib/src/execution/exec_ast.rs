@@ -2497,7 +2497,7 @@ impl Node<BinaryExpression> {
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 let artifact_id = exec_state.next_artifact_id();
-                                exec_state.add_artifact(Artifact::SketchConstraint(SketchBlockConstraint {
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
                                     id: artifact_id,
                                     sketch_id,
                                     constraint_id,

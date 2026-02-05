@@ -1034,7 +1034,7 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
         return;
     };
     let artifact_id = exec_state.next_artifact_id();
-    exec_state.add_artifact(Artifact::SketchConstraint(SketchBlockConstraint {
+    exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
         id: artifact_id,
         sketch_id,
         constraint_id,

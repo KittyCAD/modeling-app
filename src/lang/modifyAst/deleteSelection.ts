@@ -33,7 +33,7 @@ export async function deleteSelectionPromise({
   // of deletion calls, from the feature tree but also Delete hotkey globally.
   if (
     selection.artifact?.type === 'sketchBlock' ||
-    selection.artifact?.type === 'sketchConstraint'
+    selection.artifact?.type === 'sketchBlockConstraint'
   ) {
     let result:
       | {
@@ -51,7 +51,7 @@ export async function deleteSelectionPromise({
             settings
           )
           break
-        case 'sketchConstraint':
+        case 'sketchBlockConstraint':
           result = await systemDeps.rustContext.deleteObjects(
             SKETCH_FILE_VERSION,
             selection.artifact.sketchId,

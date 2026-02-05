@@ -397,7 +397,7 @@ pub enum Artifact {
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     SketchBlock(SketchBlock),
-    SketchConstraint(SketchBlockConstraint),
+    SketchBlockConstraint(SketchBlockConstraint),
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
@@ -418,7 +418,7 @@ impl Artifact {
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::SketchBlock(a) => a.id,
-            Artifact::SketchConstraint(a) => a.id,
+            Artifact::SketchBlockConstraint(a) => a.id,
             Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
@@ -442,7 +442,7 @@ impl Artifact {
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::SketchBlock(a) => Some(&a.code_ref),
-            Artifact::SketchConstraint(a) => Some(&a.code_ref),
+            Artifact::SketchBlockConstraint(a) => Some(&a.code_ref),
             Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
@@ -467,7 +467,7 @@ impl Artifact {
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::SketchBlock(_)
-            | Artifact::SketchConstraint(_)
+            | Artifact::SketchBlockConstraint(_)
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
@@ -487,7 +487,7 @@ impl Artifact {
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::SketchBlock { .. } => Some(new),
-            Artifact::SketchConstraint { .. } => Some(new),
+            Artifact::SketchBlockConstraint { .. } => Some(new),
             Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
@@ -827,7 +827,7 @@ fn fill_in_node_paths(
                 block.code_ref.node_path = node_path;
             }
         }
-        Artifact::SketchConstraint(constraint) => {
+        Artifact::SketchBlockConstraint(constraint) => {
             if constraint.code_ref.node_path.is_empty() {
                 constraint.code_ref.node_path =
                     NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();

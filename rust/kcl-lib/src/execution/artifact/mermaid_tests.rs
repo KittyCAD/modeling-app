@@ -88,7 +88,7 @@ impl Artifact {
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
-            Artifact::SketchConstraint(_) => Vec::new(),
+            Artifact::SketchBlockConstraint(_) => Vec::new(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
             Artifact::Sweep(a) => {
                 let mut ids = vec![a.path_id];
@@ -167,7 +167,7 @@ impl Artifact {
                 // Note: Don't include these since they're parents: plane_id (if present).
                 Vec::new()
             }
-            Artifact::SketchConstraint { .. } => {
+            Artifact::SketchBlockConstraint { .. } => {
                 // Note: Constraints don't have artifact graph parents.
                 Vec::new()
             }
@@ -291,7 +291,7 @@ impl ArtifactGraph {
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
                 | Artifact::SketchBlock { .. }
-                | Artifact::SketchConstraint { .. }
+                | Artifact::SketchBlockConstraint { .. }
                 | Artifact::PlaneOfFace { .. }
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
@@ -417,7 +417,7 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, code_ref)?;
             }
-            Artifact::SketchConstraint(SketchBlockConstraint { code_ref, .. }) => {
+            Artifact::SketchBlockConstraint(SketchBlockConstraint { code_ref, .. }) => {
                 writeln!(
                     output,
                     "{prefix}{id}[\"SketchConstraint<br>{:?}\"]",
