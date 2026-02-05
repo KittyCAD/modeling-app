@@ -486,7 +486,7 @@ export const modelingMachine = setup({
       !kclManager.hasErrors() && kclManager.ast.body.length > 0,
     'has valid selection for deletion': ({ context }) => {
       const isCommandBarClosed =
-        context.commandBarActor?.getSnapshot()?.matches('Closed') ?? true
+        context.commandBarActor.getSnapshot().matches('Closed') ?? true
       if (!isCommandBarClosed) return false
       if (context.selectionRanges.graphSelections.length <= 0) return false
       return true
@@ -2398,8 +2398,7 @@ export const modelingMachine = setup({
       }
     ),
 
-    /* Below are actors migrated from src/components/ModelingMachineProvider.tsx
-     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
+    /* Below are actors which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async ({
         input: {

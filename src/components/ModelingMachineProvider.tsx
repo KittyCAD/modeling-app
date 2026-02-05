@@ -79,8 +79,9 @@ export const ModelingMachineProvider = ({
       sceneInfra,
       rustContext,
       sceneEntitiesManager,
+      commandBarActor,
     }),
-    [sceneInfra, rustContext, sceneEntitiesManager]
+    [sceneInfra, rustContext, sceneEntitiesManager, commandBarActor]
   )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
