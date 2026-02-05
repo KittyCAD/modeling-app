@@ -154,14 +154,6 @@ function ProjectMenuPopover({
               <kbd className="hotkey">
                 {hotkeyDisplay('mod+alt+l', platform)}
               </kbd>
-              {!findCommand(addCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Awaiting engine connection
-                </Tooltip>
-              )}
             </>
           ),
           onClick: () =>
