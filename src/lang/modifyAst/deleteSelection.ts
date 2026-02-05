@@ -55,7 +55,7 @@ export async function deleteSelectionPromise({
           result = await systemDeps.rustContext.deleteObjects(
             SKETCH_API_VERSION,
             selection.artifact.sketchId,
-            [selection.artifact.sketchConstraintId],
+            [selection.artifact.constraintId],
             [],
             settings
           )

@@ -2480,7 +2480,7 @@ impl Node<BinaryExpression> {
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::{
-                                    execution::{Artifact, CodeRef, SketchConstraintArtifact},
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint},
                                     front::Distance,
                                 };
 
@@ -2497,11 +2497,11 @@ impl Node<BinaryExpression> {
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 let artifact_id = exec_state.next_artifact_id();
-                                exec_state.add_artifact(Artifact::SketchConstraint(SketchConstraintArtifact {
+                                exec_state.add_artifact(Artifact::SketchConstraint(SketchBlockConstraint {
                                     id: artifact_id,
                                     sketch_id,
-                                    sketch_constraint_id: constraint_id,
-                                    sketch_constraint: sketch_constraint.clone(),
+                                    constraint_id,
+                                    constraint: sketch_constraint.clone(),
                                     code_ref: CodeRef::placeholder(range),
                                 }));
                                 exec_state.add_scene_object(
@@ -2637,13 +2637,14 @@ impl Node<BinaryExpression> {
                                     })
                                 };
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
@@ -2679,7 +2680,7 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, front::Distance};
+                                use crate::front::Distance;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -2688,13 +2689,14 @@ impl Node<BinaryExpression> {
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
@@ -2729,7 +2731,7 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, front::Distance};
+                                use crate::front::Distance;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -2738,13 +2740,14 @@ impl Node<BinaryExpression> {
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,

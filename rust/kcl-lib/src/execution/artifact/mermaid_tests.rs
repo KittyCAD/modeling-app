@@ -417,7 +417,7 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, code_ref)?;
             }
-            Artifact::SketchConstraint(SketchConstraintArtifact { code_ref, .. }) => {
+            Artifact::SketchConstraint(SketchBlockConstraint { code_ref, .. }) => {
                 writeln!(
                     output,
                     "{prefix}{id}[\"SketchConstraint<br>{:?}\"]",

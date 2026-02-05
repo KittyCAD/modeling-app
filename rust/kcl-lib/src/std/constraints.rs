@@ -20,7 +20,7 @@ use crate::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
-    execution::{Artifact, CodeRef, SketchConstraintArtifact},
+    execution::{Artifact, CodeRef, SketchBlockConstraint},
     front::{
         Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Vertical,
     },
@@ -1034,11 +1034,11 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
         return;
     };
     let artifact_id = exec_state.next_artifact_id();
-    exec_state.add_artifact(Artifact::SketchConstraint(SketchConstraintArtifact {
+    exec_state.add_artifact(Artifact::SketchConstraint(SketchBlockConstraint {
         id: artifact_id,
         sketch_id,
-        sketch_constraint_id: constraint_id,
-        sketch_constraint: constraint.clone(),
+        constraint_id,
+        constraint: constraint.clone(),
         code_ref: CodeRef::placeholder(args.source_range),
     }));
     exec_state.add_scene_object(

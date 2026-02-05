@@ -246,13 +246,13 @@ pub struct SketchBlock {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct SketchConstraintArtifact {
+pub struct SketchBlockConstraint {
     pub id: ArtifactId,
     /// The sketch ID (ObjectId) that owns this constraint.
     pub sketch_id: ObjectId,
     /// The constraint ID (ObjectId) for the constraint scene object.
-    pub sketch_constraint_id: ObjectId,
-    pub sketch_constraint: Constraint,
+    pub constraint_id: ObjectId,
+    pub constraint: Constraint,
     pub code_ref: CodeRef,
 }
 
@@ -397,7 +397,7 @@ pub enum Artifact {
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     SketchBlock(SketchBlock),
-    SketchConstraint(SketchConstraintArtifact),
+    SketchConstraint(SketchBlockConstraint),
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
