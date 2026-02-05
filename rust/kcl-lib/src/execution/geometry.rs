@@ -763,6 +763,9 @@ pub struct Sketch {
     /// If the sketch is a clone of another sketch.
     #[serde(skip)]
     pub clone: Option<uuid::Uuid>,
+    /// If the sketch is a region.
+    #[serde(skip)]
+    pub region: bool,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]

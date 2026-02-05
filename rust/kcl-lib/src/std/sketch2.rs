@@ -286,6 +286,7 @@ async fn inner_region(
         units,
         mirror: Default::default(),
         clone: Default::default(),
+        region: true,
         meta: vec![args.source_range.into()],
         tags: Default::default(),
         start: start_base_path,
@@ -294,6 +295,7 @@ async fn inner_region(
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
+    sketch.region = true;
     sketch.meta.push(args.source_range.into());
     // The engine always returns a closed Solid2d for a region.
     sketch.is_closed = ProfileClosed::Explicitly;

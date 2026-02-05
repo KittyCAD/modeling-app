@@ -350,6 +350,8 @@ async fn inner_extrude(
             Extrudable::Face(..) => BeingExtruded::Face,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
+            let edge_id = do_pre_extrude(&post_extr_sketch, exec_state, &args).await?;
+
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
                 exec_state,
                 ModelingCmdReq {
@@ -372,7 +374,7 @@ async fn inner_extrude(
                     extrude_method,
                     exec_state,
                     &args,
-                    None,
+                    edge_id,
                     None,
                     body_type,
                     being_extruded,
@@ -388,6 +390,33 @@ async fn inner_extrude(
     }
 
     Ok(solids)
+}
+
+pub(crate) async fn do_pre_extrude(
+    sketch: &Sketch,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<Uuid>, KclError> {
+    // If the sketch is a region, we need to get the curve info since it will
+    // have all new IDs for its edges. We need to do this before extruding
+    // because extruding takes the ID of the region for the resulting solid.
+    let mut edge_id = None;
+    if sketch.region {
+        let curve_info = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(mcmd::PathGetCurveUuid::builder().path_id(sketch.id).index(0).build()),
+            )
+            .await?;
+
+        if let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::PathGetCurveUuid(data),
+        } = curve_info
+        {
+            edge_id = Some(data.curve_id);
+        }
+    }
+    Ok(edge_id)
 }
 
 #[derive(Debug, Default)]
