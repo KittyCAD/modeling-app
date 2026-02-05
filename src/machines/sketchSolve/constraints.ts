@@ -39,7 +39,7 @@ import { getResolvedTheme, Themes } from '@src/lib/theme'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { Number } from '@rust/kcl-api/bindings/Number'
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
