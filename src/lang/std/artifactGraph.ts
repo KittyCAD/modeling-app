@@ -831,3 +831,20 @@ export function coerceSelectionsToBody(
     otherSelections: selections.otherSelections,
   }
 }
+
+/**
+ * Utility to filter down the artifact graph to artifacts that we
+ * on the frontend deem "bodies". There is no fixed definition of a "body"
+ * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
+ */
+export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
+  const artifacts = filterArtifacts(
+    {
+      types: ['compositeSolid', 'sweep'],
+      predicate: (a) => !a.consumed,
+    },
+    artifactGraph
+  )
+
+  return artifacts
+}
