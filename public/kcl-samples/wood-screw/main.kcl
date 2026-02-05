@@ -38,7 +38,7 @@ screwProfile = startProfile(screwSketch, at = [0, 0])
   |> revolve(axis = X)
 
 // Add the threads to the screw shaft
-threadPath = helix(cylinder = screwProfile, revolutions = revolutions, angleStart = 0)
+threadPath = helix(cylinder = screwProfile, revolutions, angleStart = 0)
 threadSketch = startSketchOn(XZ)
 threadProfile = polygon(threadSketch, numSides = 3, center = [headHeight, shaftRadius], radius = threadDiameter / 2)
 sweep(threadProfile, path = threadPath)
