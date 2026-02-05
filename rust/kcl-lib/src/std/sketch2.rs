@@ -280,7 +280,7 @@ async fn inner_region(
             metadata: args.source_range.into(),
         },
     };
-    let sketch = Sketch {
+    let mut sketch = seg0.sketch.clone().unwrap_or_else(|| Sketch {
         id: region_id,
         original_id: region_id,
         artifact_id: region_id.into(),
@@ -293,9 +293,15 @@ async fn inner_region(
         meta: vec![args.source_range.into()],
         tags: Default::default(),
         start: start_base_path,
-        // The engine always returns a closed Solid2d.
         is_closed: ProfileClosed::Explicitly,
-    };
+    });
+    sketch.id = region_id;
+    sketch.original_id = region_id;
+    sketch.artifact_id = region_id.into();
+    sketch.meta.push(args.source_range.into());
+    // The engine always returns a closed Solid2d for a region.
+    sketch.is_closed = ProfileClosed::Explicitly;
+
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
