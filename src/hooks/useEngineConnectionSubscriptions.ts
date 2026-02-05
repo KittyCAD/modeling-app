@@ -110,7 +110,7 @@ export function useEngineConnectionSubscriptions() {
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
   useEffect(() => {
-    const unsubscribe = rustContext.planesCreated.add(() => {
+    const unsubscribe = rustContext.planesCreated.subscribe(() => {
       const vis = stateRef.current.context.defaultPlaneVisibility
       void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
       void kclManager.setPlaneVisibilityByKey('xz', vis.xz)

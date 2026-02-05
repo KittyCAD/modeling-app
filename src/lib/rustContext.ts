@@ -37,9 +37,9 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { Signal } from '@src/lib/signal'
 import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { signal } from '@preact/signals-core'
 
 export default class RustContext {
   private readonly _wasmInstancePromise: Promise<ModuleType>
@@ -48,7 +48,7 @@ export default class RustContext {
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: ConnectionManager
   private projectId = 0
-  public readonly planesCreated = new Signal()
+  public readonly planesCreated = signal(0)
 
   private _settingsActor: SettingsActorType
   get settingsActor() {
@@ -218,7 +218,7 @@ export default class RustContext {
   private setDefaultPlanes(planes: DefaultPlanes | null) {
     this._defaultPlanes = planes
     if (planes) {
-      this.planesCreated.dispatch()
+      this.planesCreated.value++
     }
   }
 
