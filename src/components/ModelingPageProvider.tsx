@@ -12,6 +12,7 @@ import { markOnce } from '@src/lib/performance'
 import { useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -53,10 +54,27 @@ export const ModelingPageProvider = ({
       loadNamedViewCommand,
     } = createNamedViewsCommand(engineCommandManager, settingsActor)
 
+    const {
+      topViewCommand,
+      frontViewCommand,
+      rightViewCommand,
+      backViewCommand,
+      bottomViewCommand,
+      leftViewCommand,
+      zoomToFitCommand,
+    } = createStandardViewsCommands(engineCommandManager)
+
     const commands = [
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
+      topViewCommand,
+      frontViewCommand,
+      rightViewCommand,
+      backViewCommand,
+      bottomViewCommand,
+      leftViewCommand,
+      zoomToFitCommand,
     ]
     commandBarActor.send({
       type: 'Add commands',
