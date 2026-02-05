@@ -111,7 +111,6 @@ function ProjectMenuPopover({
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
-  const addCommandInfo = { name: 'Add file to project', groupId: 'application' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
@@ -133,7 +132,7 @@ function ProjectMenuPopover({
                 Project settings
               </span>
               <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'up'}+,`, platform)}
+                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
               </kbd>
             </>
           ),
