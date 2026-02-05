@@ -16,7 +16,7 @@ import {
 import { useSingletons } from '@src/lib/boot'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
+import { sourceRangeFromRust, sourceRangeToUtf16 } from '@src/lang/sourceRange'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
@@ -88,7 +88,10 @@ function BodyItem({
   )
   const { actor: modelingActor, send: modelingSend } = useModelingContext()
 
-  const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
+  const sourceRange = sourceRangeToUtf16(
+    sourceRangeFromRust(artifact.codeRef.range),
+    kclManager.code
+  )
   const isSelected =
     kclManager.editorState.selection.main.from >= sourceRange[0] &&
     kclManager.editorState.selection.main.to <= sourceRange[1]

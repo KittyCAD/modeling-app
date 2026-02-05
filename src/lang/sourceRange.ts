@@ -1,4 +1,5 @@
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { toUtf16 } from './errors'
 
 /**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
@@ -25,4 +26,15 @@ export function sourceRangeContains(
   inner: SourceRange
 ): boolean {
   return outer[0] <= inner[0] && outer[1] >= inner[1] && outer[2] === inner[2]
+}
+
+/**
+ * Helper to convert a source range of UTF-8 values into a UTF-16 one.
+ */
+export function sourceRangeToUtf16(
+  s: SourceRange,
+  source: string
+): SourceRange {
+  const t = (n: number) => toUtf16(n, source)
+  return [t(s[0]), t(s[1]), t(s[2])]
 }

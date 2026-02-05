@@ -12,7 +12,7 @@ import {
   findOperationPlaneArtifact,
   isOffsetPlane,
 } from '@src/lang/queryAst'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
+import { sourceRangeFromRust, sourceRangeToUtf16 } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
@@ -134,7 +134,7 @@ export const FeatureTreePaneContents = memo(() => {
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange,
+        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
         kclManager,
         modelingSend,
       })
@@ -438,7 +438,8 @@ const OperationItem = ({
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
   const sourceRange =
-    'sourceRange' in item && sourceRangeFromRust(item.sourceRange)
+    'sourceRange' in item &&
+    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isSelected = useMemo(() => {
     const selected =
       sourceRange &&
