@@ -71,6 +71,7 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
+  splitPipedProfile,
 } from '@src/lang/modifyAst'
 import {
   addIntersect,
@@ -105,6 +106,7 @@ import {
 } from '@src/lang/modifyAst/transforms'
 import {
   artifactIsPlaneWithPaths,
+  doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
@@ -128,6 +130,7 @@ import type {
   ArtifactId,
   KclValue,
   PathToNode,
+  PipeExpression,
   Program,
   VariableDeclaration,
   VariableDeclarator,
@@ -135,7 +138,7 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import { EXECUTION_TYPE_MOCK, EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getEventForSegmentSelection,
@@ -2751,9 +2754,122 @@ export const modelingMachine = setup({
         return {} as SketchDetailsUpdate
       }
     ),
-    'split-sketch-pipe-if-needed': fromPromise(
-      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
-        return {} as SketchDetailsUpdate
+    'split-sketch-pipe-if-needed': fromPromise<
+      SketchDetailsUpdate,
+      {
+        sketchDetails: SketchDetails
+        kclManager: KclManager
+        wasmInstance: ModuleType
+        rustContext: RustContext
+      }
+    >(
+      async ({
+        input: { sketchDetails, kclManager, wasmInstance, rustContext },
+      }) => {
+        if (!sketchDetails) {
+          throw new Error('No sketch details')
+        }
+        const existingSketchInfoNoOp = {
+          updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
+          updatedSketchNodePaths: sketchDetails.sketchNodePaths,
+          updatedPlaneNodePath: sketchDetails.planeNodePath,
+          expressionIndexToDelete: -1,
+        } as const
+        if (!sketchDetails?.sketchEntryNodePath?.length) {
+          return existingSketchInfoNoOp
+        }
+        if (
+          !sketchDetails.sketchNodePaths.length &&
+          sketchDetails.planeNodePath.length
+        ) {
+          // new sketch, no profiles yet
+          return existingSketchInfoNoOp
+        }
+        const doesNeedSplitting = doesSketchPipeNeedSplitting(
+          kclManager.ast,
+          sketchDetails.sketchEntryNodePath,
+          wasmInstance
+        )
+        if (err(doesNeedSplitting)) {
+          throw doesNeedSplitting
+        }
+        let moddedAst: Node<Program> = structuredClone(kclManager.ast)
+        let pathToProfile = sketchDetails.sketchEntryNodePath
+        let updatedSketchNodePaths = sketchDetails.sketchNodePaths
+        if (doesNeedSplitting) {
+          const splitResult = splitPipedProfile(
+            moddedAst,
+            sketchDetails.sketchEntryNodePath,
+            wasmInstance
+          )
+          if (err(splitResult)) {
+            throw splitResult
+          }
+          moddedAst = splitResult.modifiedAst
+          pathToProfile = splitResult.pathToProfile
+          updatedSketchNodePaths = [pathToProfile]
+        }
+
+        const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
+        let isLastInPipeThreePointArc = false
+        if (indexToDelete >= 0) {
+          // this is the expression that was added when as sketch tool was used but not completed
+          // i.e first click for the center of the circle, but not the second click for the radius
+          // we added a circle to editor, but they bailed out early so we should remove it
+
+          const pipe = getNodeFromPath<PipeExpression>(
+            moddedAst,
+            pathToProfile,
+            await kclManager.wasmInstancePromise,
+            'PipeExpression'
+          )
+          if (err(pipe)) {
+            isLastInPipeThreePointArc = false
+          } else {
+            const lastInPipe = pipe?.node?.body?.[pipe.node.body.length - 1]
+            if (
+              lastInPipe &&
+              Number(pathToProfile[1][0]) === indexToDelete &&
+              lastInPipe.type === 'CallExpressionKw' &&
+              lastInPipe.callee.type === 'Name' &&
+              lastInPipe.callee.name.name === 'arcTo'
+            ) {
+              isLastInPipeThreePointArc = true
+              pipe.node.body = pipe.node.body.slice(0, -1)
+            }
+          }
+
+          if (!isLastInPipeThreePointArc) {
+            moddedAst.body.splice(indexToDelete, 1)
+            // make sure the deleted expression is removed from the sketchNodePaths
+            updatedSketchNodePaths = updatedSketchNodePaths.filter(
+              (path) => path[1][0] !== indexToDelete
+            )
+            // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
+            // as a safe default
+            pathToProfile =
+              pathToProfile[1][0] !== indexToDelete
+                ? pathToProfile
+                : updatedSketchNodePaths[0]
+          }
+        }
+
+        if (
+          doesNeedSplitting ||
+          indexToDelete >= 0 ||
+          isLastInPipeThreePointArc
+        ) {
+          await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            rustContext,
+          })
+        }
+        return {
+          updatedEntryNodePath: pathToProfile,
+          updatedSketchNodePaths: updatedSketchNodePaths,
+          updatedPlaneNodePath: sketchDetails.planeNodePath,
+          expressionIndexToDelete: -1,
+        }
       }
     ),
     'submit-prompt-edit': fromPromise(
@@ -5129,8 +5245,11 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: '#Modeling.Sketch.SketchIdle',
-                input: ({ context: { sketchDetails } }) => ({
-                  sketchDetails,
+                input: ({ context }) => ({
+                  sketchDetails: context.sketchDetails,
+                  kclManager: context.kclManager,
+                  wasmInstance: context.wasmInstance,
+                  rustContext: context.rustContext,
                 }),
               },
             },
