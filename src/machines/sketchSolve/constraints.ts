@@ -60,6 +60,8 @@ const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
 const DIMENSION_LABEL_GAP_PX = 16 // The gap within the dimension line that leaves space for the numeric value
 const HIT_AREA_WIDTH_PX = 10 // Extended hit area width for lines in pixels
 const LABEL_HIT_AREA_PADDING_PX = 8 // Extra padding around label for hit detection
+const DIMENSION_HIDE_THRESHOLD_PX = 6 // Hide all constraint rendering below this screen-space length
+const DIMENSION_LABEL_HIDE_THRESHOLD_PX = 32 // Hide label/arrows below this screen-space length
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -279,6 +281,26 @@ export class ConstraintUtils {
         end = p2.clone().add(offset)
       }
 
+      const dimensionLengthPx = start.distanceTo(end) / scale
+      const midpoint = start.clone().add(end).multiplyScalar(0.5)
+
+      const label = group.children.find(
+        (child) => child.userData.type === DISTANCE_CONSTRAINT_LABEL
+      ) as SpriteLabel | undefined
+      if (label) {
+        // Need to update label position even if it's not shown because it's used to
+        // place the input box when double clicking on it.
+        label.position.copy(midpoint)
+      }
+
+      if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX) {
+        group.visible = false
+        return
+      }
+
+      group.visible = true
+      const showLabel = dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
+
       const theme = getResolvedTheme(sceneInfra.theme)
       const constraintColor = CONSTRAINT_COLOR[theme]
 
@@ -308,6 +330,21 @@ export class ConstraintUtils {
           child.userData.type === DISTANCE_CONSTRAINT_ARROW
         ) {
           child.material = matSet.arrow
+        }
+      }
+
+      for (const child of group.children) {
+        if (child.userData.type === DISTANCE_CONSTRAINT_LABEL) {
+          child.visible = showLabel
+        } else if (child.userData.type === DISTANCE_CONSTRAINT_ARROW) {
+          child.visible = showLabel
+        } else if (
+          child.userData.type === DISTANCE_CONSTRAINT_HIT_AREA &&
+          child.userData.subtype === DISTANCE_CONSTRAINT_LABEL
+        ) {
+          child.visible = showLabel
+        } else {
+          child.visible = true
         }
       }
 
@@ -343,8 +380,7 @@ export class ConstraintUtils {
       ])
 
       // Main constraint lines with gap at center for label
-      const halfGap = (DIMENSION_LABEL_GAP_PX / 2) * scale
-      const midpoint = start.clone().add(end).multiplyScalar(0.5)
+      const halfGap = showLabel ? (DIMENSION_LABEL_GAP_PX / 2) * scale : 0
       const gapStart = midpoint.clone().sub(dir.clone().multiplyScalar(halfGap))
       const gapEnd = midpoint.clone().add(dir.clone().multiplyScalar(halfGap))
 
@@ -381,7 +417,9 @@ export class ConstraintUtils {
       arrow2.rotation.z = angle - Math.PI / 2
       arrow2.scale.setScalar(scale)
 
-      this.updateLabel(group, obj, constraintColor, distance, midpoint, scale)
+      if (showLabel) {
+        this.updateLabel(group, obj, constraintColor, distance, scale)
+      }
 
       // Update hit areas for lines
       const hitAreas = group.children.filter(
@@ -453,7 +491,6 @@ export class ConstraintUtils {
     obj: ApiObject,
     constraintColor: number,
     distance: Number,
-    midpoint: Vector3,
     scale: number
   ) {
     const label = group.children.find(
@@ -538,7 +575,6 @@ export class ConstraintUtils {
         label.material.map.needsUpdate = true
       }
 
-      label.position.copy(midpoint)
       label.scale.set(
         canvas.width * scale * 0.5,
         canvas.height * scale * 0.5,
@@ -553,7 +589,7 @@ export class ConstraintUtils {
       )
       const labelHitArea = labelHitAreas[0] as Mesh
       if (labelHitArea) {
-        labelHitArea.position.copy(midpoint)
+        labelHitArea.position.copy(label.position)
         labelHitArea.scale.set(
           canvas.width * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
           canvas.height * scale * 0.5 + LABEL_HIT_AREA_PADDING_PX * scale,
@@ -668,10 +704,12 @@ export function calculateDimensionLabelScreenPosition(
     console.warn(`Label not found in constraint group ${constraintId}`)
     return
   }
+
   const worldPosition = new Vector3()
   label.getWorldPosition(worldPosition)
-  const screenPosition = worldPosition.clone()
-  screenPosition.project(sceneInfra.camControls.camera)
+  const screenPosition = worldPosition
+    .clone()
+    .project(sceneInfra.camControls.camera)
 
   const x =
     (screenPosition.x * 0.5 + 0.5) * sceneInfra.renderer.domElement.clientWidth
