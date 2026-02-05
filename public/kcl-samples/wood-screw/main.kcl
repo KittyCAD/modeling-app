@@ -1,5 +1,5 @@
 // Wood Screw
-// An Oval Head Phillips Wood Screw flange is a threaded fastener with a slightly domed head, a cross‑shaped (Phillips) drive, and a sharp point for entering wood. This kind of wood screw is often used for furniture assembly and household construction projects, like attaching hinges and trims. 
+// An Oval Head Phillips Wood Screw flange is a threaded fastener with a slightly domed head, a cross‑shaped (Phillips) drive, and a sharp point for entering wood. This kind of wood screw is often used for furniture assembly and household construction projects, like attaching hinges and trims.
 // Categories: Construction
 
 // Set units
@@ -23,14 +23,17 @@ threadDiameter = 0.025
 
 phillipsDriveHalfWidth = flatHeadRadius / 3 / 2
 straightHeight = 0.75 * flatHeadRadius
-phillipsArcRatio = 2/5 // amount of the phillips head that is not straight
+phillipsArcRatio = 2 / 5 // amount of the phillips head that is not straight
 
 
 // Create the half-profile of the screw body
 screwSketch = startSketchOn(XZ)
 screwProfile = startProfile(screwSketch, at = [0, 0])
   |> yLine(length = flatHeadRadius, tag = $flatHead)
-  |> tangentialArc(end = [ovalRatio * headHeight, flatHeadRadius * ovalArcFactor])
+  |> tangentialArc(end = [
+       ovalRatio * headHeight,
+       flatHeadRadius * ovalArcFactor
+     ])
   |> line(endAbsolute = [headHeight, shaftRadius])
   |> xLine(length = length - headHeight)
   |> line(end = [tipLength, -shaftRadius])
@@ -40,16 +43,24 @@ screwProfile = startProfile(screwSketch, at = [0, 0])
 // Add the threads to the screw shaft
 threadPath = helix(cylinder = screwProfile, revolutions, angleStart = 0)
 threadSketch = startSketchOn(XZ)
-threadProfile = polygon(threadSketch, numSides = 3, center = [headHeight, shaftRadius], radius = threadDiameter / 2)
+threadProfile = polygon(
+  threadSketch,
+  numSides = 3,
+  center = [headHeight, shaftRadius],
+  radius = threadDiameter / 2,
+)
 sweep(threadProfile, path = threadPath)
 
 // Add the Phillips drive
 quarterPhillipsSketch = startSketchOn(screwProfile, face = flatHead)
 quarterPhillipsProfile = startProfile(quarterPhillipsSketch, at = [0, straightHeight])
   |> xLine(length = phillipsDriveHalfWidth)
-  |> yLine(length = -straightHeight*(1-phillipsArcRatio))
-  |> tangentialArc(endAbsolute = [straightHeight * phillipsArcRatio, phillipsDriveHalfWidth])
-  |> xLine(length = straightHeight*(1 - phillipsArcRatio))
+  |> yLine(length = -straightHeight * (1 - phillipsArcRatio))
+  |> tangentialArc(endAbsolute = [
+       straightHeight * phillipsArcRatio,
+       phillipsDriveHalfWidth
+     ])
+  |> xLine(length = straightHeight * (1 - phillipsArcRatio))
   |> yLine(length = -phillipsDriveHalfWidth)
   |> xLine(length = -straightHeight)
   |> close()
@@ -59,5 +70,5 @@ quarterPhillipsProfile = startProfile(quarterPhillipsSketch, at = [0, straightHe
 halfPhillipsDrive = mirror2d(quarterPhillipsProfile, axis = X)
 fullPhillipsDrive = mirror2d(halfPhillipsDrive, axis = Y)
   |> extrude(length = headHeight, method = NEW)
-  |> translate(x = headHeight*ovalRatio/2, y = 0, z = 0)
+  |> translate(x = headHeight * ovalRatio / 2, y = 0, z = 0)
 subtract([screwProfile], tools = [fullPhillipsDrive])
