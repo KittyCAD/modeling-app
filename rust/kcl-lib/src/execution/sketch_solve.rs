@@ -190,6 +190,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, analysis, &srs)?;
             let position = [position_x, position_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Point {
                     position,
@@ -218,6 +219,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Line {
                     start,
@@ -258,6 +260,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             let end = [end_x, end_y];
             let center = [center_x, center_y];
             Ok(Segment {
+                id: segment.id,
                 object_id: segment.object_id,
                 kind: SegmentKind::Arc {
                     start,
@@ -375,6 +378,14 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
             variable_set.insert(*id as usize);
         }
         kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }

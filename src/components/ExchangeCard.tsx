@@ -211,6 +211,7 @@ export const ChatBubble = (props: {
   dataTestId?: string
   placeholderTestId?: string
   className?: string
+  showCancelledInsteadOfPlaceholder?: boolean
 }) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
@@ -225,6 +226,8 @@ export const ChatBubble = (props: {
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
           {hasVisibleChildren(props.children) ? (
             props.children
+          ) : props.showCancelledInsteadOfPlaceholder ? (
+            <span>Message canceled.</span>
           ) : (
             <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
@@ -263,6 +266,7 @@ export const Delta = (props: { children: ReactNode }) => {
 type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
+  isLastResponse: boolean
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -316,6 +320,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
       className="py-4"
+      showCancelledInsteadOfPlaceholder={!props.isLastResponse}
     >
       {[
         itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
@@ -415,18 +420,21 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               )}
             </button>
           </div>
-          <ExchangeCardStatus
-            maybeError={maybeError}
-            responses={props.responses}
-            onlyShowImmediateThought={true}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
+          {props.isLastResponse && (
+            <ExchangeCardStatus
+              maybeError={maybeError}
+              responses={props.responses}
+              onlyShowImmediateThought={true}
+              startedAt={startedAt}
+              updatedAt={updatedAt}
+            />
+          )}
         </div>
       )}
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
+        isLastResponse={props.isLastResponse}
       />
       <ResponseCardToolBar
         responses={props.responses}

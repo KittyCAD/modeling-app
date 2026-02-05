@@ -145,7 +145,6 @@ import {
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
@@ -363,7 +362,9 @@ export type ModelingMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
         | 'construction'
     }
   | { type: 'unequip tool' }
@@ -1188,7 +1189,7 @@ export const modelingMachine = setup({
     }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -1235,7 +1236,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       deleteSegmentsOrProfiles({
         pathToNodes: event.data,
         sketchDetails,
@@ -1353,7 +1354,6 @@ export const modelingMachine = setup({
           engineCommandManager,
           sceneEntitiesManager,
           kclManager,
-          kclEditorMachine: providedKclEditorMachine,
           wasmInstance,
         },
         event,
@@ -1370,10 +1370,6 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-        const theKclEditorMachine = providedKclEditorMachine
-          ? providedKclEditorMachine
-          : kclEditorActor
-
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
@@ -1493,13 +1489,6 @@ export const modelingMachine = setup({
                   ]
                 : [],
             })
-            theKclEditorMachine.send({
-              type: 'setLastSelectionEvent',
-              data: {
-                codeMirrorSelection,
-                scrollIntoView: setSelections.scrollIntoView ?? false,
-              },
-            })
           }
 
           // If there are engine commands that need sent off, send them
@@ -1567,13 +1556,6 @@ export const modelingMachine = setup({
           })
           updateSceneObjectColors()
 
-          theKclEditorMachine.send({
-            type: 'setLastSelectionEvent',
-            data: {
-              codeMirrorSelection,
-              scrollIntoView: false,
-            },
-          })
           if (!sketchDetails)
             return {
               selectionRanges: setSelections.selection,
@@ -5599,7 +5581,13 @@ export const modelingMachine = setup({
         Horizontal: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
-        Distance: {
+        Dimension: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        HorizontalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        VerticalDistance: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         construction: {

@@ -9,6 +9,7 @@ import {
   getFacesFromBox,
   getKclCommandValue,
   runNewAstAndCheckForSweep,
+  runNewAstAndCountSweeps,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -130,6 +131,84 @@ profile002 = rectangle(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a basic extrude call on a cap', async () => {
+      const code = `${circleProfileCode}
+  extrude001 = extrude(profile001, length = 1)`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const endCap = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'cap'
+      )
+      expect(endCap).toBeDefined()
+      const sketches = createSelectionFromArtifacts([endCap!], artifactGraph)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const res = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(res)) throw res
+      const newCode = recast(res.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude(capEnd001, length = 2)`)
+      await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 2)
+    })
+
+    it('should add a basic extrude call on a wall', async () => {
+      const code = `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 2)
+  |> yLine(length = 2)
+  |> xLine(length = -2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 2)`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const endWall = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'wall'
+      )
+      expect(endWall).toBeDefined()
+      const sketches = createSelectionFromArtifacts([endWall!], artifactGraph)
+      const length = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const res = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(res)) throw res
+      const newCode = recast(res.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 2)
+  |> yLine(length = 2)
+  |> xLine(length = -2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 2)
+extrude002 = extrude(seg01, length = 3)`)
+      await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 2)
+    })
+
     it('should add a basic multi-profile extrude call', async () => {
       const { ast, sketches, artifactGraph } =
         await getAstAndSketchSelectionsEngineless(
@@ -156,6 +235,62 @@ profile002 = rectangle(
         `extrude001 = extrude([profile001, profile002], length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a multi-profile extrude call on a profile and a cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+profile002 = rectangle(
+  sketch001,
+  corner = [2, 2],
+  width = 2,
+  height = 2,
+)
+extrude001 = extrude(profile002, length = 1)
+`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const profile = [...artifactGraph.values()].find(
+        (a) => a.type === 'solid2d'
+      )
+      const endCap = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'cap'
+      )
+      console.log({ profile, endCap })
+      expect(profile).toBeDefined()
+      expect(endCap).toBeDefined()
+      const sketches = createSelectionFromArtifacts(
+        [profile!, endCap!],
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const res = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(res)) throw res
+      const newCode = recast(res.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+profile002 = rectangle(
+  sketch001,
+  corner = [2, 2],
+  width = 2,
+  height = 2,
+)
+extrude001 = extrude(profile002, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude([capEnd001, profile001], length = 1)`)
+      await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 3)
     })
 
     it('should add an extrude call with symmetric true', async () => {
@@ -810,6 +945,45 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
         `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
       )
       // Don't think we can find the artifact here for loft?
+    })
+
+    it('should add a basic loft call with surface bodyType on open path without engine errors', async () => {
+      const openPaths = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2.32, -2.09])
+  |> line(end = [9.62, 4.63])
+plane001 = offsetPlane(XY, offset = 5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-0.75, -3.04])
+  |> line(end = [8.17, 4.09])`
+      const { ast, sketches } = await getAstAndSketchSelections(
+        openPaths,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(openPaths)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+      )
+      const { operations } = await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const loft = operations.find(
+        (op) => op.type === 'StdLibCall' && op.name === 'loft'
+      )
+      if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
+      expect(loft.isError).toBeFalsy()
     })
 
     it('should edit a loft call with vDegree', async () => {

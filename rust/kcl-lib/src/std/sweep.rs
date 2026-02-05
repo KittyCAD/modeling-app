@@ -125,6 +125,7 @@ async fn inner_sweep(
                 None,
                 None,
                 body_type,
+                crate::std::extrude::BeingExtruded::Sketch,
             )
             .await?,
         );

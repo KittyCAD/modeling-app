@@ -102,10 +102,10 @@ spokeFace = startSketchOn(XZ)
 // Create a spoke by intersecting the side and face profiles, then pattern around the center of the wheel
 spokes = intersect([
        spokeFace
-  |> extrude(length = wheelWidth * 2),
+         |> extrude(length = wheelWidth * 2),
        spokeSide
-  |> rotate(pitch = 90)
-  |> revolve(axis = Y)
+         |> rotate(pitch = 90)
+         |> revolve(axis = Y)
      ])
   |> patternCircular3d(instances = spokeCount, axis = Y, center = [0, 0, 0])
 

@@ -29,6 +29,7 @@ pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
 pub(crate) use sketch_solve::normalize_to_solver_unit;
+pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -68,6 +69,7 @@ pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
 mod sketch_solve;
+mod sketch_transpiler;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -318,6 +320,10 @@ impl TagIdentifier {
             self.info.push((*oe, ot.clone()));
         }
     }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        self.get_cur_info().map(|info| info.geometry.clone())
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -365,8 +371,8 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch the tag is on.
-    pub sketch: uuid::Uuid,
+    /// The geometry the tag is on.
+    pub geometry: Geometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -572,22 +578,24 @@ impl ExecutorContext {
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+            .commands_ws(kittycad::modeling::CommandsWsParams {
+                api_call_id: None,
+                fps: None,
+                order_independent_transparency: None,
+                post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                pool: None,
+                pr: None,
+                unlocked_framerate: None,
+                webrtc: Some(false),
+                video_res_width: None,
+                video_res_height: None,
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =
@@ -629,6 +637,29 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
         }
+    }
+
+    /// Create a new mock executor context for WASM LSP servers.
+    /// This is a convenience function that creates a mock engine and FileManager from a FileSystemManager.
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_mock_for_lsp(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
+        use crate::mock_engine;
+
+        let mock_engine = Arc::new(Box::new(
+            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
+        ) as Box<dyn EngineManager>);
+
+        let fs = Arc::new(FileManager::new(fs_manager));
+
+        Ok(ExecutorContext {
+            engine: mock_engine,
+            fs,
+            settings,
+            context_type: ContextType::Mock,
+        })
     }
 
     #[cfg(not(target_arch = "wasm32"))]
