@@ -66,6 +66,8 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { statusBarField, versionClicky } from '@src/lib/extension'
+import { useAppState } from '@src/AppState'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -86,6 +88,7 @@ export function OpenedProject() {
   } = useSingletons()
   const settingsActor = settings.actor
   const getSettings = settings.get
+  const app = useApp()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
@@ -336,7 +339,10 @@ export function OpenedProject() {
   )
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden select-none">
+    <div
+      onClick={() => versionClicky.value++}
+      className="h-screen flex flex-col overflow-hidden select-none"
+    >
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
@@ -364,11 +370,7 @@ export function OpenedProject() {
           />
         </section>
         <StatusBar
-          globalItems={[
-            networkHealthStatus,
-            ...(isDesktop() ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
-          ]}
+          globalItems={app.stateFields.get(statusBarField).global}
           localItems={[
             ...(getSettings().app.showDebugPanel.current
               ? ([

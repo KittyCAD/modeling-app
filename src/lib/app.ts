@@ -1,7 +1,7 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -45,11 +45,22 @@ import {
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { signal } from '@preact/signals-core'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import React from 'react'
+import {
+  ExtensionConfig,
+  StatusBarConfig,
+  statusBarField,
+} from '@src/lib/extension'
+import { Signal, signal } from '@preact/signals-core'
+import { computed } from '@preact/signals-core'
+import { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { appVerionStatusExtension } from '@src/components/StatusBar/defaultStatusBarItems'
+import { Extension, ZDSFacet } from './facet'
+import { Field, FieldSet } from './field'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -146,9 +157,16 @@ export class App {
     useContext: () => useSelector(this.billingActor, ({ context }) => context),
   }
 
-  constructor() {
+  extensions: Extension[]
+  stateFields: FieldSet
+
+  constructor(extensions: Extension[] = []) {
     this.singletons = this.buildSingletons()
     this.settingsActor.subscribe(this.onSettingsUpdate)
+    this.extensions = extensions
+    this.stateFields = FieldSet.fromFields(
+      ...this.extensions.flat(10).filter((ext) => ext instanceof Field)
+    )
   }
 
   /**

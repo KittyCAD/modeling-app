@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { signal } from '@preact/signals-core'
 import { HelpMenu } from '@src/components/HelpMenu'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {

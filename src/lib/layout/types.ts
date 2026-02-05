@@ -137,7 +137,7 @@ export type LayoutMigration = {
   transformationSets: LayoutTransformationSet[]
 }
 
-type LayoutTransformationSet = {
+export type LayoutTransformationSet = {
   /** A matcher to either match on all (if `true`) or some layout nodes */
   matcher: LayoutMatcher
   /** The transformations to apply to the matched layout node */
