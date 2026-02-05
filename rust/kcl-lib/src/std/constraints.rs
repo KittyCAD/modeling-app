@@ -117,7 +117,9 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -292,7 +294,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -555,7 +559,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {

@@ -10,7 +10,7 @@ use uuid::Uuid;
 use crate::{
     ExecState, KclError,
     errors::KclErrorDetails,
-    exec::{KclValue, NumericType, UnitType},
+    exec::{KclValue, NumericType, Sketch, UnitType},
     execution::{
         AbstractSegment, Segment, SegmentKind, SegmentRepr, SketchSurface, UnsolvedExpr, UnsolvedSegment,
         UnsolvedSegmentKind,
@@ -76,13 +76,22 @@ pub(super) fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     surface: &SketchSurface,
     sketch_id: Uuid,
+    sketch: Option<Sketch>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value = substitute_sketch_var(value, surface, sketch_id, solve_outcome, solution_ty, analysis)?;
+        let subbed_value = substitute_sketch_var(
+            value,
+            surface,
+            sketch_id,
+            sketch.as_ref(),
+            solve_outcome,
+            solution_ty,
+            analysis,
+        )?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
@@ -92,6 +101,7 @@ fn substitute_sketch_var(
     value: KclValue,
     surface: &SketchSurface,
     sketch_id: Uuid,
+    sketch: Option<&Sketch>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -123,14 +133,14 @@ fn substitute_sketch_var(
         KclValue::Tuple { value, meta } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis))
+                .map(|v| substitute_sketch_var(v, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::Tuple { value: subbed, meta })
         }
         KclValue::HomArray { value, ty } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis))
+                .map(|v| substitute_sketch_var(v, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::HomArray { value: subbed, ty })
         }
@@ -142,7 +152,8 @@ fn substitute_sketch_var(
             let subbed = value
                 .into_iter()
                 .map(|(k, v)| {
-                    substitute_sketch_var(v, surface, sketch_id, solve_outcome, solution_ty, analysis).map(|v| (k, v))
+                    substitute_sketch_var(v, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis)
+                        .map(|v| (k, v))
                 })
                 .collect::<Result<HashMap<_, _>, KclError>>()?;
             Ok(KclValue::Object {
@@ -161,16 +172,19 @@ fn substitute_sketch_var(
         } => match abstract_segment.repr {
             SegmentRepr::Unsolved { segment } => {
                 let subbed = substitute_sketch_var_in_segment(
-                    segment,
+                    *segment,
                     surface,
                     sketch_id,
+                    sketch.cloned(),
                     solve_outcome,
                     solution_ty,
                     analysis,
                 )?;
                 Ok(KclValue::Segment {
                     value: Box::new(AbstractSegment {
-                        repr: SegmentRepr::Solved { segment: subbed },
+                        repr: SegmentRepr::Solved {
+                            segment: Box::new(subbed),
+                        },
                         meta: abstract_segment.meta,
                     }),
                 })
@@ -194,6 +208,7 @@ pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     surface: &SketchSurface,
     sketch_id: Uuid,
+    sketch: Option<Sketch>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -216,6 +231,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 },
                 surface: surface.clone(),
                 sketch_id,
+                sketch,
                 meta: segment.meta,
             })
         }
@@ -252,6 +268,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 },
                 surface: surface.clone(),
                 sketch_id,
+                sketch,
                 meta: segment.meta,
             })
         }
@@ -298,6 +315,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 },
                 surface: surface.clone(),
                 sketch_id,
+                sketch,
                 meta: segment.meta,
             })
         }

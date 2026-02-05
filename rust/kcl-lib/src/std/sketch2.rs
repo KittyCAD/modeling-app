@@ -22,6 +22,7 @@ use crate::{
     std_utils::untyped_point_to_unit,
 };
 
+/// Return will be None if there are no segments.
 pub(crate) async fn create_segments_in_engine(
     sketch_surface: &SketchSurface,
     sketch_engine_id: Uuid,
@@ -30,9 +31,9 @@ pub(crate) async fn create_segments_in_engine(
     ctx: &ExecutorContext,
     exec_state: &mut ExecState,
     range: SourceRange,
-) -> Result<(), KclError> {
+) -> Result<Option<Sketch>, KclError> {
     let mut outer_sketch: Option<Sketch> = None;
-    for segment in segments {
+    for segment in segments.iter() {
         if segment.is_construction() {
             // Don't send construction segments to the engine.
             continue;
@@ -55,17 +56,19 @@ pub(crate) async fn create_segments_in_engine(
 
             // Move the path pen.
             let id = exec_state.next_uuid();
-            exec_state
-                .batch_modeling_cmd(
-                    ModelingCmdMeta::with_id(exec_state, ctx, range, id),
-                    ModelingCmd::from(
-                        mcmd::MovePathPen::builder()
-                            .path(sketch.id.into())
-                            .to(KPoint2d::from(point_to_mm(start.clone())).with_z(0.0).map(LengthUnit))
-                            .build(),
-                    ),
-                )
-                .await?;
+            if !exec_state.sketch_mode() {
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::with_id(exec_state, ctx, range, id),
+                        ModelingCmd::from(
+                            mcmd::MovePathPen::builder()
+                                .path(sketch.id.into())
+                                .to(KPoint2d::from(point_to_mm(start.clone())).with_z(0.0).map(LengthUnit))
+                                .build(),
+                        ),
+                    )
+                    .await?;
+            }
             // Store the current location in the sketch.
             let previous_base = sketch.paths.last().map(|p| p.get_base()).unwrap_or(&sketch.start);
             let base = BasePath {
@@ -178,7 +181,15 @@ pub(crate) async fn create_segments_in_engine(
             }
         }
     }
-    Ok(())
+
+    // Add the sketch to each segment.
+    if outer_sketch.is_some() {
+        for segment in segments {
+            segment.sketch = outer_sketch.clone();
+        }
+    }
+
+    Ok(outer_sketch)
 }
 
 pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
