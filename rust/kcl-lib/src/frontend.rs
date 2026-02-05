@@ -3021,7 +3021,20 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
         }
         AstMutateCommand::EditConstraintValue { value } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                binary_expr.right = value.clone();
+                let left_is_constraint = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(call)
+                        if matches!(
+                            call.callee.name.name.as_str(),
+                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
+                        )
+                );
+                if left_is_constraint {
+                    binary_expr.right = value.clone();
+                } else {
+                    binary_expr.left = value.clone();
+                }
+
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
