@@ -443,7 +443,7 @@ export function addHide({
 
   // 2. Prepare unlabeled arguments
   // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = false
+  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,

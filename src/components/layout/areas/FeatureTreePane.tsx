@@ -12,7 +12,7 @@ import {
   findOperationPlaneArtifact,
   isOffsetPlane,
 } from '@src/lang/queryAst'
-import { sourceRangeFromRust, sourceRangeToUtf16 } from '@src/lang/sourceRange'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
@@ -49,7 +49,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
-import { toUtf16 } from '@src/lang/errors'
+import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
   sendDeleteCommand,
