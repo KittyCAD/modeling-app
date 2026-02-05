@@ -2006,6 +2006,8 @@ pub struct Segment {
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
     #[serde(skip)]
+    pub sketch: Option<Sketch>,
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -2070,8 +2072,8 @@ pub struct AbstractSegment {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 pub enum SegmentRepr {
-    Unsolved { segment: UnsolvedSegment },
-    Solved { segment: Segment },
+    Unsolved { segment: Box<UnsolvedSegment> },
+    Solved { segment: Box<Segment> },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

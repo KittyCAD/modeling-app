@@ -1406,20 +1406,13 @@ impl Node<SketchBlock> {
         // Substitute solutions back into sketch variables.
         let sketch_engine_id = exec_state.next_uuid();
         let solution_ty = solver_numeric_type(exec_state);
-        let variables = substitute_sketch_vars(
-            variables,
-            &sketch_surface,
-            sketch_engine_id,
-            &solve_outcome,
-            solution_ty,
-            solve_analysis.as_ref(),
-        )?;
         let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
                 &sketch_surface,
                 sketch_engine_id,
+                None,
                 &solve_outcome,
                 solver_numeric_type(exec_state),
                 solve_analysis.as_ref(),
@@ -1433,11 +1426,37 @@ impl Node<SketchBlock> {
             // the last one. Therefore, we should overwrite any previous
             // solutions.
             exec_state.mod_local.artifacts.var_solutions =
-                sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
+                sketch_block_state.var_solutions(&solve_outcome, solution_ty, SourceRange::from(self))?;
         }
 
         // Create scene objects after unknowns are solved.
         let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
+
+        // Build the sketch and send everything to the engine.
+        let sketch = create_segments_in_engine(
+            &sketch_surface,
+            sketch_engine_id,
+            &mut solved_segments,
+            &sketch_block_state.segment_tags,
+            ctx,
+            exec_state,
+            range,
+        )
+        .await?;
+
+        // Substitute solutions back into sketch variables. This time, collect
+        // all the variables in the sketch block. The set of variables may have
+        // overlap with the objects sent to the engine, but it isn't necessarily
+        // the same.
+        let variables = substitute_sketch_vars(
+            variables,
+            &sketch_surface,
+            sketch_engine_id,
+            sketch,
+            &solve_outcome,
+            solution_ty,
+            solve_analysis.as_ref(),
+        )?;
 
         #[cfg(not(feature = "artifact-graph"))]
         drop(scene_objects);
@@ -1479,20 +1498,6 @@ impl Node<SketchBlock> {
                 node_path: NodePath::placeholder(),
                 source_range: range,
             });
-        }
-
-        // If not in sketch mode, send everything to the engine.
-        if !exec_state.sketch_mode() {
-            create_segments_in_engine(
-                &sketch_surface,
-                sketch_engine_id,
-                &mut solved_segments,
-                &sketch_block_state.segment_tags,
-                ctx,
-                exec_state,
-                range,
-            )
-            .await?;
         }
 
         let metadata = Metadata {
@@ -1817,7 +1822,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
-                                    segment: UnsolvedSegment {
+                                    segment: Box::new(UnsolvedSegment {
                                         id: segment.id,
                                         object_id: *start_object_id,
                                         kind: UnsolvedSegmentKind::Point {
@@ -1827,7 +1832,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1841,7 +1846,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
-                                    segment: UnsolvedSegment {
+                                    segment: Box::new(UnsolvedSegment {
                                         id: segment.id,
                                         object_id: *start_object_id,
                                         kind: UnsolvedSegmentKind::Point {
@@ -1851,7 +1856,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1875,7 +1880,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
-                                    segment: Segment {
+                                    segment: Box::new(Segment {
                                         id: segment.id,
                                         object_id: *start_object_id,
                                         kind: SegmentKind::Point {
@@ -1887,8 +1892,9 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
+                                        sketch: None,
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1903,7 +1909,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
-                                    segment: Segment {
+                                    segment: Box::new(Segment {
                                         id: segment.id,
                                         object_id: *start_object_id,
                                         kind: SegmentKind::Point {
@@ -1915,8 +1921,9 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
+                                        sketch: None,
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1941,7 +1948,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
-                                    segment: UnsolvedSegment {
+                                    segment: Box::new(UnsolvedSegment {
                                         id: segment.id,
                                         object_id: *end_object_id,
                                         kind: UnsolvedSegmentKind::Point {
@@ -1951,7 +1958,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1965,7 +1972,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
-                                    segment: UnsolvedSegment {
+                                    segment: Box::new(UnsolvedSegment {
                                         id: segment.id,
                                         object_id: *end_object_id,
                                         kind: UnsolvedSegmentKind::Point {
@@ -1975,7 +1982,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -1999,7 +2006,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
-                                    segment: Segment {
+                                    segment: Box::new(Segment {
                                         id: segment.id,
                                         object_id: *end_object_id,
                                         kind: SegmentKind::Point {
@@ -2011,8 +2018,9 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
+                                        sketch: None,
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -2027,7 +2035,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
-                                    segment: Segment {
+                                    segment: Box::new(Segment {
                                         id: segment.id,
                                         object_id: *end_object_id,
                                         kind: SegmentKind::Point {
@@ -2039,8 +2047,9 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
+                                        sketch: None,
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -2058,7 +2067,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Unsolved {
-                                    segment: UnsolvedSegment {
+                                    segment: Box::new(UnsolvedSegment {
                                         id: segment.id,
                                         object_id: *center_object_id,
                                         kind: UnsolvedSegmentKind::Point {
@@ -2068,7 +2077,7 @@ impl Node<MemberExpression> {
                                             }),
                                         },
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
@@ -2092,7 +2101,7 @@ impl Node<MemberExpression> {
                         } => Ok(KclValue::Segment {
                             value: Box::new(AbstractSegment {
                                 repr: SegmentRepr::Solved {
-                                    segment: Segment {
+                                    segment: Box::new(Segment {
                                         id: segment.id,
                                         object_id: *center_object_id,
                                         kind: SegmentKind::Point {
@@ -2104,8 +2113,9 @@ impl Node<MemberExpression> {
                                         },
                                         surface: segment.surface.clone(),
                                         sketch_id: segment.sketch_id,
+                                        sketch: None,
                                         meta: segment.meta.clone(),
-                                    },
+                                    }),
                                 },
                                 meta: segment.meta.clone(),
                             }),
