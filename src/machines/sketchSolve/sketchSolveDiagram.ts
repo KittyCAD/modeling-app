@@ -221,7 +221,7 @@ export const sketchSolveMachine = setup({
       duringAreaSelectIds: [],
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
-        kclSource: {
+        sourceDelta: {
           text: input.kclManager.code,
         },
         sceneGraphDelta: input.initialSceneGraphDelta,
@@ -283,7 +283,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -383,7 +386,10 @@ export const sketchSolveMachine = setup({
             if (result) {
               self.send({
                 type: 'update sketch outcome',
-                data: result,
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                },
               })
             }
             return
@@ -448,7 +454,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -488,7 +497,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -508,7 +520,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -528,7 +543,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -551,7 +569,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -574,7 +595,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -665,7 +689,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -706,7 +733,10 @@ export const sketchSolveMachine = setup({
           // Send the update sketch outcome event
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },

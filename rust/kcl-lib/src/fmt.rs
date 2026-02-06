@@ -25,6 +25,19 @@ pub enum FormatNumericSuffixError {
 ///
 /// This is used by TS.
 pub fn format_number_literal(value: f64, suffix: NumericSuffix) -> Result<String, FormatNumericSuffixError> {
+    // Format to 2 decimal places maximum (matching TypeScript roundOff function)
+    // Round first to ensure we don't have floating point precision issues
+    let rounded = (value * 100.0).round() / 100.0;
+    // Format with up to 2 decimal places, removing trailing zeros
+    let formatted = if rounded.fract().abs() < 1e-10 {
+        // Integer value
+        format!("{:.0}", rounded)
+    } else {
+        // Format with 2 decimal places, then remove trailing zeros
+        let with_2_decimals = format!("{:.2}", rounded);
+        with_2_decimals.trim_end_matches('0').trim_end_matches('.').to_string()
+    };
+
     match suffix {
         // There isn't a syntactic suffix for these. For unknown, we don't want
         // to ever generate the unknown suffix. We currently warn on it, and we
@@ -41,7 +54,7 @@ pub fn format_number_literal(value: f64, suffix: NumericSuffix) -> Result<String
         | NumericSuffix::Ft
         | NumericSuffix::Yd
         | NumericSuffix::Deg
-        | NumericSuffix::Rad => Ok(format!("{value}{suffix}")),
+        | NumericSuffix::Rad => Ok(format!("{formatted}{suffix}")),
     }
 }
 
