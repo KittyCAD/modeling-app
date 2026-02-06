@@ -1768,7 +1768,9 @@ fn find_termination_in_direction(
 ///
 /// The callback should return:
 /// - The updated scene graph delta after executing operations
-pub async fn execute_trim_loop<F, Fut>(
+#[cfg(test)]
+#[allow(dead_code)]
+pub(crate) async fn execute_trim_loop<F, Fut>(
     points: &[Coords2d],
     initial_scene_graph_delta: crate::frontend::api::SceneGraphDelta,
     mut execute_operations: F,
@@ -1898,8 +1900,7 @@ where
 }
 
 /// Result of executing trim flow
-// #[allow(dead_code)] // Only used in non-WASM builds
-#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -1921,8 +1922,8 @@ pub struct TrimFlowResult {
 ///
 /// Note: This function is only available for non-WASM builds (tests) as it requires
 /// a real engine connection via `new_with_default_client`.
-#[cfg(not(target_arch = "wasm32"))]
-pub async fn execute_trim_flow(
+#[cfg(all(not(target_arch = "wasm32"), test))]
+pub(crate) async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
@@ -2224,7 +2225,7 @@ pub async fn execute_trim_loop_with_context(
 /// - Coincident constraints on either side need to be migrated to the correct side
 /// - Angle based constraints (parallel, perpendicular, horizontal, vertical), need to be applied to both sides of the trim
 /// - If the segment getting split is an arc, and there's a constraints applied to an arc's center, this should be applied to both arcs after they are split.
-pub fn trim_strategy(
+pub(crate) fn trim_strategy(
     trim_spawn_id: ObjectId,
     trim_spawn_segment: &Object,
     left_side: &TrimTermination,
@@ -2276,17 +2277,6 @@ pub fn trim_strategy(
             _ => NumericSuffix::Mm,
         },
         _ => NumericSuffix::Mm,
-    };
-
-    // Helper to convert Coords2d (mm) to ApiPoint2d JSON in segment units
-    let _coords_to_api_point = |coords: Coords2d| -> serde_json::Value {
-        let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
-        let x = mm_to_number(round_off(coords.x), units);
-        let y = mm_to_number(round_off(coords.y), units);
-        serde_json::json!({
-            "x": { "type": "Var", "value": x.value, "units": x.units },
-            "y": { "type": "Var", "value": y.value, "units": y.units },
-        })
     };
 
     // Helper to find distance constraints that reference a segment (via owned points)
@@ -2826,13 +2816,12 @@ pub fn trim_strategy(
             _ => None,
         };
 
-        if original_end_point_coords.is_none() {
+        let Some(original_end_coords) = original_end_point_coords else {
             return Err(
                 "Could not get original end point coordinates before editing - this is required for split trim"
                     .to_string(),
             );
-        }
-        let original_end_coords = original_end_point_coords.unwrap();
+        };
 
         // Calculate trim coordinates for both sides
         let left_trim_coords = match left_side {
