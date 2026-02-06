@@ -1140,7 +1140,7 @@ fn find_termination_in_direction(
     };
 
     // Collect all candidate points: intersections, coincident points, and endpoints
-    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
     enum CandidateType {
         Intersection,
         Coincident,
