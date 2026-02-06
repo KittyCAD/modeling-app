@@ -11,6 +11,10 @@ use crate::{
     pretty::NumericSuffix,
 };
 
+#[cfg(test)]
+#[path = "trim_tests.rs"]
+mod trim_tests;
+
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL: f64 = 1e-10;
 const EPSILON_POINT_ON_SEGMENT: f64 = 1e-6;
