@@ -10,7 +10,7 @@ use wasm_bindgen::prelude::*;
 use crate::{Context, TRUE_BUG};
 
 #[derive(serde::Serialize)]
-struct TrimResult {
+struct TrimOutcome {
     source_delta: kcl_lib::front::SourceDelta,
     scene_graph_delta: kcl_lib::front::SceneGraphDelta,
     operations_performed: bool,
@@ -504,7 +504,7 @@ impl Context {
         };
 
         // Return both source_delta and sceneGraphDelta
-        let result = TrimResult {
+        let result = TrimOutcome {
             source_delta,
             scene_graph_delta,
             operations_performed,

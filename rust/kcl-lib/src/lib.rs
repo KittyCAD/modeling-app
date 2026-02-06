@@ -170,10 +170,10 @@ pub mod front {
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
-            execute_trim_loop_with_context, execute_trim_operations_simple, get_next_trim_spawn,
-            get_position_coords_for_line, get_position_coords_from_arc, get_trim_spawn_terminations, is_point_on_arc,
-            is_point_on_line_segment, line_arc_intersection, line_segment_intersection,
-            perpendicular_distance_to_segment, project_point_onto_arc, project_point_onto_segment,
+            execute_trim_loop_with_context, get_next_trim_spawn, get_position_coords_for_line,
+            get_position_coords_from_arc, get_trim_spawn_terminations, is_point_on_arc, is_point_on_line_segment,
+            line_arc_intersection, line_segment_intersection, perpendicular_distance_to_segment,
+            project_point_onto_arc, project_point_onto_segment,
         },
     };
 }
