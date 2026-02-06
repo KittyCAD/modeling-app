@@ -1057,6 +1057,7 @@ pub struct Solid {
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
     /// How this solid was created.
+    #[serde(flatten)]
     pub creator: SolidCreator,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
@@ -1077,7 +1078,7 @@ pub struct Solid {
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(untagged, rename_all = "camelCase")]
 pub enum SolidCreator {
     /// Created from a sketch.
     Sketch { sketch: Sketch },
