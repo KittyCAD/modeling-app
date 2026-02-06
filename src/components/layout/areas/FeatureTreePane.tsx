@@ -679,7 +679,7 @@ const OperationItem = ({
               onClick={() => {
                 const exportDxf = async () => {
                   if (item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(item, {
+                  await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -702,7 +702,7 @@ const OperationItem = ({
               onClick={() => {
                 const exportDxf = async () => {
                   if (item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(item, {
+                  await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
