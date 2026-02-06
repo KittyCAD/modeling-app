@@ -127,6 +127,29 @@ describe('rectTool - XState', () => {
       expect(actor.getSnapshot().context.draft).toBeDefined()
       actor.stop()
     })
+
+    it('should transition to awaiting third point in angled mode after setting second point', async () => {
+      const { machine, sceneInfra, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [3, 4] })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+      expect(actor.getSnapshot().context.secondPoint).toEqual([3, 4])
+
+      actor.stop()
+    })
   })
 
   describe('escape handling', () => {
@@ -176,6 +199,35 @@ describe('rectTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.origin).toEqual([0, 0])
+      expect(context.draft).toBeUndefined()
+      actor.stop()
+    })
+
+    it('should clear draft and second point when finalizing angled mode from third point state', async () => {
+      const { machine, sceneInfra, rustContext, kclManager } =
+        createTestMachine()
+      const actor = createActor(machine, {
+        input: {
+          sceneInfra,
+          rustContext,
+          kclManager,
+          sketchId: 0,
+          toolVariant: 'angled',
+        },
+      }).start()
+
+      actor.send({ type: 'add point', data: [1, 2] })
+      await waitFor(actor, (state) => state.matches('awaiting second point'))
+
+      actor.send({ type: 'set second point', data: [3, 4] })
+      await waitFor(actor, (state) => state.matches('awaiting third point'))
+
+      actor.send({ type: 'finalize' })
+      await waitFor(actor, (state) => state.matches('awaiting first point'))
+
+      const context = actor.getSnapshot().context
+      expect(context.origin).toEqual([0, 0])
+      expect(context.secondPoint).toBeUndefined()
       expect(context.draft).toBeUndefined()
       actor.stop()
     })
