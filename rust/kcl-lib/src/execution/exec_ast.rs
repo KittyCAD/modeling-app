@@ -604,6 +604,7 @@ impl ExecutorContext {
                                             exec_state,
                                             metadata.source_range,
                                             attrs.impl_ == annotations::Impl::KclConstrainable,
+                                            false,
                                         )
                                         .map_err(|e| KclError::new_semantic(e.into()))?,
                                     ),
@@ -1582,7 +1583,7 @@ fn apply_ascription(
     exec_state: &mut ExecState,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false)
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false, false)
         .map_err(|e| KclError::new_semantic(e.into()))?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
