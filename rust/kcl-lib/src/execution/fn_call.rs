@@ -480,12 +480,20 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            for v in &value.value {
+            if value.sketch().is_none() {
+                // Solids created procedurally have no sketch, so no tags to update.
+                return Ok(());
+            }
+            let surfaces = value.value.clone();
+            for v in &surfaces {
                 let mut solid_copy = value.clone();
-                solid_copy.sketch.tags.clear(); // Avoid recursive tags.
+                if let Some(sketch) = solid_copy.sketch_mut() {
+                    sketch.tags.clear(); // Avoid recursive tags.
+                }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
+                    let sketch = value.sketch_mut().unwrap();
+                    let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -520,7 +528,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     // update the sketch tags.
-                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+                    sketch.merge_tags(Some(&tag_id).into_iter());
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
@@ -540,11 +548,15 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            if !value.sketch.tags.is_empty() {
+            if let Some(sketch) = value.sketch() {
+                if sketch.tags.is_empty() {
+                    return Ok(());
+                }
+                let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -553,7 +565,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 for k in sketches_to_update {
                     exec_state.mut_stack().update(&k, |v, _| {
                         let sketch = v.as_mut_sketch().unwrap();
-                        sketch.merge_tags(value.sketch.tags.values());
+                        sketch.merge_tags(sketch_tags.iter());
                     });
                 }
             }

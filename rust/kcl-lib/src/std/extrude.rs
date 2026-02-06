@@ -23,7 +23,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed,
-        Sketch, SketchSurface, Solid, annotations,
+        Sketch, SketchSurface, Solid, SolidCreator, annotations,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -475,7 +475,7 @@ pub(crate) async fn do_post_extrude<'a>(
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                sketch.id = face.solid.sketch.id;
+                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
             }
         }
         (ExtrudeMethod::New, BeingExtruded::Face) => {
@@ -491,7 +491,7 @@ pub(crate) async fn do_post_extrude<'a>(
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                sketch.id = face.solid.sketch.id;
+                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
             }
         }
         (other, _) => {
@@ -678,14 +678,26 @@ pub(crate) async fn do_post_extrude<'a>(
         }));
     }
 
+    let meta = sketch.meta.clone();
+    let units = sketch.units;
+    let id = sketch.id;
+    let creator = match &sketch.on {
+        SketchSurface::Plane(_) => SolidCreator::Sketch { sketch },
+        SketchSurface::Face(face) => SolidCreator::Face {
+            face_id: face.id,
+            solid_id: face.solid.id,
+            sketch,
+        },
+    };
+
     Ok(Solid {
-        id: sketch.id,
+        id,
         artifact_id: extrude_cmd_id,
         value: new_value,
-        meta: sketch.meta.clone(),
-        units: sketch.units,
+        meta,
+        units,
         sectional,
-        sketch,
+        creator,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],

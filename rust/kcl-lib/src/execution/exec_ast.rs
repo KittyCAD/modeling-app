@@ -2265,10 +2265,18 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
-                value: Box::new(value.sketch),
+            (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => {
+                let Some(sketch) = value.sketch() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "This solid was created without a sketch, so `solid.sketch` is unavailable.".to_owned(),
+                        vec![self.clone().into()],
+                    )));
+                };
+                Ok(KclValue::Sketch {
+                    value: Box::new(sketch.clone()),
+                }
+                .continue_())
             }
-            .continue_()),
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
