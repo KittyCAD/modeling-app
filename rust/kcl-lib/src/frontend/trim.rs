@@ -3471,7 +3471,7 @@ pub(crate) fn trim_strategy(
 /// - Adding coincident constraints (AddCoincidentConstraint)
 /// - Splitting segments (SplitSegment)
 /// - Migrating constraints (MigrateConstraint)
-pub async fn execute_trim_operations_simple(
+pub(crate) async fn execute_trim_operations_simple(
     strategy: Vec<TrimOperation>,
     current_scene_graph_delta: &crate::frontend::api::SceneGraphDelta,
     frontend: &mut crate::frontend::FrontendState,
