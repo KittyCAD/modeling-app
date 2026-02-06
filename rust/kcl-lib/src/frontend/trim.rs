@@ -2661,10 +2661,10 @@ pub(crate) fn trim_strategy(
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
-                let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
+                // Convert to segment units only; rounding happens at final conversion to output if needed.
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.x), units)),
-                    y: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.y), units)),
+                    x: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.x, units)),
+                    y: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.y, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
@@ -2681,10 +2681,10 @@ pub(crate) fn trim_strategy(
                 }
             }
             SegmentCtor::Arc(arc_ctor) => {
-                let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
+                // Convert to segment units only; rounding happens at final conversion to output if needed.
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.x), units)),
-                    y: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.y), units)),
+                    x: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.x, units)),
+                    y: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.y, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
@@ -3780,13 +3780,13 @@ pub(crate) async fn execute_trim_operations_simple(
                     _ => crate::pretty::NumericSuffix::Mm,
                 };
 
-                // Helper to convert Coords2d (mm) to Point2d in segment units
+                // Helper to convert Coords2d (mm) to Point2d in segment units. No rounding here;
+                // rounding happens at final conversion to output if needed.
                 let coords_to_point =
                     |coords: Coords2d| -> crate::frontend::sketch::Point2d<crate::frontend::api::Number> {
-                        let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
                         crate::frontend::sketch::Point2d {
-                            x: mm_to_number(round_off(coords.x), units),
-                            y: mm_to_number(round_off(coords.y), units),
+                            x: mm_to_number(coords.x, units),
+                            y: mm_to_number(coords.y, units),
                         }
                     };
 
