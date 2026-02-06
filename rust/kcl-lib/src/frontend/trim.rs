@@ -1800,7 +1800,7 @@ where
                 let old_start_index = start_index;
                 start_index = *next_index;
 
-                // Fail-safe: if nextIndex didn't advance, force it to advance
+                // Fail-safe: if start_index didn't advance, force it to advance
                 if start_index <= old_start_index {
                     start_index = old_start_index + 1;
                 }
