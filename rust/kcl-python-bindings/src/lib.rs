@@ -5,8 +5,12 @@ use kcl_lib::{
     ExecutorContext,
 };
 use kittycad_modeling_cmds::{
-    self as kcmc, format::InputFormat3d, shared::FileExportFormat, units::UnitLength, websocket::RawFile, ImageFormat,
-    ImportFile,
+    self as kcmc,
+    format::{InputFormat3d, OutputFormat3d},
+    shared::FileExportFormat,
+    units::UnitLength,
+    websocket::RawFile,
+    ImageFormat, ImportFile,
 };
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
@@ -38,73 +42,6 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
     };
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
-}
-
-fn get_output_format(
-    format: &FileExportFormat,
-    src_unit: UnitLength,
-) -> kittycad_modeling_cmds::format::OutputFormat3d {
-    // Zoo co-ordinate system.
-    //
-    // * Forward: -Y
-    // * Up: +Z
-    // * Handedness: Right
-    let coords = kittycad_modeling_cmds::coord::System {
-        forward: kittycad_modeling_cmds::coord::AxisDirectionPair {
-            axis: kittycad_modeling_cmds::coord::Axis::Y,
-            direction: kittycad_modeling_cmds::coord::Direction::Negative,
-        },
-        up: kittycad_modeling_cmds::coord::AxisDirectionPair {
-            axis: kittycad_modeling_cmds::coord::Axis::Z,
-            direction: kittycad_modeling_cmds::coord::Direction::Positive,
-        },
-    };
-
-    match format {
-        FileExportFormat::Fbx => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Fbx(kittycad_modeling_cmds::format::fbx::export::Options {
-                storage: kittycad_modeling_cmds::format::fbx::export::Storage::Binary,
-                created: None,
-            })
-        }
-        FileExportFormat::Glb => kittycad_modeling_cmds::format::OutputFormat3d::Gltf(
-            kittycad_modeling_cmds::format::gltf::export::Options {
-                storage: kittycad_modeling_cmds::format::gltf::export::Storage::Binary,
-                presentation: kittycad_modeling_cmds::format::gltf::export::Presentation::Compact,
-            },
-        ),
-        FileExportFormat::Gltf => kittycad_modeling_cmds::format::OutputFormat3d::Gltf(
-            kittycad_modeling_cmds::format::gltf::export::Options {
-                storage: kittycad_modeling_cmds::format::gltf::export::Storage::Embedded,
-                presentation: kittycad_modeling_cmds::format::gltf::export::Presentation::Pretty,
-            },
-        ),
-        FileExportFormat::Obj => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Obj(kittycad_modeling_cmds::format::obj::export::Options {
-                coords,
-                units: src_unit,
-            })
-        }
-        FileExportFormat::Ply => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Ply(kittycad_modeling_cmds::format::ply::export::Options {
-                storage: kittycad_modeling_cmds::format::ply::export::Storage::Ascii,
-                coords,
-                selection: kittycad_modeling_cmds::format::Selection::DefaultScene,
-                units: src_unit,
-            })
-        }
-        FileExportFormat::Step => kittycad_modeling_cmds::format::OutputFormat3d::Step(
-            kittycad_modeling_cmds::format::step::export::Options { coords, created: None },
-        ),
-        FileExportFormat::Stl => {
-            kittycad_modeling_cmds::format::OutputFormat3d::Stl(kittycad_modeling_cmds::format::stl::export::Options {
-                storage: kittycad_modeling_cmds::format::stl::export::Storage::Ascii,
-                coords,
-                units: src_unit,
-                selection: kittycad_modeling_cmds::format::Selection::DefaultScene,
-            })
-        }
-    }
 }
 
 /// Get the path to the current file from the path given, and read the code.
@@ -327,10 +264,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
     let mut files = Vec::with_capacity(filepaths.len());
     for filepath in filepaths {
         let file_contents = tokio::fs::read(&filepath).await.map_err(to_py_exception)?;
-        files.push(ImportFile {
-            path: filepath,
-            data: file_contents,
-        });
+        files.push(ImportFile::builder().path(filepath).data(file_contents).build());
     }
     let resp = ctx
         .engine
@@ -579,7 +513,10 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                     &kittycad_modeling_cmds::ModelingCmd::Export(
                         kittycad_modeling_cmds::Export::builder()
                             .entity_ids(vec![])
-                            .format(get_output_format(&export_format, units.into()))
+                            .format(OutputFormat3d::new(
+                                &export_format,
+                                kcmc::format::OutputFormat3dOptions::new(units),
+                            ))
                             .build(),
                     ),
                 )
@@ -632,7 +569,10 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                     &kittycad_modeling_cmds::ModelingCmd::Export(
                         kittycad_modeling_cmds::Export::builder()
                             .entity_ids(vec![])
-                            .format(get_output_format(&export_format, units.into()))
+                            .format(OutputFormat3d::new(
+                                &export_format,
+                                kcmc::format::OutputFormat3dOptions::new(units),
+                            ))
                             .build(),
                     ),
                 )
