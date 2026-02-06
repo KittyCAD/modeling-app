@@ -119,7 +119,6 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { sep } from 'path'
 
 interface ExecuteArgs {
   ast?: Node<Program>
