@@ -102,12 +102,7 @@ async fn inner_appearance(
             ))
         })?;
 
-        let color = Color {
-            r: rgb.red,
-            g: rgb.green,
-            b: rgb.blue,
-            a: 1.0,
-        };
+        let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, 1.0);
 
         exec_state
             .batch_modeling_cmd(

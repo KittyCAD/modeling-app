@@ -198,7 +198,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -293,7 +292,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -370,7 +368,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -447,7 +444,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 270.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -652,7 +648,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 4000.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -747,7 +742,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -841,7 +835,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -935,7 +928,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 270.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1252,7 +1244,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1329,7 +1320,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1406,7 +1396,6 @@ description: Artifact commands saturn-v.kcl
                 "z": 270.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
