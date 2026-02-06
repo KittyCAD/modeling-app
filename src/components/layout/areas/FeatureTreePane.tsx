@@ -687,14 +687,6 @@ const OperationItem = ({
                     base64Decode,
                     browserSaveFile,
                   })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
                 }
                 void exportDxf()
               }}
@@ -718,14 +710,6 @@ const OperationItem = ({
                     base64Decode,
                     browserSaveFile,
                   })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
                 }
                 void exportDxf()
               }}
