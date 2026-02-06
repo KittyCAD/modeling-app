@@ -5,7 +5,7 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, StatementKind,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, Solid, StatementKind,
         TagEngineInfo, TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         control_continue,
@@ -480,19 +480,26 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            if value.sketch().is_none() {
-                // Solids created procedurally have no sketch, so no tags to update.
-                return Ok(());
-            }
             let surfaces = value.value.clone();
-            for v in &surfaces {
-                let mut solid_copy = value.clone();
+            if value.sketch_mut().is_none() {
+                // If the solid isn't based on a sketch, then it doesn't have a tag container,
+                // so there's nothing to do here.
+                return Ok(());
+            };
+            // Now that we know there's work to do (because there's a tag container),
+            // run some clones.
+            let solid_copies: Vec<Box<Solid>> = surfaces.iter().map(|_| value.clone()).collect();
+            // Get the tag container. We expect it to always succeed because we already checked
+            // for a tag container above.
+            let Some(sketch) = value.sketch_mut() else {
+                return Ok(());
+            };
+            for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
                 if let Some(sketch) = solid_copy.sketch_mut() {
                     sketch.tags.clear(); // Avoid recursive tags.
                 }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let sketch = value.sketch_mut().unwrap();
                     let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
