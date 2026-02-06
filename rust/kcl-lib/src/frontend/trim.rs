@@ -3441,7 +3441,14 @@ pub(crate) fn trim_strategy(
         return Ok(operations);
     }
 
-    Err("Not implemented".to_string())
+    // Only three strategy cases should exist: simple trim (endpoint/endpoint),
+    // tail cut (intersection+endpoint), or split (intersection+intersection).
+    // If we get here, trim termination pairing was unexpected or a new variant
+    // was added without updating the strategy mapping.
+    Err(format!(
+        "Unsupported trim termination combination: left={:?} right={:?}",
+        left_side, right_side
+    ))
 }
 
 /// Execute the trim operations determined by the trim strategy
