@@ -2466,7 +2466,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2661,7 +2660,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2838,7 +2836,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3033,7 +3030,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3270,7 +3266,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3447,7 +3442,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

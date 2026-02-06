@@ -9859,7 +9859,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9886,7 +9885,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9913,7 +9911,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 12.7
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9940,7 +9937,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10237,7 +10233,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 31.75
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10534,7 +10529,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 18.541999999999998
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10832,7 +10826,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10858,7 +10851,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 19.558
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -11156,7 +11148,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -11182,7 +11173,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 6.350000000000001
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

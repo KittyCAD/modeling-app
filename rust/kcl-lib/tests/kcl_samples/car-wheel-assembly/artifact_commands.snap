@@ -1582,7 +1582,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1611,7 +1610,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1808,7 +1806,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1837,7 +1834,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2034,7 +2030,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2063,7 +2058,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2260,7 +2254,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2289,7 +2282,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2486,7 +2478,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2515,7 +2506,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5681,7 +5671,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7260,7 +7249,6 @@ description: Artifact commands car-wheel-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
