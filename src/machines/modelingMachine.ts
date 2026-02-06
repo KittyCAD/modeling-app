@@ -4833,14 +4833,13 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
-              fileName?: string
             }
           | undefined
       }) => {
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
-        const { data, kclManager, rustContext, defaultUnit, fileName } = input
+        const { data, kclManager, rustContext, defaultUnit } = input
 
         if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
           let errorMessage = 'Unable to Export '
@@ -4854,10 +4853,13 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        let finalFileName = fileName?.replace('.kcl', `.${data.type}`) || ''
+        let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
+          '.kcl',
+          `.${data.type}`
+        )
         // Ensure the file has an extension.
-        if (!finalFileName.includes('.')) {
-          finalFileName += `.${data.type}`
+        if (!fileName.includes('.')) {
+          fileName += `.${data.type}`
         }
 
         const format = {
@@ -4920,7 +4922,7 @@ export const modelingMachine = setup({
           return
         }
 
-        await exportSave({ files, toastId, fileName: finalFileName })
+        await exportSave({ files, toastId, fileName })
       }
     ),
     makeFromEngine: fromPromise(
@@ -7594,7 +7596,6 @@ export const modelingMachine = setup({
           return {
             machineManager: context.machineManager,
             rustContext: context.rustContext,
-            fileName: context.fileName,
             ...event.data,
           }
         },

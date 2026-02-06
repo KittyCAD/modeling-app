@@ -119,6 +119,7 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { sep } from 'path'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1709,6 +1710,11 @@ export class KclManager extends EventTarget {
       this._currentFilePath = path
       this.lastWrite = null
     }
+  }
+  get currentFileName() {
+    return (
+      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+    )
   }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
