@@ -325,6 +325,55 @@ sketch(on = YZ) {
         assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
     }
 
+    /// Same logical trim line [[-15, 50], [-15, -50]] (vertical at -15mm) and equivalent sketches in cm vs mm.
+    /// Trim line should produce equivalent trimmed sketches regardless of sketch default unit.
+    #[tokio::test]
+    async fn test_trim_should_work_with_different_units() {
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
+  line2 = sketch2::line(start = [var -20mm, var 0mm], end = [var 50mm, var 0mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
+
+        // Expected: trim line at -15mm trims line2 to the intersection with line1 at -10mm.
+        let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
+  line2 = sketch2::line(start = [var -10mm, var 0mm], end = [var 50mm, var 0mm])
+  sketch2::coincident([line2.start, line1])
+}
+"#;
+
+        assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
+  line2 = sketch2::line(start = [var -2cm, var 0cm], end = [var 5cm, var 0cm])
+}
+"#;
+
+        // Same physical trim line as mm case, expressed in cm: -1.5cm to 5cm.
+        let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
+
+        let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
+  line2 = sketch2::line(start = [var -1cm, var 0cm], end = [var 5cm, var 0cm])
+  sketch2::coincident([line2.start, line1])
+}
+"#;
+
+        assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    }
+
     #[tokio::test]
     async fn test_split_trim_with_point_line_coincident_constraint() {
         // split trim where the end of the trimmed segment has a point-line coincident constraint,

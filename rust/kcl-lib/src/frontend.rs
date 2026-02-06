@@ -6,6 +6,7 @@ use std::{
 
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
     ExecOutcome, ExecutorContext, Program,
@@ -143,6 +144,15 @@ impl FrontendState {
     /// Get a reference to the scene graph
     pub fn scene_graph(&self) -> &SceneGraph {
         &self.scene_graph
+    }
+
+    pub fn default_length_unit(&self) -> UnitLength {
+        self.program
+            .meta_settings()
+            .ok()
+            .flatten()
+            .map(|settings| settings.default_length_units)
+            .unwrap_or(UnitLength::Millimeters)
     }
 }
 

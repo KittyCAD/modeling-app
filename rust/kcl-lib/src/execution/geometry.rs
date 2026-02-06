@@ -1,5 +1,7 @@
-use std::f64::consts::TAU;
-use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use std::{
+    f64::consts::TAU,
+    ops::{Add, AddAssign, Mul, Sub, SubAssign},
+};
 
 use anyhow::Result;
 use indexmap::IndexMap;

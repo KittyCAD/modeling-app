@@ -1,8 +1,11 @@
 use std::f64::consts::TAU;
 
+use kittycad_modeling_cmds::units::UnitLength;
+
 use crate::{
+    execution::types::adjust_length,
     frontend::{
-        api::{Object, ObjectId, ObjectKind},
+        api::{Number, Object, ObjectId, ObjectKind},
         sketch::{Constraint, Segment, SegmentCtor},
     },
     pretty::NumericSuffix,
@@ -12,7 +15,44 @@ use crate::{
 const EPSILON_PARALLEL: f64 = 1e-10;
 const EPSILON_POINT_ON_SEGMENT: f64 = 1e-6;
 
-/// 2D coordinates
+/// Length unit for a numeric suffix (length variants only). Non-length suffixes default to millimeters.
+fn suffix_to_unit(suffix: NumericSuffix) -> UnitLength {
+    match suffix {
+        NumericSuffix::Mm => UnitLength::Millimeters,
+        NumericSuffix::Cm => UnitLength::Centimeters,
+        NumericSuffix::M => UnitLength::Meters,
+        NumericSuffix::Inch => UnitLength::Inches,
+        NumericSuffix::Ft => UnitLength::Feet,
+        NumericSuffix::Yd => UnitLength::Yards,
+        _ => UnitLength::Millimeters,
+    }
+}
+
+/// Convert a length `Number` to f64 in millimeters. Use when reading coordinates so trim geometry is in a single unit.
+fn number_to_mm(n: &Number) -> f64 {
+    adjust_length(suffix_to_unit(n.units), n.value, UnitLength::Millimeters).0
+}
+
+/// Convert a length in mm to a `Number` in the given unit. Use when writing coordinates from trim back to the scene.
+fn mm_to_number(value_mm: f64, target_suffix: NumericSuffix) -> Number {
+    let (value, _) = adjust_length(UnitLength::Millimeters, value_mm, suffix_to_unit(target_suffix));
+    Number {
+        value,
+        units: target_suffix,
+    }
+}
+
+fn normalize_trim_points_to_mm(points: &[Coords2d], default_unit: UnitLength) -> Vec<Coords2d> {
+    points
+        .iter()
+        .map(|point| Coords2d {
+            x: adjust_length(default_unit, point.x, UnitLength::Millimeters).0,
+            y: adjust_length(default_unit, point.y, UnitLength::Millimeters).0,
+        })
+        .collect()
+}
+
+/// 2D coordinates in millimeters (trim internal unit). All segment/point positions are converted to mm when read.
 #[derive(Debug, Clone, Copy)]
 pub struct Coords2d {
     pub x: f64,
@@ -652,10 +692,10 @@ fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId) -> Optio
         return None;
     };
 
-    // Extract position coordinates from Point2d<Number>
+    // Extract position coordinates in mm (trim internal unit)
     Some(Coords2d {
-        x: point.position.x.value,
-        y: point.position.y.value,
+        x: number_to_mm(&point.position.x),
+        y: number_to_mm(&point.position.y),
     })
 }
 
@@ -744,6 +784,9 @@ pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objec
 ///
 /// Loops through polyline segments starting from startIndex and checks for intersections
 /// with all scene segments (both Line and Arc). Returns the first intersection found.
+///
+/// **Units:** `points` and all coordinates in the trim API use millimeters. Segment positions
+/// read from `objects` are converted to mm internally; callers must pass the trim line in mm.
 pub fn get_next_trim_spawn(points: &[Coords2d], start_index: usize, objects: &[Object]) -> TrimItem {
     // Loop through polyline segments starting from startIndex
     for i in start_index..points.len().saturating_sub(1) {
@@ -1988,6 +2031,8 @@ pub async fn execute_trim_loop_with_context(
     version: crate::frontend::api::Version,
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
+    let normalized_points = normalize_trim_points_to_mm(points, frontend.default_length_unit());
+
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
     // This duplicates the loop from execute_trim_loop, but allows us to access frontend and ctx directly
     let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
@@ -1999,6 +2044,8 @@ pub async fn execute_trim_loop_with_context(
     let mut start_index = 0;
     let max_iterations = 1000;
     let mut iteration_count = 0;
+
+    let points = normalized_points.as_slice();
 
     while start_index < points.len().saturating_sub(1) && iteration_count < max_iterations {
         iteration_count += 1;
@@ -2226,13 +2273,14 @@ pub fn trim_strategy(
         _ => NumericSuffix::Mm,
     };
 
-    // Helper to convert Coords2d to ApiPoint2d JSON with units
+    // Helper to convert Coords2d (mm) to ApiPoint2d JSON in segment units
     let _coords_to_api_point = |coords: Coords2d| -> serde_json::Value {
-        // Round to 2 decimal places (matching TypeScript roundOff function)
         let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
+        let x = mm_to_number(round_off(coords.x), units);
+        let y = mm_to_number(round_off(coords.y), units);
         serde_json::json!({
-            "x": { "type": "Var", "value": round_off(coords.x), "units": units },
-            "y": { "type": "Var", "value": round_off(coords.y), "units": units },
+            "x": { "type": "Var", "value": x.value, "units": x.units },
+            "y": { "type": "Var", "value": y.value, "units": y.units },
         })
     };
 
@@ -2613,17 +2661,10 @@ pub fn trim_strategy(
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
-                // Round to 2 decimal places (matching TypeScript roundOff function)
                 let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(crate::frontend::api::Number {
-                        value: round_off(intersection_coords.x),
-                        units,
-                    }),
-                    y: crate::frontend::api::Expr::Var(crate::frontend::api::Number {
-                        value: round_off(intersection_coords.y),
-                        units,
-                    }),
+                    x: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.x), units)),
+                    y: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.y), units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
@@ -2640,17 +2681,10 @@ pub fn trim_strategy(
                 }
             }
             SegmentCtor::Arc(arc_ctor) => {
-                // Round to 2 decimal places (matching TypeScript roundOff function)
                 let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(crate::frontend::api::Number {
-                        value: round_off(intersection_coords.x),
-                        units,
-                    }),
-                    y: crate::frontend::api::Expr::Var(crate::frontend::api::Number {
-                        value: round_off(intersection_coords.y),
-                        units,
-                    }),
+                    x: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.x), units)),
+                    y: crate::frontend::api::Expr::Var(mm_to_number(round_off(intersection_coords.y), units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
@@ -2971,10 +3005,10 @@ pub fn trim_strategy(
                             continue;
                         };
 
-                        // Get point coordinates
+                        // Get point coordinates in mm
                         let point_coords = Coords2d {
-                            x: point.position.x.value,
-                            y: point.position.y.value,
+                            x: number_to_mm(&point.position.x),
+                            y: number_to_mm(&point.position.y),
                         };
 
                         // Check if point is at original end point (geometrically)
@@ -2986,8 +3020,8 @@ pub fn trim_strategy(
                                 } = &end_point_obj.kind
                                 {
                                     Some(Coords2d {
-                                        x: end_point.position.x.value,
-                                        y: end_point.position.y.value,
+                                        x: number_to_mm(&end_point.position.x),
+                                        y: number_to_mm(&end_point.position.y),
                                     })
                                 } else {
                                     None
@@ -3113,10 +3147,10 @@ pub fn trim_strategy(
                                 continue;
                             };
 
-                            // Get point coordinates
+                            // Get point coordinates in mm
                             let point_coords = Coords2d {
-                                x: point.position.x.value,
-                                y: point.position.y.value,
+                                x: number_to_mm(&point.position.x),
+                                y: number_to_mm(&point.position.y),
                             };
 
                             // Project the point onto the segment to get its parametric position
@@ -3141,8 +3175,8 @@ pub fn trim_strategy(
                                     } = &end_point_obj.kind
                                     {
                                         Some(Coords2d {
-                                            x: end_point.position.x.value,
-                                            y: end_point.position.y.value,
+                                            x: number_to_mm(&end_point.position.x),
+                                            y: number_to_mm(&end_point.position.y),
                                         })
                                     } else {
                                         None
@@ -3325,10 +3359,10 @@ pub fn trim_strategy(
                             false
                         };
 
-                    // Get point coordinates
+                    // Get point coordinates in mm
                     let point_coords = Coords2d {
-                        x: point.position.x.value,
-                        y: point.position.y.value,
+                        x: number_to_mm(&point.position.x),
+                        y: number_to_mm(&point.position.y),
                     };
 
                     // Check if point is at original end point (with relaxed tolerance for catch-all)
@@ -3339,8 +3373,8 @@ pub fn trim_strategy(
                             } = &end_point_obj.kind
                             {
                                 Some(Coords2d {
-                                    x: end_point.position.x.value,
-                                    y: end_point.position.y.value,
+                                    x: number_to_mm(&end_point.position.x),
+                                    y: number_to_mm(&end_point.position.y),
                                 })
                             } else {
                                 None
@@ -3761,20 +3795,13 @@ pub async fn execute_trim_operations_simple(
                     _ => crate::pretty::NumericSuffix::Mm,
                 };
 
-                // Helper to convert Coords2d to Point2d with units
+                // Helper to convert Coords2d (mm) to Point2d in segment units
                 let coords_to_point =
                     |coords: Coords2d| -> crate::frontend::sketch::Point2d<crate::frontend::api::Number> {
-                        // Round to 2 decimal places (matching TypeScript roundOff function)
                         let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
                         crate::frontend::sketch::Point2d {
-                            x: crate::frontend::api::Number {
-                                value: round_off(coords.x),
-                                units,
-                            },
-                            y: crate::frontend::api::Number {
-                                value: round_off(coords.y),
-                                units,
-                            },
+                            x: mm_to_number(round_off(coords.x), units),
+                            y: mm_to_number(round_off(coords.y), units),
                         }
                     };
 
