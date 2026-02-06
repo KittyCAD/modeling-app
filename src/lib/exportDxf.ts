@@ -40,7 +40,7 @@ function findPlaneArtifactForSubtract2d(
   )
 
   if (planeArtifact instanceof Error) return null
-  return planeArtifact
+  return kclManager.artifactGraph.get(planeArtifact.id) ?? null
 }
 
 // Exports a sketch operation to DXF format

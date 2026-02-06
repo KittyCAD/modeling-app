@@ -704,13 +704,13 @@ const OperationItem = ({
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' && props.item.name === 'subtract2d'
+      ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
         ? [
             <ContextMenuItem
               onClick={() => {
                 const exportDxf = async () => {
-                  if (props.item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(props.item, {
+                  if (item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,

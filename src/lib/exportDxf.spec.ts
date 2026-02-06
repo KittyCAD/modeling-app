@@ -636,6 +636,8 @@ describe('DXF Export', () => {
         type: 'path',
         planeId: 'plane-id',
         segIds: [],
+        consumed: false,
+        trajectorySweepId: null,
         codeRef: {
           nodePath: {
             steps: [
@@ -655,6 +657,8 @@ describe('DXF Export', () => {
         type: 'path',
         planeId: 'plane-id',
         segIds: [],
+        consumed: false,
+        trajectorySweepId: null,
         codeRef: {
           nodePath: {
             steps: [
