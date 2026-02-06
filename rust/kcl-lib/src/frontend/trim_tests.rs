@@ -352,8 +352,8 @@ sketch(on = YZ) {
 }
 "#;
 
-    // Same physical trim line as mm case, expressed in cm: -1.5cm to 5cm.
-    let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
+    // Same physical trim line as mm case, still provided in mm.
+    let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
 
     let expected_code = r#"@settings(experimentalFeatures = allow, defaultLengthUnit = cm)
 
@@ -1441,6 +1441,8 @@ fn find_first_arc_id(objects: &[crate::frontend::api::Object]) -> crate::fronten
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 /// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
 mod get_trim_spawn_terminations_tests {
+    use kittycad_modeling_cmds::units::UnitLength;
+
     use super::*;
     use crate::frontend::trim::{Coords2d, TrimTermination, get_trim_spawn_terminations};
 
@@ -1458,8 +1460,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_line_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be intersections
         assert!(matches!(result.left_side, TrimTermination::Intersection { .. }));
@@ -1502,8 +1509,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_line_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be segEndPoint
         assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
@@ -1542,8 +1554,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_line_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be trimSpawnSegmentCoincidentWithAnotherSegmentPoint
         assert!(matches!(
@@ -1594,8 +1611,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_line_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_line_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be segEndPoint
         assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
@@ -1632,8 +1654,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_arc_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be intersections
         assert!(matches!(result.left_side, TrimTermination::Intersection { .. }));
@@ -1676,8 +1703,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_arc_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be segEndPoint
         assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));
@@ -1716,8 +1748,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_arc_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be trimSpawnSegmentCoincidentWithAnotherSegmentPoint
         assert!(matches!(
@@ -1768,8 +1805,13 @@ sketch(on = YZ) {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(find_first_arc_id(&objects), &trim_points, &objects)
-            .expect("get_trim_spawn_terminations failed");
+        let result = get_trim_spawn_terminations(
+            find_first_arc_id(&objects),
+            &trim_points,
+            &objects,
+            UnitLength::Millimeters,
+        )
+        .expect("get_trim_spawn_terminations failed");
 
         // Both sides should be segEndPoint
         assert!(matches!(result.left_side, TrimTermination::SegEndPoint { .. }));

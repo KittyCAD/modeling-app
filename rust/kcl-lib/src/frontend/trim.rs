@@ -33,31 +33,32 @@ fn suffix_to_unit(suffix: NumericSuffix) -> UnitLength {
     }
 }
 
-/// Convert a length `Number` to f64 in millimeters. Use when reading coordinates so trim geometry is in a single unit.
-fn number_to_mm(n: &Number) -> f64 {
-    adjust_length(suffix_to_unit(n.units), n.value, UnitLength::Millimeters).0
+/// Convert a length `Number` to f64 in the target unit. Use when normalizing geometry into a single unit.
+fn number_to_unit(n: &Number, target_unit: UnitLength) -> f64 {
+    adjust_length(suffix_to_unit(n.units), n.value, target_unit).0
 }
 
-/// Convert a length in mm to a `Number` in the given unit. Use when writing coordinates from trim back to the scene.
-fn mm_to_number(value_mm: f64, target_suffix: NumericSuffix) -> Number {
-    let (value, _) = adjust_length(UnitLength::Millimeters, value_mm, suffix_to_unit(target_suffix));
+/// Convert a length in the given unit to a `Number` in the target suffix.
+fn unit_to_number(value: f64, source_unit: UnitLength, target_suffix: NumericSuffix) -> Number {
+    let (value, _) = adjust_length(source_unit, value, suffix_to_unit(target_suffix));
     Number {
         value,
         units: target_suffix,
     }
 }
 
-fn normalize_trim_points_to_mm(points: &[Coords2d], default_unit: UnitLength) -> Vec<Coords2d> {
+/// Convert trim line points from millimeters into the current/default unit.
+fn normalize_trim_points_to_unit(points: &[Coords2d], default_unit: UnitLength) -> Vec<Coords2d> {
     points
         .iter()
         .map(|point| Coords2d {
-            x: adjust_length(default_unit, point.x, UnitLength::Millimeters).0,
-            y: adjust_length(default_unit, point.y, UnitLength::Millimeters).0,
+            x: adjust_length(UnitLength::Millimeters, point.x, default_unit).0,
+            y: adjust_length(UnitLength::Millimeters, point.y, default_unit).0,
         })
         .collect()
 }
 
-/// 2D coordinates in millimeters (trim internal unit). All segment/point positions are converted to mm when read.
+/// 2D coordinates in the trim internal unit (current/default length unit).
 #[derive(Debug, Clone, Copy)]
 pub struct Coords2d {
     pub x: f64,
@@ -685,7 +686,7 @@ pub fn arc_arc_intersection(
 
 /// Helper to extract coordinates from a point object in JSON format
 // Native type helper - get point coordinates from ObjectId
-fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId) -> Option<Coords2d> {
+fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId, default_unit: UnitLength) -> Option<Coords2d> {
     let point_obj = objects.get(point_id.0)?;
 
     // Check if it's a Point segment
@@ -697,16 +698,21 @@ fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId) -> Optio
         return None;
     };
 
-    // Extract position coordinates in mm (trim internal unit)
+    // Extract position coordinates in the trim internal unit
     Some(Coords2d {
-        x: number_to_mm(&point.position.x),
-        y: number_to_mm(&point.position.y),
+        x: number_to_unit(&point.position.x, default_unit),
+        y: number_to_unit(&point.position.y, default_unit),
     })
 }
 
 // Legacy JSON helper (will be removed)
 /// Helper to get point coordinates from a Line segment by looking up the point object (native types)
-pub fn get_position_coords_for_line(segment_obj: &Object, which: LineEndpoint, objects: &[Object]) -> Option<Coords2d> {
+pub fn get_position_coords_for_line(
+    segment_obj: &Object,
+    which: LineEndpoint,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Option<Coords2d> {
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
         return None;
     };
@@ -721,7 +727,7 @@ pub fn get_position_coords_for_line(segment_obj: &Object, which: LineEndpoint, o
         LineEndpoint::End => line.end,
     };
 
-    get_point_coords_from_native(objects, point_id)
+    get_point_coords_from_native(objects, point_id, default_unit)
 }
 
 /// Helper to check if a point is coincident with a segment (line or arc) via constraints (native types)
@@ -748,7 +754,12 @@ fn is_point_coincident_with_segment_native(point_id: ObjectId, segment_id: Objec
 }
 
 /// Helper to get point coordinates from an Arc segment by looking up the point object (native types)
-pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objects: &[Object]) -> Option<Coords2d> {
+pub fn get_position_coords_from_arc(
+    segment_obj: &Object,
+    which: ArcPoint,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Option<Coords2d> {
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
         return None;
     };
@@ -764,7 +775,7 @@ pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objec
         ArcPoint::Center => arc.center,
     };
 
-    get_point_coords_from_native(objects, point_id)
+    get_point_coords_from_native(objects, point_id, default_unit)
 }
 
 /// Find the next trim spawn (intersection) between trim line and scene segments
@@ -790,9 +801,16 @@ pub fn get_position_coords_from_arc(segment_obj: &Object, which: ArcPoint, objec
 /// Loops through polyline segments starting from startIndex and checks for intersections
 /// with all scene segments (both Line and Arc). Returns the first intersection found.
 ///
-/// **Units:** `points` and all coordinates in the trim API use millimeters. Segment positions
-/// read from `objects` are converted to mm internally; callers must pass the trim line in mm.
-pub fn get_next_trim_spawn(points: &[Coords2d], start_index: usize, objects: &[Object]) -> TrimItem {
+/// **Units:** Trim line points are expected in millimeters at the API boundary. Callers should
+/// normalize points to the current/default length unit before calling this function (the
+/// trim loop does this for you). Segment positions read from `objects` are converted to that same
+/// unit internally.
+pub fn get_next_trim_spawn(
+    points: &[Coords2d],
+    start_index: usize,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> TrimItem {
     // Loop through polyline segments starting from startIndex
     for i in start_index..points.len().saturating_sub(1) {
         let p1 = points[i];
@@ -807,8 +825,8 @@ pub fn get_next_trim_spawn(points: &[Coords2d], start_index: usize, objects: &[O
 
             // Handle Line segments
             if let Segment::Line(_line) = segment {
-                let start_point = get_position_coords_for_line(obj, LineEndpoint::Start, objects);
-                let end_point = get_position_coords_for_line(obj, LineEndpoint::End, objects);
+                let start_point = get_position_coords_for_line(obj, LineEndpoint::Start, objects, default_unit);
+                let end_point = get_position_coords_for_line(obj, LineEndpoint::End, objects, default_unit);
 
                 if let (Some(start), Some(end)) = (start_point, end_point)
                     && let Some(intersection) = line_segment_intersection(p1, p2, start, end, EPSILON_POINT_ON_SEGMENT)
@@ -826,9 +844,9 @@ pub fn get_next_trim_spawn(points: &[Coords2d], start_index: usize, objects: &[O
 
             // Handle Arc segments
             if let Segment::Arc(_arc) = segment {
-                let center_point = get_position_coords_from_arc(obj, ArcPoint::Center, objects);
-                let start_point = get_position_coords_from_arc(obj, ArcPoint::Start, objects);
-                let end_point = get_position_coords_from_arc(obj, ArcPoint::End, objects);
+                let center_point = get_position_coords_from_arc(obj, ArcPoint::Center, objects, default_unit);
+                let start_point = get_position_coords_from_arc(obj, ArcPoint::Start, objects, default_unit);
+                let end_point = get_position_coords_from_arc(obj, ArcPoint::End, objects, default_unit);
 
                 if let (Some(center), Some(start), Some(end)) = (center_point, start_point, end_point)
                     && let Some(intersection) =
@@ -911,6 +929,7 @@ pub fn get_trim_spawn_terminations(
     trim_spawn_seg_id: ObjectId,
     trim_spawn_coords: &[Coords2d],
     objects: &[Object],
+    default_unit: UnitLength,
 ) -> Result<TrimTerminations, String> {
     // Find the trim spawn segment
     let trim_spawn_seg = objects.iter().find(|obj| obj.id == trim_spawn_seg_id);
@@ -929,32 +948,34 @@ pub fn get_trim_spawn_terminations(
 
     let (segment_start, segment_end, segment_center) = match segment {
         Segment::Line(_) => {
-            let start =
-                get_position_coords_for_line(trim_spawn_seg, LineEndpoint::Start, objects).ok_or_else(|| {
+            let start = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::Start, objects, default_unit)
+                .ok_or_else(|| {
                     format!(
                         "Could not get start coordinates for line segment {}",
                         trim_spawn_seg_id.0
                     )
                 })?;
-            let end = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::End, objects)
+            let end = get_position_coords_for_line(trim_spawn_seg, LineEndpoint::End, objects, default_unit)
                 .ok_or_else(|| format!("Could not get end coordinates for line segment {}", trim_spawn_seg_id.0))?;
             (start, end, None)
         }
         Segment::Arc(_) => {
-            let start = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Start, objects).ok_or_else(|| {
-                format!(
-                    "Could not get start coordinates for arc segment {}",
-                    trim_spawn_seg_id.0
-                )
-            })?;
-            let end = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::End, objects)
+            let start = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Start, objects, default_unit)
+                .ok_or_else(|| {
+                    format!(
+                        "Could not get start coordinates for arc segment {}",
+                        trim_spawn_seg_id.0
+                    )
+                })?;
+            let end = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::End, objects, default_unit)
                 .ok_or_else(|| format!("Could not get end coordinates for arc segment {}", trim_spawn_seg_id.0))?;
-            let center = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Center, objects).ok_or_else(|| {
-                format!(
-                    "Could not get center coordinates for arc segment {}",
-                    trim_spawn_seg_id.0
-                )
-            })?;
+            let center = get_position_coords_from_arc(trim_spawn_seg, ArcPoint::Center, objects, default_unit)
+                .ok_or_else(|| {
+                    format!(
+                        "Could not get center coordinates for arc segment {}",
+                        trim_spawn_seg_id.0
+                    )
+                })?;
             (start, end, Some(center))
         }
         _ => {
@@ -1050,6 +1071,7 @@ pub fn get_trim_spawn_terminations(
             end: segment_end,
             center: segment_center,
         },
+        default_unit,
     )?;
 
     let right_termination = find_termination_in_direction(
@@ -1063,6 +1085,7 @@ pub fn get_trim_spawn_terminations(
             end: segment_end,
             center: segment_center,
         },
+        default_unit,
     )?;
 
     Ok(TrimTerminations {
@@ -1138,6 +1161,7 @@ fn find_termination_in_direction(
     direction: TrimDirection,
     objects: &[Object],
     segment_geometry: SegmentGeometry,
+    default_unit: UnitLength,
 ) -> Result<TrimTermination, String> {
     // Use native types
     let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
@@ -1220,8 +1244,8 @@ fn find_termination_in_direction(
         // Handle Line-Line, Line-Arc, Arc-Line, Arc-Arc intersections
         match other_segment {
             Segment::Line(_) => {
-                let other_start = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects);
-                let other_end = get_position_coords_for_line(other_seg, LineEndpoint::End, objects);
+                let other_start = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects, default_unit);
+                let other_end = get_position_coords_for_line(other_seg, LineEndpoint::End, objects, default_unit);
                 if let (Some(os), Some(oe)) = (other_start, other_end) {
                     match segment {
                         Segment::Line(_) => {
@@ -1277,9 +1301,9 @@ fn find_termination_in_direction(
                 }
             }
             Segment::Arc(_) => {
-                let other_start = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects);
-                let other_end = get_position_coords_from_arc(other_seg, ArcPoint::End, objects);
-                let other_center = get_position_coords_from_arc(other_seg, ArcPoint::Center, objects);
+                let other_start = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects, default_unit);
+                let other_end = get_position_coords_from_arc(other_seg, ArcPoint::End, objects, default_unit);
+                let other_center = get_position_coords_from_arc(other_seg, ArcPoint::Center, objects, default_unit);
                 if let (Some(os), Some(oe), Some(oc)) = (other_start, other_end, other_center) {
                     match segment {
                         Segment::Line(_) => {
@@ -1348,7 +1372,8 @@ fn find_termination_in_direction(
 
                 // Check if other segment's start endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) = get_position_coords_for_line(other_seg, LineEndpoint::Start, objects)
+                    && let Some(other_start) =
+                        get_position_coords_for_line(other_seg, LineEndpoint::Start, objects, default_unit)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1398,7 +1423,8 @@ fn find_termination_in_direction(
 
                 // Check if other segment's end endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) = get_position_coords_for_line(other_seg, LineEndpoint::End, objects)
+                    && let Some(other_end) =
+                        get_position_coords_for_line(other_seg, LineEndpoint::End, objects, default_unit)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1451,7 +1477,8 @@ fn find_termination_in_direction(
 
                 // Check if other segment's start endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects)
-                    && let Some(other_start) = get_position_coords_from_arc(other_seg, ArcPoint::Start, objects)
+                    && let Some(other_start) =
+                        get_position_coords_from_arc(other_seg, ArcPoint::Start, objects, default_unit)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1501,7 +1528,8 @@ fn find_termination_in_direction(
 
                 // Check if other segment's end endpoint is coincident with trim spawn segment
                 if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects)
-                    && let Some(other_end) = get_position_coords_from_arc(other_seg, ArcPoint::End, objects)
+                    && let Some(other_end) =
+                        get_position_coords_from_arc(other_seg, ArcPoint::End, objects, default_unit)
                 {
                     let (t, is_on_segment) = match segment {
                         Segment::Line(_) => {
@@ -1624,8 +1652,8 @@ fn find_termination_in_direction(
                 match other_segment {
                     Segment::Line(_) => {
                         if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_for_line(intersecting_seg, LineEndpoint::Start, objects),
-                            get_position_coords_for_line(intersecting_seg, LineEndpoint::End, objects),
+                            get_position_coords_for_line(intersecting_seg, LineEndpoint::Start, objects, default_unit),
+                            get_position_coords_for_line(intersecting_seg, LineEndpoint::End, objects, default_unit),
                         ) {
                             let dist_to_start = ((closest_candidate.point.x - other_start.x)
                                 * (closest_candidate.point.x - other_start.x)
@@ -1642,8 +1670,8 @@ fn find_termination_in_direction(
                     }
                     Segment::Arc(_) => {
                         if let (Some(other_start), Some(other_end)) = (
-                            get_position_coords_from_arc(intersecting_seg, ArcPoint::Start, objects),
-                            get_position_coords_from_arc(intersecting_seg, ArcPoint::End, objects),
+                            get_position_coords_from_arc(intersecting_seg, ArcPoint::Start, objects, default_unit),
+                            get_position_coords_from_arc(intersecting_seg, ArcPoint::End, objects, default_unit),
                         ) {
                             let dist_to_start = ((closest_candidate.point.x - other_start.x)
                                 * (closest_candidate.point.x - other_start.x)
@@ -1777,6 +1805,7 @@ fn find_termination_in_direction(
 #[allow(dead_code)]
 pub(crate) async fn execute_trim_loop<F, Fut>(
     points: &[Coords2d],
+    default_unit: UnitLength,
     initial_scene_graph_delta: crate::frontend::api::SceneGraphDelta,
     mut execute_operations: F,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String>
@@ -1786,6 +1815,10 @@ where
             Output = Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String>,
         >,
 {
+    // Trim line points are expected in millimeters and normalized to the current unit here.
+    let normalized_points = normalize_trim_points_to_unit(points, default_unit);
+    let points = normalized_points.as_slice();
+
     let mut start_index = 0;
     let max_iterations = 1000;
     let mut iteration_count = 0;
@@ -1800,7 +1833,12 @@ where
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_spawn = get_next_trim_spawn(points, start_index, &current_scene_graph_delta.new_graph.objects);
+        let next_trim_spawn = get_next_trim_spawn(
+            points,
+            start_index,
+            &current_scene_graph_delta.new_graph.objects,
+            default_unit,
+        );
 
         match &next_trim_spawn {
             TrimItem::None { next_index } => {
@@ -1828,6 +1866,7 @@ where
                     *trim_spawn_seg_id,
                     points,
                     &current_scene_graph_delta.new_graph.objects,
+                    default_unit,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -1855,6 +1894,7 @@ where
                     &terminations.left_side,
                     &terminations.right_side,
                     &current_scene_graph_delta.new_graph.objects,
+                    default_unit,
                 ) {
                     Ok(ops) => ops,
                     Err(e) => {
@@ -2034,6 +2074,8 @@ pub(crate) async fn execute_trim_flow(
 /// Execute the trim loop with a context struct that provides access to FrontendState.
 /// This is a convenience wrapper that inlines the loop to avoid borrow checker issues with closures.
 /// The core loop logic is duplicated here, but this allows direct access to frontend and ctx.
+///
+/// Trim line points are expected in millimeters and are normalized to the current/default unit.
 pub async fn execute_trim_loop_with_context(
     points: &[Coords2d],
     initial_scene_graph_delta: crate::frontend::api::SceneGraphDelta,
@@ -2042,7 +2084,9 @@ pub async fn execute_trim_loop_with_context(
     version: crate::frontend::api::Version,
     sketch_id: ObjectId,
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
-    let normalized_points = normalize_trim_points_to_mm(points, frontend.default_length_unit());
+    // Trim line points are expected in millimeters and normalized to the current unit here.
+    let default_unit = frontend.default_length_unit();
+    let normalized_points = normalize_trim_points_to_unit(points, default_unit);
 
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
     // This duplicates the loop from execute_trim_loop, but allows us to access frontend and ctx directly
@@ -2062,7 +2106,12 @@ pub async fn execute_trim_loop_with_context(
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_spawn = get_next_trim_spawn(points, start_index, &current_scene_graph_delta.new_graph.objects);
+        let next_trim_spawn = get_next_trim_spawn(
+            points,
+            start_index,
+            &current_scene_graph_delta.new_graph.objects,
+            default_unit,
+        );
 
         match &next_trim_spawn {
             TrimItem::None { next_index } => {
@@ -2086,6 +2135,7 @@ pub async fn execute_trim_loop_with_context(
                     *trim_spawn_seg_id,
                     points,
                     &current_scene_graph_delta.new_graph.objects,
+                    default_unit,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -2113,6 +2163,7 @@ pub async fn execute_trim_loop_with_context(
                     &terminations.left_side,
                     &terminations.right_side,
                     &current_scene_graph_delta.new_graph.objects,
+                    default_unit,
                 ) {
                     Ok(ops) => ops,
                     Err(e) => {
@@ -2236,6 +2287,7 @@ pub(crate) fn trim_strategy(
     left_side: &TrimTermination,
     right_side: &TrimTermination,
     objects: &[Object],
+    default_unit: UnitLength,
 ) -> Result<Vec<TrimOperation>, String> {
     // Simple trim: both sides are endpoints
     if matches!(left_side, TrimTermination::SegEndPoint { .. })
@@ -2663,8 +2715,8 @@ pub(crate) fn trim_strategy(
             SegmentCtor::Line(line_ctor) => {
                 // Convert to segment units only; rounding happens at final conversion to output if needed.
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.x, units)),
-                    y: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.y, units)),
+                    x: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
+                    y: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Line(crate::frontend::sketch::LineCtor {
@@ -2683,8 +2735,8 @@ pub(crate) fn trim_strategy(
             SegmentCtor::Arc(arc_ctor) => {
                 // Convert to segment units only; rounding happens at final conversion to output if needed.
                 let new_point = crate::frontend::sketch::Point2d {
-                    x: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.x, units)),
-                    y: crate::frontend::api::Expr::Var(mm_to_number(intersection_coords.y, units)),
+                    x: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.x, default_unit, units)),
+                    y: crate::frontend::api::Expr::Var(unit_to_number(intersection_coords.y, default_unit, units)),
                 };
                 if endpoint_to_change == EndpointChanged::Start {
                     SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
@@ -2816,8 +2868,10 @@ pub(crate) fn trim_strategy(
 
         // Get the original end point coordinates before editing using native types
         let original_end_point_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects),
+            Segment::Line(_) => {
+                get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects, default_unit)
+            }
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects, default_unit),
             _ => None,
         };
 
@@ -2992,10 +3046,10 @@ pub(crate) fn trim_strategy(
                             continue;
                         };
 
-                        // Get point coordinates in mm
+                        // Get point coordinates in the trim internal unit
                         let point_coords = Coords2d {
-                            x: number_to_mm(&point.position.x),
-                            y: number_to_mm(&point.position.y),
+                            x: number_to_unit(&point.position.x, default_unit),
+                            y: number_to_unit(&point.position.y, default_unit),
                         };
 
                         // Check if point is at original end point (geometrically)
@@ -3007,8 +3061,8 @@ pub(crate) fn trim_strategy(
                                 } = &end_point_obj.kind
                                 {
                                     Some(Coords2d {
-                                        x: number_to_mm(&end_point.position.x),
-                                        y: number_to_mm(&end_point.position.y),
+                                        x: number_to_unit(&end_point.position.x, default_unit),
+                                        y: number_to_unit(&end_point.position.y, default_unit),
                                     })
                                 } else {
                                     None
@@ -3068,18 +3122,24 @@ pub(crate) fn trim_strategy(
         // They should be migrated to [pointId, newSegmentId] if the point is after the split point
         let split_point = right_trim_coords; // Use right trim coords as split point
         let segment_start_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::Start, objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Start, objects),
+            Segment::Line(_) => {
+                get_position_coords_for_line(trim_spawn_segment, LineEndpoint::Start, objects, default_unit)
+            }
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Start, objects, default_unit),
             _ => None,
         };
         let segment_end_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects),
+            Segment::Line(_) => {
+                get_position_coords_for_line(trim_spawn_segment, LineEndpoint::End, objects, default_unit)
+            }
+            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::End, objects, default_unit),
             _ => None,
         };
         let segment_center_coords = match segment {
             Segment::Line(_) => None,
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Center, objects),
+            Segment::Arc(_) => {
+                get_position_coords_from_arc(trim_spawn_segment, ArcPoint::Center, objects, default_unit)
+            }
             _ => None,
         };
 
@@ -3132,10 +3192,10 @@ pub(crate) fn trim_strategy(
                                 continue;
                             };
 
-                            // Get point coordinates in mm
+                            // Get point coordinates in the trim internal unit
                             let point_coords = Coords2d {
-                                x: number_to_mm(&point.position.x),
-                                y: number_to_mm(&point.position.y),
+                                x: number_to_unit(&point.position.x, default_unit),
+                                y: number_to_unit(&point.position.y, default_unit),
                             };
 
                             // Project the point onto the segment to get its parametric position
@@ -3160,8 +3220,8 @@ pub(crate) fn trim_strategy(
                                     } = &end_point_obj.kind
                                     {
                                         Some(Coords2d {
-                                            x: number_to_mm(&end_point.position.x),
-                                            y: number_to_mm(&end_point.position.y),
+                                            x: number_to_unit(&end_point.position.x, default_unit),
+                                            y: number_to_unit(&end_point.position.y, default_unit),
                                         })
                                     } else {
                                         None
@@ -3338,10 +3398,10 @@ pub(crate) fn trim_strategy(
                             false
                         };
 
-                    // Get point coordinates in mm
+                    // Get point coordinates in the trim internal unit
                     let point_coords = Coords2d {
-                        x: number_to_mm(&point.position.x),
-                        y: number_to_mm(&point.position.y),
+                        x: number_to_unit(&point.position.x, default_unit),
+                        y: number_to_unit(&point.position.y, default_unit),
                     };
 
                     // Check if point is at original end point (with relaxed tolerance for catch-all)
@@ -3352,8 +3412,8 @@ pub(crate) fn trim_strategy(
                             } = &end_point_obj.kind
                             {
                                 Some(Coords2d {
-                                    x: number_to_mm(&end_point.position.x),
-                                    y: number_to_mm(&end_point.position.y),
+                                    x: number_to_unit(&end_point.position.x, default_unit),
+                                    y: number_to_unit(&end_point.position.y, default_unit),
                                 })
                             } else {
                                 None
@@ -3474,6 +3534,8 @@ pub(crate) async fn execute_trim_operations_simple(
         SketchApi,
         sketch::{Constraint, ExistingSegmentCtor, SegmentCtor},
     };
+
+    let default_unit = frontend.default_length_unit();
 
     let mut op_index = 0;
     let mut last_result: Option<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta)> = None;
@@ -3780,13 +3842,13 @@ pub(crate) async fn execute_trim_operations_simple(
                     _ => crate::pretty::NumericSuffix::Mm,
                 };
 
-                // Helper to convert Coords2d (mm) to Point2d in segment units. No rounding here;
-                // rounding happens at final conversion to output if needed.
+                // Helper to convert Coords2d (current trim unit) to Point2d in segment units.
+                // No rounding here; rounding happens at final conversion to output if needed.
                 let coords_to_point =
                     |coords: Coords2d| -> crate::frontend::sketch::Point2d<crate::frontend::api::Number> {
                         crate::frontend::sketch::Point2d {
-                            x: mm_to_number(coords.x, units),
-                            y: mm_to_number(coords.y, units),
+                            x: unit_to_number(coords.x, default_unit, units),
+                            y: unit_to_number(coords.y, default_unit, units),
                         }
                     };
 
@@ -3966,7 +4028,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         .find(|obj| obj.id == right_intersecting_seg_id);
 
                     if let Some(seg) = intersecting_seg {
-                        let endpoint_epsilon = 1e-3; // 0.001mm
+                        let endpoint_epsilon = 1e-3; // In current trim unit
                         let right_trim_coords_value = *right_trim_coords;
 
                         if let crate::frontend::api::ObjectKind::Segment { segment } = &seg.kind {
@@ -3977,11 +4039,13 @@ pub(crate) async fn execute_trim_operations_simple(
                                             seg,
                                             crate::frontend::trim::LineEndpoint::Start,
                                             &edit_scene_graph_delta.new_graph.objects,
+                                            default_unit,
                                         ),
                                         crate::frontend::trim::get_position_coords_for_line(
                                             seg,
                                             crate::frontend::trim::LineEndpoint::End,
                                             &edit_scene_graph_delta.new_graph.objects,
+                                            default_unit,
                                         ),
                                     ) {
                                         let dist_to_start = ((right_trim_coords_value.x - start_coords.x)
@@ -4013,11 +4077,13 @@ pub(crate) async fn execute_trim_operations_simple(
                                             seg,
                                             crate::frontend::trim::ArcPoint::Start,
                                             &edit_scene_graph_delta.new_graph.objects,
+                                            default_unit,
                                         ),
                                         crate::frontend::trim::get_position_coords_from_arc(
                                             seg,
                                             crate::frontend::trim::ArcPoint::End,
                                             &edit_scene_graph_delta.new_graph.objects,
+                                            default_unit,
                                         ),
                                     ) {
                                         let dist_to_start = ((right_trim_coords_value.x - start_coords.x)
@@ -4895,7 +4961,7 @@ mod tests {
         // Trim line that intersects: from [0, 10] to [10, 0]
         let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 0.0 }];
 
-        let result = get_next_trim_spawn(&points, 0, &objects);
+        let result = get_next_trim_spawn(&points, 0, &objects, UnitLength::Millimeters);
 
         match result {
             TrimItem::Spawn { trim_spawn_coords, .. } => {
@@ -4991,7 +5057,7 @@ mod tests {
         // Trim line that doesn't intersect: from [0, 10] to [10, 10]
         let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 10.0 }];
 
-        let result = get_next_trim_spawn(&points, 0, &objects);
+        let result = get_next_trim_spawn(&points, 0, &objects, UnitLength::Millimeters);
 
         match result {
             TrimItem::None { .. } => {
