@@ -35,9 +35,24 @@ export const playwrightLayoutConfig: Layout = {
         {
           id: DefaultLayoutPaneID.FeatureTree,
           label: 'Feature Tree',
-          type: LayoutType.Simple,
-          areaType: AreaType.FeatureTree,
+          type: LayoutType.Splits,
           icon: 'model',
+          sizes: [75, 25],
+          orientation: 'block',
+          children: [
+            {
+              id: 'operations-list',
+              label: 'Feature Tree',
+              type: LayoutType.Simple,
+              areaType: AreaType.FeatureTree,
+            },
+            {
+              id: 'bodies-list',
+              label: 'Bodies List',
+              type: LayoutType.Simple,
+              areaType: AreaType.Bodies,
+            },
+          ],
         },
         {
           id: DefaultLayoutPaneID.Code,

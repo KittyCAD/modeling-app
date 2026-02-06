@@ -52,6 +52,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PLANE: 'plane',
   HELIX: 'helix',
   CLONE: 'clone',
+  HIDDEN: 'hidden',
   SOLID: 'solid',
   SPLIT: 'split',
   PATTERN: 'pattern',

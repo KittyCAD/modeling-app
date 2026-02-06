@@ -220,7 +220,13 @@ function LayoutNode({
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case LayoutType.Splits:
-      return <SplitLayout layout={layout} key={`node-${layout.id}`} />
+      return (
+        <SplitLayout
+          layout={layout}
+          key={`node-${layout.id}`}
+          onClose={onClose}
+        />
+      )
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default: {
@@ -233,11 +239,15 @@ function LayoutNode({
 /**
  * Need to see if we should just roll our own resizable component?
  */
-function SplitLayout({ layout }: { layout: SplitLayoutType }) {
+function SplitLayout({
+  layout,
+  onClose,
+}: { layout: SplitLayoutType; onClose?: (id: string) => void }) {
   return (
     <SplitLayoutContents
       direction={orientationToDirection(layout.orientation)}
       layout={layout}
+      onClose={onClose}
     />
   )
 }
@@ -319,7 +329,14 @@ function SplitLayoutContents({
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
                 minSize={2}
               >
-                <LayoutNode layout={a} onClose={() => onClose?.(a.id)} />
+                <LayoutNode
+                  layout={a}
+                  onClose={(idOverride?: unknown) => {
+                    onClose?.(
+                      typeof idOverride === 'string' ? idOverride : a.id
+                    )
+                  }}
+                />
               </Panel>
               <ResizeHandle
                 direction={direction}

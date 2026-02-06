@@ -251,7 +251,8 @@ export class KclManager extends EventTarget {
   }
   livePathsToWatch = signal<string[]>([])
 
-  private _execState: ExecState = emptyExecState()
+  private _execState = signal<ExecState>(emptyExecState())
+
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
@@ -355,11 +356,14 @@ export class KclManager extends EventTarget {
   }
 
   private set execState(execState) {
-    this._execState = execState
+    this._execState.value = execState
     this.variables = execState.variables
   }
 
   get execState() {
+    return this._execState.value
+  }
+  get execStateSignal() {
     return this._execState
   }
 
@@ -999,7 +1003,7 @@ export class KclManager extends EventTarget {
     })
 
     this.logs = logs
-    this._execState = execState
+    this._execState.value = execState
     this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables

@@ -55,11 +55,13 @@ jobs:
 
       - name: Build Wasm condition
         id: wasm
+        env:
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
+          EVENT_NAME: ${{ github.event_name }}
+          RUST_CHANGES: ${{ steps.filter.outputs.rust }}
         run: |
-          set -euox pipefail
-          # Build wasm if this is a push to main or tag, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build Wasm with pushes to main, Rust changes, or cache misses
+          if [[ "${EVENT_NAME}" == 'push' || "${RUST_CHANGES}" == 'true' || "${DOWNLOAD_OUTCOME}" == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
