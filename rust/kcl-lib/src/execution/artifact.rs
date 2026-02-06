@@ -343,6 +343,8 @@ impl From<kcmc::shared::CutTypeV2> for EdgeCutSubType {
             kcmc::shared::CutTypeV2::Fillet { .. } => EdgeCutSubType::Fillet,
             kcmc::shared::CutTypeV2::Chamfer { .. } => EdgeCutSubType::Chamfer,
             kcmc::shared::CutTypeV2::Custom { .. } => EdgeCutSubType::Custom,
+            // Modeling API has added something we're not aware of.
+            _other => EdgeCutSubType::Custom,
         }
     }
 }
@@ -851,6 +853,7 @@ fn flatten_modeling_command_responses(
             | OkWebSocketResponseData::ModelingSessionData { .. }
             | OkWebSocketResponseData::Debug { .. }
             | OkWebSocketResponseData::Pong { .. } => {}
+            _other => {}
         }
     }
 
@@ -1365,6 +1368,10 @@ fn artifacts_to_update(
                         ExtrusionFaceCapType::Top => CapSubType::End,
                         ExtrusionFaceCapType::Bottom => CapSubType::Start,
                         ExtrusionFaceCapType::None | ExtrusionFaceCapType::Both => continue,
+                        _other => {
+                            // Modeling API has added something we're not aware of.
+                            continue;
+                        }
                     };
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
