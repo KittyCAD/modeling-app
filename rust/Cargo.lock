@@ -2391,8 +2391,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.164"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#505f1bbd17d1b3a51394aee71e773bf2208b1b42"
+version = "0.2.165"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#8b5210d4edac812e1fb118be1d6235e7ffa502c9"
 dependencies = [
  "anyhow",
  "bon",
@@ -2420,7 +2420,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#505f1bbd17d1b3a51394aee71e773bf2208b1b42"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#8b5210d4edac812e1fb118be1d6235e7ffa502c9"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2431,7 +2431,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#505f1bbd17d1b3a51394aee71e773bf2208b1b42"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/surface_blend#8b5210d4edac812e1fb118be1d6235e7ffa502c9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2867,7 +2867,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -4580,7 +4580,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]

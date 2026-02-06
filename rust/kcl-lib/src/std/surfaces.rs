@@ -8,7 +8,7 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
     output as mout,
-    shared::{BodyType, SurfaceEdgeReference},
+    shared::{BodyType, SurfaceEdgeReference, FractionOfEdge},
     websocket::OkWebSocketResponseData,
 };
 
@@ -238,17 +238,18 @@ async fn inner_blend(
 
     let object_ids: Vec<_> = surfaces.iter().map(|surface| surface.id).collect();
 
-    let edge_ids = edges
+    //TODO: that unwrap
+    let edge_ids: Vec<_> = edges
         .into_iter()
-        .map(|edge_tag| edge_tag.get_engine_id(exec_state, &args))
-        .collect::<Result<Vec<_>, _>>()?;
+        .map(|edge_tag| FractionOfEdge::builder().edge_id(edge_tag.get_engine_id(exec_state, &args).unwrap()).build())
+        .collect();
 
     let surface_refs: Vec<SurfaceEdgeReference> = object_ids
         .iter()
         .zip(edge_ids)
         .map(|(obj, edg)| SurfaceEdgeReference {
             object_id: *obj,
-            edge_ids: vec![edg],
+            edges: vec![edg],
         })
         .collect();
 
