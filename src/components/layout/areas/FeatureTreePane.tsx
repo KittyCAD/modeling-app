@@ -49,7 +49,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
-import { toUtf16 } from '@src/lang/errors'
+import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
   sendDeleteCommand,
@@ -134,7 +134,7 @@ export const FeatureTreePaneContents = memo(() => {
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange,
+        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
         kclManager,
         modelingSend,
       })
@@ -438,7 +438,8 @@ const OperationItem = ({
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
   const sourceRange =
-    'sourceRange' in item && sourceRangeFromRust(item.sourceRange)
+    'sourceRange' in item &&
+    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isSelected = useMemo(() => {
     const selected =
       sourceRange &&
