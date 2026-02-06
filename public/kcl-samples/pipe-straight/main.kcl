@@ -37,4 +37,4 @@ flangePerforatedProfile = subtract2d(flangeRingProfile, tool = boltHolesRing)
 baseFlange = extrude(flangePerforatedProfile, length = flangeThickness, method = NEW)
 
 rightEndFlange = baseFlange |> translate(x = faceToFaceLength / 2 - flangeThickness, global = true)
-leftEndFlange = clone(rightEndFlange)[0] |> rotate(axis = Y, angle = 180deg)
+leftEndFlange = clone(rightEndFlange) |> rotate(axis = Y, angle = 180deg)
