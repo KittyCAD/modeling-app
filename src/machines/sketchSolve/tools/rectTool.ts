@@ -19,7 +19,7 @@ import type { Coords2d } from '@src/lang/util'
 
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
-export type RectOriginMode = 'corner' | 'center'
+export type RectOriginMode = 'corner' | 'center' | 'angled'
 export type RectToolEvent =
   | BaseToolEvent
   | { type: 'finalize' }

@@ -143,6 +143,7 @@ export type SketchSolveContext = {
 }
 export const equipTools = Object.freeze({
   // both use the same tool, opened with a different flag
+  angledRectTool: rectTool,
   centerRectTool: rectTool,
   cornerRectTool: rectTool,
   dimensionTool,
@@ -949,10 +950,11 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
-  toolVariant?: string // eg. 'corner' | 'center' for rectTool
+  toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 
 const toolVariants: Record<string, string> = {
+  angledRectTool: 'angled',
   centerRectTool: 'center',
   cornerRectTool: 'corner',
 }
