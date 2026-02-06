@@ -1824,7 +1824,7 @@ where
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
-                        eprintln!("Error getting trim spawn terminations: {}", e);
+                        crate::logln!("Error getting trim spawn terminations: {}", e);
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -1851,7 +1851,7 @@ where
                 ) {
                     Ok(ops) => ops,
                     Err(e) => {
-                        eprintln!("Error determining trim strategy: {}", e);
+                        crate::logln!("Error determining trim strategy: {}", e);
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -1872,7 +1872,7 @@ where
                         current_scene_graph_delta = scene_graph_delta;
                     }
                     Err(e) => {
-                        eprintln!("Error executing trim operations: {}", e);
+                        crate::logln!("Error executing trim operations: {}", e);
                         // Continue to next segment
                     }
                 }
@@ -2083,7 +2083,7 @@ pub async fn execute_trim_loop_with_context(
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
-                        eprintln!("Error getting trim spawn terminations: {}", e);
+                        crate::logln!("Error getting trim spawn terminations: {}", e);
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -2110,7 +2110,7 @@ pub async fn execute_trim_loop_with_context(
                 ) {
                     Ok(ops) => ops,
                     Err(e) => {
-                        eprintln!("Error determining trim strategy: {}", e);
+                        crate::logln!("Error determining trim strategy: {}", e);
                         let old_start_index = start_index;
                         start_index = *next_index;
                         if start_index <= old_start_index {
@@ -2140,7 +2140,7 @@ pub async fn execute_trim_loop_with_context(
                         current_scene_graph_delta = scene_graph_delta;
                     }
                     Err(e) => {
-                        eprintln!("Error executing trim operations: {}", e);
+                        crate::logln!("Error executing trim operations: {}", e);
                     }
                 }
 
@@ -4299,7 +4299,7 @@ pub async fn execute_trim_operations_simple(
                 last_result = Some((source_delta, scene_graph_delta.clone()));
             }
             Err(e) => {
-                eprintln!("Error executing trim operation {}: {}", op_index, e);
+                crate::logln!("Error executing trim operation {}: {}", op_index, e);
                 // Continue to next operation
             }
         }
