@@ -2,12 +2,7 @@
 
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    ok_response::OkModelingCmdResponse,
-    output::{self as mout, BooleanIntersection, BooleanSubtract, BooleanUnion},
-    websocket::OkWebSocketResponseData,
-};
+use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
@@ -67,7 +62,7 @@ pub(crate) async fn inner_union(
         .await?;
 
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::BooleanUnion(BooleanUnion { extra_solid_ids }),
+        modeling_response: OkModelingCmdResponse::BooleanUnion(boolean_resp),
     } = result
     else {
         return Err(KclError::new_internal(KclErrorDetails::new(
@@ -77,7 +72,7 @@ pub(crate) async fn inner_union(
     };
 
     // If we have more solids, set those as well.
-    for extra_solid_id in extra_solid_ids {
+    for extra_solid_id in boolean_resp.extra_solid_ids {
         if extra_solid_id == solid_out_id {
             continue;
         }
@@ -140,7 +135,7 @@ pub(crate) async fn inner_intersect(
         .await?;
 
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::BooleanIntersection(BooleanIntersection { extra_solid_ids }),
+        modeling_response: OkModelingCmdResponse::BooleanIntersection(boolean_resp),
     } = result
     else {
         return Err(KclError::new_internal(KclErrorDetails::new(
@@ -150,7 +145,7 @@ pub(crate) async fn inner_intersect(
     };
 
     // If we have more solids, set those as well.
-    for extra_solid_id in extra_solid_ids {
+    for extra_solid_id in boolean_resp.extra_solid_ids {
         if extra_solid_id == solid_out_id {
             continue;
         }
@@ -210,7 +205,7 @@ pub(crate) async fn inner_subtract(
         .await?;
 
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::BooleanSubtract(BooleanSubtract { extra_solid_ids }),
+        modeling_response: OkModelingCmdResponse::BooleanSubtract(boolean_resp),
     } = result
     else {
         return Err(KclError::new_internal(KclErrorDetails::new(
@@ -220,7 +215,7 @@ pub(crate) async fn inner_subtract(
     };
 
     // If we have more solids, set those as well.
-    for extra_solid_id in extra_solid_ids {
+    for extra_solid_id in boolean_resp.extra_solid_ids {
         if extra_solid_id == solid_out_id {
             continue;
         }
@@ -296,7 +291,7 @@ pub(crate) async fn inner_imprint(
         .await?;
 
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::BooleanImprint(mout::BooleanImprint { extra_solid_ids }),
+        modeling_response: OkModelingCmdResponse::BooleanImprint(boolean_resp),
     } = result
     else {
         return Err(KclError::new_internal(KclErrorDetails::new(
@@ -306,7 +301,7 @@ pub(crate) async fn inner_imprint(
     };
 
     // If we have more solids, set those as well.
-    for extra_solid_id in extra_solid_ids {
+    for extra_solid_id in boolean_resp.extra_solid_ids {
         if extra_solid_id == body_out_id {
             continue;
         }

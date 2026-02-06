@@ -34,6 +34,7 @@ import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
+import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { Stats } from 'fs'
 
 const convertStatsToFileMetadata = (
@@ -509,22 +510,22 @@ export async function writeProjectSettingsFile(
   return electron.writeFile(projectSettingsFilePath, tomlStr)
 }
 
-// Important for saving settings.
-let APP_ID = 'dev.zoo.modeling-app'
-if (IS_STAGING) {
-  APP_ID = `${APP_ID}-staging`
-} else if (IS_STAGING_OR_DEBUG) {
-  APP_ID = `${APP_ID}-local`
-}
-
 const getAppFolderName = (electron: IElectronAPI) => {
-  if (electron.os.isMac || electron.os.isWindows) {
-    return APP_ID
-  }
-  // TODO: we need to make linux use the same convention this is weird
-  // This variable below gets the -staging suffix on staging too thru scripts/flip-files-to-staging.sh
-  // But it should be consistent with the reserve domain app id we use on Windows and Linux
-  return electron.packageJson.name
+  const platform =
+    electron.platform ??
+    (electron.os.isLinux
+      ? 'linux'
+      : electron.os.isMac
+        ? 'darwin'
+        : electron.os.isWindows
+          ? 'win32'
+          : 'unknown')
+  return getAppFolderNameFromMetadata({
+    packageName: electron.packageJson.name,
+    platform,
+    isStaging: IS_STAGING,
+    isStagingOrDebug: IS_STAGING_OR_DEBUG,
+  })
 }
 
 export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
@@ -1001,6 +1002,13 @@ export const writeProjectThumbnailFile = async (
   for (let i = 0, len = data.length; i < len; ++i) {
     asArray[i] = data.charCodeAt(i)
   }
+
+  // Configure Git to ignore the generated thumbnail
+  const gitignorePath = electron.path.join(projectDirectoryPath, '.gitignore')
+  if (!electron.exists(gitignorePath)) {
+    await electron.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
+  }
+
   return electron.writeFile(filePath, asArray)
 }
 

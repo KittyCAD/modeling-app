@@ -2644,7 +2644,7 @@ description: Artifact commands coilover-assembly.kcl
           "r": 0.14509805,
           "g": 0.13725491,
           "b": 0.09411765,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -2668,7 +2668,6 @@ description: Artifact commands coilover-assembly.kcl
                 "z": 200.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2865,7 +2864,7 @@ description: Artifact commands coilover-assembly.kcl
           "r": 0.84313726,
           "g": 0.5058824,
           "b": 0.03529412,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.5,
         "roughness": 0.9,

@@ -397,7 +397,6 @@ description: Artifact commands union_cubes.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

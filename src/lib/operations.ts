@@ -1,6 +1,5 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -34,6 +33,7 @@ import {
   type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
+  type PathToNode,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -53,9 +53,19 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeExtrudeMethod,
+  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { ActorRefFrom } from 'xstate'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import type { KclManager } from '@src/lang/KclManager'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -1664,13 +1674,13 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
-    (arg) => ('error' in arg ? undefined : arg)
-  )
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1680,6 +1690,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     precision,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1725,13 +1736,13 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   // Extract optional parameters
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
     extractKclArgument(code, operation, 'fontPointSize', rustContext),
     extractKclArgument(code, operation, 'fontScale', rustContext),
   ])
 
-  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
-    'error' in arg ? undefined : arg
-  )
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1740,6 +1751,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     name,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1789,6 +1801,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
     prepareToEdit: prepareToEditFillet,
+  },
+  flipSurface: {
+    label: 'Flip Surface',
+    icon: 'flipSurface',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   'gdt::datum': {
     label: 'Datum',
@@ -1898,6 +1916,58 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
     supportsTransform: true,
+  },
+  'sketch2::coincident': {
+    label: 'Coincident Constraint',
+    icon: 'coincident',
+  },
+  'sketch2::concentric': {
+    label: 'Concentric Constraint',
+    icon: 'concentric',
+  },
+  'sketch2::distance': {
+    label: 'Distance Constraint',
+    icon: 'dimension', // TODO: see if we need a different icon here?
+  },
+  'sketch2::equalLength': {
+    label: 'Equal Length Constraint',
+    icon: 'equal',
+  },
+  'sketch2::fixed': {
+    label: 'Fixed Constraint',
+    icon: 'fix',
+  },
+  'sketch2::horizontal': {
+    label: 'Horizontal Constraint',
+    icon: 'horizontal',
+  },
+  'sketch2::midpoint': {
+    label: 'Midpoint Constraint',
+    icon: 'midpoint',
+  },
+  'sketch2::normal': {
+    label: 'Normal Constraint',
+    icon: 'normal',
+  },
+  'sketch2::parallel': {
+    label: 'Parallel Constraint',
+    icon: 'parallel',
+  },
+  'sketch2::perpendicular': {
+    label: 'Perpendicular Constraint',
+    icon: 'perpendicular',
+  },
+  'sketch2::symmetric': {
+    label: 'Symmetric Constraint',
+    icon: 'symmetry',
+  },
+  'sketch2::tangent': {
+    label: 'Tangent Constraint',
+    icon: 'tangent',
+  },
+  'sketch2::vertical': {
+    label: 'Vertical Constraint',
+    icon: 'vertical',
   },
   'hole::hole': {
     label: 'Hole',
@@ -2145,9 +2215,6 @@ export function getOperationVariableName(
 
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
-  if (pathToNode.length === 0) {
-    return undefined
-  }
 
   // If this is a module instance, the variable name is the import alias.
   if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
@@ -2170,6 +2237,18 @@ export function getOperationVariableName(
   }
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
+  return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
+}
+
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
+  wasmInstance: ModuleType
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
@@ -2233,6 +2312,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
+  isNotHideOperation,
 ]
 
 /**
@@ -2298,6 +2378,20 @@ function isNotUserFunctionWithNoOperations(
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
+}
+
+/**
+ * A filter to exclude `hide()` operations from a list of operations.
+ */
+function isNotHideOperation(ops: Operation[]): Operation[] {
+  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+}
+
+/**
+ * Filter Operations list to just hide() calls
+ */
+export function getHideOperations(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type === 'StdLibCall' && op.name === 'hide')
 }
 
 export interface EnterEditFlowProps {
@@ -2737,4 +2831,117 @@ async function prepareToEditAppearance({
     ...baseCommand,
     argDefaultValues,
   }
+}
+
+export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+export function getHideOpByArtifactId(
+  ops: Operation[],
+  searchId: string
+): HideOperation | undefined {
+  const found = ops.find((op) => {
+    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+      return undefined
+    }
+    if (op.unlabeledArg?.value.type === 'Array') {
+      const found = op.unlabeledArg.value.value.find(
+        (a) =>
+          'value' in a &&
+          typeof a.value === 'object' &&
+          'artifactId' in a.value &&
+          typeof a.value?.artifactId === 'string' &&
+          a.value.artifactId === searchId
+      )
+
+      return found ? op : undefined
+    } else if (
+      op.unlabeledArg?.value &&
+      'value' in op.unlabeledArg.value &&
+      op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value === 'object' &&
+      'artifactId' in op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
+      op.unlabeledArg.value.value.artifactId
+    ) {
+      return op.unlabeledArg.value.value.artifactId === searchId
+        ? op
+        : undefined
+    }
+    return undefined
+  })
+
+  return found as HideOperation | undefined
+}
+
+export function onHide(props: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+}) {
+  const selection = props.modelingActor.getSnapshot().context.selectionRanges
+
+  props.modelingActor.send({
+    type: 'Hide',
+    data: {
+      objects: selection,
+    },
+  })
+}
+
+export async function onUnhide(props: {
+  hideOperation: HideOperation
+  targetArtifact: Artifact
+  systemDeps: {
+    kclManager: KclManager
+    rustContext: RustContext
+  }
+}) {
+  if (props.hideOperation.unlabeledArg === null) {
+    return new Error('Missing unlabeled arg for hide operation')
+  }
+  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+
+  if (
+    props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    'codeRef' in props.targetArtifact
+  ) {
+    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    // Multi-item case: remove that target artifact's name
+    const termToDelete = getVariableNameFromNodePath(
+      pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
+      modifiedAst,
+      wasmInstance
+    )
+    if (!termToDelete) {
+      return new Error(
+        'Variable name to delete not found while trying to unhide'
+      )
+    }
+
+    const deleteResult = deleteTermFromUnlabeledArgumentArray(
+      props.systemDeps.kclManager.ast,
+      pathToNode,
+      wasmInstance,
+      termToDelete
+    )
+    if (err(deleteResult)) {
+      return deleteResult
+    }
+    modifiedAst = deleteResult
+  } else {
+    // Single item case: Delete the node
+    const result = deleteTopLevelStatement(modifiedAst, pathToNode)
+    if (err(result)) {
+      return result
+    }
+  }
+
+  return updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    props.systemDeps,
+    {
+      focusPath: [],
+    }
+  )
 }

@@ -718,6 +718,53 @@ export function deleteTopLevelStatement(
   updateCommentIndicesAfterDelete(ast, statementIndex)
 }
 
+/**
+ * Deletes a value from the unlabeled argument of a standard library function.
+ */
+export function deleteTermFromUnlabeledArgumentArray(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType,
+  termToDelete: string
+): Error | Node<Program> {
+  const pathStep = pathToNode[1]
+  if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
+    return new Error(
+      'Invalid pathToNode structure: expected a number at path[1][0]'
+    )
+  }
+  const newAst = structuredClone(ast)
+  const nodeToEdit = getNodeFromPath<Node<CallExpressionKw>>(
+    newAst,
+    pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(nodeToEdit)) {
+    return nodeToEdit
+  }
+
+  if (nodeToEdit.node.unlabeled === null) {
+    return new Error('Missing unlabeled argument, cannot edit it')
+  }
+  if (nodeToEdit.node.unlabeled.type !== 'ArrayExpression') {
+    return new Error('Unlabeled argument is not an array, cannot edit it')
+  }
+
+  // Remove any literal array members that match the term to be deleted
+  nodeToEdit.node.unlabeled.elements =
+    nodeToEdit.node.unlabeled.elements.filter(
+      (v) =>
+        !(
+          v.type === 'Name' &&
+          v.name.type === 'Identifier' &&
+          v.name.name === termToDelete
+        )
+    )
+
+  return newAst
+}
+
 function updateCommentIndicesAfterDelete(
   ast: Node<Program>,
   deletedIndex: number

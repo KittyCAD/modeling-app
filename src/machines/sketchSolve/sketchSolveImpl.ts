@@ -23,7 +23,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 
-import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
@@ -59,12 +59,7 @@ export type SpawnToolActor = <K extends EquipTool>(
   src: K,
   options?: {
     id?: string
-    input?: {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    }
+    input?: ToolInput
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
@@ -81,7 +76,10 @@ export type SketchSolveMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
     }
   | {
       type: 'update selected ids'
@@ -116,7 +114,7 @@ export type SketchSolveMachineEvent =
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
   | ActorRefFrom<typeof centerArcTool>
@@ -144,7 +142,10 @@ export type SketchSolveContext = {
   kclManager: KclManager
 }
 export const equipTools = Object.freeze({
-  centerRectTool,
+  // both use the same tool, opened with a different flag
+  angledRectTool: rectTool,
+  centerRectTool: rectTool,
+  cornerRectTool: rectTool,
   dimensionTool,
   pointTool,
   lineTool,
@@ -268,7 +269,19 @@ export function updateSegmentGroup({
     return
   }
 
+  // Determine isDraft and isConstruction separately
   const isDraft = draftEntityIds?.includes(idNum) ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
 
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
@@ -291,6 +304,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -302,6 +316,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -313,6 +328,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -337,6 +353,20 @@ function initSegmentGroup({
   isDraft?: boolean
   objects?: Array<ApiObject>
 }): Group | Error {
+  // Determine isDraft and isConstruction separately
+  const isDraftValue = isDraft ?? false
+  let isConstruction = false
+  if (objects) {
+    const segmentObj = objects[id]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      (segmentObj.kind.segment.type === 'Line' ||
+        segmentObj.kind.segment.type === 'Arc')
+    ) {
+      isConstruction = segmentObj.kind.segment.construction === true
+    }
+  }
+
   // Derive freedom from segment freedom
   let freedomResult: Freedom | null = null
   if (objects) {
@@ -353,7 +383,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -362,7 +393,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -371,7 +403,8 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      isDraft,
+      isDraft: isDraftValue,
+      isConstruction,
       freedom: freedomResult,
     })
   }
@@ -596,9 +629,8 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   }
 }
 
-export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
-  const sketchSegments =
-    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
+  const sketchSegments = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSegments || !(sketchSegments instanceof Group)) {
     // no segments to clean
     return
@@ -902,6 +934,7 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
 
@@ -910,4 +943,18 @@ export function spawnTool(
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
+}
+
+export type ToolInput = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
+}
+
+const toolVariants: Record<string, string> = {
+  angledRectTool: 'angled',
+  centerRectTool: 'center',
+  cornerRectTool: 'corner',
 }

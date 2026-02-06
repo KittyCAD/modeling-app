@@ -98,6 +98,7 @@ import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
+  addHide,
   addRotate,
   addScale,
   addTranslate,
@@ -145,7 +146,6 @@ import {
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
@@ -156,6 +156,7 @@ import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
+import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
 
 export type ModelingMachineEvent =
   | {
@@ -262,8 +263,15 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | {
+      type: 'Hide'
+      data: {
+        objects: Selections
+      }
+    }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | {
       type:
         | 'Add circle origin'
@@ -361,7 +369,10 @@ export type ModelingMachineEvent =
         | 'Horizontal'
         | 'Parallel'
         | 'Perpendicular'
-        | 'Distance'
+        | 'Dimension'
+        | 'HorizontalDistance'
+        | 'VerticalDistance'
+        | 'construction'
     }
   | { type: 'unequip tool' }
   | {
@@ -1185,7 +1196,7 @@ export const modelingMachine = setup({
     }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -1232,7 +1243,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
       deleteSegmentsOrProfiles({
         pathToNodes: event.data,
         sketchDetails,
@@ -1350,7 +1361,6 @@ export const modelingMachine = setup({
           engineCommandManager,
           sceneEntitiesManager,
           kclManager,
-          kclEditorMachine: providedKclEditorMachine,
           wasmInstance,
         },
         event,
@@ -1367,10 +1377,6 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-        const theKclEditorMachine = providedKclEditorMachine
-          ? providedKclEditorMachine
-          : kclEditorActor
-
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
@@ -1490,13 +1496,6 @@ export const modelingMachine = setup({
                   ]
                 : [],
             })
-            theKclEditorMachine.send({
-              type: 'setLastSelectionEvent',
-              data: {
-                codeMirrorSelection,
-                scrollIntoView: setSelections.scrollIntoView ?? false,
-              },
-            })
           }
 
           // If there are engine commands that need sent off, send them
@@ -1564,13 +1563,6 @@ export const modelingMachine = setup({
           })
           updateSceneObjectColors()
 
-          theKclEditorMachine.send({
-            type: 'setLastSelectionEvent',
-            data: {
-              codeMirrorSelection,
-              scrollIntoView: false,
-            },
-          })
           if (!sketchDetails)
             return {
               selectionRanges: setSelections.selection,
@@ -3419,6 +3411,43 @@ export const modelingMachine = setup({
         )
       }
     ),
+    hideAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data:
+                | {
+                    objects: Selections
+                  }
+                | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addHide({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(result.modifiedAst, EXECUTION_TYPE_REAL, {
+          kclManager: input.kclManager,
+          rustContext: input.rustContext,
+        })
+      }
+    ),
     gdtFlatnessAstMod: fromPromise(
       async ({
         input,
@@ -3515,6 +3544,45 @@ export const modelingMachine = setup({
         const result = addDatumGdt({
           ...input.data,
           ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    flipSurfaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Flip Surface'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const result = addFlipSurface({
+          ...input.data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
@@ -3988,6 +4056,10 @@ export const modelingMachine = setup({
           target: 'Applying clone',
         },
 
+        Hide: {
+          target: 'Applying hide',
+        },
+
         'GDT Flatness': {
           target: 'Applying GDT Flatness',
         },
@@ -4018,6 +4090,10 @@ export const modelingMachine = setup({
 
         'Pattern Linear 3D': {
           target: 'Pattern Linear 3D',
+        },
+
+        'Flip Surface': {
+          target: 'Applying Flip Surface',
         },
 
         // Modeling actions
@@ -5553,7 +5629,16 @@ export const modelingMachine = setup({
         Horizontal: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
-        Distance: {
+        Dimension: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        HorizontalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        VerticalDistance: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        construction: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         'delete selected': {
@@ -5920,6 +6005,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying hide': {
+      invoke: {
+        src: 'hideAstMod',
+        id: 'hideAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Hide') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying GDT Flatness': {
       invoke: {
         src: 'gdtFlatnessAstMod',
@@ -5950,6 +6056,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Flip Surface': {
+      invoke: {
+        src: 'flipSurfaceAstMod',
+        id: 'flipSurfaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Flip Surface') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],

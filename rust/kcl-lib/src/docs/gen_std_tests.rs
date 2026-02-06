@@ -1,7 +1,6 @@
 use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
-use base64::Engine;
 use serde_json::json;
 use tokio::task::JoinSet;
 
@@ -181,20 +180,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         crate::unparser::fmt(src).unwrap()
     };
 
-    let image_base64 = if props.norun {
-        String::new()
-    } else {
-        let image_path = format!(
-            "{}/tests/outputs/serial_test_example_{}{}.png",
-            env!("CARGO_MANIFEST_DIR"),
-            file_name,
-            index
-        );
-        let image_data =
-            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {image_path}"));
-        base64::engine::general_purpose::STANDARD.encode(&image_data)
-    };
-
     let gltf_path = if props.norun || props.no3d {
         String::new()
     } else {
@@ -217,7 +202,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         "content": content,
         "gltf_path": gltf_path,
         "image_path": image_path,
-        "image_base64": image_base64,
     }))
 }
 

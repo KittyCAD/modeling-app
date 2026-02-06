@@ -3,9 +3,7 @@
 use std::collections::HashMap;
 
 use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
-    shared::BodyType,
+    ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -15,10 +13,13 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{PrimitiveType, RuntimeType},
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{Args, extrude::NamedCapTags},
+    std::{
+        Args,
+        extrude::{BeingExtruded, NamedCapTags},
+    },
 };
 
 type Result<T> = std::result::Result<T, KclError>;
@@ -27,80 +28,88 @@ type Result<T> = std::result::Result<T, KclError>;
 ///
 /// This works essentially like a copy-paste operation.
 pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue> {
-    let geometry = args.get_unlabeled_kw_arg(
+    let geometries = args.get_unlabeled_kw_arg(
         "geometry",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Sketch),
-            RuntimeType::Primitive(PrimitiveType::Solid),
-            RuntimeType::imported(),
-        ]),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Sketch),
+                RuntimeType::Primitive(PrimitiveType::Solid),
+                RuntimeType::imported(),
+            ])),
+            ArrayLen::Minimum(1),
+        ),
         exec_state,
     )?;
 
-    let cloned = inner_clone(geometry, exec_state, args).await?;
+    let cloned = inner_clone(geometries, exec_state, args).await?;
     Ok(cloned.into())
 }
 
 async fn inner_clone(
-    geometry: GeometryWithImportedGeometry,
+    geometries: Vec<GeometryWithImportedGeometry>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<GeometryWithImportedGeometry> {
-    let new_id = exec_state.next_uuid();
-    let mut geometry = geometry.clone();
-    let old_id = geometry.id(&args.ctx).await?;
+) -> Result<Vec<GeometryWithImportedGeometry>> {
+    let mut res = vec![];
 
-    let mut new_geometry = match &geometry {
-        GeometryWithImportedGeometry::ImportedGeometry(imported) => {
-            let mut new_imported = imported.clone();
-            new_imported.id = new_id;
-            GeometryWithImportedGeometry::ImportedGeometry(new_imported)
-        }
-        GeometryWithImportedGeometry::Sketch(sketch) => {
-            let mut new_sketch = sketch.clone();
-            new_sketch.id = new_id;
-            new_sketch.original_id = new_id;
-            new_sketch.artifact_id = new_id.into();
-            GeometryWithImportedGeometry::Sketch(new_sketch)
-        }
-        GeometryWithImportedGeometry::Solid(solid) => {
-            // We flush before the clone so all the shit exists.
+    for g in geometries {
+        let new_id = exec_state.next_uuid();
+        let mut geometry = g.clone();
+        let old_id = geometry.id(&args.ctx).await?;
+
+        let mut new_geometry = match &geometry {
+            GeometryWithImportedGeometry::ImportedGeometry(imported) => {
+                let mut new_imported = imported.clone();
+                new_imported.id = new_id;
+                GeometryWithImportedGeometry::ImportedGeometry(new_imported)
+            }
+            GeometryWithImportedGeometry::Sketch(sketch) => {
+                let mut new_sketch = sketch.clone();
+                new_sketch.id = new_id;
+                new_sketch.original_id = new_id;
+                new_sketch.artifact_id = new_id.into();
+                GeometryWithImportedGeometry::Sketch(new_sketch)
+            }
+            GeometryWithImportedGeometry::Solid(solid) => {
+                // We flush before the clone so all the shit exists.
+                exec_state
+                    .flush_batch_for_solids(
+                        ModelingCmdMeta::from_args(exec_state, &args),
+                        std::slice::from_ref(solid),
+                    )
+                    .await?;
+
+                let mut new_solid = solid.clone();
+                new_solid.id = new_id;
+                new_solid.sketch.original_id = new_id;
+                new_solid.artifact_id = new_id.into();
+                GeometryWithImportedGeometry::Solid(new_solid)
+            }
+        };
+
+        if args.ctx.no_engine_commands().await {
+            res.push(new_geometry);
+        } else {
             exec_state
-                .flush_batch_for_solids(
-                    ModelingCmdMeta::from_args(exec_state, &args),
-                    std::slice::from_ref(solid),
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
+                    ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
                 )
                 .await?;
 
-            let mut new_solid = solid.clone();
-            new_solid.id = new_id;
-            new_solid.sketch.original_id = new_id;
-            new_solid.artifact_id = new_id.into();
-            GeometryWithImportedGeometry::Solid(new_solid)
+            fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+                .await
+                .map_err(|e| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("failed to fix tags and references: {e:?}"),
+                        vec![args.source_range],
+                    ))
+                })?;
+            res.push(new_geometry)
         }
-    };
-
-    if args.ctx.no_engine_commands().await {
-        return Ok(new_geometry);
     }
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
-            ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
-        )
-        .await?;
-
-    fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
-        .await
-        .map_err(|e| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!("failed to fix tags and references: {e:?}"),
-                vec![args.source_range],
-            ))
-        })?;
-
-    Ok(new_geometry)
+    Ok(res)
 }
 /// Fix the tags and references of the cloned geometry.
 async fn fix_tags_and_references(
@@ -170,6 +179,7 @@ async fn fix_tags_and_references(
                 None,
                 Some(&entity_id_map.clone()),
                 BodyType::Solid, // TODO: Support surface clones.
+                BeingExtruded::Sketch,
             )
             .await?;
 
@@ -198,10 +208,7 @@ async fn get_old_new_child_map(
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: old_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(old_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -209,6 +216,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let old_entity_ids = old_resp.entity_ids;
 
     // Get the new geometries entity ids.
     let response = exec_state
@@ -222,10 +230,7 @@ async fn get_old_new_child_map(
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(new_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -233,6 +238,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let new_entity_ids = new_resp.entity_ids;
 
     // Create a map of old entity ids to new entity ids.
     Ok(HashMap::from_iter(
@@ -497,7 +503,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_eq!(tag_info.surface, None);
             assert_eq!(cloned_tag_info.surface, None);
@@ -563,7 +569,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
@@ -635,7 +641,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }

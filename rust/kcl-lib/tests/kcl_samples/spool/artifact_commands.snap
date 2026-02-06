@@ -243,7 +243,7 @@ description: Artifact commands spool.kcl
           "r": 0.003921569,
           "g": 0.003921569,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.1,
         "roughness": 0.7,
@@ -1838,7 +1838,6 @@ description: Artifact commands spool.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1860,7 +1859,7 @@ description: Artifact commands spool.kcl
           "r": 0.9490196,
           "g": 0.2784314,
           "b": 0.10980392,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.7,
         "roughness": 0.3,

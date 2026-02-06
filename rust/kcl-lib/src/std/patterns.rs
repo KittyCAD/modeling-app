@@ -289,6 +289,14 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
+    for (dim, name) in [(scale.x, "x"), (scale.y, "y"), (scale.z, "z")] {
+        if dim == 0.0 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("cannot set {name} = 0, scale factor must be nonzero"),
+                source_ranges,
+            )));
+        }
+    }
     let translate = match transform.get("translate") {
         Some(x) => {
             let arr = point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
@@ -341,12 +349,13 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
     }
 
-    Ok(Transform {
-        replicate,
-        scale,
-        translate,
-        rotation,
-    })
+    let transform = Transform::builder()
+        .replicate(replicate)
+        .scale(scale)
+        .translate(translate)
+        .rotation(rotation)
+        .build();
+    Ok(transform)
 }
 
 fn array_to_point3d(
@@ -578,10 +587,7 @@ async fn inner_pattern_linear_2d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(
@@ -638,10 +644,7 @@ async fn inner_pattern_linear_3d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(transforms, solids, use_original.unwrap_or_default(), exec_state, &args).await

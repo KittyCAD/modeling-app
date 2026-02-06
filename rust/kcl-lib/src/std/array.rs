@@ -212,3 +212,38 @@ fn inner_concat(
     };
     KclValue::HomArray { value: new, ty }
 }
+
+pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
+    let mut flattened = Vec::new();
+
+    let (array, original_ty) = match array_value {
+        KclValue::HomArray { value, ty, .. } => (value, ty),
+        KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+        _ => (vec![array_value], RuntimeType::any()),
+    };
+    for elem in array {
+        match elem {
+            KclValue::HomArray { value, .. } => flattened.extend(value),
+            KclValue::Tuple { value, .. } => flattened.extend(value),
+            _ => flattened.push(elem),
+        }
+    }
+
+    let ty = infer_flattened_type(original_ty, &flattened);
+    Ok(KclValue::HomArray { value: flattened, ty })
+}
+
+/// Infer the type of a flattened array based on the original type and the
+/// types of the flattened values. Currently, we preserve the original type only
+/// if all flattened values have the same type as the original element type.
+/// Otherwise, we fall back to `any`.
+fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> RuntimeType {
+    for value in values {
+        if !value.has_type(&original_ty) {
+            return RuntimeType::any();
+        };
+    }
+
+    original_ty
+}

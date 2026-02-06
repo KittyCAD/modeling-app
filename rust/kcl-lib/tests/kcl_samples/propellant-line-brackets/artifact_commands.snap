@@ -1034,7 +1034,7 @@ description: Artifact commands propellant-line-brackets.kcl
           "r": 0.6313726,
           "g": 0.5568628,
           "b": 0.1882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1051,7 +1051,7 @@ description: Artifact commands propellant-line-brackets.kcl
           "r": 0.6313726,
           "g": 0.5568628,
           "b": 0.1882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1742,7 +1742,7 @@ description: Artifact commands propellant-line-brackets.kcl
           "r": 0.25490198,
           "g": 0.5686275,
           "b": 0.7647059,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1765,7 +1765,6 @@ description: Artifact commands propellant-line-brackets.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1791,7 +1790,6 @@ description: Artifact commands propellant-line-brackets.kcl
                 "z": 6.35
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

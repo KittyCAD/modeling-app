@@ -5,11 +5,11 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, KclValueControlFlow, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier, annotations,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, StatementKind,
+        TagEngineInfo, TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         control_continue,
-        kcl_value::{FunctionBody, FunctionSource},
+        kcl_value::{FunctionBody, FunctionSource, NamedParam},
         memory,
         types::RuntimeType,
     },
@@ -275,6 +275,21 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
+        // Warn if experimental arguments are used after desugaring.
+        for (label, arg) in &args.labeled {
+            if let Some(param) = self.named_args.get(label.as_str())
+                && param.experimental
+            {
+                exec_state.warn_experimental(
+                    &match &fn_name {
+                        Some(f) => format!("`{f}({label})`"),
+                        None => label.to_owned(),
+                    },
+                    arg.source_range,
+                );
+            }
+        }
+
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
@@ -466,6 +481,8 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         }
         KclValue::Solid { value } => {
             for v in &value.value {
+                let mut solid_copy = value.clone();
+                solid_copy.sketch.tags.clear(); // Avoid recursive tags.
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
@@ -479,7 +496,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                         let mut info = info.clone();
                         info.surface = Some(v.clone());
-                        info.sketch = value.id;
+                        info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -493,7 +510,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    sketch: value.id,
+                                    geometry: Geometry::Solid(*solid_copy),
                                 },
                             )],
                             meta: vec![Metadata {
@@ -758,7 +775,11 @@ fn type_check_params_kw(
 
     for (label, mut arg) in args.labeled {
         match fn_def.named_args.get(&label) {
-            Some((def, ty)) => {
+            Some(NamedParam {
+                experimental: _,
+                default_value: def,
+                ty,
+            }) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
@@ -815,7 +836,7 @@ fn assign_args_to_params_kw(
     // been created.
     let source_ranges = fn_def.ast.as_source_ranges();
 
-    for (name, (default, _)) in fn_def.named_args.iter() {
+    for (name, param) in fn_def.named_args.iter() {
         let arg = args.labeled.get(name);
         match arg {
             Some(arg) => {
@@ -825,7 +846,7 @@ fn assign_args_to_params_kw(
                     arg.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
                 )?;
             }
-            None => match default {
+            None => match &param.default_value {
                 Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
@@ -915,6 +936,7 @@ mod test {
         }
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -924,6 +946,7 @@ mod test {
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,

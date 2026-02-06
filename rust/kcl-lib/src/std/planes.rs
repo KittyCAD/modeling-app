@@ -242,12 +242,7 @@ async fn make_offset_plane_in_engine(
 
     // Create new default planes.
     let default_size = 100.0;
-    let color = Color {
-        r: 0.6,
-        g: 0.6,
-        b: 0.6,
-        a: 0.3,
-    };
+    let color = Color::from_rgba(0.6, 0.6, 0.6, 0.3);
 
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane.id);
     exec_state
