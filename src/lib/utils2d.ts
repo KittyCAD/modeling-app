@@ -52,6 +52,14 @@ export function distance2d(a: Coords2d, b: Coords2d): number {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
+export function pointsAreEqual(
+  a: Coords2d,
+  b: Coords2d,
+  epsilon = 1e-8
+): boolean {
+  return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon
+}
+
 export function isValidNumber(value: number): boolean {
   return typeof value === 'number' && !Number.isNaN(value) && isFinite(value)
 }

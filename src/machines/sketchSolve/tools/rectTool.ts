@@ -17,6 +17,7 @@ import {
   updateDraftRectangleAligned,
 } from '@src/machines/sketchSolve/tools/rectUtils'
 import type { Coords2d } from '@src/lang/util'
+import { pointsAreEqual } from '@src/lib/utils2d'
 
 export const RECTANGLE_TOOL_ID = 'Rectangle tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${RECTANGLE_TOOL_ID}.adding first point`
@@ -156,12 +157,11 @@ export const machine = setup({
               type: 'set second point',
               data: [twoD.x, twoD.y],
             })
-            return
+          } else {
+            self.send({
+              type: 'finalize',
+            })
           }
-
-          self.send({
-            type: 'finalize',
-          })
         },
       })
     },
@@ -201,6 +201,12 @@ export const machine = setup({
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (!twoD) return
+          if (
+            context.secondPoint &&
+            pointsAreEqual(context.secondPoint, [twoD.x, twoD.y])
+          ) {
+            return
+          }
           self.send({
             type: 'finalize',
           })
@@ -352,7 +358,11 @@ export const machine = setup({
           target: 'awaiting first point',
         },
         'set second point': {
-          guard: ({ context }) => context.rectOriginMode === 'angled',
+          guard: ({ context, event }) => {
+            if (context.rectOriginMode !== 'angled') return false
+            if (event.type !== 'set second point') return false
+            return !pointsAreEqual(context.origin, event.data)
+          },
           actions: assign(({ event }) => {
             if (event.type !== 'set second point') return {}
             return {
