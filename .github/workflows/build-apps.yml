@@ -11,7 +11,7 @@ on:
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-  FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
+  FORCE_RELEASE_BUILD: true # Set to true to enable codesign in a PR
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -196,9 +196,6 @@ jobs:
       - name: Configure Azure Trusted Signing env (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
-          echo "AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> "$GITHUB_ENV"
-          echo "AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> "$GITHUB_ENV"
-          echo "AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}" >> "$GITHUB_ENV"
         shell: bash
 
       - name: Build the app (debug)
@@ -218,6 +215,9 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           CSC_FOR_PULL_REQUEST: ${{ env.FORCE_RELEASE_BUILD }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
