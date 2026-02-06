@@ -1666,7 +1666,7 @@ const CustomIconMap = Object.freeze({
       xmlns="http://www.w3.org/2000/svg"
       aria-label="rectangle angled"
     >
-      <g transform="rotate(-30 10 10)">
+      <g transform="rotate(-45 10 10)">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
