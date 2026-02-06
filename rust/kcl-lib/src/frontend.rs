@@ -758,6 +758,13 @@ impl SketchApi for FrontendState {
         todo!()
     }
 
+    /// Splitting a segment means creating a new segment, editing the old one, and then
+    /// migrating a bunch of the constraints from the original segment to the new one
+    /// (i.e. deleting them and re-adding them on the other segment).
+    ///
+    /// To keep this efficient we require as few executions as possible: we create the
+    /// new segment first (to get its id), then do all edits and new constraints, and
+    /// do all deletes at the end (since deletes invalidate ids).
     async fn batch_split_segment_operations(
         &mut self,
         ctx: &ExecutorContext,
