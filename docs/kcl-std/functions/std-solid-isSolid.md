@@ -1,11 +1,11 @@
 ---
 title: "isSolid"
 subtitle: "Function in std::solid"
-excerpt: "Given a KCL value that is a "body" (currently typed as [`Solid`](/docs/kcl-std/types/std-types-Solid)), returns `true` if the value is a solid and `false` otherwise."
+excerpt: "Given a KCL value that is a 'body' (currently typed as [`Solid`](/docs/kcl-std/types/std-types-Solid)), returns `true` if the value is a solid and `false` otherwise."
 layout: manual
 ---
 
-Given a KCL value that is a "body" (currently typed as [`Solid`](/docs/kcl-std/types/std-types-Solid)), returns `true` if the value is a solid and `false` otherwise.
+Given a KCL value that is a 'body' (currently typed as [`Solid`](/docs/kcl-std/types/std-types-Solid)), returns `true` if the value is a solid and `false` otherwise.
 
 ```kcl
 isSolid(@val: Solid): bool

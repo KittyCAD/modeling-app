@@ -15935,7 +15935,6 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -15979,7 +15978,6 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

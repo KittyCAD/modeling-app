@@ -252,6 +252,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  body: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 7C16 8.65685 13.3137 10 10 10C6.68629 10 4 8.65685 4 7M16 7C16 5.34315 13.3137 4 10 4C6.68629 4 4 5.34315 4 7M16 7V13C16 14.6569 13.3137 16 10 16C6.68629 16 4 14.6569 4 13V7"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   booleanExclude: (
     <svg
       viewBox="0 0 20 20"
@@ -1649,6 +1657,23 @@ const CustomIconMap = Object.freeze({
         d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
         fill="currentColor"
       />
+    </svg>
+  ),
+  rectangleAngled: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle angled"
+    >
+      <g transform="rotate(-45 10 10)">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
+          fill="currentColor"
+        />
+      </g>
     </svg>
   ),
   rectangleCenter: (

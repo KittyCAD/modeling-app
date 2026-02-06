@@ -8,7 +8,7 @@ layout: manual
 Clone a sketch or solid.
 
 ```kcl
-clone(@geometry: Sketch | Solid | ImportedGeometry): Sketch | Solid | ImportedGeometry
+clone(@geometries: [Sketch | Solid | ImportedGeometry; 1+]): [Sketch | Solid | ImportedGeometry; 1+]
 ```
 
 This works essentially like a copy-paste operation. It creates a perfect replica
@@ -20,15 +20,28 @@ instance pattern with zero transformations.
 Really only use this function if YOU ARE SURE you need it. In most cases you
 do not need clone and using a pattern with `instance = 2` is more appropriate.
 
+
+
+
+
+
+
+
+
+
+
+
+// Clone an array that includes an imported geometry, solid and sketch.
+
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `geometry` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The sketch, solid, or imported geometry to be cloned. | Yes |
+| `geometries` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+] | The sketch, solid, or imported geometry to be cloned. | Yes |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+]
 
 
 ### Examples
@@ -388,6 +401,94 @@ clonedCube = clone(myCube)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone9.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Clone an array of sketches and solids
+exampleSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+exampleSolid = startSketchOn(XY)
+  |> startProfile(at = [-15, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+  |> extrude(length = 5)
+
+inputArray = [exampleSketch, exampleSolid]
+outputArray = clone(inputArray)
+
+outputArray[0]
+  |> translate(xyz = [10, 10, 10])
+  |> extrude(length = 5)
+
+clonedSolid = outputArray[1]
+  |> translate(xyz = [-10, -10, -10])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the clone function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-clone10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+import "tests/inputs/cube.sldprt" as cube
+
+geom = cube
+  |> translate(xyz = [1000, 50, 50])
+
+// Clone a basic sketch and move it and extrude it.
+exampleSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+exampleSolid = startSketchOn(XY)
+  |> startProfile(at = [-15, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+  |> extrude(length = 5)
+
+inputArray = [exampleSketch, exampleSolid, geom]
+outputArray = clone(inputArray)
+
+outputArray[0]
+  |> translate(xyz = [10, 10, 10])
+  |> extrude(length = 5)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the clone function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone11_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-clone11.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

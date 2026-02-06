@@ -225,7 +225,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -561,7 +560,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -605,7 +603,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -861,7 +858,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -905,7 +901,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1161,7 +1156,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1205,7 +1199,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

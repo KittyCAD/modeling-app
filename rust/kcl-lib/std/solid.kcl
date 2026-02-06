@@ -1353,6 +1353,8 @@ export fn flipSurface(
 ): [Solid; 1+] {}
 
 /// Split a body into two parts: the part that overlaps with a tool, and the part that doesn't.
+/// NOTE: Currently `merge = true` is required. You must set this argument.
+/// In the future, this restriction will be removed.
 ///
 /// ```kcl
 /// sideLen = 4
@@ -1398,7 +1400,7 @@ export fn split(
 ): [Solid; 1+] {}
 
 
-/// Given a KCL value that is a "body" (currently typed as `Solid`), returns `true` if the value is a solid and `false` otherwise. 
+/// Given a KCL value that is a 'body' (currently typed as `Solid`), returns `true` if the value is a solid and `false` otherwise. 
 ///
 /// ```kcl
 /// fn square(@plane, origin, side, body_type) {
@@ -1443,7 +1445,7 @@ export fn isSolid(
 ): bool {}
 
 
-/// Given a KCL value that is a "body" (currently typed as `Solid`), returns `true` if the value is a surface and `false` otherwise. 
+/// Given a KCL value that is a 'body' (currently typed as `Solid`), returns `true` if the value is a surface and `false` otherwise. 
 ///
 /// ```kcl
 /// fn square(@plane, origin, side, body_type) {

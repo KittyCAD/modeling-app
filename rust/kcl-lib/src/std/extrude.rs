@@ -23,7 +23,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed,
-        Sketch, SketchSurface, Solid,
+        Sketch, SketchSurface, Solid, annotations,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -462,24 +462,20 @@ pub(crate) async fn do_post_extrude<'a>(
             sketch.is_closed = ProfileClosed::Explicitly;
         }
         BodyType::Surface => {}
+        _other => {
+            // At some point in the future we'll add sheet metal or something.
+            // Figure this out then.
+        }
     }
 
-    // 1st time: Merge, Sketch
-    // 2nd time: New, Face
     match (extrude_method, being_extruded) {
         (ExtrudeMethod::Merge, BeingExtruded::Face) => {
             // Merge the IDs.
             // If we were sketching on a face, we need the original face id.
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch.id;
             }
         }
         (ExtrudeMethod::New, BeingExtruded::Face) => {
@@ -493,16 +489,17 @@ pub(crate) async fn do_post_extrude<'a>(
         }
         (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch.id;
             }
+        }
+        (other, _) => {
+            // If you ever hit this, you should add a new arm to the match expression, and implement support for the new ExtrudeMethod variant.
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Zoo does not yet support creating bodies via {other:?}"),
+                vec![args.source_range],
+            )));
         }
     }
 
@@ -727,6 +724,18 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
                 if let Some(curve_id) = face_info.curve_id {
                     faces.sides.insert(curve_id, face_info.face_id);
                 }
+            }
+            other => {
+                exec_state.warn(
+                    crate::CompilationError {
+                        source_range: args.source_range,
+                        message: format!("unknown extrusion face type {other:?}"),
+                        suggestion: None,
+                        severity: crate::errors::Severity::Warning,
+                        tag: crate::errors::Tag::Unnecessary,
+                    },
+                    annotations::WARN_NOT_YET_SUPPORTED,
+                );
             }
         }
     }

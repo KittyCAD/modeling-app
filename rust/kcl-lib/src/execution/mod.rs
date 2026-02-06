@@ -1616,9 +1616,9 @@ impl ExecutorContext {
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options {
-                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: if deterministic_time {
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {e}"),
@@ -1627,8 +1627,8 @@ impl ExecutorContext {
                         })?)
                     } else {
                         None
-                    },
-                },
+                    })
+                    .build(),
             ))
             .await?;
 
@@ -2919,5 +2919,34 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_parameter() {
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5, amount = 2)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        // If the parameter isn't used, there's no warning.
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 0);
     }
 }

@@ -1862,7 +1862,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "w": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1887,7 +1886,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 3.8353999999999995
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1914,7 +1912,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -2.3114
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2251,7 +2248,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 17.525999999999996
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2989,7 +2985,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 18.3388
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3017,7 +3012,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3434,7 +3428,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -36.064825
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3793,7 +3786,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3819,7 +3811,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 11.175999999999998
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -4157,7 +4148,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4183,7 +4173,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -15.011399999999998
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

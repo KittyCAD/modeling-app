@@ -891,6 +891,7 @@ impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
+impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -942,6 +943,33 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                     Some(Self::SolidSet(solids))
                 } else {
                     Some(Self::SketchSet(sketches))
+                }
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut helices = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::HelixSet(helices))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),

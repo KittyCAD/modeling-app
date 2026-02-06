@@ -103,7 +103,7 @@ export class ToolbarFixture {
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
-    this.featureTreePane = page.locator('#feature-tree-pane')
+    this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one
@@ -254,6 +254,14 @@ export class ToolbarFixture {
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
