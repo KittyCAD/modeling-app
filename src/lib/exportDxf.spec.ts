@@ -569,8 +569,26 @@ describe('DXF Export', () => {
       const subtract2dOperation: StdLibCallOp = {
         type: 'StdLibCall',
         name: 'subtract2d',
-        unlabeledArg: null,
-        labeledArgs: {},
+        unlabeledArg: {
+          value: {
+            type: 'Sketch',
+            value: {
+              artifactId: 'path-1',
+            },
+          },
+          sourceRange: [0, 0, 0],
+        },
+        labeledArgs: {
+          tool: {
+            value: {
+              type: 'Sketch',
+              value: {
+                artifactId: 'path-2',
+              },
+            },
+            sourceRange: [0, 0, 0],
+          },
+        },
         nodePath: {
           steps: [
             { type: 'ProgramBodyItem', index: 0 },
@@ -582,7 +600,7 @@ describe('DXF Export', () => {
         sourceRange: [0, 0, 0],
       }
 
-      // Setup: plane artifact with nodePath matching root (first 2 steps)
+      // Setup: plane artifact with nodePath unrelated to subtract2d (function-defined sketch)
       const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
@@ -600,7 +618,7 @@ describe('DXF Export', () => {
         },
       }
 
-      // Setup: path artifacts with nodePaths matching the subtract2d root
+      // Setup: path artifacts with nodePaths in a function body
       const pathArtifact1: Artifact = {
         id: 'path-1',
         type: 'path',

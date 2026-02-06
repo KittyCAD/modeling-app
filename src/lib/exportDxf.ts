@@ -10,55 +10,35 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ToastOptions } from 'react-hot-toast'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+
+function getSketchArtifactId(value: OpKclValue | null | undefined): string | null {
+  if (!value) return null
+  if (value.type === 'Sketch' && value.value?.artifactId) {
+    return value.value.artifactId
+  }
+  return null
+}
 
 // Helper function to find the plane artifact for a subtract2d operation
-// by traversing the artifact graph to find which plane contains the sketch's paths
+// by resolving the sketch artifact ID from the operation args.
 function findPlaneArtifactForSubtract2d(
   operation: StdLibCallOp,
   kclManager: KclManager
 ): Artifact | null {
-  const subtract2dNodePath = operation.nodePath
-  if (!subtract2dNodePath.steps || subtract2dNodePath.steps.length < 2) {
-    return null
-  }
-  // Get the root of the subtract2d's nodePath (identifies the variable/pipe)
-  const subtract2dRoot = JSON.stringify(subtract2dNodePath.steps.slice(0, 2))
+  const sketchId = getSketchArtifactId(operation.unlabeledArg?.value)
+  if (!sketchId) return null
 
-  // Find all path artifacts that share the same root - these are the sketch's paths
-  const sketchPathIds: string[] = []
-  for (const artifact of kclManager.artifactGraph.values()) {
-    if (artifact.type !== 'path') continue
+  const sketchArtifact = kclManager.artifactGraph.get(sketchId)
+  const planeArtifact = getPlaneFromArtifact(
+    sketchArtifact,
+    kclManager.artifactGraph
+  )
 
-    const pathNodePath = artifact.codeRef?.nodePath
-    if (!pathNodePath?.steps || pathNodePath.steps.length < 2) continue
-
-    const pathRoot = JSON.stringify(pathNodePath.steps.slice(0, 2))
-    if (pathRoot === subtract2dRoot) {
-      sketchPathIds.push(artifact.id)
-    }
-  }
-
-  if (sketchPathIds.length === 0) {
-    return null
-  }
-
-  // Find which plane contains these paths by checking plane.pathIds
-  for (const artifact of kclManager.artifactGraph.values()) {
-    if (artifact.type !== 'plane') continue
-    if (!('pathIds' in artifact) || !isArray(artifact.pathIds)) continue
-
-    // Check if this plane contains any of the sketch's paths
-    const containsSketchPath = sketchPathIds.some((pathId) =>
-      artifact.pathIds.includes(pathId)
-    )
-
-    if (containsSketchPath) {
-      return artifact
-    }
-  }
-
-  return null
+  if (planeArtifact instanceof Error) return null
+  return planeArtifact
 }
 
 // Exports a sketch operation to DXF format
