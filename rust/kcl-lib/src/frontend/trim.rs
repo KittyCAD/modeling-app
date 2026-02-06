@@ -1,5 +1,6 @@
 use std::f64::consts::TAU;
 
+use indexmap::IndexSet;
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
@@ -2870,22 +2871,14 @@ pub(crate) fn trim_strategy(
         // For now, implement a simplified version that creates the split operation
         // The full constraint migration logic is very complex and can be refined during testing
         let mut constraints_to_migrate: Vec<ConstraintToMigrate> = Vec::new();
-        let mut constraints_to_delete: Vec<ObjectId> = Vec::new();
-
-        // Use a HashSet to track which constraints we've already added to avoid duplicates
-        use std::collections::HashSet;
-        let mut constraints_to_delete_set: HashSet<ObjectId> = HashSet::new();
+        let mut constraints_to_delete_set: IndexSet<ObjectId> = IndexSet::new();
 
         // Add existing point-segment constraints from terminations to delete list
-        if let Some(constraint_id) = left_coincident_data.existing_point_segment_constraint_id
-            && constraints_to_delete_set.insert(constraint_id)
-        {
-            constraints_to_delete.push(constraint_id);
+        if let Some(constraint_id) = left_coincident_data.existing_point_segment_constraint_id {
+            constraints_to_delete_set.insert(constraint_id);
         }
-        if let Some(constraint_id) = right_coincident_data.existing_point_segment_constraint_id
-            && constraints_to_delete_set.insert(constraint_id)
-        {
-            constraints_to_delete.push(constraint_id);
+        if let Some(constraint_id) = right_coincident_data.existing_point_segment_constraint_id {
+            constraints_to_delete_set.insert(constraint_id);
         }
 
         // Find point-point constraints on end endpoint to migrate
@@ -2910,9 +2903,7 @@ pub(crate) fn trim_strategy(
                 });
 
                 if let Some(other_point_id) = other_point_id_opt {
-                    if constraints_to_delete_set.insert(constraint_id) {
-                        constraints_to_delete.push(constraint_id);
-                    }
+                    constraints_to_delete_set.insert(constraint_id);
                     // Migrate as point-point constraint to the new end endpoint
                     constraints_to_migrate.push(ConstraintToMigrate {
                         constraint_id,
@@ -2934,9 +2925,7 @@ pub(crate) fn trim_strategy(
                     .map(|id| id as usize)
                 {
                     let constraint_id = ObjectId(constraint_id_usize);
-                    if constraints_to_delete_set.insert(constraint_id) {
-                        constraints_to_delete.push(constraint_id);
-                    }
+                    constraints_to_delete_set.insert(constraint_id);
                     // Add to migrate list (simplified)
                     if let Some(other_id_usize) = constraint_json
                         .get("segmentOrPointId")
@@ -3067,9 +3056,7 @@ pub(crate) fn trim_strategy(
                                 });
                             }
                             // Always delete the old point-segment constraint (whether we migrate or not)
-                            if constraints_to_delete_set.insert(obj.id) {
-                                constraints_to_delete.push(obj.id);
-                            }
+                            constraints_to_delete_set.insert(obj.id);
                         }
                     }
                 }
@@ -3228,9 +3215,7 @@ pub(crate) fn trim_strategy(
                                     });
                                 }
                                 // Always delete the old point-segment constraint
-                                if constraints_to_delete_set.insert(obj.id) {
-                                    constraints_to_delete.push(obj.id);
-                                }
+                                constraints_to_delete_set.insert(obj.id);
                                 continue; // Already handled as point-point constraint migration above
                             }
 
@@ -3259,9 +3244,7 @@ pub(crate) fn trim_strategy(
                                     is_point_point: false, // Keep as point-segment, but replace the segment
                                     attach_to_endpoint: AttachToEndpoint::Segment, // Replace old segment with new segment
                                 });
-                                if constraints_to_delete_set.insert(obj.id) {
-                                    constraints_to_delete.push(obj.id);
-                                }
+                                constraints_to_delete_set.insert(obj.id);
                             }
                         }
                     }
@@ -3295,9 +3278,7 @@ pub(crate) fn trim_strategy(
                 }
             }
 
-            if constraints_to_delete_set.insert(constraint_id) {
-                constraints_to_delete.push(constraint_id);
-            }
+            constraints_to_delete_set.insert(constraint_id);
         }
 
         // Find angle constraints (Parallel, Perpendicular, Horizontal, Vertical) that reference the segment being split
@@ -3322,7 +3303,7 @@ pub(crate) fn trim_strategy(
             }
 
             // Skip if already marked for deletion
-            if constraints_to_delete.contains(&obj.id) {
+            if constraints_to_delete_set.contains(&obj.id) {
                 continue;
             }
 
@@ -3428,15 +3409,14 @@ pub(crate) fn trim_strategy(
                             });
                         }
                         // Always delete the old point-segment constraint
-                        if constraints_to_delete_set.insert(obj.id) {
-                            constraints_to_delete.push(obj.id);
-                        }
+                        constraints_to_delete_set.insert(obj.id);
                     }
                 }
             }
         }
 
         // Create split segment operation
+        let constraints_to_delete: Vec<ObjectId> = constraints_to_delete_set.iter().copied().collect();
         let operations = vec![TrimOperation::SplitSegment {
             segment_id: trim_spawn_id,
             left_trim_coords,

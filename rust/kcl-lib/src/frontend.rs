@@ -39,7 +39,6 @@ pub(crate) mod sketch;
 mod traverse;
 pub(crate) mod trim;
 
-
 struct ArcSizeConstraintParams {
     points: Vec<ObjectId>,
     function_name: &'static str,
