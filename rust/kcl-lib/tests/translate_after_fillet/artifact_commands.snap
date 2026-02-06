@@ -576,7 +576,6 @@ description: Artifact commands translate_after_fillet.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

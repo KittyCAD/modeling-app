@@ -1616,9 +1616,9 @@ impl ExecutorContext {
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options {
-                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: if deterministic_time {
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {e}"),
@@ -1627,8 +1627,8 @@ impl ExecutorContext {
                         })?)
                     } else {
                         None
-                    },
-                },
+                    })
+                    .build(),
             ))
             .await?;
 
