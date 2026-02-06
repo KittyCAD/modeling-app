@@ -417,13 +417,14 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, code_ref)?;
             }
-            Artifact::SketchBlockConstraint(SketchBlockConstraint { code_ref, .. }) => {
+            Artifact::SketchBlockConstraint(constraint) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"SketchConstraint<br>{:?}\"]",
-                    code_ref_display(code_ref)
+                    "{prefix}{id}[\"SketchBlockConstraint {:?}<br>{:?}\"]",
+                    constraint.constraint_type,
+                    code_ref_display(&constraint.code_ref)
                 )?;
-                node_path_display(output, prefix, None, code_ref)?;
+                node_path_display(output, prefix, None, &constraint.code_ref)?;
             }
             Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => {
                 writeln!(

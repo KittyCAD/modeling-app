@@ -243,6 +243,41 @@ pub struct SketchBlock {
     pub sketch_id: ObjectId,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SketchBlockConstraintType {
+    Coincident,
+    Distance,
+    Diameter,
+    HorizontalDistance,
+    VerticalDistance,
+    Horizontal,
+    LinesEqualLength,
+    Parallel,
+    Perpendicular,
+    Radius,
+    Vertical,
+}
+
+impl From<&Constraint> for SketchBlockConstraintType {
+    fn from(constraint: &Constraint) -> Self {
+        match constraint {
+            Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
+            Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
+            Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
+            Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
+            Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,
+            Constraint::LinesEqualLength { .. } => SketchBlockConstraintType::LinesEqualLength,
+            Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
+            Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
+            Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -252,7 +287,7 @@ pub struct SketchBlockConstraint {
     pub sketch_id: ObjectId,
     /// The constraint ID (ObjectId) for the constraint scene object.
     pub constraint_id: ObjectId,
-    pub constraint: Constraint,
+    pub constraint_type: SketchBlockConstraintType,
     pub code_ref: CodeRef,
 }
 
