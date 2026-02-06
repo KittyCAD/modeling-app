@@ -1140,11 +1140,18 @@ fn find_termination_in_direction(
     };
 
     // Collect all candidate points: intersections, coincident points, and endpoints
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum CandidateType {
+        Intersection,
+        Coincident,
+        Endpoint,
+    }
+
     #[derive(Debug, Clone)]
     struct Candidate {
         t: f64,
         point: Coords2d,
-        candidate_type: String, // "intersection", "coincident", or "endpoint"
+        candidate_type: CandidateType,
         segment_id: Option<ObjectId>,
         point_id: Option<ObjectId>,
     }
@@ -1157,14 +1164,14 @@ fn find_termination_in_direction(
             candidates.push(Candidate {
                 t: 0.0,
                 point: segment_geometry.start,
-                candidate_type: "endpoint".to_string(),
+                candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(line.start),
             });
             candidates.push(Candidate {
                 t: 1.0,
                 point: segment_geometry.end,
-                candidate_type: "endpoint".to_string(),
+                candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(line.end),
             });
@@ -1174,14 +1181,14 @@ fn find_termination_in_direction(
             candidates.push(Candidate {
                 t: 0.0,
                 point: segment_geometry.start,
-                candidate_type: "endpoint".to_string(),
+                candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(arc.start),
             });
             candidates.push(Candidate {
                 t: 1.0,
                 point: segment_geometry.end,
-                candidate_type: "endpoint".to_string(),
+                candidate_type: CandidateType::Endpoint,
                 segment_id: None,
                 point_id: Some(arc.end),
             });
@@ -1228,7 +1235,7 @@ fn find_termination_in_direction(
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
-                                    candidate_type: "intersection".to_string(),
+                                    candidate_type: CandidateType::Intersection,
                                     segment_id: Some(other_id),
                                     point_id: None,
                                 });
@@ -1254,7 +1261,7 @@ fn find_termination_in_direction(
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
-                                    candidate_type: "intersection".to_string(),
+                                    candidate_type: CandidateType::Intersection,
                                     segment_id: Some(other_id),
                                     point_id: None,
                                 });
@@ -1287,7 +1294,7 @@ fn find_termination_in_direction(
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
-                                    candidate_type: "intersection".to_string(),
+                                    candidate_type: CandidateType::Intersection,
                                     segment_id: Some(other_id),
                                     point_id: None,
                                 });
@@ -1314,7 +1321,7 @@ fn find_termination_in_direction(
                                 candidates.push(Candidate {
                                     t,
                                     point: intersection,
-                                    candidate_type: "intersection".to_string(),
+                                    candidate_type: CandidateType::Intersection,
                                     segment_id: Some(other_id),
                                     point_id: None,
                                 });
@@ -1377,7 +1384,7 @@ fn find_termination_in_direction(
                         candidates.push(Candidate {
                             t,
                             point: other_start,
-                            candidate_type: "coincident".to_string(),
+                            candidate_type: CandidateType::Coincident,
                             segment_id: Some(other_id),
                             point_id: Some(other_start_id),
                         });
@@ -1426,7 +1433,7 @@ fn find_termination_in_direction(
                         candidates.push(Candidate {
                             t,
                             point: other_end,
-                            candidate_type: "coincident".to_string(),
+                            candidate_type: CandidateType::Coincident,
                             segment_id: Some(other_id),
                             point_id: Some(other_end_id),
                         });
@@ -1480,7 +1487,7 @@ fn find_termination_in_direction(
                         candidates.push(Candidate {
                             t,
                             point: other_start,
-                            candidate_type: "coincident".to_string(),
+                            candidate_type: CandidateType::Coincident,
                             segment_id: Some(other_id),
                             point_id: Some(other_start_id),
                         });
@@ -1529,7 +1536,7 @@ fn find_termination_in_direction(
                         candidates.push(Candidate {
                             t,
                             point: other_end,
-                            candidate_type: "coincident".to_string(),
+                            candidate_type: CandidateType::Coincident,
                             segment_id: Some(other_id),
                             point_id: Some(other_end_id),
                         });
@@ -1569,16 +1576,14 @@ fn find_termination_in_direction(
             dist_diff.partial_cmp(&0.0).unwrap_or(std::cmp::Ordering::Equal)
         } else {
             // Distances are effectively equal - prioritize by type
-            let type_priority = |candidate_type: &str| -> i32 {
-                if candidate_type == "coincident" {
-                    0
-                } else if candidate_type == "intersection" {
-                    1
-                } else {
-                    2 // endpoint
+            let type_priority = |candidate_type: CandidateType| -> i32 {
+                match candidate_type {
+                    CandidateType::Coincident => 0,
+                    CandidateType::Intersection => 1,
+                    CandidateType::Endpoint => 2,
                 }
             };
-            type_priority(&a.candidate_type).cmp(&type_priority(&b.candidate_type))
+            type_priority(a.candidate_type).cmp(&type_priority(b.candidate_type))
         }
     });
 
@@ -1600,7 +1605,7 @@ fn find_termination_in_direction(
     // Check if the closest candidate is an intersection that is actually another segment's endpoint
     // According to test case: if another segment's endpoint is on our segment (even without coincident constraint),
     // we should return segEndPoint, not intersection
-    if closest_candidate.candidate_type == "intersection"
+    if closest_candidate.candidate_type == CandidateType::Intersection
         && let Some(seg_id) = closest_candidate.segment_id
     {
         let intersecting_seg = objects.iter().find(|obj| obj.id == seg_id);
@@ -1696,7 +1701,7 @@ fn find_termination_in_direction(
         TrimDirection::Left => 0.0,
         TrimDirection::Right => 1.0,
     };
-    if closest_candidate.candidate_type == "intersection" {
+    if closest_candidate.candidate_type == CandidateType::Intersection {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
         if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
             // Intersection is at endpoint - check if there's a coincident constraint
@@ -1716,7 +1721,7 @@ fn find_termination_in_direction(
         TrimDirection::Left => segment_geometry.start,
         TrimDirection::Right => segment_geometry.end,
     };
-    if closest_candidate.candidate_type == "endpoint" {
+    if closest_candidate.candidate_type == CandidateType::Endpoint {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
         if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
             // This is our own endpoint, return it
@@ -1727,7 +1732,7 @@ fn find_termination_in_direction(
     }
 
     // Return appropriate termination type
-    if closest_candidate.candidate_type == "coincident" {
+    if closest_candidate.candidate_type == CandidateType::Coincident {
         // Even if at endpoint, return coincident type because it's a constraint-based termination
         Ok(TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
             trim_termination_coords: closest_candidate.point,
@@ -1738,7 +1743,7 @@ fn find_termination_in_direction(
                 .point_id
                 .ok_or_else(|| "Missing point_id for coincident".to_string())?,
         })
-    } else if closest_candidate.candidate_type == "intersection" {
+    } else if closest_candidate.candidate_type == CandidateType::Intersection {
         Ok(TrimTermination::Intersection {
             trim_termination_coords: closest_candidate.point,
             intersecting_seg_id: closest_candidate
