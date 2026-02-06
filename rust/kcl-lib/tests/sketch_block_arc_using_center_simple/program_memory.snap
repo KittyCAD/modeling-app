@@ -148,7 +148,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                }
               }
             }
           }

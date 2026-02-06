@@ -688,7 +688,11 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
               }
             }
           }
@@ -976,7 +980,11 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
               }
             }
           }
@@ -1264,7 +1272,11 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
               }
             }
           }
@@ -1552,7 +1564,11 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
               }
             }
           }

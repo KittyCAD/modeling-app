@@ -116,7 +116,11 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
               }
             }
           }
@@ -232,7 +236,11 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line5"
+                }
               }
             }
           }

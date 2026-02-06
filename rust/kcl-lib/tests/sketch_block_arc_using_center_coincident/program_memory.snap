@@ -148,7 +148,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                }
               }
             }
           }
@@ -264,7 +268,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineX"
+                }
               }
             }
           }
@@ -380,7 +388,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "lineY"
+                }
               }
             }
           }
@@ -462,7 +474,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p0"
+                }
               }
             }
           }
@@ -544,7 +560,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p1"
+                }
               }
             }
           }

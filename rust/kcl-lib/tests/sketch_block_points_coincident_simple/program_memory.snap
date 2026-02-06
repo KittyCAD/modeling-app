@@ -82,7 +82,11 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p1"
+                }
               }
             }
           }
@@ -164,7 +168,11 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p2"
+                }
               }
             }
           }
@@ -246,7 +254,11 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p3"
+                }
               }
             }
           }
@@ -328,7 +340,11 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "p4"
+                }
               }
             }
           }

@@ -116,7 +116,11 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]"
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "l1"
+                }
               }
             }
           }
