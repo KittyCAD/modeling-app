@@ -14,7 +14,9 @@ import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
-function getSketchArtifactId(value: OpKclValue | null | undefined): string | null {
+function getSketchArtifactId(
+  value: OpKclValue | null | undefined
+): string | null {
   if (!value) return null
   if (value.type === 'Sketch' && value.value?.artifactId) {
     return value.value.artifactId
