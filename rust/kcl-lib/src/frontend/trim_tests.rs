@@ -1,4 +1,3 @@
-
 use crate::frontend::{
     api::ObjectId,
     trim::{Coords2d, execute_trim_flow},
@@ -40,6 +39,7 @@ async fn test_trim_line2_left_side() {
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+}
 "#;
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
@@ -50,6 +50,7 @@ sketch(on = YZ) {
   line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var 0mm, var 0mm])
   sketch2::coincident([line2.end, line1])
+}
 "#;
 
     assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
@@ -68,6 +69,7 @@ sketch(on = YZ) {
   sketch2::coincident([line2.start, line1])
   sketch2::coincident([line4.start, line2])
   sketch2::coincident([line2.end, line3])
+}
 "#;
 
     let trim_points = vec![Coords2d { x: -2.18, y: 4.92 }, Coords2d { x: -4.23, y: -5.15 }];
@@ -81,6 +83,7 @@ sketch(on = YZ) {
   line4 = sketch2::line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
   sketch2::coincident([line2.end, line3])
   sketch2::coincident([line2.start, line4.start])
+}
 "#;
 
     assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
