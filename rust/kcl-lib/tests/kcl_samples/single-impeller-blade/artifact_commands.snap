@@ -297,7 +297,6 @@ description: Artifact commands single-impeller-blade.kcl
                 "z": 30.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
