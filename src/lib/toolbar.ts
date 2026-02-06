@@ -1461,6 +1461,26 @@ export const useToolbarConfig = () => {
                   state.matches('sketchSolveMode') &&
                   state.context.sketchSolveToolName === 'centerRectTool',
               },
+              {
+                id: 'angled-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'angledRectTool' },
+                      }),
+                icon: 'rectangleAngled',
+                status: 'available',
+                title: 'Angled Rectangle',
+                description: 'Draw a rotated rectangle with three clicks',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'angledRectTool',
+              },
             ],
           },
           'break',

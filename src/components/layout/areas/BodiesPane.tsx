@@ -21,6 +21,7 @@ import { sendSelectionEvent } from '@src/lib/featureTree'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
+import { toUtf16 } from '@src/lang/errors'
 
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
 
@@ -89,15 +90,21 @@ function BodyItem({
   const { actor: modelingActor, send: modelingSend } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
+
   const isSelected =
-    kclManager.editorState.selection.main.from >= sourceRange[0] &&
-    kclManager.editorState.selection.main.to <= sourceRange[1]
+    kclManager.editorState.selection.main.from >=
+      toUtf16(sourceRange[0], kclManager.code) &&
+    kclManager.editorState.selection.main.to <=
+      toUtf16(sourceRange[1], kclManager.code)
   const onSelect = () =>
-    sendSelectionEvent({
-      sourceRange,
-      kclManager,
-      modelingSend,
-    })
+    sendSelectionEvent(
+      {
+        sourceRange,
+        kclManager,
+        modelingSend,
+      },
+      true
+    )
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">

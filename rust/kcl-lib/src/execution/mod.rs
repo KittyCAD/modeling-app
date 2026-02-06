@@ -2920,4 +2920,33 @@ startSketchOn(XY)
 "#;
         parse_execute(code).await.unwrap_err();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_parameter() {
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5, amount = 2)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        // If the parameter isn't used, there's no warning.
+        let code = r#"
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+
+answer = inc(5)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 0);
+    }
 }
