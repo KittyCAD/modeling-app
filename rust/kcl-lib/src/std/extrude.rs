@@ -347,7 +347,18 @@ async fn inner_extrude(
 
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::Face(..) => BeingExtruded::Face { face_id, solid_id },
+            Extrudable::Face(face_tag) => {
+                let face_id = sketch_or_face_id;
+                let solid_id = match face_tag.geometry() {
+                    Some(crate::execution::Geometry::Solid(solid)) => solid.id,
+                    Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
+                        SketchSurface::Face(face) => face.solid.id,
+                        SketchSurface::Plane(_) => sketch.id,
+                    },
+                    None => face_id,
+                };
+                BeingExtruded::Face { face_id, solid_id }
+            }
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
