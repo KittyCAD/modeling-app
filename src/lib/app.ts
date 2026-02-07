@@ -178,7 +178,7 @@ export class App {
           },
         })
     }
-    const { SETTINGS, SYSTEM_IO, COMMAND_BAR } = ACTOR_IDS
+    const { SETTINGS, SYSTEM_IO } = ACTOR_IDS
     const appMachineActors = {
       [SETTINGS]: settingsMachine.provide({
         actors: {
@@ -312,7 +312,6 @@ export class App {
         },
       }),
       [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      [COMMAND_BAR]: commandBarMachine,
     } as const
 
     const appMachine = setup({
@@ -348,12 +347,6 @@ export class App {
           systemId: SYSTEM_IO,
           input: {
             wasmInstancePromise: this.wasmPromise,
-          },
-        }),
-        spawnChild(appMachineActors[COMMAND_BAR], {
-          systemId: COMMAND_BAR,
-          input: {
-            commands: [],
           },
         }),
       ],
