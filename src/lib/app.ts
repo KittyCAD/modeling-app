@@ -79,7 +79,7 @@ export class App {
 
   constructor() {
     this.singletons = this.buildSingletons()
-    this.ReactContext = React.createContext(this.singletons)
+    this.ReactContext = React.createContext(this)
   }
 
   /**
