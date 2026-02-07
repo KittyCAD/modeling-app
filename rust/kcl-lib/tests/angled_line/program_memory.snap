@@ -6,11 +6,62 @@ description: Variables in memory after executing angled_line.kcl
   "part001": {
     "type": "Solid",
     "value": {
-      "artifactId": "[uuid]",
-      "endCapId": "[uuid]",
+      "type": "Solid",
       "id": "[uuid]",
-      "sectional": false,
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 133,
+            "end": 139,
+            "moduleId": 0,
+            "start": 133,
+            "type": "TagDeclarator",
+            "value": "seg01"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -182,59 +233,9 @@ description: Variables in memory after executing angled_line.kcl
         "units": "mm"
       },
       "startCapId": "[uuid]",
-      "type": "Solid",
+      "endCapId": "[uuid]",
       "units": "mm",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 133,
-            "end": 139,
-            "moduleId": 0,
-            "start": 133,
-            "type": "TagDeclarator",
-            "value": "seg01"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        }
-      ]
+      "sectional": false
     }
   },
   "seg01": {

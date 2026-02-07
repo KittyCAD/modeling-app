@@ -1057,7 +1057,7 @@ pub struct Solid {
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
     /// How this solid was created.
-    #[serde(flatten)]
+    #[serde(rename = "sketch")]
     pub creator: SolidCreator,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
@@ -1075,22 +1075,26 @@ pub struct Solid {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorFace {
+    /// The face id that served as the base.
+    pub face_id: uuid::Uuid,
+    /// The solid id that owned the face.
+    pub solid_id: uuid::Uuid,
+    /// The sketch used for the operation.
+    pub sketch: Sketch,
+}
+
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(untagged, rename_all = "camelCase")]
+#[serde(tag = "creatorType", rename_all = "camelCase")]
 pub enum SolidCreator {
     /// Created from a sketch.
-    Sketch { sketch: Sketch },
+    Sketch(Sketch),
     /// Created by extruding or modifying a face.
-    Face {
-        /// The face id that served as the base.
-        face_id: uuid::Uuid,
-        /// The solid id that owned the face.
-        solid_id: uuid::Uuid,
-        /// The sketch used for the operation.
-        sketch: Sketch,
-    },
+    Face(CreatorFace),
     /// Created procedurally without a sketch.
     Procedural,
 }
@@ -1098,16 +1102,16 @@ pub enum SolidCreator {
 impl Solid {
     pub fn sketch(&self) -> Option<&Sketch> {
         match &self.creator {
-            SolidCreator::Sketch { sketch } => Some(sketch),
-            SolidCreator::Face { sketch, .. } => Some(sketch),
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
         }
     }
 
     pub fn sketch_mut(&mut self) -> Option<&mut Sketch> {
         match &mut self.creator {
-            SolidCreator::Sketch { sketch } => Some(sketch),
-            SolidCreator::Face { sketch, .. } => Some(sketch),
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
             SolidCreator::Procedural => None,
         }
     }

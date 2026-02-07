@@ -19,6 +19,7 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
+use crate::execution::CreatorFace;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -682,12 +683,12 @@ pub(crate) async fn do_post_extrude<'a>(
     let units = sketch.units;
     let id = sketch.id;
     let creator = match &sketch.on {
-        SketchSurface::Plane(_) => SolidCreator::Sketch { sketch },
-        SketchSurface::Face(face) => SolidCreator::Face {
+        SketchSurface::Plane(_) => SolidCreator::Sketch(sketch),
+        SketchSurface::Face(face) => SolidCreator::Face(CreatorFace {
             face_id: face.id,
             solid_id: face.solid.id,
             sketch,
-        },
+        }),
     };
 
     Ok(Solid {
