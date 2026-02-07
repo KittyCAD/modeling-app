@@ -19,6 +19,7 @@ description: Variables in memory after executing pipe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "face",
         "face_id": "[uuid]",
         "solid_id": "[uuid]",
         "sketch": {
@@ -81,6 +82,7 @@ description: Variables in memory after executing pipe.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -209,6 +211,7 @@ description: Variables in memory after executing pipe.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

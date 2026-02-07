@@ -168,6 +168,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -358,6 +359,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -548,6 +550,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -738,6 +741,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -928,6 +932,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1118,6 +1123,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1308,6 +1314,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1498,6 +1505,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1688,6 +1696,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1878,6 +1887,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2068,6 +2078,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2258,6 +2269,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2448,6 +2460,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2638,6 +2651,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2828,6 +2842,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3018,6 +3033,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3208,6 +3224,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3398,6 +3415,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3588,6 +3606,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3778,6 +3797,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3968,6 +3988,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4158,6 +4179,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4348,6 +4370,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4538,6 +4561,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4754,6 +4778,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5052,6 +5077,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5350,6 +5376,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5648,6 +5675,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5946,6 +5974,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6244,6 +6273,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6544,6 +6574,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6734,6 +6765,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6924,6 +6956,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7114,6 +7147,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7304,6 +7338,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7494,6 +7529,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7684,6 +7720,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7874,6 +7911,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8064,6 +8102,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8254,6 +8293,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8444,6 +8484,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8634,6 +8675,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8824,6 +8866,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9014,6 +9057,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9204,6 +9248,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9394,6 +9439,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9584,6 +9630,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9774,6 +9821,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9964,6 +10012,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10154,6 +10203,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10344,6 +10394,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10534,6 +10585,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10724,6 +10776,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10914,6 +10967,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11145,6 +11199,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -11434,6 +11489,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11624,6 +11680,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -11814,6 +11871,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12004,6 +12062,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12330,6 +12389,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12654,6 +12714,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -12983,6 +13044,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13307,6 +13369,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13649,6 +13712,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -13973,6 +14037,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -14308,6 +14373,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -14632,6 +14698,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -14956,6 +15023,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -15280,6 +15348,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -15652,6 +15721,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -15976,6 +16046,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -16235,6 +16306,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -16346,6 +16418,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -16623,6 +16696,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -16734,6 +16808,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -17011,6 +17086,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -17122,6 +17198,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -17399,6 +17476,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -17510,6 +17588,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -18162,6 +18241,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18352,6 +18432,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18542,6 +18623,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18732,6 +18814,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -18945,6 +19028,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -19222,6 +19306,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -19412,6 +19497,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

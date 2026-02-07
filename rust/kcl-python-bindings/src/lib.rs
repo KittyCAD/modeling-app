@@ -730,6 +730,77 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+pub struct Analyses {
+    pub center_of_mass: Option<()>,
+    pub conversion: Option<()>,
+    pub density: Option<()>,
+    pub mass: Option<()>,
+    pub surface_area: Option<()>,
+    pub volume: Option<()>,
+}
+
+/// Execute a kcl file and export it to a specific file format.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn execute_and_get_properties(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
+    tokio()
+        .spawn(async move {
+            let (code, path) = get_code_and_file_path(&path)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            let program = kcl_lib::Program::parse_no_errs(&code)
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+
+            let (ctx, mut state) = new_context_state(Some(path.clone()), false)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            // Execute the program.
+            ctx.run(&program, &mut state)
+                .await
+                .map_err(|err| into_miette(err, &code))?;
+
+            let settings = program
+                .meta_settings()
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
+                .unwrap_or_default();
+            let units: UnitLength = settings.default_length_units.into();
+
+            // This will not return until there are files.
+            let resp = ctx
+                .engine
+                .send_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    kcl_lib::SourceRange::default(),
+                    &kittycad_modeling_cmds::ModelingCmd::Export(
+                        kittycad_modeling_cmds::Export::builder()
+                            .entity_ids(vec![])
+                            .format(OutputFormat3d::new(
+                                &export_format,
+                                kcmc::format::OutputFormat3dOptions::new(units),
+                            ))
+                            .build(),
+                    ),
+                )
+                .await?;
+
+            ctx.close().await;
+            drop(ctx);
+
+            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+                return Err(pyo3::exceptions::PyException::new_err(format!(
+                    "Unexpected response from engine: {resp:?}"
+                )));
+            };
+
+            Ok(files)
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]

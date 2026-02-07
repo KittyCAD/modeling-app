@@ -124,6 +124,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -501,6 +502,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -763,6 +765,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -981,6 +984,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -1148,6 +1152,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -1501,6 +1506,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -1668,6 +1674,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -2021,6 +2028,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -2188,6 +2196,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -2541,6 +2550,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "face",
             "face_id": "[uuid]",
             "solid_id": "[uuid]",
             "sketch": {
@@ -2708,6 +2718,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -3194,6 +3205,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -3643,6 +3655,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -3984,6 +3997,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4084,6 +4098,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4310,6 +4325,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4850,6 +4866,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -5356,6 +5373,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5659,6 +5677,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6059,6 +6078,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6557,6 +6577,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7055,6 +7076,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7553,6 +7575,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7892,6 +7915,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -8306,6 +8330,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8582,6 +8607,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8902,6 +8928,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -9237,6 +9264,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -9337,6 +9365,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -11083,6 +11112,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

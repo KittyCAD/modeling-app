@@ -54,6 +54,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -253,6 +254,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         }
       ],
       "sketch": {
+        "creatorType": "face",
         "face_id": "[uuid]",
         "solid_id": "[uuid]",
         "sketch": {
@@ -378,6 +380,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -861,6 +864,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
