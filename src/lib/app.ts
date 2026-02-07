@@ -76,6 +76,16 @@ export class App {
    * Access this through `kclManager.wasmInstance`, not directly.
    */
   public wasmPromise = initialiseWasm()
+  private authActor = createActor(authMachine)
+  /** Auth system. Use `send` method to act with auth. */
+  auth = {
+    actor: this.authActor,
+    send: (...args: Parameters<typeof this.authActor.send>) =>
+      this.authActor.send(...args),
+    useAuthState: () => useSelector(this.authActor, (state) => state),
+    useToken: () => useSelector(this.authActor, (state) => state.context.token),
+    useUser: () => useSelector(this.authActor, (state) => state.context.user),
+  }
 
   constructor() {
     this.singletons = this.buildSingletons()
@@ -157,9 +167,8 @@ export class App {
           },
         })
     }
-    const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
+    const { SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
     const appMachineActors = {
-      [AUTH]: authMachine,
       [SETTINGS]: settingsMachine.provide({
         actors: {
           persistSettings: fromPromise<
@@ -318,7 +327,6 @@ export class App {
          * using the `actors` property in the `setup` function, and
          * inline them instead.
          */
-        spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
         spawnChild(appMachineActors[SETTINGS], {
           systemId: SETTINGS,
           input: {
@@ -365,19 +373,6 @@ export class App {
     const appActor = createActor(appMachine, {
       systemId: 'root',
     })
-
-    /**
-     * GOTCHA: the type coercion of this actor works because it is spawned for
-     * the lifetime of {appActor}, but would not work if it were invoked
-     * or if it were destroyed under any conditions during {appActor}'s life
-     */
-    const authActor = appActor.system.get(AUTH) as ActorRefFrom<
-      (typeof appMachineActors)[typeof AUTH]
-    >
-    const useAuthState = () => useSelector(authActor, (state) => state)
-    const useToken = () =>
-      useSelector(authActor, (state) => state.context.token)
-    const useUser = () => useSelector(authActor, (state) => state.context.user)
 
     /**
      * GOTCHA: the type coercion of this actor works because it is spawned for
@@ -431,7 +426,7 @@ export class App {
       type: 'Add commands',
       data: {
         commands: [
-          ...createAuthCommands({ authActor }),
+          ...createAuthCommands({ authActor: this.authActor }),
           ...createProjectCommands({ systemIOActor }),
         ],
       },
@@ -452,10 +447,6 @@ export class App {
       kclManager,
       sceneEntitiesManager,
       appActor,
-      authActor,
-      useAuthState,
-      useToken,
-      useUser,
       settingsActor,
       getSettings,
       useSettings,

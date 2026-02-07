@@ -56,7 +56,7 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
@@ -69,13 +69,12 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const { auth } = useApp()
   const {
-    authActor,
     billingActor,
     commandBarActor,
     kclManager,
     useSettings,
-    useToken,
     systemIOActor,
     settingsActor,
   } = useSingletons()
@@ -83,7 +82,7 @@ const Home = () => {
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const apiToken = useToken()
+  const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
   const hasUnlimitedCredits = billingContext.balance === Infinity
@@ -169,7 +168,7 @@ const Home = () => {
     } else if (data.menuLabel === 'Edit.Change project directory') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
-      authActor.send({ type: 'Log out' })
+      auth.actor.send({ type: 'Log out' })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
