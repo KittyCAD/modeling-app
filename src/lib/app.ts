@@ -66,7 +66,7 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
-  ReactContext: React.Context<typeof this.singletons>
+  ReactContext: React.Context<typeof this>
 
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
