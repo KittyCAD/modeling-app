@@ -1089,7 +1089,7 @@ pub struct CreatorFace {
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(tag = "creatorType", rename_all = "camelCase")]
+#[serde(untagged, rename_all = "camelCase")]
 pub enum SolidCreator {
     /// Created from a sketch.
     Sketch(Sketch),
