@@ -66,7 +66,7 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
-  ReactContext: React.Context<typeof this.singletons>
+  ReactContext: React.Context<typeof this>
 
   constructor() {
     this.singletons = this.buildSingletons()
