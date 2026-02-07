@@ -28,64 +28,106 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         }
       ],
       "sketch": {
-        "creatorType": "face",
-        "face_id": "[uuid]",
-        "solid_id": "[uuid]",
-        "sketch": {
-          "type": "Sketch",
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              53.15127018922193
+            ],
+            "from": [
+              1.0,
+              53.15127018922193
+            ],
+            "radius": 1.0,
+            "tag": null,
+            "to": [
+              1.0,
+              53.15127018922193
+            ],
+            "type": "Circle",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "face",
           "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                53.15127018922193
-              ],
-              "from": [
-                1.0,
-                53.15127018922193
-              ],
-              "radius": 1.0,
-              "tag": null,
-              "to": [
-                1.0,
-                53.15127018922193
-              ],
-              "type": "Circle",
-              "units": "mm"
-            }
-          ],
-          "on": {
-            "type": "face",
+          "artifactId": "[uuid]",
+          "objectId": 5,
+          "value": "end",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "solid": {
+            "type": "Solid",
             "id": "[uuid]",
             "artifactId": "[uuid]",
-            "objectId": 5,
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": null
-            },
-            "solid": {
-              "type": "Solid",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 2156,
+                  "end": 2162,
+                  "moduleId": 0,
+                  "start": 2156,
+                  "type": "TagDeclarator",
+                  "value": "seg10"
+                },
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 2206,
+                  "end": 2216,
+                  "moduleId": 0,
+                  "start": 2206,
+                  "type": "TagDeclarator",
+                  "value": "capEnd004"
+                },
+                "type": "extrudePlane"
+              }
+            ],
+            "sketch": {
+              "creatorType": "sketch",
+              "type": "Sketch",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
+              "paths": [
                 {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    53.15127018922193
+                  ],
+                  "from": [
+                    2.0,
+                    53.15127018922193
+                  ],
+                  "radius": 2.0,
                   "tag": {
                     "commentStart": 2156,
                     "end": 2162,
@@ -94,254 +136,204 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "type": "TagDeclarator",
                     "value": "seg10"
                   },
-                  "type": "extrudeArc"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": {
-                    "commentStart": 2206,
-                    "end": 2216,
-                    "moduleId": 0,
-                    "start": 2206,
-                    "type": "TagDeclarator",
-                    "value": "capEnd004"
-                  },
-                  "type": "extrudePlane"
+                  "to": [
+                    2.0,
+                    53.15127018922193
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
                 }
               ],
-              "sketch": {
-                "creatorType": "face",
-                "face_id": "[uuid]",
-                "solid_id": "[uuid]",
-                "sketch": {
-                  "type": "Sketch",
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "objectId": 4,
+                "value": "end",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "solid": {
+                  "type": "Solid",
                   "id": "[uuid]",
-                  "paths": [
+                  "artifactId": "[uuid]",
+                  "value": [
                     {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudeArc"
+                    }
+                  ],
+                  "sketch": {
+                    "creatorType": "sketch",
+                    "type": "Sketch",
+                    "id": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          0.0,
+                          53.15127018922193
+                        ],
+                        "from": [
+                          15.789473684210527,
+                          53.15127018922193
+                        ],
+                        "radius": 15.789473684210527,
+                        "tag": null,
+                        "to": [
+                          15.789473684210527,
+                          53.15127018922193
+                        ],
+                        "type": "Circle",
+                        "units": "mm"
+                      }
+                    ],
+                    "on": {
+                      "artifactId": "[uuid]",
+                      "id": "[uuid]",
+                      "kind": "Custom",
+                      "objectId": 3,
+                      "origin": {
+                        "x": 0.0,
+                        "y": -28.495190528383297,
+                        "z": 0.0,
+                        "units": "mm"
+                      },
+                      "type": "plane",
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "units": null
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0,
+                        "units": null
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": -1.0,
+                        "z": 0.0,
+                        "units": null
+                      }
+                    },
+                    "start": {
+                      "from": [
+                        15.789473684210527,
+                        53.15127018922193
+                      ],
+                      "to": [
+                        15.789473684210527,
+                        53.15127018922193
+                      ],
+                      "units": "mm",
+                      "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": []
-                      },
-                      "ccw": true,
-                      "center": [
-                        0.0,
-                        53.15127018922193
-                      ],
-                      "from": [
-                        2.0,
-                        53.15127018922193
-                      ],
-                      "radius": 2.0,
-                      "tag": {
-                        "commentStart": 2156,
-                        "end": 2162,
-                        "moduleId": 0,
-                        "start": 2156,
-                        "type": "TagDeclarator",
-                        "value": "seg10"
-                      },
-                      "to": [
-                        2.0,
-                        53.15127018922193
-                      ],
-                      "type": "Circle",
-                      "units": "mm"
-                    }
-                  ],
-                  "on": {
-                    "type": "face",
-                    "id": "[uuid]",
+                      }
+                    },
                     "artifactId": "[uuid]",
-                    "objectId": 4,
-                    "value": "end",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": null
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": null
-                    },
-                    "solid": {
-                      "type": "Solid",
-                      "id": "[uuid]",
-                      "artifactId": "[uuid]",
-                      "value": [
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudeArc"
-                        }
-                      ],
-                      "sketch": {
-                        "creatorType": "sketch",
-                        "type": "Sketch",
-                        "id": "[uuid]",
-                        "paths": [
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "ccw": true,
-                            "center": [
-                              0.0,
-                              53.15127018922193
-                            ],
-                            "from": [
-                              15.789473684210527,
-                              53.15127018922193
-                            ],
-                            "radius": 15.789473684210527,
-                            "tag": null,
-                            "to": [
-                              15.789473684210527,
-                              53.15127018922193
-                            ],
-                            "type": "Circle",
-                            "units": "mm"
-                          }
-                        ],
-                        "on": {
-                          "artifactId": "[uuid]",
-                          "id": "[uuid]",
-                          "kind": "Custom",
-                          "objectId": 3,
-                          "origin": {
-                            "x": 0.0,
-                            "y": -28.495190528383297,
-                            "z": 0.0,
-                            "units": "mm"
-                          },
-                          "type": "plane",
-                          "xAxis": {
-                            "x": 1.0,
-                            "y": 0.0,
-                            "z": 0.0,
-                            "units": null
-                          },
-                          "yAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0,
-                            "units": null
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": -1.0,
-                            "z": 0.0,
-                            "units": null
-                          }
-                        },
-                        "start": {
-                          "from": [
-                            15.789473684210527,
-                            53.15127018922193
-                          ],
-                          "to": [
-                            15.789473684210527,
-                            53.15127018922193
-                          ],
-                          "units": "mm",
-                          "tag": null,
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": []
-                          }
-                        },
-                        "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "mm"
-                      },
-                      "startCapId": "[uuid]",
-                      "endCapId": "[uuid]",
-                      "units": "mm",
-                      "sectional": false
-                    },
+                    "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "start": {
-                    "from": [
-                      2.0,
-                      53.15127018922193
-                    ],
-                    "to": [
-                      2.0,
-                      53.15127018922193
-                    ],
-                    "units": "mm",
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "tags": {
-                    "capEnd004": {
-                      "type": "TagIdentifier",
-                      "value": "capEnd004"
-                    },
-                    "seg10": {
-                      "type": "TagIdentifier",
-                      "value": "seg10"
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "startCapId": "[uuid]",
+                  "endCapId": "[uuid]",
+                  "units": "mm",
+                  "sectional": false
+                },
+                "units": "mm"
+              },
+              "start": {
+                "from": [
+                  2.0,
+                  53.15127018922193
+                ],
+                "to": [
+                  2.0,
+                  53.15127018922193
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
                 }
               },
-              "startCapId": null,
-              "endCapId": "[uuid]",
-              "edgeCuts": [
-                {
-                  "type": "chamfer",
-                  "id": "[uuid]",
-                  "length": {
-                    "n": 0.6666666666666666,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  "edgeId": "[uuid]",
-                  "tag": null
+              "tags": {
+                "capEnd004": {
+                  "type": "TagIdentifier",
+                  "value": "capEnd004"
+                },
+                "seg10": {
+                  "type": "TagIdentifier",
+                  "value": "seg10"
                 }
-              ],
-              "units": "mm",
-              "sectional": false
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm"
             },
-            "units": "mm"
-          },
-          "start": {
-            "from": [
-              1.0,
-              53.15127018922193
-            ],
-            "to": [
-              1.0,
-              53.15127018922193
+            "startCapId": null,
+            "endCapId": "[uuid]",
+            "edgeCuts": [
+              {
+                "type": "chamfer",
+                "id": "[uuid]",
+                "length": {
+                  "n": 0.6666666666666666,
+                  "ty": {
+                    "type": "Default",
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
+                },
+                "edgeId": "[uuid]",
+                "tag": null
+              }
             ],
             "units": "mm",
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
+            "sectional": false
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": "mm"
-        }
+        },
+        "start": {
+          "from": [
+            1.0,
+            53.15127018922193
+          ],
+          "to": [
+            1.0,
+            53.15127018922193
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
       },
       "startCapId": null,
       "endCapId": null,
@@ -365,64 +357,106 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         }
       ],
       "sketch": {
-        "creatorType": "face",
-        "face_id": "[uuid]",
-        "solid_id": "[uuid]",
-        "sketch": {
-          "type": "Sketch",
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              150.0
+            ],
+            "from": [
+              1.6,
+              150.0
+            ],
+            "radius": 1.6,
+            "tag": null,
+            "to": [
+              1.6,
+              150.0
+            ],
+            "type": "Circle",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "face",
           "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                150.0
-              ],
-              "from": [
-                1.6,
-                150.0
-              ],
-              "radius": 1.6,
-              "tag": null,
-              "to": [
-                1.6,
-                150.0
-              ],
-              "type": "Circle",
-              "units": "mm"
-            }
-          ],
-          "on": {
-            "type": "face",
+          "artifactId": "[uuid]",
+          "objectId": 9,
+          "value": "end",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "solid": {
+            "type": "Solid",
             "id": "[uuid]",
             "artifactId": "[uuid]",
-            "objectId": 9,
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": null
-            },
-            "solid": {
-              "type": "Solid",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 3512,
+                  "end": 3518,
+                  "moduleId": 0,
+                  "start": 3512,
+                  "type": "TagDeclarator",
+                  "value": "seg09"
+                },
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 3562,
+                  "end": 3572,
+                  "moduleId": 0,
+                  "start": 3562,
+                  "type": "TagDeclarator",
+                  "value": "capEnd003"
+                },
+                "type": "extrudePlane"
+              }
+            ],
+            "sketch": {
+              "creatorType": "sketch",
+              "type": "Sketch",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
+              "paths": [
                 {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    150.0
+                  ],
+                  "from": [
+                    3.2,
+                    150.0
+                  ],
+                  "radius": 3.2,
                   "tag": {
                     "commentStart": 3512,
                     "end": 3518,
@@ -431,254 +465,204 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "type": "TagDeclarator",
                     "value": "seg09"
                   },
-                  "type": "extrudeArc"
-                },
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": {
-                    "commentStart": 3562,
-                    "end": 3572,
-                    "moduleId": 0,
-                    "start": 3562,
-                    "type": "TagDeclarator",
-                    "value": "capEnd003"
-                  },
-                  "type": "extrudePlane"
+                  "to": [
+                    3.2,
+                    150.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
                 }
               ],
-              "sketch": {
-                "creatorType": "face",
-                "face_id": "[uuid]",
-                "solid_id": "[uuid]",
-                "sketch": {
-                  "type": "Sketch",
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "objectId": 8,
+                "value": "start",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "solid": {
+                  "type": "Solid",
                   "id": "[uuid]",
-                  "paths": [
+                  "artifactId": "[uuid]",
+                  "value": [
                     {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": null,
+                      "type": "extrudeArc"
+                    }
+                  ],
+                  "sketch": {
+                    "creatorType": "sketch",
+                    "type": "Sketch",
+                    "id": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          0.0,
+                          150.0
+                        ],
+                        "from": [
+                          15.789473684210527,
+                          150.0
+                        ],
+                        "radius": 15.789473684210527,
+                        "tag": null,
+                        "to": [
+                          15.789473684210527,
+                          150.0
+                        ],
+                        "type": "Circle",
+                        "units": "mm"
+                      }
+                    ],
+                    "on": {
+                      "artifactId": "[uuid]",
+                      "id": "[uuid]",
+                      "kind": "Custom",
+                      "objectId": 7,
+                      "origin": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -2.0,
+                        "units": "mm"
+                      },
+                      "type": "plane",
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "units": null
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.0,
+                        "units": null
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0,
+                        "units": null
+                      }
+                    },
+                    "start": {
+                      "from": [
+                        15.789473684210527,
+                        150.0
+                      ],
+                      "to": [
+                        15.789473684210527,
+                        150.0
+                      ],
+                      "units": "mm",
+                      "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": []
-                      },
-                      "ccw": true,
-                      "center": [
-                        0.0,
-                        150.0
-                      ],
-                      "from": [
-                        3.2,
-                        150.0
-                      ],
-                      "radius": 3.2,
-                      "tag": {
-                        "commentStart": 3512,
-                        "end": 3518,
-                        "moduleId": 0,
-                        "start": 3512,
-                        "type": "TagDeclarator",
-                        "value": "seg09"
-                      },
-                      "to": [
-                        3.2,
-                        150.0
-                      ],
-                      "type": "Circle",
-                      "units": "mm"
-                    }
-                  ],
-                  "on": {
-                    "type": "face",
-                    "id": "[uuid]",
+                      }
+                    },
                     "artifactId": "[uuid]",
-                    "objectId": 8,
-                    "value": "start",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": null
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": null
-                    },
-                    "solid": {
-                      "type": "Solid",
-                      "id": "[uuid]",
-                      "artifactId": "[uuid]",
-                      "value": [
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudeArc"
-                        }
-                      ],
-                      "sketch": {
-                        "creatorType": "sketch",
-                        "type": "Sketch",
-                        "id": "[uuid]",
-                        "paths": [
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "ccw": true,
-                            "center": [
-                              0.0,
-                              150.0
-                            ],
-                            "from": [
-                              15.789473684210527,
-                              150.0
-                            ],
-                            "radius": 15.789473684210527,
-                            "tag": null,
-                            "to": [
-                              15.789473684210527,
-                              150.0
-                            ],
-                            "type": "Circle",
-                            "units": "mm"
-                          }
-                        ],
-                        "on": {
-                          "artifactId": "[uuid]",
-                          "id": "[uuid]",
-                          "kind": "Custom",
-                          "objectId": 7,
-                          "origin": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": -2.0,
-                            "units": "mm"
-                          },
-                          "type": "plane",
-                          "xAxis": {
-                            "x": 1.0,
-                            "y": 0.0,
-                            "z": 0.0,
-                            "units": null
-                          },
-                          "yAxis": {
-                            "x": 0.0,
-                            "y": 1.0,
-                            "z": 0.0,
-                            "units": null
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0,
-                            "units": null
-                          }
-                        },
-                        "start": {
-                          "from": [
-                            15.789473684210527,
-                            150.0
-                          ],
-                          "to": [
-                            15.789473684210527,
-                            150.0
-                          ],
-                          "units": "mm",
-                          "tag": null,
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": []
-                          }
-                        },
-                        "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": "mm"
-                      },
-                      "startCapId": "[uuid]",
-                      "endCapId": "[uuid]",
-                      "units": "mm",
-                      "sectional": false
-                    },
+                    "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "start": {
-                    "from": [
-                      3.2,
-                      150.0
-                    ],
-                    "to": [
-                      3.2,
-                      150.0
-                    ],
-                    "units": "mm",
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "tags": {
-                    "capEnd003": {
-                      "type": "TagIdentifier",
-                      "value": "capEnd003"
-                    },
-                    "seg09": {
-                      "type": "TagIdentifier",
-                      "value": "seg09"
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": "mm"
+                  "startCapId": "[uuid]",
+                  "endCapId": "[uuid]",
+                  "units": "mm",
+                  "sectional": false
+                },
+                "units": "mm"
+              },
+              "start": {
+                "from": [
+                  3.2,
+                  150.0
+                ],
+                "to": [
+                  3.2,
+                  150.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
                 }
               },
-              "startCapId": null,
-              "endCapId": "[uuid]",
-              "edgeCuts": [
-                {
-                  "type": "chamfer",
-                  "id": "[uuid]",
-                  "length": {
-                    "n": 1.0666666666666667,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  "edgeId": "[uuid]",
-                  "tag": null
+              "tags": {
+                "capEnd003": {
+                  "type": "TagIdentifier",
+                  "value": "capEnd003"
+                },
+                "seg09": {
+                  "type": "TagIdentifier",
+                  "value": "seg09"
                 }
-              ],
-              "units": "mm",
-              "sectional": false
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm"
             },
-            "units": "mm"
-          },
-          "start": {
-            "from": [
-              1.6,
-              150.0
-            ],
-            "to": [
-              1.6,
-              150.0
+            "startCapId": null,
+            "endCapId": "[uuid]",
+            "edgeCuts": [
+              {
+                "type": "chamfer",
+                "id": "[uuid]",
+                "length": {
+                  "n": 1.0666666666666667,
+                  "ty": {
+                    "type": "Default",
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
+                },
+                "edgeId": "[uuid]",
+                "tag": null
+              }
             ],
             "units": "mm",
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
+            "sectional": false
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": "mm"
-        }
+        },
+        "start": {
+          "from": [
+            1.6,
+            150.0
+          ],
+          "to": [
+            1.6,
+            150.0
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
       },
       "startCapId": null,
       "endCapId": null,
@@ -2579,192 +2563,188 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         }
       ],
       "sketch": {
-        "creatorType": "face",
-        "face_id": "[uuid]",
-        "solid_id": "[uuid]",
-        "sketch": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                53.15127018922193
-              ],
-              "from": [
-                2.0,
-                53.15127018922193
-              ],
-              "radius": 2.0,
-              "tag": {
-                "commentStart": 2156,
-                "end": 2162,
-                "moduleId": 0,
-                "start": 2156,
-                "type": "TagDeclarator",
-                "value": "seg10"
-              },
-              "to": [
-                2.0,
-                53.15127018922193
-              ],
-              "type": "Circle",
-              "units": "mm"
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "objectId": 4,
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": null
-            },
-            "solid": {
-              "type": "Solid",
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "creatorType": "sketch",
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "ccw": true,
-                    "center": [
-                      0.0,
-                      53.15127018922193
-                    ],
-                    "from": [
-                      15.789473684210527,
-                      53.15127018922193
-                    ],
-                    "radius": 15.789473684210527,
-                    "tag": null,
-                    "to": [
-                      15.789473684210527,
-                      53.15127018922193
-                    ],
-                    "type": "Circle",
-                    "units": "mm"
-                  }
-                ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "kind": "Custom",
-                  "objectId": 3,
-                  "origin": {
-                    "x": 0.0,
-                    "y": -28.495190528383297,
-                    "z": 0.0,
-                    "units": "mm"
-                  },
-                  "type": "plane",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": -1.0,
-                    "z": 0.0,
-                    "units": null
-                  }
-                },
-                "start": {
-                  "from": [
-                    15.789473684210527,
-                    53.15127018922193
-                  ],
-                  "to": [
-                    15.789473684210527,
-                    53.15127018922193
-                  ],
-                  "units": "mm",
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": "mm"
-              },
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": "mm",
-              "sectional": false
+              "sourceRange": []
             },
-            "units": "mm"
-          },
-          "start": {
+            "ccw": true,
+            "center": [
+              0.0,
+              53.15127018922193
+            ],
             "from": [
               2.0,
               53.15127018922193
             ],
+            "radius": 2.0,
+            "tag": {
+              "commentStart": 2156,
+              "end": 2162,
+              "moduleId": 0,
+              "start": 2156,
+              "type": "TagDeclarator",
+              "value": "seg10"
+            },
             "to": [
               2.0,
               53.15127018922193
             ],
-            "units": "mm",
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "tags": {
-            "capEnd004": {
-              "type": "TagIdentifier",
-              "value": "capEnd004"
-            },
-            "seg10": {
-              "type": "TagIdentifier",
-              "value": "seg10"
-            }
-          },
+            "type": "Circle",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "face",
+          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
+          "objectId": 4,
+          "value": "end",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "solid": {
+            "type": "Solid",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "creatorType": "sketch",
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    53.15127018922193
+                  ],
+                  "from": [
+                    15.789473684210527,
+                    53.15127018922193
+                  ],
+                  "radius": 15.789473684210527,
+                  "tag": null,
+                  "to": [
+                    15.789473684210527,
+                    53.15127018922193
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 3,
+                "origin": {
+                  "x": 0.0,
+                  "y": -28.495190528383297,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  15.789473684210527,
+                  53.15127018922193
+                ],
+                "to": [
+                  15.789473684210527,
+                  53.15127018922193
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm"
+            },
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": "mm",
+            "sectional": false
+          },
           "units": "mm"
-        }
+        },
+        "start": {
+          "from": [
+            2.0,
+            53.15127018922193
+          ],
+          "to": [
+            2.0,
+            53.15127018922193
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "capEnd004": {
+            "type": "TagIdentifier",
+            "value": "capEnd004"
+          },
+          "seg10": {
+            "type": "TagIdentifier",
+            "value": "seg10"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -2825,192 +2805,188 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         }
       ],
       "sketch": {
-        "creatorType": "face",
-        "face_id": "[uuid]",
-        "solid_id": "[uuid]",
-        "sketch": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                150.0
-              ],
-              "from": [
-                3.2,
-                150.0
-              ],
-              "radius": 3.2,
-              "tag": {
-                "commentStart": 3512,
-                "end": 3518,
-                "moduleId": 0,
-                "start": 3512,
-                "type": "TagDeclarator",
-                "value": "seg09"
-              },
-              "to": [
-                3.2,
-                150.0
-              ],
-              "type": "Circle",
-              "units": "mm"
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "objectId": 8,
-            "value": "start",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": null
-            },
-            "solid": {
-              "type": "Solid",
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "creatorType": "sketch",
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "ccw": true,
-                    "center": [
-                      0.0,
-                      150.0
-                    ],
-                    "from": [
-                      15.789473684210527,
-                      150.0
-                    ],
-                    "radius": 15.789473684210527,
-                    "tag": null,
-                    "to": [
-                      15.789473684210527,
-                      150.0
-                    ],
-                    "type": "Circle",
-                    "units": "mm"
-                  }
-                ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "kind": "Custom",
-                  "objectId": 7,
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": -2.0,
-                    "units": "mm"
-                  },
-                  "type": "plane",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  }
-                },
-                "start": {
-                  "from": [
-                    15.789473684210527,
-                    150.0
-                  ],
-                  "to": [
-                    15.789473684210527,
-                    150.0
-                  ],
-                  "units": "mm",
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": "mm"
-              },
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": "mm",
-              "sectional": false
+              "sourceRange": []
             },
-            "units": "mm"
-          },
-          "start": {
+            "ccw": true,
+            "center": [
+              0.0,
+              150.0
+            ],
             "from": [
               3.2,
               150.0
             ],
+            "radius": 3.2,
+            "tag": {
+              "commentStart": 3512,
+              "end": 3518,
+              "moduleId": 0,
+              "start": 3512,
+              "type": "TagDeclarator",
+              "value": "seg09"
+            },
             "to": [
               3.2,
               150.0
             ],
-            "units": "mm",
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "tags": {
-            "capEnd003": {
-              "type": "TagIdentifier",
-              "value": "capEnd003"
-            },
-            "seg09": {
-              "type": "TagIdentifier",
-              "value": "seg09"
-            }
-          },
+            "type": "Circle",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "face",
+          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "originalId": "[uuid]",
+          "objectId": 8,
+          "value": "start",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "solid": {
+            "type": "Solid",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "creatorType": "sketch",
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    150.0
+                  ],
+                  "from": [
+                    15.789473684210527,
+                    150.0
+                  ],
+                  "radius": 15.789473684210527,
+                  "tag": null,
+                  "to": [
+                    15.789473684210527,
+                    150.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 7,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": -2.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  15.789473684210527,
+                  150.0
+                ],
+                "to": [
+                  15.789473684210527,
+                  150.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm"
+            },
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": "mm",
+            "sectional": false
+          },
           "units": "mm"
-        }
+        },
+        "start": {
+          "from": [
+            3.2,
+            150.0
+          ],
+          "to": [
+            3.2,
+            150.0
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "capEnd003": {
+            "type": "TagIdentifier",
+            "value": "capEnd003"
+          },
+          "seg09": {
+            "type": "TagIdentifier",
+            "value": "seg09"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
