@@ -14,9 +14,8 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
-  const { auth } = useApp()
-  const { billingActor, engineCommandManager, systemIOActor, useSettings } =
-    useSingletons()
+  const { auth, billing } = useApp()
+  const { engineCommandManager, systemIOActor, useSettings } = useSingletons()
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
   const token = auth.useToken()
@@ -46,7 +45,7 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billingActor,
+    billing.actor,
     token,
     engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {

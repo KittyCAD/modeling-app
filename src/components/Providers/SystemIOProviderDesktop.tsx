@@ -32,14 +32,9 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
-  const { auth } = useApp()
-  const {
-    billingActor,
-    engineCommandManager,
-    kclManager,
-    systemIOActor,
-    useSettings,
-  } = useSingletons()
+  const { auth, billing } = useApp()
+  const { engineCommandManager, kclManager, systemIOActor, useSettings } =
+    useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
@@ -240,7 +235,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billingActor,
+    billing.actor,
     token,
     engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {

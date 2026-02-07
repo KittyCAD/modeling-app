@@ -74,9 +74,8 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
-  const { auth } = useApp()
+  const { auth, billing } = useApp()
   const {
-    billingActor,
     systemIOActor,
     getSettings,
     settingsActor,
@@ -198,7 +197,7 @@ export function OpenedProject() {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
