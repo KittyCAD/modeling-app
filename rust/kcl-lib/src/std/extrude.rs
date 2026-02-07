@@ -19,12 +19,11 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
-use crate::execution::CreatorFace;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed,
-        Sketch, SketchSurface, Solid, SolidCreator, annotations,
+        ArtifactId, CreatorFace, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path,
+        ProfileClosed, Sketch, SketchSurface, Solid, SolidCreator, annotations,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
