@@ -347,7 +347,7 @@ async fn inner_extrude(
 
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::Face(..) => BeingExtruded::Face,
+            Extrudable::Face(..) => BeingExtruded::Face { face_id, solid_id },
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -399,7 +399,7 @@ pub(crate) struct NamedCapTags<'a> {
 #[derive(Debug, Clone, Copy)]
 pub enum BeingExtruded {
     Sketch,
-    Face,
+    Face { face_id: Uuid, solid_id: Uuid },
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -469,7 +469,7 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     match (extrude_method, being_extruded) {
-        (ExtrudeMethod::Merge, BeingExtruded::Face) => {
+        (ExtrudeMethod::Merge, BeingExtruded::Face { .. }) => {
             // Merge the IDs.
             // If we were sketching on a face, we need the original face id.
             if let SketchSurface::Face(ref face) = sketch.on {
@@ -478,7 +478,7 @@ pub(crate) async fn do_post_extrude<'a>(
                 sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
             }
         }
-        (ExtrudeMethod::New, BeingExtruded::Face) => {
+        (ExtrudeMethod::New, BeingExtruded::Face { .. }) => {
             // We're creating a new solid, it's not based on any existing sketch (it's based on a face).
             // So we need a new ID, the extrude command ID.
             sketch.id = extrude_cmd_id.into();
@@ -681,11 +681,19 @@ pub(crate) async fn do_post_extrude<'a>(
     let meta = sketch.meta.clone();
     let units = sketch.units;
     let id = sketch.id;
-    let creator = match &sketch.on {
-        SketchSurface::Plane(_) => SolidCreator::Sketch(sketch),
-        SketchSurface::Face(face) => SolidCreator::Face(CreatorFace {
-            face_id: face.id,
-            solid_id: face.solid.id,
+    // let creator = match &sketch.on {
+    //     SketchSurface::Plane(_) => SolidCreator::Sketch(sketch),
+    //     SketchSurface::Face(face) => SolidCreator::Face(CreatorFace {
+    //         face_id: face.id,
+    //         solid_id: face.solid.id,
+    //         sketch,
+    //     }),
+    // };
+    let creator = match being_extruded {
+        BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
+        BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
+            face_id,
+            solid_id,
             sketch,
         }),
     };
