@@ -1417,6 +1417,26 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'centerArcTool',
           },
           {
+            id: 'trim',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({ type: 'unequip tool' })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'trimTool' },
+                  }),
+            icon: 'trimTool',
+            status: 'experimental',
+            title: 'Trim',
+            hotkey: 'T',
+            description:
+              'Draw a trimming line through parts of segments to be removed',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'trimTool',
+          },
+          {
             id: 'rectangles',
             array: [
               {
