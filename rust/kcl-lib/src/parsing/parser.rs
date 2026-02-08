@@ -2178,8 +2178,36 @@ fn is_char_ascii_digit(c: char) -> bool {
     c.is_ascii_digit()
 }
 
-fn is_stdlib_import_path(path_string: &str) -> bool {
-    path_string.starts_with("std") && !path_string.ends_with(".kcl")
+fn is_stdlib_import_path(path_str: &str) -> bool {
+    path_str.starts_with("std") && !path_str.ends_with(".kcl")
+}
+
+fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
+    path_str.split("::").map(str::to_owned).collect()
+}
+
+/// Given an import path, is it a safe identifier? We support Unicode
+/// identifiers.
+fn is_path_safe_identifier(path_str: &str) -> bool {
+    if path_str.starts_with("_") || path_str.starts_with(is_char_ascii_digit) {
+        return false;
+    }
+    if is_stdlib_import_path(path_str) {
+        // stdlib case
+        let segments = to_stdlib_identifier_segments(path_str);
+        // The rest of the segments will be checked elsewhere to give a better
+        // error message.
+        let Some(name) = segments.last() else {
+            return false;
+        };
+        return !name.starts_with('_') && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+    }
+    // Non-stdlib case
+    let typed_path = TypedPath::new(path_str);
+    let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
+        return false;
+    };
+    name.chars().all(|c| c.is_alphanumeric() || c == '_')
 }
 
 /// Validates the path string in an `import` statement.
@@ -2192,11 +2220,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ));
     }
 
-    if var_name
-        && (path_string.starts_with("_")
-            || path_string.starts_with(is_char_ascii_digit)
-            || (!is_stdlib_import_path(&path_string) && !path_string.chars().all(|c| c.is_alphanumeric() || c == '_')))
-    {
+    if var_name && !is_path_safe_identifier(&path_string) {
         return Err(ErrMode::Cut(
             CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
         ));
@@ -2214,7 +2238,8 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         // Make sure they are not using an absolute path.
-        if path_string.starts_with('/') || path_string.starts_with('\\') {
+        let typed_path = TypedPath::new(&path_string);
+        if path_string.starts_with('/') || path_string.starts_with('\\') || typed_path.is_absolute() {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2233,13 +2258,11 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        ImportPath::Kcl {
-            filename: TypedPath::new(&path_string),
-        }
+        ImportPath::Kcl { filename: typed_path }
     } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
-        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+        let segments: Vec<String> = to_stdlib_identifier_segments(&path_string);
 
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
@@ -5221,7 +5244,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
+            "import path to a subdirectory must only refer to main.kcl.",
             [17, 30],
         );
         assert_err(
