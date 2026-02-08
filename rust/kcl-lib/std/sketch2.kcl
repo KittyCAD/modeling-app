@@ -28,6 +28,15 @@ export fn arc(
   construction?: bool,
 ): Segment {}
 
+/// A tangential arc.
+/// The arc starts at the tangent segment's end point.
+/// `tangent` references the segment whose direction should be tangent at the arc start.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+export fn tangentialArc(
+  end: Point2d,
+  tangent: Segment,
+): Segment {}
+
 /// Constrain points, or a point and a segment to be coincident.
 ///
 /// Supports two points, or one point and one segment (line/arc).

@@ -225,7 +225,7 @@ pub struct LineCtor {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiStartOrEnd")]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "value")]
 pub enum StartOrEnd<T> {
     Start(T),
     End(T),
@@ -257,7 +257,6 @@ pub struct ArcCtor {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct TangentArcCtor {
-    pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub tangent: StartOrEnd<ObjectId>,
 }

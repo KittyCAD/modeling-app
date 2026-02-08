@@ -1984,11 +1984,21 @@ pub enum UnsolvedSegmentKind {
         end: UnsolvedPoint2dExpr,
         center: UnsolvedPoint2dExpr,
         ctor: Box<ArcCtor>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        tangent: Option<ArcTangentRef>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
         construction: bool,
     },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum ArcTangentRef {
+    Start { segment_id: ObjectId },
+    End { segment_id: ObjectId },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2040,6 +2050,8 @@ pub enum SegmentKind {
         end: [TyF64; 2],
         center: [TyF64; 2],
         ctor: Box<ArcCtor>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        tangent: Option<ArcTangentRef>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,

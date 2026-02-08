@@ -18,7 +18,10 @@ use crate::{
     std::args::TyF64,
 };
 #[cfg(feature = "artifact-graph")]
-use crate::{execution::Metadata, front::ObjectKind};
+use crate::{
+    execution::{ArcTangentRef, Metadata},
+    front::ObjectKind,
+};
 
 /// Freedom analysis results from solving a sketch constraint system. The `Vec`
 /// is converted to a set to avoid quadratic runtime.
@@ -239,6 +242,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             end,
             center,
             ctor,
+            tangent,
             start_object_id,
             end_object_id,
             center_object_id,
@@ -267,6 +271,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     end,
                     center,
                     ctor: ctor.clone(),
+                    tangent: tangent.clone(),
                     start_object_id: *start_object_id,
                     end_object_id: *end_object_id,
                     center_object_id: *center_object_id,
@@ -625,6 +630,7 @@ pub(super) fn create_segment_scene_objects(
                 end,
                 center,
                 ctor,
+                tangent,
                 start_object_id,
                 end_object_id,
                 center_object_id,
@@ -715,6 +721,18 @@ pub(super) fn create_segment_scene_objects(
                 scene_objects.push(center_point_object);
 
                 let arc_artifact_id = exec_state.next_artifact_id();
+                let ctor = if let Some(tangent) = tangent {
+                    let tangent = match tangent {
+                        ArcTangentRef::Start { segment_id } => crate::front::StartOrEnd::Start(*segment_id),
+                        ArcTangentRef::End { segment_id } => crate::front::StartOrEnd::End(*segment_id),
+                    };
+                    crate::front::SegmentCtor::TangentArc(crate::front::TangentArcCtor {
+                        end: ctor.end.clone(),
+                        tangent,
+                    })
+                } else {
+                    crate::front::SegmentCtor::Arc(ctor.as_ref().clone())
+                };
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
@@ -722,7 +740,7 @@ pub(super) fn create_segment_scene_objects(
                             start: start_point_object_id,
                             end: end_point_object_id,
                             center: center_point_object_id,
-                            ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
+                            ctor,
                             ctor_applicable: true,
                             construction: *construction,
                         }),
