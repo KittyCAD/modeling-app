@@ -4,18 +4,29 @@
 
 This section applies to all potential contributors, internal and external to the Zoo team.
 
-### Installing dependencies
+### Installing system dependencies
 
-Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
-
-On Windows, it's also recommended to [upgrade your PowerShell version](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5#winget), we're using 7.
-
-Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected.
+Install [asdf](https://asdf-vm.com/) to manage system dependencies for this project on POSIX operating systems. Run the following to install and use the versions specified in `.tool-versions`:
 
 ```
-fnm install
-fnm use
+asdf plugin add just
+asdf plugin add nodejs
+asdf plugin add python
+echo "legacy_version_file = true" > ~/.asdfrc  # enable .nvmrc support
+asdf install
 ```
+
+Then install the Rust toolchain:
+
+```
+# macOS/Linux
+npm run install:rust
+
+# Windows
+npm run install:rust:windows
+```
+
+### Installing project dependencies
 
 Install the NPM dependencies with:
 
@@ -23,21 +34,15 @@ Install the NPM dependencies with:
 npm install
 ```
 
-This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
+This project uses a lot of Rust compiled to [Wasm](https://webassembly.org/) within it using wasm-pack:
 
 ```
-# macOS/Linux
-npm run install:rust
-npm run install:wasm-pack:cargo 
-
-# Windows
-npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
 ### Building the app
 
-To build the WASM layer, run:
+To build the Wasm layer, run:
 
 ```
 # macOS/Linux
@@ -57,7 +62,7 @@ npm run fetch:wasm
 npm run fetch:wasm:windows
 ```
 
-That will build the WASM binary and put in the `public` dir (though gitignored).
+That will build the Wasm binary and put in the `public` dir (though gitignored).
 
 Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
 
@@ -102,7 +107,7 @@ How to identify the types of tests and where to put your test.
 Unit tests should be fast, minimal dependencies, and minimal async code.
 Integration tests will be slower, require more dependencies, and could be flaky.
 
-- Vitest [config](./vitest.config.ts) 
+- Vitest [config](./vitest.config.ts)
   - Code written under `/src/**/*`
   - Projects
     - `unit` -- `npm run test:unit`
@@ -111,7 +116,7 @@ Integration tests will be slower, require more dependencies, and could be flaky.
       - Component mounting and rendering
     - `integration` -- `npm run test:integration`
       - ends with `*.spec.*`
-      - Any code that requires the WASM blob loaded into memory
+      - Any code that requires the Wasm blob loaded into memory
       - Any code that requires engine connection lite (websocket)
 - Playwright [config](./playwright.config.ts)
   - Code written under `/e2e/*/*`
