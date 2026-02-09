@@ -76,7 +76,8 @@ export class App {
    * Access this through `kclManager.wasmInstance`, not directly.
    */
   public wasmPromise = initialiseWasm()
-  private authActor = createActor(authMachine)
+
+  private authActor = createActor(authMachine).start()
   /** Auth system. Use `send` method to act with auth. */
   auth = {
     actor: this.authActor,
