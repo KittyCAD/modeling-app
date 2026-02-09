@@ -21,7 +21,10 @@ use super::{
 use crate::{
     IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::{annotations, types::ArrayLen},
+    execution::{
+        annotations::{self, EXPERIMENTAL},
+        types::ArrayLen,
+    },
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -3423,11 +3426,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
                 }
+                let mut experimental = false;
                 if let Some(attr) = attr {
+                    if let Some(property) = attr.property(EXPERIMENTAL)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        experimental = value;
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
+                    experimental,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5058,6 +5068,7 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5071,6 +5082,7 @@ e
             ),
             (
                 vec![Parameter {
+                    experimental: Default::default(),
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5085,6 +5097,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5095,6 +5108,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5110,6 +5124,7 @@ e
             (
                 vec![
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5120,6 +5135,7 @@ e
                         digest: None,
                     },
                     Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,

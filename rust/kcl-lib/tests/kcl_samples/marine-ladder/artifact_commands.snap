@@ -286,7 +286,6 @@ description: Artifact commands marine-ladder.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -539,7 +538,6 @@ description: Artifact commands marine-ladder.kcl
                 "z": 355.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

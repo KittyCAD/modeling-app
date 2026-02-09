@@ -18,6 +18,14 @@ export function getTangentPointFromPreviousArc(
   ]
 }
 
+export function addVec(a: Coords2d, b: Coords2d): Coords2d {
+  return [a[0] + b[0], a[1] + b[1]]
+}
+
+export function scaleVec(a: Coords2d, scale: number): Coords2d {
+  return [a[0] * scale, a[1] * scale]
+}
+
 export function subVec(a: Coords2d, b: Coords2d): Coords2d {
   return [a[0] - b[0], a[1] - b[1]]
 }
@@ -34,10 +42,22 @@ export function cross2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[1] - a[1] * b[0]
 }
 
+export function dot2d(a: Coords2d, b: Coords2d): number {
+  return a[0] * b[0] + a[1] * b[1]
+}
+
 export function distance2d(a: Coords2d, b: Coords2d): number {
   const dx = a[0] - b[0]
   const dy = a[1] - b[1]
   return Math.sqrt(dx * dx + dy * dy)
+}
+
+export function pointsAreEqual(
+  a: Coords2d,
+  b: Coords2d,
+  epsilon = 1e-8
+): boolean {
+  return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon
 }
 
 export function isValidNumber(value: number): boolean {
