@@ -13,8 +13,7 @@ use crate::{
 };
 
 #[cfg(test)]
-#[path = "trim_tests.rs"]
-mod trim_tests;
+mod tests;
 
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL: f64 = 1e-10;
