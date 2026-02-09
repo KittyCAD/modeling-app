@@ -33,7 +33,10 @@ import {
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
+import {
+  type CommandBarActorType,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -95,8 +98,19 @@ export class App {
     useUser: () => useSelector(this.authActor, (state) => state.context.user),
   }
 
+  private commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [], wasmInstancePromise: this.wasmPromise },
+  }).start()
+
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings = signal<SaveSettingsPayload | undefined>(undefined)
+  private settingsActor = createActor(settingsMachine, {
+    input: {
+      ...createSettings(),
+      commandBarActor: this.commandBarActor,
+      wasmInstancePromise: this.wasmPromise,
+    },
+  }).start()
 
   private billingActor = createActor(billingMachine, {
     input: {
@@ -119,14 +133,6 @@ export class App {
    * Build the world!
    */
   buildSingletons() {
-    const dummySettingsActor = createActor(settingsMachine, {
-      input: {
-        commandBarActor: this.commandBarActor,
-        ...createSettings(),
-        wasmInstancePromise: this.wasmPromise,
-      },
-    })
-
     const engineCommandManager = new ConnectionManager()
     const rustContext = new RustContext(
       engineCommandManager,
@@ -134,7 +140,7 @@ export class App {
       // HACK: convert settings to not be an XState actor to prevent the need for
       // this dummy-with late binding of the real thing.
       // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
-      dummySettingsActor
+      this.settingsActor
     )
 
     // Accessible for tests mostly
@@ -164,18 +170,6 @@ export class App {
     )
     /** 🚨 Circular dependency alert 🚨 */
     kclManager.sceneEntitiesManager = sceneEntitiesManager
-
-    /**
-     * TODO: remove dependence on other subsystems. Instead, make those systems
-     * subscribe to settings changes.
-     */
-    const settingsActor = createActor(settingsMachine, {
-      input: {
-        ...createSettings(),
-        commandBarActor: this.commandBarActor,
-        wasmInstancePromise: this.wasmPromise,
-      },
-    }).start()
 
     const onSettingsUpdate = ({ context }: SnapshotFrom<SettingsActorType>) => {
       // Update line wrapping
@@ -243,9 +237,9 @@ export class App {
         getOnlySettingsFromContext(context)
       )
     }
-    settingsActor.subscribe(onSettingsUpdate)
+    this.settingsActor.subscribe(onSettingsUpdate)
 
-    settingsActor.subscribe((snapshot) => {
+    this.settingsActor.subscribe((snapshot) => {
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
         snapshot.context.app.allowOrbitInSketchMode.current
 
@@ -333,12 +327,9 @@ export class App {
       systemId: 'root',
     })
 
-    // HACK: late attaching settings actor to this manager
-    rustContext.settingsActor = settingsActor
-
     const getSettings = () => {
       const { currentProject: _, ...settings } =
-        settingsActor.getSnapshot().context
+        this.settingsActor.getSnapshot().context
       return settings
     }
 
@@ -348,7 +339,7 @@ export class App {
     sceneEntitiesManager.getSettings = getSettings
 
     const useSettings = () =>
-      useSelector(settingsActor, (state) => {
+      useSelector(this.settingsActor, (state) => {
         // We have to peel everything that isn't settings off
         return getOnlySettingsFromContext(state.context)
       })
@@ -386,7 +377,7 @@ export class App {
       kclManager,
       sceneEntitiesManager,
       appActor,
-      settingsActor,
+      settingsActor: this.settingsActor,
       getSettings,
       useSettings,
       systemIOActor,
