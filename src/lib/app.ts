@@ -33,10 +33,7 @@ import {
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import {
-  type CommandBarActorType,
-  commandBarMachine,
-} from '@src/machines/commandBarMachine'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -98,10 +95,6 @@ export class App {
     useUser: () => useSelector(this.authActor, (state) => state.context.user),
   }
 
-  private commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [], wasmInstancePromise: this.wasmPromise },
-  }).start()
-
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings = signal<SaveSettingsPayload | undefined>(undefined)
   private settingsActor = createActor(settingsMachine, {
@@ -111,6 +104,18 @@ export class App {
       wasmInstancePromise: this.wasmPromise,
     },
   }).start()
+  /** The settings system for the application */
+  public settings = {
+    actor: this.settingsActor,
+    send: this.settingsActor.send.bind(this),
+    get: () =>
+      getOnlySettingsFromContext(this.settingsActor.getSnapshot().context),
+    useSettings: () =>
+      useSelector(this.settingsActor, (state) => {
+        // We have to peel everything that isn't settings off
+        return getOnlySettingsFromContext(state.context)
+      }),
+  }
 
   private billingActor = createActor(billingMachine, {
     input: {
@@ -327,22 +332,10 @@ export class App {
       systemId: 'root',
     })
 
-    const getSettings = () => {
-      const { currentProject: _, ...settings } =
-        this.settingsActor.getSnapshot().context
-      return settings
-    }
-
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
-    sceneInfra.camControls.getSettings = getSettings
-    sceneEntitiesManager.getSettings = getSettings
-
-    const useSettings = () =>
-      useSelector(this.settingsActor, (state) => {
-        // We have to peel everything that isn't settings off
-        return getOnlySettingsFromContext(state.context)
-      })
+    sceneInfra.camControls.getSettings = this.settings.get
+    sceneEntitiesManager.getSettings = this.settings.get
 
     const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
@@ -377,9 +370,6 @@ export class App {
       kclManager,
       sceneEntitiesManager,
       appActor,
-      settingsActor: this.settingsActor,
-      getSettings,
-      useSettings,
       systemIOActor,
       getLayout,
       useLayout,
