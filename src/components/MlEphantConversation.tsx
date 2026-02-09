@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
 
 const noop = () => {}
 
@@ -257,7 +258,7 @@ export const MlEphantConversationInput = (
     e.preventDefault()
     e.stopPropagation()
     if (props.disabled) return
-    if (e.dataTransfer.types.includes('Files')) {
+    if (isExternalFileDrag(e)) {
       setIsDraggingOver(true)
     }
   }
