@@ -191,7 +191,7 @@
     "cross-env": "^10.1.0",
     "dpdm": "^3.14.0",
     "electron": "^40.0.0",
-    "electron-builder": "^26.0.13",
+    "electron-builder": "^26.7.0",
     "eslint": "^9.39.2",
     "eslint-plugin-css-modules": "^2.12.0",
     "eslint-plugin-import": "^2.31.0",
