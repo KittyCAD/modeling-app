@@ -2220,13 +2220,12 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ));
     }
 
-    if var_name && !is_path_safe_identifier(&path_string) {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
-        ));
-    }
+    let is_kcl_path = path_string.ends_with(".kcl");
 
-    let path = if path_string.ends_with(".kcl") {
+    // Check these conditions first so that the error messages are more helpful.
+    // Users should be told about the file location restrictions before the
+    // details of aliasing the identifier.
+    if is_kcl_path {
         if path_string.starts_with("..") {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -2237,9 +2236,13 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        // Make sure they are not using an absolute path.
-        let typed_path = TypedPath::new(&path_string);
-        if path_string.starts_with('/') || path_string.starts_with('\\') || typed_path.is_absolute() {
+        // Make sure they are not using an absolute path. We normalize all paths
+        // to Unix elsewhere, but here, we also check for Windows paths to make
+        // the error more helpful.
+        if path_string.starts_with('/')
+            || path_string.starts_with('\\')
+            || typed_path::TypedPath::derive(&path_string).is_absolute()
+        {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2257,8 +2260,19 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                     .into(),
             ));
         }
+    }
 
-        ImportPath::Kcl { filename: typed_path }
+    // This check applies to all file types.
+    if var_name && !is_path_safe_identifier(&path_string) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
+        ));
+    }
+
+    let path = if is_kcl_path {
+        ImportPath::Kcl {
+            filename: TypedPath::new(&path_string),
+        }
     } else if is_stdlib_import_path(&path_string) {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
@@ -5244,7 +5258,7 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path to a subdirectory must only refer to main.kcl.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
             [17, 30],
         );
         assert_err(
