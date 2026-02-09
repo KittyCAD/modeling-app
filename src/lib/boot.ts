@@ -7,6 +7,7 @@ import React from 'react'
  * created anew.
  */
 export const app = new App()
+export const AppContext = React.createContext(app)
 
 /**
  * Hook to gain access to the global app instance's singletons
@@ -14,9 +15,9 @@ export const app = new App()
  * Alternatively, can use `useApp` and peel needed singletons off.
  * `useSingletons` will eventually be deprecated.
  */
-export const useSingletons = () => React.useContext(app.ReactContext).singletons
+export const useSingletons = () => React.useContext(AppContext).singletons
 
 /**
  * Hook to get access to the app instance.
  */
-export const useApp = () => React.useContext(app.ReactContext)
+export const useApp = () => React.useContext(AppContext)
