@@ -74,19 +74,18 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
-  const { auth, billing } = useApp()
+  const { auth, billing, settings } = useApp()
   const {
     systemIOActor,
-    getSettings,
-    settingsActor,
     engineCommandManager,
     sceneInfra,
     kclManager,
     useLayout,
     setLayout,
     getLayout,
-    useSettings,
   } = useSingletons()
+  const settingsActor = settings.actor
+  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState } = useModelingContext()
@@ -155,7 +154,7 @@ export function OpenedProject() {
 
   useHotKeyListener(kclManager)
 
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
   const layout = useLayout()
 
@@ -212,8 +211,8 @@ export function OpenedProject() {
   // and they're on the web
   useEffect(() => {
     const onboardingStatus =
-      settings.app.onboardingStatus.current ||
-      settings.app.onboardingStatus.default
+      settingsValues.app.onboardingStatus.current ||
+      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
       !isDesktop() && // Only show if we're in the browser,
       authToken && // we're logged in,
@@ -224,10 +223,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
-            onboardingStatus: settings.app.onboardingStatus.current,
+            onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settings.app.theme.current),
+            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
           }),
@@ -240,8 +239,8 @@ export function OpenedProject() {
       )
     }
   }, [
-    settings.app.onboardingStatus,
-    settings.app.theme,
+    settingsValues.app.onboardingStatus,
+    settingsValues.app.theme,
     location,
     navigate,
     searchParams.size,
@@ -357,7 +356,7 @@ export function OpenedProject() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settings.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.app.showDebugPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />

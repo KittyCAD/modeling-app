@@ -145,7 +145,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { commands } = useApp()
+  const { commands, settings } = useApp()
   const {
     engineCommandManager,
     getLayout,
@@ -154,9 +154,8 @@ export const ModelingMachineProvider = ({
     sceneEntitiesManager,
     sceneInfra,
     setLayout,
-    settingsActor,
-    useSettings,
   } = useSingletons()
+  const settingsActor = settings.actor
   const systemDeps = useMemo(
     () => ({
       sceneInfra,
@@ -166,6 +165,7 @@ export const ModelingMachineProvider = ({
     [sceneInfra, rustContext, sceneEntitiesManager]
   )
   const wasmInstance = use(kclManager.wasmInstancePromise)
+  const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
     modeling: {
@@ -175,7 +175,7 @@ export const ModelingMachineProvider = ({
       useNewSketchMode,
       snapToGrid,
     },
-  } = useSettings()
+  } = settingsValues
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData<IndexLoaderData>()
   const projects = useFolders()

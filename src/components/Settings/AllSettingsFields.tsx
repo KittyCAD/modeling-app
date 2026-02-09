@@ -22,7 +22,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import {
@@ -42,11 +42,11 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { appActor, kclManager, settingsActor, useSettings, systemIOActor } =
-      useSingletons()
+    const { settings } = useApp()
+    const { appActor, kclManager, systemIOActor } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
-    const context = useSettings()
+    const context = settings.useSettings()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -128,7 +128,7 @@ export const AllSettingsFields = forwardRef(
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
-                          settingsActor.send({
+                          settings.send({
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: searchParamTab,
@@ -206,7 +206,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  settingsActor.send({
+                  settings.send({
                     type: 'Reset settings',
                     level: searchParamTab,
                   })
