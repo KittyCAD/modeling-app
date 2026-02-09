@@ -23,7 +23,9 @@ import type {
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,
+  loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
+  saveSettings,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
@@ -33,10 +35,12 @@ import {
   setThemeClass,
 } from '@src/lib/theme'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
 
@@ -81,21 +85,46 @@ export const settingsMachine = setup({
         context: SettingsMachineContext
         toastCallback?: () => void
       }
-    >(async () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    }),
-    loadUserSettings: fromPromise<SettingsType, SettingsType>(
-      async ({ input }) => {
-        // Implementation moved to singletons.ts to provide necessary singletons.
-        return input
+    >(async ({ input }) => {
+      // Without this, when a user changes the file, it'd
+      // create a detection loop with the file-system watcher.
+      if (input.doNotPersist) return
+
+      const {
+        currentProject,
+        wasmInstancePromise,
+        commandBarActor: _c,
+        ...settings
+      } = input.context
+
+      await saveSettings(wasmInstancePromise, settings, currentProject?.path)
+
+      if (input.toastCallback) {
+        input.toastCallback()
       }
-    ),
+    }),
+    loadUserSettings: fromPromise<
+      SettingsType,
+      { wasmInstancePromise: Promise<ModuleType> }
+    >(async ({ input }) => {
+      const { settings } = await loadAndValidateSettings(
+        input.wasmInstancePromise
+      )
+      return settings
+    }),
     loadProjectSettings: fromPromise<
       SettingsType,
-      { project?: Project; settings: SettingsType }
+      {
+        project?: Project
+        settings: SettingsType
+        wasmInstancePromise: Promise<ModuleType>
+      }
     >(async ({ input }) => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-      return input.settings
+      const { settings } = await loadAndValidateSettings(
+        input.wasmInstancePromise,
+        input.project?.path
+      )
+      return settings
     }),
     watchSystemTheme: fromCallback<{
       type: 'update.themeWatcher'
@@ -476,7 +505,9 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
-        input: ({ context }) => getOnlySettingsFromContext(context),
+        input: ({ context }) => ({
+          wasmInstancePromise: context.wasmInstancePromise,
+        }),
         onDone: {
           target: 'idle',
           actions: [
@@ -523,6 +554,7 @@ export const settingsMachine = setup({
           return {
             settings: getOnlySettingsFromContext(context),
             project: event.type === 'load.project' ? event.project : undefined,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
       },
@@ -533,6 +565,11 @@ export const settingsMachine = setup({
 export function getOnlySettingsFromContext(
   s: SettingsMachineContext
 ): SettingsType {
-  const { currentProject: _c, commandBarActor: _cba, ...settings } = s
+  const {
+    currentProject: _c,
+    commandBarActor: _cba,
+    wasmInstancePromise: _w,
+    ...settings
+  } = s
   return settings
 }

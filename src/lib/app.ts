@@ -12,15 +12,12 @@ import type {
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, fromPromise, setup, spawnChild } from 'xstate'
+import { assign, createActor, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  createSettings,
-  type SettingsType,
-} from '@src/lib/settings/initialSettings'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
@@ -30,14 +27,10 @@ import {
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
-  SettingsActorType,
+  type SettingsActorType,
   settingsMachine,
-  type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
-import {
-  getAllCurrentSettings,
-  loadAndValidateSettings,
-} from '@src/lib/settings/settingsUtils'
+import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -45,7 +38,6 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { saveSettings } from '@src/lib/settings/settingsUtils'
 import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { AppMachineEventType } from '@src/lib/types'
@@ -55,7 +47,6 @@ import {
   saveLayout,
   type Layout,
 } from '@src/lib/layout'
-import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
@@ -129,7 +120,11 @@ export class App {
    */
   buildSingletons() {
     const dummySettingsActor = createActor(settingsMachine, {
-      input: { commandBarActor: this.commandBarActor, ...createSettings() },
+      input: {
+        commandBarActor: this.commandBarActor,
+        ...createSettings(),
+        wasmInstancePromise: this.wasmPromise,
+      },
     })
 
     const engineCommandManager = new ConnectionManager()
@@ -174,54 +169,11 @@ export class App {
      * TODO: remove dependence on other subsystems. Instead, make those systems
      * subscribe to settings changes.
      */
-    const settingsWithProvides = settingsMachine.provide({
-      actors: {
-        persistSettings: fromPromise<
-          undefined,
-          {
-            doNotPersist: boolean
-            context: SettingsMachineContext
-            toastCallback?: () => void
-          }
-        >(async ({ input }) => {
-          // Without this, when a user changes the file, it'd
-          // create a detection loop with the file-system watcher.
-          if (input.doNotPersist) return
-
-          const {
-            currentProject,
-            commandBarActor: _c,
-            ...settings
-          } = input.context
-
-          await saveSettings(this.wasmPromise, settings, currentProject?.path)
-
-          if (input.toastCallback) {
-            input.toastCallback()
-          }
-        }),
-        loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
-          const { settings } = await loadAndValidateSettings(
-            kclManager.wasmInstancePromise
-          )
-          return settings
-        }),
-        loadProjectSettings: fromPromise<
-          SettingsType,
-          { project?: Project; settings: SettingsType }
-        >(async ({ input }) => {
-          const { settings } = await loadAndValidateSettings(
-            kclManager.wasmInstancePromise,
-            input.project?.path
-          )
-          return settings
-        }),
-      },
-    })
-    const settingsActor = createActor(settingsWithProvides, {
+    const settingsActor = createActor(settingsMachine, {
       input: {
         ...createSettings(),
         commandBarActor: this.commandBarActor,
+        wasmInstancePromise: this.wasmPromise,
       },
     }).start()
 
