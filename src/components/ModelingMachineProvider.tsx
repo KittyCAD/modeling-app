@@ -59,7 +59,7 @@ import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
@@ -145,8 +145,8 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { commands } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     getLayout,
     kclManager,
@@ -155,7 +155,6 @@ export const ModelingMachineProvider = ({
     sceneInfra,
     setLayout,
     settingsActor,
-    useCommandBarState,
     useSettings,
   } = useSingletons()
   const systemDeps = useMemo(
@@ -204,7 +203,7 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
 
   const isCommandBarClosed = useSelector(
-    commandBarActor,
+    commands.actor,
     commandBarIsClosedSelector
   )
 
@@ -1814,7 +1813,7 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
 
   // Global Esc handler for sketch solve mode when command bar is closed
   useHotkeys(
