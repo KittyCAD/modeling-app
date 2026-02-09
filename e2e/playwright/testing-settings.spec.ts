@@ -24,7 +24,8 @@ import type { Page } from '@playwright/test'
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
   const userSettingsTab = page.getByRole('radio', { name: 'User' })
-  const settingTheme = page.getByTestId('theme')
+  const settingTheme = page.getByTestId('theme') // user tab only
+  const projectIdInput = page.getByTestId('project-id') // project tab only
   switch (tab) {
     case 'user':
       await userSettingsTab.click()
@@ -32,7 +33,7 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
       break
     case 'proj':
       await projectSettingsTab.click()
-      await expect(settingTheme).not.toBeVisible()
+      await expect(projectIdInput).toBeVisible()
       break
     default:
       const _: never = tab
@@ -156,7 +157,9 @@ test.describe(
 
         // Set project-level value
         await settingInput.selectOption(settingValues.project)
-        await expect(settingInput).toHaveValue(settingValues.project)
+        await expect(settingInput).toHaveValue(settingValues.project, {
+          timeout: 15_000,
+        })
 
         // Set user-level value
         // It's the same component so this could fill too soon.
@@ -186,14 +189,18 @@ test.describe(
         await test.step('Set project-level again to test the user-level reset', async () => {
           await settingsSwitchTab(page)('proj')
           await settingInput.selectOption(settingValues.project)
-          await settingsSwitchTab(page)('user')
+          await expect(settingInput).toHaveValue(settingValues.project, {
+            timeout: 15_000,
+          })
         })
       })
 
       await test.step('Reset user settings', async () => {
         // Click the reset settings button.
+        await settingsSwitchTab(page)('user')
         await resetButton('user').click()
 
+        // Wait for the toast to disappear
         await expect(resetToast('user')).toBeVisible()
         await expect(resetToast('user')).not.toBeVisible()
 

@@ -51,7 +51,6 @@ import {
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import React from 'react'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -66,7 +65,6 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
-  ReactContext: React.Context<typeof this>
 
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -90,7 +88,6 @@ export class App {
 
   constructor() {
     this.singletons = this.buildSingletons()
-    this.ReactContext = React.createContext(this)
   }
 
   /**
