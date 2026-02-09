@@ -1,14 +1,7 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom, AnyActorRef } from 'xstate'
-import {
-  assign,
-  enqueueActions,
-  fromCallback,
-  fromPromise,
-  sendTo,
-  setup,
-} from 'xstate'
+import { assign, fromCallback, fromPromise, sendTo, setup } from 'xstate'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
@@ -187,18 +180,6 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setEngineTheme: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setClientTheme: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setAllowOrbitInSketchMode: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    setEditorLineWrapping: () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
     toastSuccess: ({ event }) => {
       if (!('data' in event)) {
         return
@@ -223,16 +204,6 @@ export const settingsMachine = setup({
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
       })
-    },
-    'Execute AST': () => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
-    },
-    /**
-     * Update the --cursor-color CSS variable
-     * based on the setting textEditor.blinkingCursor.current
-     */
-    setCursorBlinking: ({ context, self }) => {
-      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
@@ -336,19 +307,7 @@ export const settingsMachine = setup({
       on: {
         '*': {
           target: 'persisting settings',
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            enqueueActions(({ enqueue, check }) => {
-              if (
-                check(
-                  ({ event }) => event.type === 'set.textEditor.blinkingCursor'
-                )
-              ) {
-                enqueue('setCursorBlinking')
-              }
-            }),
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.app.namedViews': {
@@ -381,30 +340,23 @@ export const settingsMachine = setup({
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.app.theme': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setThemeClass',
-            'setEngineTheme',
-            'setClientTheme',
-            'sendThemeToWatcher',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'sendThemeToWatcher'],
         },
         'set.textEditor.textWrapping': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'setEditorLineWrapping'],
+          actions: ['setSettingAtLevel'],
         },
         'set.textEditor.blinkingCursor': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'setCursorBlinking'],
+          actions: ['setSettingAtLevel'],
         },
 
         'set.app.streamIdleMode': {
@@ -415,11 +367,7 @@ export const settingsMachine = setup({
 
         'set.app.allowOrbitInSketchMode': {
           target: 'persisting settings',
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setAllowOrbitInSketchMode',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'set.modeling.cameraProjection': {
@@ -447,14 +395,6 @@ export const settingsMachine = setup({
 
           actions: [
             'resetSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -467,14 +407,6 @@ export const settingsMachine = setup({
         'Set all settings': {
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -486,7 +418,7 @@ export const settingsMachine = setup({
 
         'set.modeling.showScaleGrid': {
           target: 'persisting settings',
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'load.project': {
@@ -549,13 +481,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -585,14 +510,6 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
-            'setThemeClass',
-            'setEngineTheme',
-            'Execute AST',
-            'setClientTheme',
-            'setEngineHighlightEdges',
-            'setEditorLineWrapping',
-            'setCursorBlinking',
-            'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
