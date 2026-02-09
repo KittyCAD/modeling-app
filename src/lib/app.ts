@@ -68,6 +68,15 @@ export class App {
   singletons: ReturnType<typeof this.buildSingletons>
   ReactContext: React.Context<typeof this.singletons>
 
+  /**
+   * THE bundle of WASM, a cornerstone of our app. We use this for:
+   * - settings parse/unparse
+   * - KCL parsing, execution, linting, and LSP
+   *
+   * Access this through `kclManager.wasmInstance`, not directly.
+   */
+  public wasmPromise = initialiseWasm()
+
   constructor() {
     this.singletons = this.buildSingletons()
     this.ReactContext = React.createContext(this.singletons)
@@ -77,17 +86,8 @@ export class App {
    * Build the world!
    */
   buildSingletons() {
-    /**
-     * THE bundle of WASM, a cornerstone of our app. We use this for:
-     * - settings parse/unparse
-     * - KCL parsing, execution, linting, and LSP
-     *
-     * Access this through `kclManager.wasmInstance`, not directly.
-     */
-    const initPromise = initialiseWasm()
-
     const commandBarActor = createActor(commandBarMachine, {
-      input: { commands: [], wasmInstancePromise: initPromise },
+      input: { commands: [], wasmInstancePromise: this.wasmPromise },
     }).start()
     const dummySettingsActor = createActor(settingsMachine, {
       input: { commandBarActor, ...createSettings() },
@@ -96,7 +96,7 @@ export class App {
     const engineCommandManager = new ConnectionManager()
     const rustContext = new RustContext(
       engineCommandManager,
-      initPromise,
+      this.wasmPromise,
       // HACK: convert settings to not be an XState actor to prevent the need for
       // this dummy-with late binding of the real thing.
       // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
@@ -106,8 +106,8 @@ export class App {
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
-    const kclManager = new KclManager(engineCommandManager, initPromise, {
+    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
+    const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
       rustContext,
       sceneInfra,
     })
@@ -182,7 +182,7 @@ export class App {
               ...settings
             } = input.context
 
-            await saveSettings(initPromise, settings, currentProject?.path)
+            await saveSettings(this.wasmPromise, settings, currentProject?.path)
 
             if (input.toastCallback) {
               input.toastCallback()
@@ -329,7 +329,7 @@ export class App {
         spawnChild(appMachineActors[SYSTEM_IO], {
           systemId: SYSTEM_IO,
           input: {
-            wasmInstancePromise: initPromise,
+            wasmInstancePromise: this.wasmPromise,
           },
         }),
         spawnChild(appMachineActors[COMMAND_BAR], {
