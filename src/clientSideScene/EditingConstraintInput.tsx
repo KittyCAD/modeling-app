@@ -79,7 +79,10 @@ export const EditingConstraintInput = () => {
         if (result) {
           sketchSolveActor?.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       } catch (e) {
