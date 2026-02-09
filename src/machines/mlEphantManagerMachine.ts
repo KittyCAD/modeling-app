@@ -200,18 +200,10 @@ function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
 }
 
-function resolveAttachmentMimeType(file: File): string {
-  if (file.type) return file.type
-  const name = file.name.toLowerCase()
-  if (name.endsWith('.md') || name.endsWith('.markdown')) return 'text/markdown'
-  if (name.endsWith('.pdf')) return 'application/pdf'
-  return 'application/octet-stream'
-}
-
 async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
   return {
     name: file.name,
-    mimetype: resolveAttachmentMimeType(file),
+    mimetype: file.type || 'application/octet-stream',
     data: Array.from(new Uint8Array(await file.arrayBuffer())),
   }
 }
