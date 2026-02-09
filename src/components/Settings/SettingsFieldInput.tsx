@@ -9,7 +9,7 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -26,9 +26,10 @@ export function SettingsFieldInput({
   settingsLevel,
   setting,
 }: SettingsFieldInputProps) {
+  const app = useApp()
   const { settingsActor, useSettings } = useSingletons()
   const context = useSettings()
-  const send = settingsActor.send
+  const send = settingsActor.send.bind(app)
   const options = useMemo(() => {
     return setting.commandConfig &&
       'options' in setting.commandConfig &&

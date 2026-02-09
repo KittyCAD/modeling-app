@@ -159,6 +159,145 @@ export class App {
     /** 🚨 Circular dependency alert 🚨 */
     kclManager.sceneEntitiesManager = sceneEntitiesManager
 
+    /**
+     * TODO: remove dependence on other subsystems. Instead, make those systems
+     * subscribe to settings changes.
+     */
+    const settingsWithProvides = settingsMachine.provide({
+      actors: {
+        persistSettings: fromPromise<
+          undefined,
+          {
+            doNotPersist: boolean
+            context: SettingsMachineContext
+            toastCallback?: () => void
+          }
+        >(async ({ input }) => {
+          // Without this, when a user changes the file, it'd
+          // create a detection loop with the file-system watcher.
+          if (input.doNotPersist) return
+
+          // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
+          kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+          const {
+            currentProject,
+            commandBarActor: _c,
+            ...settings
+          } = input.context
+
+          await saveSettings(this.wasmPromise, settings, currentProject?.path)
+
+          if (input.toastCallback) {
+            input.toastCallback()
+          }
+        }),
+        loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
+          const { settings } = await loadAndValidateSettings(
+            kclManager.wasmInstancePromise
+          )
+          return settings
+        }),
+        loadProjectSettings: fromPromise<
+          SettingsType,
+          { project?: Project; settings: SettingsType }
+        >(async ({ input }) => {
+          const { settings } = await loadAndValidateSettings(
+            kclManager.wasmInstancePromise,
+            input.project?.path
+          )
+          return settings
+        }),
+      },
+      actions: {
+        setEngineTheme: ({ context }) => {
+          engineCommandManager
+            .setTheme(context.app.theme.current)
+            .catch(reportRejection)
+        },
+        setEditorLineWrapping: ({ context }) => {
+          kclManager.setEditorLineWrapping(
+            context.textEditor.textWrapping.current
+          )
+        },
+        setCursorBlinking: ({ context }) => {
+          document.documentElement.style.setProperty(
+            `--cursor-color`,
+            context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+          )
+          kclManager.setCursorBlinking(
+            context.textEditor.blinkingCursor.current
+          )
+        },
+        setEngineHighlightEdges: ({ context }) => {
+          engineCommandManager
+            .setHighlightEdges(context.modeling.highlightEdges.current)
+            .catch(reportRejection)
+        },
+        setClientTheme: ({ context }) => {
+          const resolvedTheme = getResolvedTheme(context.app.theme.current)
+          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          sceneInfra.theme = opposingTheme
+          sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+          kclManager.setEditorTheme(resolvedTheme)
+        },
+        setAllowOrbitInSketchMode: ({ context }) => {
+          sceneInfra.camControls._setting_allowOrbitInSketchMode =
+            context.app.allowOrbitInSketchMode.current
+          // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+        },
+        'Execute AST': ({ context, event }) => {
+          try {
+            const relevantSetting = (s: SettingsType) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
+            const allSettingsIncludesUnitChange =
+              event.type === 'Set all settings' &&
+              relevantSetting(event.settings || context)
+
+            const shouldExecute =
+              kclManager !== undefined &&
+              (event.type === 'set.modeling.defaultUnit' ||
+                event.type === 'set.modeling.showScaleGrid' ||
+                event.type === 'set.modeling.highlightEdges' ||
+                event.type === 'Reset settings' ||
+                allSettingsIncludesUnitChange)
+
+            if (shouldExecute) {
+              // Unit changes requires a re-exec of code
+              kclManager.executeCode().catch(reportRejection)
+            } else {
+              // For any future logging we'd like to do
+              // console.log(
+              //   'Not re-executing AST because the settings change did not affect the code interpretation'
+              // )
+            }
+          } catch (e) {
+            console.error('Error executing AST after settings change', e)
+          }
+        },
+        setEngineCameraProjection: ({ context }) => {
+          const newCurrentProjection = context.modeling.cameraProjection.current
+          sceneInfra.camControls?.setEngineCameraProjection(
+            newCurrentProjection
+          )
+        },
+      },
+    })
+    const settingsActor = createActor(settingsWithProvides, {
+      input: {
+        ...createSettings(),
+        commandBarActor: commandBarActor,
+      },
+    }).start()
+
     if (typeof window !== 'undefined') {
       ;(window as any).engineCommandManager = engineCommandManager
       ;(window as any).kclManager = kclManager
@@ -185,139 +324,8 @@ export class App {
           },
         })
     }
-    const { SETTINGS, SYSTEM_IO } = ACTOR_IDS
+    const { SYSTEM_IO } = ACTOR_IDS
     const appMachineActors = {
-      [SETTINGS]: settingsMachine.provide({
-        actors: {
-          persistSettings: fromPromise<
-            undefined,
-            {
-              doNotPersist: boolean
-              context: SettingsMachineContext
-              toastCallback?: () => void
-            }
-          >(async ({ input }) => {
-            // Without this, when a user changes the file, it'd
-            // create a detection loop with the file-system watcher.
-            if (input.doNotPersist) return
-
-            // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
-            kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-            const {
-              currentProject,
-              commandBarActor: _c,
-              ...settings
-            } = input.context
-
-            await saveSettings(this.wasmPromise, settings, currentProject?.path)
-
-            if (input.toastCallback) {
-              input.toastCallback()
-            }
-          }),
-          loadUserSettings: fromPromise<SettingsType, SettingsType>(
-            async () => {
-              const { settings } = await loadAndValidateSettings(
-                kclManager.wasmInstancePromise
-              )
-              return settings
-            }
-          ),
-          loadProjectSettings: fromPromise<
-            SettingsType,
-            { project?: Project; settings: SettingsType }
-          >(async ({ input }) => {
-            const { settings } = await loadAndValidateSettings(
-              kclManager.wasmInstancePromise,
-              input.project?.path
-            )
-            return settings
-          }),
-        },
-        actions: {
-          setEngineTheme: ({ context }) => {
-            engineCommandManager
-              .setTheme(context.app.theme.current)
-              .catch(reportRejection)
-          },
-          setEditorLineWrapping: ({ context }) => {
-            kclManager.setEditorLineWrapping(
-              context.textEditor.textWrapping.current
-            )
-          },
-          setCursorBlinking: ({ context }) => {
-            document.documentElement.style.setProperty(
-              `--cursor-color`,
-              context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
-            )
-            kclManager.setCursorBlinking(
-              context.textEditor.blinkingCursor.current
-            )
-          },
-          setEngineHighlightEdges: ({ context }) => {
-            engineCommandManager
-              .setHighlightEdges(context.modeling.highlightEdges.current)
-              .catch(reportRejection)
-          },
-          setClientTheme: ({ context }) => {
-            const resolvedTheme = getResolvedTheme(context.app.theme.current)
-            const opposingTheme = getOppositeTheme(context.app.theme.current)
-            sceneInfra.theme = opposingTheme
-            sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-            kclManager.setEditorTheme(resolvedTheme)
-          },
-          setAllowOrbitInSketchMode: ({ context }) => {
-            sceneInfra.camControls._setting_allowOrbitInSketchMode =
-              context.app.allowOrbitInSketchMode.current
-            // ModelingMachineProvider will do a use effect to trigger the camera engine sync
-          },
-          'Execute AST': ({ context, event }) => {
-            try {
-              const relevantSetting = (s: SettingsType) => {
-                return (
-                  s.modeling?.defaultUnit?.current !==
-                    context.modeling.defaultUnit.current ||
-                  s.modeling.showScaleGrid.current !==
-                    context.modeling.showScaleGrid.current ||
-                  s.modeling?.highlightEdges.current !==
-                    context.modeling.highlightEdges.current
-                )
-              }
-
-              const allSettingsIncludesUnitChange =
-                event.type === 'Set all settings' &&
-                relevantSetting(event.settings || context)
-
-              const shouldExecute =
-                kclManager !== undefined &&
-                (event.type === 'set.modeling.defaultUnit' ||
-                  event.type === 'set.modeling.showScaleGrid' ||
-                  event.type === 'set.modeling.highlightEdges' ||
-                  event.type === 'Reset settings' ||
-                  allSettingsIncludesUnitChange)
-
-              if (shouldExecute) {
-                // Unit changes requires a re-exec of code
-                kclManager.executeCode().catch(reportRejection)
-              } else {
-                // For any future logging we'd like to do
-                // console.log(
-                //   'Not re-executing AST because the settings change did not affect the code interpretation'
-                // )
-              }
-            } catch (e) {
-              console.error('Error executing AST after settings change', e)
-            }
-          },
-          setEngineCameraProjection: ({ context }) => {
-            const newCurrentProjection =
-              context.modeling.cameraProjection.current
-            sceneInfra.camControls?.setEngineCameraProjection(
-              newCurrentProjection
-            )
-          },
-        },
-      }),
       [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
     } as const
 
@@ -337,19 +345,6 @@ export class App {
         layout: defaultLayout,
       },
       entry: [
-        /**
-         * We have been battling XState's type unions exploding in size,
-         * so for these global actors, we have decided to forego creating them by reference
-         * using the `actors` property in the `setup` function, and
-         * inline them instead.
-         */
-        spawnChild(appMachineActors[SETTINGS], {
-          systemId: SETTINGS,
-          input: {
-            ...createSettings(),
-            commandBarActor: this.commandBarActor,
-          },
-        }),
         spawnChild(appMachineActors[SYSTEM_IO], {
           systemId: SYSTEM_IO,
           input: {
@@ -376,15 +371,6 @@ export class App {
     const appActor = createActor(appMachine, {
       systemId: 'root',
     })
-
-    /**
-     * GOTCHA: the type coercion of this actor works because it is spawned for
-     * the lifetime of {appActor}, but would not work if it were invoked
-     * or if it were destroyed under any conditions during {appActor}'s life
-     */
-    const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
-      (typeof appMachineActors)[typeof SETTINGS]
-    >
 
     // HACK: late attaching settings actor to this manager
     rustContext.settingsActor = settingsActor

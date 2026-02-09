@@ -87,9 +87,10 @@ export function useNextClick(newStatus: OnboardingStatus) {
 }
 
 export function useDismiss() {
+  const app = useApp()
   const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
-  const send = settingsActor.send
+  const send = settingsActor.send.bind(app)
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
