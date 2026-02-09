@@ -28,6 +28,7 @@ import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { deferredCallback } from '@src/lib/utils'
 import {
@@ -95,7 +96,7 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update sketch outcome'
       data: {
-        kclSource: SourceDelta
+        sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         /**
          * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
@@ -128,7 +129,20 @@ type ToolActorRef =
   | ActorRefFrom<typeof rectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
+  | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
+
+export const equipTools = Object.freeze({
+  trimTool,
+  // both use the same tool, opened with a different flag
+  angledRectTool: rectTool,
+  centerRectTool: rectTool,
+  cornerRectTool: rectTool,
+  dimensionTool,
+  pointTool,
+  lineTool,
+  centerArcTool,
+})
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -138,7 +152,7 @@ export type SketchSolveContext = {
   duringAreaSelectIds: Array<number>
   hoveredId: number | null
   sketchExecOutcome?: {
-    kclSource: SourceDelta
+    sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
   draftEntities?: {
@@ -154,15 +168,6 @@ export type SketchSolveContext = {
   rustContext: RustContext
   kclManager: KclManager
 }
-export const equipTools = Object.freeze({
-  // both use the same tool, opened with a different flag
-  centerRectTool: rectTool,
-  cornerRectTool: rectTool,
-  dimensionTool,
-  pointTool,
-  lineTool,
-  centerArcTool,
-})
 
 export type SolveActionArgs = ActionArgs<
   SketchSolveContext,
@@ -795,7 +800,7 @@ export function initializeInitialSceneGraph({
 
     return {
       sketchExecOutcome: {
-        kclSource,
+        sourceDelta: kclSource,
         sceneGraphDelta,
       },
     }
@@ -846,6 +851,15 @@ const debouncedEditorUpdate = deferredCallback(
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
 
+  if (!event.data.sourceDelta) {
+    console.error(
+      'updateSketchOutcome: ERROR - No sourceDelta provided',
+      event.data
+    )
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
+  }
+
   // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({
     sceneGraphDelta: event.data.sceneGraphDelta,
@@ -864,12 +878,12 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // by calling the debounced function again with new text before the delay expires
     // If a new update comes in within 200ms, the previous one is cancelled
     debouncedEditorUpdate({
-      text: event.data.kclSource.text,
+      text: event.data.sourceDelta.text,
       kclManager: context.kclManager,
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.kclSource.text, {
+    context.kclManager.updateCodeEditor(event.data.sourceDelta.text, {
       shouldExecute: false,
       // Persist changes to disk unless explicitly disabled
       shouldWriteToDisk: event.data.writeToDisk || false,
@@ -878,7 +892,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
 
   return {
     sketchExecOutcome: {
-      kclSource: event.data.kclSource,
+      sourceDelta: event.data.sourceDelta,
       sceneGraphDelta: event.data.sceneGraphDelta,
     },
   }
@@ -925,7 +939,7 @@ export async function deleteDraftEntities({
       self.send({
         type: 'update sketch outcome',
         data: {
-          kclSource: result.kclSource,
+          sourceDelta: result.kclSource,
           sceneGraphDelta: result.sceneGraphDelta,
         },
       })
@@ -1027,10 +1041,11 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
-  toolVariant?: string // eg. 'corner' | 'center' for rectTool
+  toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 
 const toolVariants: Record<string, string> = {
+  angledRectTool: 'angled',
   centerRectTool: 'center',
   cornerRectTool: 'corner',
 }

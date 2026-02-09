@@ -2746,7 +2746,6 @@ description: Artifact commands helical-planetary-gearset.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

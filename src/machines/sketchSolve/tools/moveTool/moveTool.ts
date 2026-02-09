@@ -1474,11 +1474,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
           settings
         )
       },
-      onNewSketchOutcome: (outcome) =>
+      onNewSketchOutcome: (outcome) => {
         self.send({
           type: 'update sketch outcome',
-          data: { ...outcome, writeToDisk: false },
-        }),
+          data: {
+            sourceDelta: outcome.kclSource,
+            sceneGraphDelta: outcome.sceneGraphDelta,
+            writeToDisk: false,
+          },
+        })
+      },
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>

@@ -3256,7 +3256,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3282,7 +3281,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3312,7 +3310,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3765,7 +3762,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3791,7 +3787,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3821,7 +3816,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4274,7 +4268,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4300,7 +4293,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4330,7 +4322,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4783,7 +4774,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4809,7 +4799,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4839,7 +4828,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5292,7 +5280,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5318,7 +5305,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5348,7 +5334,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5767,7 +5752,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -5793,7 +5777,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -6167,7 +6150,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -6193,7 +6175,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -6223,7 +6204,6 @@ description: Artifact commands battery-module-cooling-plate.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

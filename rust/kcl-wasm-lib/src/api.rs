@@ -9,6 +9,13 @@ use wasm_bindgen::prelude::*;
 
 use crate::{Context, TRUE_BUG};
 
+#[derive(serde::Serialize)]
+struct TrimOutcome {
+    source_delta: kcl_lib::front::SourceDelta,
+    scene_graph_delta: kcl_lib::front::SceneGraphDelta,
+    operations_performed: bool,
+}
+
 #[wasm_bindgen]
 impl Context {
     #[wasm_bindgen]
@@ -427,6 +434,118 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Execute trim operations on a sketch.
+    /// This runs the full trim loop internally, executing all trim operations.
+    #[wasm_bindgen]
+    pub async fn execute_trim(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        points: Vec<f64>,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+
+        // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
+        if points.len() % 2 != 0 {
+            return Err(JsValue::from_str(
+                "Points array must have even length (pairs of x, y coordinates)",
+            ));
+        }
+        let points: Vec<[f64; 2]> = points.chunks_exact(2).map(|chunk| [chunk[0], chunk[1]]).collect();
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for trim. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+
+        // Import trim function from kcl-lib
+        use kcl_lib::front::{execute_trim_loop_with_context, Coords2d as Coords2dCore};
+
+        // Find the actual sketch object ID from the scene graph
+        // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch
+        let actual_sketch_id = if let Some(sketch_mode) = guard.scene_graph().sketch_mode {
+            sketch_mode
+        } else {
+            // Try to find a sketch object in the scene graph
+            guard
+                .scene_graph()
+                .objects
+                .iter()
+                .find(|obj| matches!(obj.kind, kcl_lib::front::ObjectKind::Sketch { .. }))
+                .map(|obj| obj.id)
+                .unwrap_or(sketch) // Fall back to provided sketch
+        };
+
+        // Get current scene graph by executing mock first
+        let (_, initial_scene_graph_delta) = guard
+            .execute_mock(&ctx, version, actual_sketch_id)
+            .await
+            .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
+
+        // Convert [f64; 2] arrays to core Coords2d struct for kcl-lib functions
+        let points_core: Vec<Coords2dCore> = points
+            .iter()
+            .map(|[x, y]| kcl_lib::front::Coords2d { x: *x, y: *y })
+            .collect();
+
+        // Execute the trim loop using the shared function from kcl-lib
+        // This replaces ~140 lines of duplicated loop logic
+        let (source_delta, scene_graph_delta) = match execute_trim_loop_with_context(
+            &points_core,
+            initial_scene_graph_delta,
+            &mut *guard,
+            &ctx,
+            version,
+            actual_sketch_id,
+        )
+        .await
+        {
+            Ok(result) => result,
+            Err(e) => {
+                // If the trim loop returns an error (e.g., no operations executed),
+                // execute mock to get the current state and return that
+                eprintln!("Trim loop returned error: {}", e);
+                guard
+                    .execute_mock(&ctx, version, actual_sketch_id)
+                    .await
+                    .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+            }
+        };
+
+        // Track if any operations were performed (for return value)
+        // If source_delta is empty, it means no operations were executed
+        let operations_performed = !source_delta.text.is_empty();
+
+        // If source_delta is empty, it means no operations were executed
+        // In this case, we should return the original source code unchanged, not an empty string
+        let (source_delta, scene_graph_delta) = if source_delta.text.is_empty() {
+            // Get the current source code by executing mock, which returns the unchanged source
+            guard
+                .execute_mock(&ctx, version, actual_sketch_id)
+                .await
+                .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+        } else {
+            (source_delta, scene_graph_delta)
+        };
+
+        // Return both source_delta and sceneGraphDelta
+        let result = TrimOutcome {
+            source_delta,
+            scene_graph_delta,
+            operations_performed,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize trim result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Transpile old sketch syntax (startProfile in pipe) to new sketch block syntax.
