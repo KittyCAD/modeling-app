@@ -15,60 +15,8 @@ import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
-import toast from 'react-hot-toast'
 
 const noop = () => {}
-
-const ATTACHMENT_ACCEPT =
-  'application/pdf,text/markdown,text/x-markdown,.md,.markdown,image/*,application/dxf,.dxf'
-const ATTACHMENT_EXTENSIONS = new Set([
-  '.pdf',
-  '.md',
-  '.markdown',
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.gif',
-  '.webp',
-  '.bmp',
-  '.tif',
-  '.tiff',
-  '.svg',
-  '.dxf',
-])
-
-const isSupportedAttachment = (file: File): boolean => {
-  if (file.type.startsWith('image/')) return true
-  if (file.type === 'application/pdf') return true
-  if (file.type === 'text/markdown' || file.type === 'text/x-markdown')
-    return true
-  if (file.type === 'application/dxf') return true
-
-  return isSupportedAttachmentName(file.name)
-}
-
-const isSupportedAttachmentName = (name: string): boolean => {
-  const lower = name.toLowerCase()
-  const dotIndex = lower.lastIndexOf('.')
-  if (dotIndex === -1) return false
-  return ATTACHMENT_EXTENSIONS.has(lower.slice(dotIndex))
-}
-
-const resolveAttachmentMimeType = (name: string): string => {
-  const lower = name.toLowerCase()
-  if (lower.endsWith('.pdf')) return 'application/pdf'
-  if (lower.endsWith('.md') || lower.endsWith('.markdown'))
-    return 'text/markdown'
-  if (lower.endsWith('.png')) return 'image/png'
-  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg'
-  if (lower.endsWith('.gif')) return 'image/gif'
-  if (lower.endsWith('.webp')) return 'image/webp'
-  if (lower.endsWith('.bmp')) return 'image/bmp'
-  if (lower.endsWith('.tif') || lower.endsWith('.tiff')) return 'image/tiff'
-  if (lower.endsWith('.svg')) return 'image/svg+xml'
-  if (lower.endsWith('.dxf')) return 'application/dxf'
-  return 'application/octet-stream'
-}
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -275,87 +223,15 @@ export const MlEphantConversationInput = (
               file.lastModified === 0)
         )
         if (!exists) {
-          // Normalize mime type for files where the browser doesn't recognize the type
-          const normalizedType =
-            !file.type || file.type === 'application/octet-stream'
-              ? resolveAttachmentMimeType(file.name)
-              : file.type
-          const normalizedFile =
-            normalizedType !== file.type
-              ? new File([file], file.name, {
-                  type: normalizedType,
-                  lastModified: file.lastModified,
-                })
-              : file
-          next.push(normalizedFile)
+          next.push(file)
         }
       }
       return next
     })
   }
 
-  const onAttachFiles = async () => {
+  const onAttachFiles = () => {
     if (props.disabled) return
-
-    if (window.electron?.open) {
-      try {
-        const result = await window.electron.open({
-          properties: ['openFile', 'multiSelections'],
-          title: 'Attach files',
-          filters: [
-            {
-              name: 'Supported files',
-              extensions: Array.from(ATTACHMENT_EXTENSIONS).map((ext) =>
-                ext.replace('.', '')
-              ),
-            },
-          ],
-        })
-
-        if (result.canceled) return
-
-        const selectedPaths = result.filePaths ?? []
-        const supportedPaths = selectedPaths.filter(isSupportedAttachmentName)
-        if (supportedPaths.length !== selectedPaths.length) {
-          toast.error('Only PDF, Markdown, DXF, and image files are supported.')
-        }
-
-        const files = await Promise.all(
-          supportedPaths.map(async (filePath) => {
-            try {
-              const [data, stats] = await Promise.all([
-                window.electron!.readFile(filePath),
-                window.electron!.stat(filePath),
-              ])
-              const name = window.electron!.path.basename(filePath)
-              const lastModified =
-                typeof stats?.mtimeMs === 'number'
-                  ? Math.round(stats.mtimeMs)
-                  : Date.now()
-              return new File([data], name, {
-                type: resolveAttachmentMimeType(name),
-                lastModified,
-              })
-            } catch (error) {
-              console.warn('Failed to read attachment file', error)
-              return null
-            }
-          })
-        )
-
-        const validFiles = files.filter((file): file is File => file !== null)
-        if (validFiles.length !== supportedPaths.length) {
-          toast.error('Some files could not be read.')
-        }
-        appendAttachments(validFiles)
-        return
-      } catch (error) {
-        console.warn('Failed to open attachment dialog', error)
-        toast.error('Unable to open file picker.')
-        return
-      }
-    }
-
     fileInputRef.current?.click()
   }
 
@@ -363,11 +239,7 @@ export const MlEphantConversationInput = (
     const files = Array.from(event.target.files ?? [])
     if (!files.length) return
 
-    const supported = files.filter(isSupportedAttachment)
-    if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
-    }
-    appendAttachments(supported)
+    appendAttachments(files)
 
     event.target.value = ''
   }
@@ -411,11 +283,7 @@ export const MlEphantConversationInput = (
     const files = Array.from(e.dataTransfer.files)
     if (!files.length) return
 
-    const supported = files.filter(isSupportedAttachment)
-    if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
-    }
-    appendAttachments(supported)
+    appendAttachments(files)
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -426,11 +294,7 @@ export const MlEphantConversationInput = (
     // Prevent default only if we have files to handle
     e.preventDefault()
 
-    const supported = files.filter(isSupportedAttachment)
-    if (supported.length !== files.length) {
-      toast.error('Only PDF, Markdown, DXF, and image files are supported.')
-    }
-    appendAttachments(supported)
+    appendAttachments(files)
   }
 
   const selectionsContext:
@@ -457,7 +321,6 @@ export const MlEphantConversationInput = (
           ref={fileInputRef}
           type="file"
           multiple
-          accept={ATTACHMENT_ACCEPT}
           onChange={onFileInputChange}
           className="hidden"
         />
@@ -514,7 +377,7 @@ export const MlEphantConversationInput = (
             context={selectionsContext}
             mode={mode}
             onSetMode={setMode}
-            onAttachFiles={() => void onAttachFiles()}
+            onAttachFiles={onAttachFiles}
             attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">

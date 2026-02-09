@@ -1,12 +1,6 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
 
-vi.mock('react-hot-toast', () => ({
-  default: {
-    error: vi.fn(),
-  },
-}))
-
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -33,7 +27,6 @@ import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import toast from 'react-hot-toast'
 
 describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
@@ -283,45 +276,6 @@ describe('MlEphantConversation', () => {
       expect(await screen.findByText('document.pdf')).toBeInTheDocument()
     })
 
-    test('shows error toast for unsupported file types on drop', () => {
-      renderConversation()
-
-      const dropContainer = screen
-        .getByTestId('ml-ephant-conversation-input')
-        .closest('div')!
-
-      const unsupportedFile = createMockFile('script.js', 'text/javascript')
-
-      fireEvent.drop(dropContainer, {
-        dataTransfer: {
-          files: [unsupportedFile],
-          types: ['Files'],
-        },
-      })
-
-      expect(toast.error).toHaveBeenCalledWith(
-        'Only PDF, Markdown, DXF, and image files are supported.'
-      )
-    })
-
-    test('shows error toast for unsupported file types on paste', () => {
-      renderConversation()
-
-      const textarea = screen.getByTestId('ml-ephant-conversation-input')
-      const unsupportedFile = createMockFile('script.js', 'text/javascript')
-
-      fireEvent.paste(textarea, {
-        preventDefault: vi.fn(),
-        clipboardData: {
-          files: [unsupportedFile],
-        },
-      })
-
-      expect(toast.error).toHaveBeenCalledWith(
-        'Only PDF, Markdown, DXF, and image files are supported.'
-      )
-    })
-
     test('allows removing attached files', async () => {
       renderConversation()
 
@@ -472,7 +426,7 @@ describe('MlEphantConversation', () => {
       expect(attachments).toHaveLength(1)
     })
 
-    test('accepts multiple supported file types', async () => {
+    test('accepts multiple files at once', async () => {
       renderConversation()
 
       const dropContainer = screen
@@ -481,20 +435,20 @@ describe('MlEphantConversation', () => {
 
       const pngFile = createMockFile('image.png', 'image/png')
       const pdfFile = createMockFile('doc.pdf', 'application/pdf')
-      const mdFile = createMockFile('readme.md', 'text/markdown')
       const dxfFile = createMockFile('drawing.dxf', 'application/dxf')
+      const jsFile = createMockFile('script.js', 'text/javascript')
 
       fireEvent.drop(dropContainer, {
         dataTransfer: {
-          files: [pngFile, pdfFile, mdFile, dxfFile],
+          files: [pngFile, pdfFile, dxfFile, jsFile],
           types: ['Files'],
         },
       })
 
       expect(await screen.findByText('image.png')).toBeInTheDocument()
       expect(screen.getByText('doc.pdf')).toBeInTheDocument()
-      expect(screen.getByText('readme.md')).toBeInTheDocument()
       expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
+      expect(screen.getByText('script.js')).toBeInTheDocument()
     })
   })
 })
