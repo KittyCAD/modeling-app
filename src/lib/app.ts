@@ -91,7 +91,7 @@ export class App {
       ...BILLING_CONTEXT_DEFAULTS,
       urlUserService: () => withAPIBaseURL(''),
     },
-  })
+  }).start()
   /** The billing system for the app, which today focuses on Zookeeper credits */
   billing = {
     actor: this.billingActor,
