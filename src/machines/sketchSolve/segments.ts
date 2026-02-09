@@ -865,10 +865,9 @@ class ArcSegment implements SketchEntityUtils {
       return
     }
 
-    // Always draw arcs CCW from start to end.
-    // The solver also uses a CCW convention from start to end, so we keep
-    // the angles as-is and force ccw = true to match that behaviour.
-    const ccw = true
+    // Tangential arcs can be CW or CCW depending on which side of the tangent
+    // their center lies on. Default to CCW if no explicit direction is provided.
+    const ccw = group.userData.arcCcw !== false
     arcSegmentBody.geometry.setPositions(
       createArcPositions({
         center: [centerX, centerY],

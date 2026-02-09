@@ -172,11 +172,125 @@ export const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
  * Helper function to build a segment ctor from a scene graph object.
  * Returns null if the object is not a segment or if required data is missing.
  */
+function isDerivedTangentArcPoint(
+  obj: ApiObject,
+  objects: Array<ApiObject>
+): boolean {
+  if (!(obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point')) {
+    return false
+  }
+  const ownerId = obj.kind.segment.owner
+  if (ownerId === null || ownerId === undefined) {
+    return false
+  }
+  const ownerObj = objects[ownerId]
+  if (
+    !(
+      ownerObj?.kind?.type === 'Segment' &&
+      ownerObj.kind.segment.type === 'Arc' &&
+      ownerObj.kind.segment.ctor.type === 'TangentArc'
+    )
+  ) {
+    return false
+  }
+  return (
+    ownerObj.kind.segment.center === obj.id ||
+    ownerObj.kind.segment.start === obj.id
+  )
+}
+
+function getPointPositionFromObjects(
+  objects: Array<ApiObject>,
+  pointId: number
+): { x: number; y: number } | null {
+  const pointObj = objects[pointId]
+  if (
+    pointObj?.kind?.type !== 'Segment' ||
+    pointObj.kind.segment.type !== 'Point'
+  ) {
+    return null
+  }
+  return {
+    x: pointObj.kind.segment.position.x.value,
+    y: pointObj.kind.segment.position.y.value,
+  }
+}
+
+function deriveArcRenderCcw(
+  obj: ApiObject,
+  objects: Array<ApiObject>
+): boolean {
+  if (!(obj.kind.type === 'Segment' && obj.kind.segment.type === 'Arc')) {
+    return true
+  }
+
+  const ctor = obj.kind.segment.ctor
+  if (ctor.type !== 'TangentArc') {
+    return true
+  }
+
+  const tangentObj = objects[ctor.tangent.value]
+  if (
+    !(
+      tangentObj?.kind?.type === 'Segment' &&
+      tangentObj.kind.segment.type === 'Line'
+    )
+  ) {
+    return true
+  }
+
+  const tangentStart = getPointPositionFromObjects(
+    objects,
+    tangentObj.kind.segment.start
+  )
+  const tangentEnd = getPointPositionFromObjects(
+    objects,
+    tangentObj.kind.segment.end
+  )
+  const arcStart = getPointPositionFromObjects(objects, obj.kind.segment.start)
+  const arcCenter = getPointPositionFromObjects(
+    objects,
+    obj.kind.segment.center
+  )
+  if (!tangentStart || !tangentEnd || !arcStart || !arcCenter) {
+    return true
+  }
+
+  // Tangent direction should point outward from the referenced endpoint.
+  const tangentDir =
+    ctor.tangent.type === 'End'
+      ? {
+          x: tangentEnd.x - tangentStart.x,
+          y: tangentEnd.y - tangentStart.y,
+        }
+      : {
+          x: tangentStart.x - tangentEnd.x,
+          y: tangentStart.y - tangentEnd.y,
+        }
+
+  // Radius vector from center to arc start.
+  const radiusVec = {
+    x: arcStart.x - arcCenter.x,
+    y: arcStart.y - arcCenter.y,
+  }
+
+  const cross = radiusVec.x * tangentDir.y - radiusVec.y * tangentDir.x
+  if (Math.abs(cross) < 1e-9) {
+    return true
+  }
+  // Positive cross => CCW tangent at start, negative => CW.
+  return cross > 0
+}
+
 export function buildSegmentCtorFromObject(
   obj: ApiObject,
   objects: Array<ApiObject>
 ): SegmentCtor | null {
   if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+    // Tangent arc start/center are derived and should not be directly editable handles.
+    if (isDerivedTangentArcPoint(obj, objects)) {
+      return null
+    }
     return {
       type: 'Point',
       position: {
@@ -294,6 +408,15 @@ export function updateSegmentGroup({
 
   // Store freedom in userData for immediate use (not as a cache - Rust handles that)
   group.userData.freedom = freedomResult
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (
+      segmentObj?.kind?.type === 'Segment' &&
+      segmentObj.kind.segment.type === 'Arc'
+    ) {
+      group.userData.arcCcw = deriveArcRenderCcw(segmentObj, objects)
+    }
+  }
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
@@ -411,6 +534,15 @@ function initSegmentGroup({
   if (group instanceof Group) {
     // Store freedom in userData for immediate use (not as a cache - Rust handles that)
     group.userData.freedom = freedomResult
+    if (objects) {
+      const segmentObj = objects[id]
+      if (
+        segmentObj?.kind?.type === 'Segment' &&
+        segmentObj.kind.segment.type === 'Arc'
+      ) {
+        group.userData.arcCcw = deriveArcRenderCcw(segmentObj, objects)
+      }
+    }
     return group
   }
   return new Error(`Unknown input type: ${(input as any).type}`)
@@ -520,6 +652,11 @@ export function updateSceneGraphFromDelta({
       return
     }
     if (!ctor) {
+      // Only remove groups for points we intentionally hide.
+      if (isDerivedTangentArcPoint(obj, objects)) {
+        disposeGroupChildren(group)
+        group.parent?.remove(group)
+      }
       return
     }
 

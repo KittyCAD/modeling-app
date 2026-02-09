@@ -51,6 +51,7 @@ const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 const ARC_FN: &str = "arc";
+const TANGENTIAL_ARC_FN: &str = "tangentialArc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
@@ -472,32 +473,69 @@ impl SketchApi for FrontendState {
                                 if arc.start == segment_id || arc.end == segment_id || arc.center == segment_id =>
                             {
                                 if let Some(existing) = final_edits.get_mut(&owner_id) {
-                                    let SegmentCtor::Arc(arc_ctor) = existing else {
-                                        return Err(Error {
-                                            msg: format!("Internal: Expected arc ctor for owner: {owner_object:?}"),
-                                        });
-                                    };
-                                    if arc.start == segment_id {
-                                        arc_ctor.start = ctor.position;
-                                    } else if arc.end == segment_id {
-                                        arc_ctor.end = ctor.position;
-                                    } else {
-                                        arc_ctor.center = ctor.position;
+                                    match existing {
+                                        SegmentCtor::Arc(arc_ctor) => {
+                                            if arc.start == segment_id {
+                                                arc_ctor.start = ctor.position;
+                                            } else if arc.end == segment_id {
+                                                arc_ctor.end = ctor.position;
+                                            } else {
+                                                arc_ctor.center = ctor.position;
+                                            }
+                                        }
+                                        SegmentCtor::TangentArc(tangent_arc_ctor) => {
+                                            if arc.end == segment_id {
+                                                tangent_arc_ctor.end = ctor.position;
+                                            } else {
+                                                return Err(Error {
+                                                    msg: format!(
+                                                        "Internal: Tangent arc only supports editing end point: {owner_object:?}"
+                                                    ),
+                                                });
+                                            }
+                                        }
+                                        _ => {
+                                            return Err(Error {
+                                                msg: format!(
+                                                    "Internal: Expected arc or tangent arc ctor for owner: {owner_object:?}"
+                                                ),
+                                            });
+                                        }
                                     }
-                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
-                                    let mut arc_ctor = arc_ctor.clone();
-                                    if arc.start == segment_id {
-                                        arc_ctor.start = ctor.position;
-                                    } else if arc.end == segment_id {
-                                        arc_ctor.end = ctor.position;
-                                    } else {
-                                        arc_ctor.center = ctor.position;
-                                    }
-                                    final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
                                 } else {
-                                    return Err(Error {
-                                        msg: format!("Internal: Arc does not have arc ctor: {owner_object:?}"),
-                                    });
+                                    match &arc.ctor {
+                                        SegmentCtor::Arc(arc_ctor) => {
+                                            let mut arc_ctor = arc_ctor.clone();
+                                            if arc.start == segment_id {
+                                                arc_ctor.start = ctor.position;
+                                            } else if arc.end == segment_id {
+                                                arc_ctor.end = ctor.position;
+                                            } else {
+                                                arc_ctor.center = ctor.position;
+                                            }
+                                            final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
+                                        }
+                                        SegmentCtor::TangentArc(tangent_arc_ctor) => {
+                                            if arc.end == segment_id {
+                                                let mut tangent_arc_ctor = tangent_arc_ctor.clone();
+                                                tangent_arc_ctor.end = ctor.position;
+                                                final_edits.insert(owner_id, SegmentCtor::TangentArc(tangent_arc_ctor));
+                                            } else {
+                                                return Err(Error {
+                                                    msg: format!(
+                                                        "Internal: Tangent arc only supports editing end point: {owner_object:?}"
+                                                    ),
+                                                });
+                                            }
+                                        }
+                                        _ => {
+                                            return Err(Error {
+                                                msg: format!(
+                                                    "Internal: Arc does not have arc/tangent arc ctor: {owner_object:?}"
+                                                ),
+                                            });
+                                        }
+                                    }
                                 }
                                 continue;
                             }
@@ -514,6 +552,9 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Arc(ctor) => {
                     final_edits.insert(segment_id, SegmentCtor::Arc(ctor));
                 }
+                SegmentCtor::TangentArc(ctor) => {
+                    final_edits.insert(segment_id, SegmentCtor::TangentArc(ctor));
+                }
                 other_ctor => {
                     final_edits.insert(segment_id, other_ctor);
                 }
@@ -525,6 +566,7 @@ impl SketchApi for FrontendState {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment_id, ctor)?,
                 SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment_id, ctor)?,
+                SegmentCtor::TangentArc(ctor) => self.edit_tangent_arc(&mut new_ast, sketch, segment_id, ctor)?,
                 _ => {
                     return Err(Error {
                         msg: format!("segment ctor not implemented yet: {ctor:?}"),
@@ -1244,27 +1286,43 @@ impl FrontendState {
 
             // Handle Arc owner
             if let Segment::Arc(arc) = segment {
-                let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
-                    return Err(Error {
-                        msg: format!("Internal: Owner of point does not have arc ctor: {owner_object:?}"),
-                    });
-                };
-                let mut arc_ctor = arc_ctor.clone();
-                // Which point of the arc is this? (center, start, or end)
-                if arc.center == point_id {
-                    arc_ctor.center = ctor.position;
-                } else if arc.start == point_id {
-                    arc_ctor.start = ctor.position;
-                } else if arc.end == point_id {
-                    arc_ctor.end = ctor.position;
-                } else {
-                    return Err(Error {
-                        msg: format!(
-                            "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
-                        ),
-                    });
+                match &arc.ctor {
+                    SegmentCtor::Arc(arc_ctor) => {
+                        let mut arc_ctor = arc_ctor.clone();
+                        // Which point of the arc is this? (center, start, or end)
+                        if arc.center == point_id {
+                            arc_ctor.center = ctor.position;
+                        } else if arc.start == point_id {
+                            arc_ctor.start = ctor.position;
+                        } else if arc.end == point_id {
+                            arc_ctor.end = ctor.position;
+                        } else {
+                            return Err(Error {
+                                msg: format!(
+                                    "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
+                                ),
+                            });
+                        }
+                        return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
+                    }
+                    SegmentCtor::TangentArc(tangent_arc_ctor) => {
+                        if arc.end != point_id {
+                            return Err(Error {
+                                msg: format!(
+                                    "Internal: Tangent arc only supports editing end point: point={point_id:?}, arc={owner_id:?}"
+                                ),
+                            });
+                        }
+                        let mut tangent_arc_ctor = tangent_arc_ctor.clone();
+                        tangent_arc_ctor.end = ctor.position;
+                        return self.edit_tangent_arc(new_ast, sketch_id, owner_id, tangent_arc_ctor);
+                    }
+                    _ => {
+                        return Err(Error {
+                            msg: format!("Internal: Owner of point does not have arc ctor: {owner_object:?}"),
+                        });
+                    }
                 }
-                return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
             }
 
             // If owner is neither Line nor Arc, allow editing the point directly
@@ -1369,6 +1427,51 @@ impl FrontendState {
                 end: new_end_ast,
                 center: new_center_ast,
                 construction: ctor.construction,
+            },
+        )?;
+        Ok(())
+    }
+
+    fn edit_tangent_arc(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        arc: ObjectId,
+        ctor: crate::front::TangentArcCtor,
+    ) -> api::Result<()> {
+        // Create updated KCL source from args.
+        let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch.segments.iter().find(|o| **o == arc).ok_or_else(|| Error {
+            msg: format!("Arc not found in sketch: arc={arc:?}, sketch={sketch:?}"),
+        })?;
+        // Look up existing arc.
+        let arc_id = arc;
+        let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
+            msg: format!("Arc not found in scene graph: arc={arc:?}"),
+        })?;
+        let ObjectKind::Segment { .. } = &arc_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {arc_object:?}"),
+            });
+        };
+
+        // Modify the tangential arc AST.
+        self.mutate_ast(
+            new_ast,
+            arc_id,
+            AstMutateCommand::EditTangentArc {
+                end: new_end_ast,
             },
         )?;
         Ok(())
@@ -1515,7 +1618,10 @@ impl FrontendState {
             let mut new_ast = self.program.ast.clone();
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
-                mutate_ast_node_by_source_range(
+                // Some solver variables are internal (e.g. derived tangent-arc vars)
+                // and don't map to a concrete numeric literal in source.
+                // Skip those instead of aborting the entire edit operation.
+                let _ = mutate_ast_node_by_source_range_if_found(
                     &mut new_ast,
                     *var_range,
                     AstMutateCommand::EditVarInitialValue { value: rounded },
@@ -2683,6 +2789,27 @@ fn mutate_ast_node_by_source_range(
     }
 }
 
+#[cfg(feature = "artifact-graph")]
+fn mutate_ast_node_by_source_range_if_found(
+    ast: &mut ast::Node<ast::Program>,
+    source_range: SourceRange,
+    command: AstMutateCommand,
+) -> Result<bool, Error> {
+    let mut context = AstMutateContext {
+        source_range,
+        command,
+        defined_names_stack: Default::default(),
+    };
+    let control = dfs_mut(ast, &mut context);
+    match control {
+        ControlFlow::Continue(_) => Ok(false),
+        ControlFlow::Break(break_value) => {
+            break_value?;
+            Ok(true)
+        }
+    }
+}
+
 #[derive(Debug)]
 struct AstMutateContext {
     source_range: SourceRange,
@@ -2713,6 +2840,9 @@ enum AstMutateCommand {
         end: ast::Expr,
         center: ast::Expr,
         construction: Option<bool>,
+    },
+    EditTangentArc {
+        end: ast::Expr,
     },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
@@ -2838,7 +2968,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::EditPoint { at } => {
-            if let NodeMut::CallExpressionKw(call) = node {
+            let edit_call = |call: &mut ast::CallExpressionKw| {
                 if call.callee.name.name != POINT_FN {
                     return TraversalReturn::new_continue(());
                 }
@@ -2849,6 +2979,21 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            };
+
+            match node {
+                NodeMut::CallExpressionKw(call) => return edit_call(call),
+                NodeMut::ExpressionStatement(expr_stmt) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut expr_stmt.expression {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                NodeMut::VariableDeclaration(var_decl) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut var_decl.declaration.init {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                _ => {}
             }
         }
         AstMutateCommand::EditLine {
@@ -2856,7 +3001,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             end,
             construction,
         } => {
-            if let NodeMut::CallExpressionKw(call) = node {
+            let edit_call = |call: &mut ast::CallExpressionKw| {
                 if call.callee.name.name != LINE_FN {
                     return TraversalReturn::new_continue(());
                 }
@@ -2906,6 +3051,21 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            };
+
+            match node {
+                NodeMut::CallExpressionKw(call) => return edit_call(call),
+                NodeMut::ExpressionStatement(expr_stmt) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut expr_stmt.expression {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                NodeMut::VariableDeclaration(var_decl) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut var_decl.declaration.init {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                _ => {}
             }
         }
         AstMutateCommand::EditArc {
@@ -2914,7 +3074,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             center,
             construction,
         } => {
-            if let NodeMut::CallExpressionKw(call) = node {
+            let edit_call = |call: &mut ast::CallExpressionKw| {
                 if call.callee.name.name != ARC_FN {
                     return TraversalReturn::new_continue(());
                 }
@@ -2967,6 +3127,49 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            };
+
+            match node {
+                NodeMut::CallExpressionKw(call) => return edit_call(call),
+                NodeMut::ExpressionStatement(expr_stmt) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut expr_stmt.expression {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                NodeMut::VariableDeclaration(var_decl) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut var_decl.declaration.init {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                _ => {}
+            }
+        }
+        AstMutateCommand::EditTangentArc { end } => {
+            let edit_call = |call: &mut ast::CallExpressionKw| {
+                if call.callee.name.name != TANGENTIAL_ARC_FN {
+                    return TraversalReturn::new_continue(());
+                }
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_END_PARAM) {
+                        labeled_arg.arg = end.clone();
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            };
+
+            match node {
+                NodeMut::CallExpressionKw(call) => return edit_call(call),
+                NodeMut::ExpressionStatement(expr_stmt) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut expr_stmt.expression {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                NodeMut::VariableDeclaration(var_decl) => {
+                    if let ast::Expr::CallExpressionKw(call) = &mut var_decl.declaration.init {
+                        return edit_call(&mut call.inner);
+                    }
+                }
+                _ => {}
             }
         }
         #[cfg(feature = "artifact-graph")]

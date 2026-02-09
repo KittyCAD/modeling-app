@@ -82,6 +82,15 @@ function buildSegmentCtorWithDrag({
   dragVec: Vector2
   units: NumericSuffix
 }): SegmentCtor | null {
+  if (
+    obj.kind.type === 'Segment' &&
+    obj.kind.segment.type === 'Arc' &&
+    obj.kind.segment.ctor.type === 'TangentArc'
+  ) {
+    // Tangent-arc body drag isn't supported: only endpoint edits are allowed.
+    return null
+  }
+
   const baseCtor = buildSegmentCtorFromObject(obj, objects)
   if (!baseCtor) {
     return null
