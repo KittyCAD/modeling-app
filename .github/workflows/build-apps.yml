@@ -193,11 +193,6 @@ jobs:
 
       - run: npm install
 
-      - name: Configure Azure Trusted Signing env (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.FORCE_RELEASE_BUILD == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
-        run: |
-        shell: bash
-
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.FORCE_RELEASE_BUILD == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
