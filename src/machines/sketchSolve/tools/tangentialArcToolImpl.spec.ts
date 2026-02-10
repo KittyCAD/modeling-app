@@ -6,7 +6,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   findTangentialArcCenter,
-  resolveTangentAnchorFromClick,
+  resolveTangentInfoFromClick,
   resolveTangentialArcEndpoints,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
 import { describe, expect, it } from 'vitest'
@@ -34,30 +34,30 @@ describe('tangentialArcToolImpl', () => {
     })
   })
 
-  describe('resolveTangentAnchorFromClick', () => {
+  describe('resolveTangentInfoFromClick', () => {
     it('should resolve nearest endpoint when clicking a line segment', () => {
       const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
       const p2 = createPointApiObject({ id: 2, x: 20, y: 0 })
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
       const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
 
-      const anchorNearStart = resolveTangentAnchorFromClick({
+      const tangentInfoNearStart = resolveTangentInfoFromClick({
         clickedId: 3,
         clickPoint: [1, 0],
         sceneGraphDelta,
       })
-      const anchorNearEnd = resolveTangentAnchorFromClick({
+      const tangentInfoNearEnd = resolveTangentInfoFromClick({
         clickedId: 3,
         clickPoint: [19, 0],
         sceneGraphDelta,
       })
 
-      expect(anchorNearStart).toEqual({
+      expect(tangentInfoNearStart).toEqual({
         lineId: 3,
         tangentStart: { id: 1, point: [0, 0] },
         tangentDirection: [1, 0],
       })
-      expect(anchorNearEnd).toEqual({
+      expect(tangentInfoNearEnd).toEqual({
         lineId: 3,
         tangentStart: { id: 2, point: [20, 0] },
         tangentDirection: [1, 0],
@@ -76,13 +76,13 @@ describe('tangentialArcToolImpl', () => {
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
       const sceneGraphDelta = createSceneGraphDelta([p1, p2, line], [1, 2, 3])
 
-      const anchor = resolveTangentAnchorFromClick({
+      const tangentInfo = resolveTangentInfoFromClick({
         clickedId: 2,
         clickPoint: [20, 0],
         sceneGraphDelta,
       })
 
-      expect(anchor).toEqual({
+      expect(tangentInfo).toEqual({
         lineId: 3,
         tangentStart: { id: 2, point: [20, 0] },
         tangentDirection: [1, 0],
@@ -99,13 +99,13 @@ describe('tangentialArcToolImpl', () => {
         [1, 2, 3, 4]
       )
 
-      const anchor = resolveTangentAnchorFromClick({
+      const tangentInfo = resolveTangentInfoFromClick({
         clickedId: 4,
         clickPoint: [2, 2],
         sceneGraphDelta,
       })
 
-      expect(anchor).toBeNull()
+      expect(tangentInfo).toBeNull()
     })
   })
 

@@ -44,7 +44,7 @@ export type TangentInfo = {
 export type ToolEvents =
   | BaseToolEvent
   | {
-      type: 'select tangent anchor'
+      type: 'select tangent info'
       data: TangentInfo
     }
   | {
@@ -186,7 +186,7 @@ export function resolveTangentialArcEndpoints(
   }
 }
 
-export function resolveTangentAnchorFromClick({
+export function resolveTangentInfoFromClick({
   clickedId,
   clickPoint,
   sceneGraphDelta,
@@ -282,7 +282,7 @@ export function resolveTangentAnchorFromClick({
   return null
 }
 
-export function addTangentAnchorListener({ self, context }: ToolActionArgs) {
+export function addFirstPointListener({ self, context }: ToolActionArgs) {
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
       if (!args) return
@@ -298,35 +298,16 @@ export function addTangentAnchorListener({ self, context }: ToolActionArgs) {
       const clickedId = Number(args.selected?.name)
       if (Number.isNaN(clickedId)) return
 
-      const anchor = resolveTangentAnchorFromClick({
+      const tangentInfo = resolveTangentInfoFromClick({
         clickedId,
         clickPoint: [twoD.x, twoD.y],
         sceneGraphDelta,
       })
-      if (!anchor) return
+      if (!tangentInfo) return
 
       self.send({
-        type: 'select tangent anchor',
-        data: anchor,
-      })
-    },
-    onMove: () => {},
-  })
-}
-
-export function addPointListener({ self, context }: ToolActionArgs) {
-  context.sceneInfra.setCallbacks({
-    onClick: (args) => {
-      if (!args) return
-      if (args.mouseEvent.which !== 1) return
-
-      const twoD = args.intersectionPoint?.twoD
-      if (!twoD) return
-
-      self.send({
-        type: 'add point',
-        data: [twoD.x, twoD.y],
-        clickNumber: 2,
+        type: 'select tangent info',
+        data: tangentInfo,
       })
     },
     onMove: () => {},

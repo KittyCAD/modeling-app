@@ -60,7 +60,7 @@ function createTestMachine(mockActors?: {
 }
 
 describe('tangentialArcTool - XState', () => {
-  it('should start in ready-for-anchor state', () => {
+  it('should start in ready-for-info state', () => {
     const { machine, sceneInfra, rustContext, kclManager } = createTestMachine()
     const actor = createActor(machine, {
       input: {
@@ -71,7 +71,7 @@ describe('tangentialArcTool - XState', () => {
       },
     }).start()
 
-    expect(actor.getSnapshot().value).toBe('ready for tangent anchor click')
+    expect(actor.getSnapshot().value).toBe('ready for tangent info click')
     actor.stop()
   })
 
@@ -102,7 +102,7 @@ describe('tangentialArcTool - XState', () => {
     }).start()
 
     actor.send({
-      type: 'select tangent anchor',
+      type: 'select tangent info',
       data: {
         lineId: 10,
         tangentStart: { id: 11, point: [10, 0] },
@@ -145,7 +145,7 @@ describe('tangentialArcTool - XState', () => {
     }).start()
 
     actor.send({
-      type: 'select tangent anchor',
+      type: 'select tangent info',
       data: {
         lineId: 10,
         tangentStart: { id: 11, point: [10, 0] },
@@ -157,7 +157,7 @@ describe('tangentialArcTool - XState', () => {
     actor.send({ type: 'add point', data: [15, 5], clickNumber: 2 })
     await waitFor(actor, (state) => state.matches('Finalizing arc'))
     await waitFor(actor, (state) =>
-      state.matches('ready for tangent anchor click')
+      state.matches('ready for tangent info click')
     )
 
     actor.stop()

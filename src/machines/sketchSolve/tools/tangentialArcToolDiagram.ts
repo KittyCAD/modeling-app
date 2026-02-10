@@ -8,8 +8,7 @@ import {
   type TOOL_ID,
   type ToolContext,
   type ToolEvents,
-  addPointListener,
-  addTangentAnchorListener,
+  addFirstPointListener,
   animateArcEndPointListener,
   createArcActor,
   finalizeArcActor,
@@ -27,9 +26,8 @@ export const machine = setup({
     input: {} as ToolInput,
   },
   actions: {
-    'add tangent anchor listener': addTangentAnchorListener,
-    'add point listener': addPointListener,
-    'animate arc end point listener': animateArcEndPointListener,
+    'add first point listener': addFirstPointListener,
+    'add second point listener': animateArcEndPointListener,
     'remove point listener': removePointListener,
     'send result to parent': sendResultToParent,
     'store created arc result': assign(storeCreatedArcResult),
@@ -50,7 +48,7 @@ export const machine = setup({
     sketchId: input.sketchId || 0,
   }),
   id: toolId,
-  initial: 'ready for tangent anchor click',
+  initial: 'ready for tangent info click',
   on: {
     unequip: {
       target: `#Tangential arc tool.unequipping`,
@@ -61,13 +59,13 @@ export const machine = setup({
   description:
     'Creates an arc tangent to an existing line at a chosen endpoint',
   states: {
-    'ready for tangent anchor click': {
-      entry: 'add tangent anchor listener',
+    'ready for tangent info click': {
+      entry: 'add first point listener',
       on: {
-        'select tangent anchor': {
+        'select tangent info': {
           target: 'Creating arc',
           actions: assign(({ event }) => {
-            assertEvent(event, 'select tangent anchor')
+            assertEvent(event, 'select tangent info')
             return {
               tangentInfo: event.data,
             }
@@ -100,12 +98,12 @@ export const machine = setup({
           target: 'Animating arc',
           actions: ['send result to parent', 'store created arc result'],
         },
-        onError: 'ready for tangent anchor click',
+        onError: 'ready for tangent info click',
       },
     },
 
     'Animating arc': {
-      entry: 'animate arc end point listener',
+      entry: 'add second point listener',
       exit: 'remove point listener',
       on: {
         'add point': {
@@ -156,7 +154,7 @@ export const machine = setup({
           }
         },
         onDone: {
-          target: 'ready for tangent anchor click',
+          target: 'ready for tangent info click',
           actions: [
             'send result to parent',
             ({ self }) => {
