@@ -96,7 +96,7 @@ export fn region(
   /// Index of the intersection of the first segment with the second segment to
   /// use as the region's boundary. The default is `-1`, which uses the last
   /// intersection.
-  intersectionIndex: number(Count),
+  intersectionIndex?: number(Count),
   /// `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`.
-  direction: string,
+  direction?: string = "ccw",
 ) {}
