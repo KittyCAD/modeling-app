@@ -33,9 +33,9 @@ plateSketch = startSketchOn(XY)
 // Define hole positions (face-local: note X/Y swapped vs world XY)
 holePositionsSwapped = [
   [-boltSpacingY / 2, -boltSpacingX / 2],
-  [-boltSpacingY / 2,  boltSpacingX / 2],
-  [ boltSpacingY / 2, -boltSpacingX / 2],
-  [ boltSpacingY / 2,  boltSpacingX / 2],
+  [-boltSpacingY / 2, boltSpacingX / 2],
+  [boltSpacingY / 2, -boltSpacingX / 2],
+  [boltSpacingY / 2, boltSpacingX / 2]
 ]
 
 // 1) Extrude plate
@@ -58,9 +58,9 @@ plate = hole::holes(
   plateChamfered,
   face = plateTop,
   cutsAt = holePositionsSwapped,
-  holeBottom = hole::flat(),
-  holeBody = hole::blind(depth = stockThickness, diameter = boltDiameter),
-  holeType = hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = stockThickness, diameter = boltDiameter),
+  holeType =   hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
 )
 
 // Drill a small pin hole in the side of the tube (separate extrude)
@@ -79,15 +79,25 @@ centralTube = subtract([centralTubeSolid], tools = [pinhole])
 // Diagonal plane helper for i = 1
 finDiagPlane1 = {
   origin = [0.0, 0.0, 0.0],
-  xAxis = [boltSpacingX / 2 * 1, boltSpacingY / 2, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
+  xAxis = [
+    boltSpacingX / 2 * 1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 finProfile1 = startSketchOn(finDiagPlane1)
-  |> startProfile(at = [tubeInnerDiameter / 2 + tubeThickness, stockThickness])
+  |> startProfile(at = [
+       tubeInnerDiameter / 2 + tubeThickness,
+       stockThickness
+     ])
   |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
   |> yLine(length = 0.15)
-  |> line(endAbsolute = [profileStartX(%) + 0.15, stockThickness + tubeHeight * .8])
+  |> line(endAbsolute = [
+       profileStartX(%) + 0.15,
+       stockThickness + tubeHeight * .8
+     ])
   |> xLine(length = -0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -106,15 +116,25 @@ finPair1 = patternCircular3d(
 // Diagonal plane helper for i = -1
 finDiagPlane2 = {
   origin = [0.0, 0.0, 0.0],
-  xAxis = [boltSpacingX / 2 * -1, boltSpacingY / 2, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
+  xAxis = [
+    boltSpacingX / 2 * -1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 finProfile2 = startSketchOn(finDiagPlane2)
-  |> startProfile(at = [tubeInnerDiameter / 2 + tubeThickness, stockThickness])
+  |> startProfile(at = [
+       tubeInnerDiameter / 2 + tubeThickness,
+       stockThickness
+     ])
   |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
   |> yLine(length = 0.15)
-  |> line(endAbsolute = [profileStartX(%) + 0.15, stockThickness + tubeHeight * .8])
+  |> line(endAbsolute = [
+       profileStartX(%) + 0.15,
+       stockThickness + tubeHeight * .8
+     ])
   |> xLine(length = -0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
