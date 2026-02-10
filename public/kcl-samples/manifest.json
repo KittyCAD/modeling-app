@@ -167,6 +167,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Automotive"
     ],
