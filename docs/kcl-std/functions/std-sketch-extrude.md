@@ -46,7 +46,7 @@ can change this behavior by using the `method` parameter. See
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
 | `twistAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`. | No |
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
-| `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center. | No |
+| `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the plane's origin. Only used if `twistAngle` is given, defaults to [0, 0] i.e. plane origin. | No |
 | `method` | [`string`](/docs/kcl-std/types/std-types-string) | The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`. | No |
 | `hideSeams` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether or not to hide the seams between the original and resulting object. Only used if a face is extruded and method = MERGE | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
@@ -195,6 +195,30 @@ example = startSketchOn(XZ)
 </model-viewer>
 
 ```kcl
+// Sketch a square in the corner of the scene.
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> polygon(radius = 1, numSides = 10, center = [4, 4])
+  // Because the twist defaults to the plane's center, this makes a spiral shape.
+  |> extrude(length = 10, twistAngle = 360deg)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude5_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1)
@@ -220,10 +244,10 @@ translate(cylinder, x = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude5.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude6.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -279,10 +303,10 @@ cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude6.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude7.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -306,10 +330,10 @@ extrude(openProfile, length = 2, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude7.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -376,10 +400,10 @@ extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -411,10 +435,10 @@ box = extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude10.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -450,10 +474,10 @@ extrude(endSweep, length = 2, method = NEW)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude10.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude11.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -474,10 +498,10 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude12_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude11.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude12.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

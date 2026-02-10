@@ -3,9 +3,7 @@
 use std::collections::HashMap;
 
 use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
-    shared::BodyType,
+    ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -210,10 +208,7 @@ async fn get_old_new_child_map(
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: old_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(old_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -221,6 +216,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let old_entity_ids = old_resp.entity_ids;
 
     // Get the new geometries entity ids.
     let response = exec_state
@@ -234,10 +230,7 @@ async fn get_old_new_child_map(
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(new_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -245,6 +238,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let new_entity_ids = new_resp.entity_ids;
 
     // Create a map of old entity ids to new entity ids.
     Ok(HashMap::from_iter(

@@ -518,7 +518,14 @@ export fn ellipse(
 ///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
 ///   |> extrude(length = 10, twistAngle = 120deg)
 /// ```
-///
+/// ```
+/// // Sketch a square in the corner of the scene.
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> polygon(radius = 1, numSides = 10, center = [4, 4])
+/// // Because the twist defaults to the plane's center, this makes a spiral shape.
+///   |> extrude(length = 10, twistAngle = 360deg)
+/// ```
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 /// profile001 = startProfile(sketch001, at = [0, 0])
@@ -704,8 +711,8 @@ export fn extrude(
   /// Must be between 4 and 90 degrees.
   /// Only used if `twistAngle` is given, defaults to 15 degrees.
   twistAngleStep?: number(Angle),
-  /// The center around which the sketch will be twisted. Relative to the sketch's center.
-  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
+  /// The center around which the sketch will be twisted. Relative to the plane's origin.
+  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. plane origin.
   @(snippetArray = ["0", "0"])
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.

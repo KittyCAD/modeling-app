@@ -133,9 +133,16 @@ where
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct NamedParam {
+    pub experimental: bool,
+    pub default_value: Option<DefaultParamVal>,
+    pub ty: Option<Type>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct FunctionSource {
     pub input_arg: Option<(String, Option<Type>)>,
-    pub named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    pub named_args: IndexMap<String, NamedParam>,
     pub return_type: Option<Node<Type>>,
     pub deprecated: bool,
     pub experimental: bool,
@@ -193,13 +200,8 @@ impl FunctionSource {
         }
     }
 
-    #[allow(clippy::type_complexity)]
-    fn args_from_ast(
-        ast: &FunctionExpression,
-    ) -> (
-        Option<(String, Option<Type>)>,
-        IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
-    ) {
+    #[expect(clippy::type_complexity)]
+    fn args_from_ast(ast: &FunctionExpression) -> (Option<(String, Option<Type>)>, IndexMap<String, NamedParam>) {
         let mut input_arg = None;
         let mut named_args = IndexMap::new();
         for p in &ast.params {
@@ -213,7 +215,11 @@ impl FunctionSource {
 
             named_args.insert(
                 p.identifier.name.clone(),
-                (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
+                NamedParam {
+                    experimental: p.experimental,
+                    default_value: p.default_value.clone(),
+                    ty: p.param_type.as_ref().map(|t| t.inner.clone()),
+                },
             );
         }
 

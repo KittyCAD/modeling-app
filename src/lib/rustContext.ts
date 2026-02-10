@@ -623,6 +623,46 @@ export default class RustContext {
     }
   }
 
+  /** Execute trim operations on a sketch. Runs the full trim loop in Rust. */
+  async executeTrim(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    points: Array<[number, number]>,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    operationsPerformed: boolean
+  }> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      // Flatten array of [x, y] tuples into a Float64Array [x1, y1, x2, y2, ...]
+      // wasm-bindgen expects a typed array for Vec<f64>
+      const flattenedPoints = new Float64Array(points.flat())
+
+      const result: {
+        source_delta: SourceDelta
+        scene_graph_delta: SceneGraphDelta
+        operations_performed: boolean
+      } = await instance.execute_trim(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        flattenedPoints,
+        JSON.stringify(settings)
+      )
+      return {
+        kclSource: result.source_delta,
+        sceneGraphDelta: result.scene_graph_delta,
+        operationsPerformed: result.operations_performed,
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Helper to check if context instance exists */
   private async _checkContextInstance(): Promise<Context> {
     if (!this.ctxInstance) {
