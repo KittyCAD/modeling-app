@@ -235,16 +235,13 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
 
     let surface_refs: Vec<SurfaceEdgeReference> = edges
         .iter()
-        .map(|edge| SurfaceEdgeReference {
-            object_id: edge.face_id,
-            edges: vec![
+        .map(|edge| SurfaceEdgeReference::builder().object_id(edge.face_id).edges(vec![
                 FractionOfEdge::builder()
                     .edge_id(edge.edge_id)
                     .lower_bound(edge.lower_bound)
                     .upper_bound(edge.upper_bound)
                     .build(),
-            ],
-        })
+            ]).build())
         .collect();
 
     exec_state

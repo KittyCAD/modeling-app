@@ -1139,9 +1139,9 @@ export fn getBoundedEdge(
   @solid: Solid,
   /// The tag of the edge that is part of the face
   edge: TaggedEdge,
-  /// A lower percentage bound of the edge, must be between (0, 1)
+  /// A lower percentage bound of the edge, must be between (0, 1). Defaults to 0.
   lowerBound?: number,
-  /// A upper percentage bound of the edge, must be between (0, 1)
+  /// A upper percentage bound of the edge, must be between (0, 1). Defaults to 1.
   upperBound?: number,
 ): BoundedEdge {}
 
