@@ -29,7 +29,7 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
-import { machine as tangentialArcTool} from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import { deferredCallback } from '@src/lib/utils'
 import {

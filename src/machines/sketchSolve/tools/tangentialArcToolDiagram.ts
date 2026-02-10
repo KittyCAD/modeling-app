@@ -59,7 +59,8 @@ export const machine = setup({
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
     },
   },
-  description: 'Creates an arc tangent to an existing line at a chosen endpoint',
+  description:
+    'Creates an arc tangent to an existing line at a chosen endpoint',
   states: {
     'ready for tangent anchor click': {
       entry: 'add tangent anchor listener',
@@ -143,8 +144,7 @@ export const machine = setup({
           assertEvent(event, 'add point')
           if (!context.arcId || !context.tangentInfo) {
             return {
-              error:
-                'Arc id and tangent info must be set before finalizing',
+              error: 'Arc id and tangent info must be set before finalizing',
             }
           }
           return {

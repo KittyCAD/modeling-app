@@ -10,9 +10,7 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import {
-  machine,
-} from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { describe, expect, it } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 

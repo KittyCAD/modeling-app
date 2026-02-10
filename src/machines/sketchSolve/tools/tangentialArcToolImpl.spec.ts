@@ -111,11 +111,7 @@ describe('tangentialArcToolImpl', () => {
 
   describe('resolveTangentialArcEndpoints', () => {
     it('keeps start/end order when endpoint is on the left side of tangent direction', () => {
-      const result = resolveTangentialArcEndpoints(
-        [0, 0],
-        [1, 1],
-        [1, 0]
-      )
+      const result = resolveTangentialArcEndpoints([0, 0], [1, 1], [1, 0])
 
       expect(result).toEqual({
         start: [0, 0],
@@ -125,11 +121,7 @@ describe('tangentialArcToolImpl', () => {
     })
 
     it('swaps start/end order when endpoint is on the right side of tangent direction', () => {
-      const result = resolveTangentialArcEndpoints(
-        [0, 0],
-        [1, -1],
-        [1, 0]
-      )
+      const result = resolveTangentialArcEndpoints([0, 0], [1, -1], [1, 0])
 
       expect(result).toEqual({
         start: [1, -1],
