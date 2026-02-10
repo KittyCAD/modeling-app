@@ -1219,7 +1219,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
   it('should return the pipe substitution symbol and a variable name in a complex multi profile selection', async () => {
     const circleProfileInVar = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
-profile002 = circle(sketch001, center = [2, 2], radius = 1)
+profile002 = circle(startSketchOn(YZ), center = [2, 2], radius = 1)
 `
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
