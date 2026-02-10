@@ -33,6 +33,7 @@ export interface IZooDesignStudioFS {
     src: string,
     dest: string,
     options?: any
+    // NodeJS website and TS type defs do not match. We need to use this.
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void> | void
   readFile: ((src: string, options: { encoding: 'utf-8' }) => Promise<string>) &
