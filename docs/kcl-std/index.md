@@ -24,6 +24,7 @@ layout: manual
   * [`pop`](/docs/kcl-std/functions/std-array-pop)
   * [`push`](/docs/kcl-std/functions/std-array-push)
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
+  * [`slice`](/docs/kcl-std/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
   * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
   * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
