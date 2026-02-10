@@ -71,6 +71,7 @@ export const AllSettingsFields = forwardRef(
         navigate,
         kclManager,
         systemIOActor,
+        settingsActor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
