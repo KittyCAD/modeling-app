@@ -28,16 +28,16 @@ fn lobe(duration, lift) {
     |> arc(interiorAbsolute = [0, -baseCircle / 2], endAbsolute = polar(angle = 90 - (duration / 4), length = baseCircle / 2), tag = $seg02)
     |> angledLine(angle = tangentToEnd(seg02), endAbsoluteY = baseCircle / 2 + lift, tag = $seg04)
     |> xLine(endAbsolute = 0, tag = $seg03)
-    |> xLine(length = -segLen(seg03))
+    |> xLine(length = -segLen(seg03), tag = $seg01)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg05)
     |> close()
     |> extrude(length = camHeight)
     |> fillet(
-         radius = min([segLen(seg03), segLen(seg04)]) * 0.99,
          tags = [
            getCommonEdge(faces = [seg04, seg03]),
-           getCommonEdge(faces = [seg03, seg05])
+           getCommonEdge(faces = [seg01, seg05])
          ],
+         radius = min([segLen(seg03), segLen(seg04)]) * 0.99,
        )
     |> rotate(yaw = intakeCenterline)
 
