@@ -1,4 +1,6 @@
 #![allow(clippy::useless_conversion)]
+use std::path::Path;
+
 use anyhow::Result;
 use kcl_lib::{
     lint::{checks, Discovered, FindingFamily},
@@ -262,12 +264,28 @@ async fn import_and_snapshot_views(
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
+/// Make an absolute path not absolute. We need to do this to re-root files
+/// under a directory by using [Path::join].
+pub(crate) fn unabs_path(path: &Path) -> &Path {
+    if !path.is_absolute() {
+        return path;
+    }
+    path.strip_prefix("/").expect("not possible given is_absolute check")
+}
+
 /// Return the ID of the imported object.
 async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputFormat3d) -> PyResult<Uuid> {
     let mut files = Vec::with_capacity(filepaths.len());
     for filepath in filepaths {
+        let filepath = Path::new(&filepath);
         let file_contents = tokio::fs::read(&filepath).await.map_err(to_py_exception)?;
-        files.push(ImportFile::builder().path(filepath).data(file_contents).build());
+        let relative_filepath = unabs_path(filepath);
+        files.push(
+            ImportFile::builder()
+                .path(relative_filepath.display().to_string())
+                .data(file_contents)
+                .build(),
+        );
     }
     let resp = ctx
         .engine
