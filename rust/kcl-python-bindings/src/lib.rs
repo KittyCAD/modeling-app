@@ -1,4 +1,6 @@
 #![allow(clippy::useless_conversion)]
+use std::path::Path;
+
 use anyhow::Result;
 use kcl_lib::{
     lint::{checks, Discovered, FindingFamily},
@@ -7,10 +9,11 @@ use kcl_lib::{
 use kittycad_modeling_cmds::{
     self as kcmc,
     format::{InputFormat3d, OutputFormat3d},
+    ok_response::OkModelingCmdResponse,
     shared::FileExportFormat,
     units::UnitLength,
-    websocket::RawFile,
-    ImageFormat, ImportFile,
+    websocket::{OkWebSocketResponseData, RawFile},
+    ImageFormat, ImportFile, ModelingCmd,
 };
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
@@ -19,6 +22,8 @@ use pyo3::{
 use pyo3_stub_gen::define_stub_info_gatherer;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+use crate::bridge::physical_properties::{PhysicalPropertiesRequest, PhysicalPropertiesResponse};
 
 mod bridge;
 
@@ -259,12 +264,28 @@ async fn import_and_snapshot_views(
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
+/// Make an absolute path not absolute. We need to do this to re-root files
+/// under a directory by using [Path::join].
+pub(crate) fn unabs_path(path: &Path) -> &Path {
+    if !path.is_absolute() {
+        return path;
+    }
+    path.strip_prefix("/").expect("not possible given is_absolute check")
+}
+
 /// Return the ID of the imported object.
 async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputFormat3d) -> PyResult<Uuid> {
     let mut files = Vec::with_capacity(filepaths.len());
     for filepath in filepaths {
+        let filepath = Path::new(&filepath);
         let file_contents = tokio::fs::read(&filepath).await.map_err(to_py_exception)?;
-        files.push(ImportFile::builder().path(filepath).data(file_contents).build());
+        let relative_filepath = unabs_path(filepath);
+        files.push(
+            ImportFile::builder()
+                .path(relative_filepath.display().to_string())
+                .data(file_contents)
+                .build(),
+        );
     }
     let resp = ctx
         .engine
@@ -275,7 +296,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
         )
         .await?;
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::ImportFiles(data),
+        modeling_response: OkModelingCmdResponse::ImportFiles(data),
     } = resp
     else {
         return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -331,6 +352,62 @@ async fn execute_and_snapshot_views(
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
     let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
     Ok(snaps.pop().unwrap())
+}
+
+/// Execute a kcl file and measure physical properties of the resulting model.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
+    tokio()
+        .spawn(async move {
+            let (code, path) = get_code_and_file_path(&path)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            let program = kcl_lib::Program::parse_no_errs(&code)
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+
+            let (ctx, mut state) = new_context_state(Some(path), false)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            // Execute the program.
+            ctx.run(&program, &mut state)
+                .await
+                .map_err(|err| into_miette(err, &code))?;
+
+            let result = measure_model_properties(&ctx, request).await;
+            ctx.close().await;
+            result
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+/// Execute the kcl code and measure physical properties of the resulting model.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn execute_code_and_measure(
+    code: String,
+    request: PhysicalPropertiesRequest,
+) -> PyResult<PhysicalPropertiesResponse> {
+    tokio()
+        .spawn(async move {
+            let program =
+                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+
+            let (ctx, mut state) = new_context_state(None, false)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            // Execute the program.
+            ctx.run(&program, &mut state)
+                .await
+                .map_err(|err| into_miette(err, &code))?;
+
+            let result = measure_model_properties(&ctx, request).await;
+            ctx.close().await;
+            result
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Customize a snapshot.
@@ -467,7 +544,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .await?;
 
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
+        modeling_response: OkModelingCmdResponse::TakeSnapshot(data),
     } = resp
     else {
         return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -476,6 +553,122 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
     };
 
     Ok(data.contents.0)
+}
+
+async fn measure_model_properties(
+    ctx: &ExecutorContext,
+    request: PhysicalPropertiesRequest,
+) -> PyResult<PhysicalPropertiesResponse> {
+    let mut out = PhysicalPropertiesResponse::default();
+    let PhysicalPropertiesRequest {
+        volume,
+        mass,
+        center_of_mass,
+        surface_area,
+        density,
+    } = request;
+    // volume
+    if let Some(volume_req) = volume {
+        let volume_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(volume_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Volume(volume_resp),
+        } = volume_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {volume_resp:?}",
+            )));
+        };
+        out.volume = Some(volume_resp);
+    }
+    // mass
+    if let Some(mass_req) = mass {
+        let mass_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(mass_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Mass(mass_resp),
+        } = mass_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {mass_resp:?}",
+            )));
+        };
+        out.mass = Some(mass_resp);
+    }
+    // center_of_mass
+    if let Some(center_of_mass_req) = center_of_mass {
+        let center_of_mass_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(center_of_mass_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::CenterOfMass(center_of_mass_resp),
+        } = center_of_mass_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {center_of_mass_resp:?}",
+            )));
+        };
+        out.center_of_mass = Some(center_of_mass_resp);
+    }
+    // density
+    if let Some(density_req) = density {
+        let density_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(density_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Density(density_resp),
+        } = density_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {density_resp:?}",
+            )));
+        };
+        out.density = Some(density_resp);
+    }
+    // surface_area
+    if let Some(surface_area_req) = surface_area {
+        let surface_area_resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &ModelingCmd::from(surface_area_req),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area_resp),
+        } = surface_area_resp
+        else {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {surface_area_resp:?}",
+            )));
+        };
+        out.surface_area = Some(surface_area_resp);
+    }
+
+    Ok(out)
 }
 
 /// Execute a kcl file and export it to a specific file format.
@@ -689,13 +882,21 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
     m.add_class::<FileExportFormat>()?;
-    m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
+    m.add_class::<PhysicalPropertiesRequest>()?;
+    m.add_class::<PhysicalPropertiesResponse>()?;
     m.add_class::<SnapshotOptions>()?;
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
     m.add_class::<FindingFamily>()?;
+
+    m.add_class::<kcmc::units::UnitAngle>()?;
+    m.add_class::<kcmc::units::UnitArea>()?;
+    m.add_class::<kcmc::units::UnitDensity>()?;
+    m.add_class::<kcmc::units::UnitLength>()?;
+    m.add_class::<kcmc::units::UnitMass>()?;
+    m.add_class::<kcmc::units::UnitVolume>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;
@@ -721,6 +922,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;

@@ -46,6 +46,7 @@ import {
   buildSegmentCtorFromObject,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
@@ -712,7 +713,7 @@ export const sketchSolveMachine = setup({
         // Call deleteObjects with the selected segment IDs
         const result = await context.rustContext
           .deleteObjects(
-            0,
+            SKETCH_FILE_VERSION,
             context.sketchId,
             [],
             selectedIds,
