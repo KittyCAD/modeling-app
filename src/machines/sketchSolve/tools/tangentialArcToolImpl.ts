@@ -65,7 +65,6 @@ export type ToolContext = {
   arcId?: number
   arcStartPointId?: number
   arcEndPointId?: number
-  sceneGraphDelta?: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -312,19 +311,8 @@ export function addTangentAnchorListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
 
-      // Match trim-tool behavior: query parent snapshot for the freshest graph first.
-      let sceneGraphDelta: SceneGraphDelta | undefined
-      try {
-        const parentSnapshot = self._parent?.getSnapshot()
-        if (parentSnapshot?.context?.sketchExecOutcome?.sceneGraphDelta) {
-          sceneGraphDelta =
-            parentSnapshot.context.sketchExecOutcome.sceneGraphDelta
-        } else if (context.sceneGraphDelta?.new_graph?.objects) {
-          sceneGraphDelta = context.sceneGraphDelta
-        }
-      } catch {
-        sceneGraphDelta = context.sceneGraphDelta
-      }
+      const sceneGraphDelta =
+        self._parent?.getSnapshot()?.context?.sketchExecOutcome?.sceneGraphDelta
       if (!sceneGraphDelta?.new_graph?.objects) return
 
       const selectedId = findNumericGroupId(args.selected)
@@ -498,10 +486,9 @@ export function removePointListener({ context }: ToolActionArgs) {
 export function sendResultToParent({
   event,
   self,
-  context,
 }: ToolAssignArgs<any>) {
   if (!('output' in event) || !event.output) {
-    return {}
+    return
   }
 
   const output = event.output as {
@@ -511,7 +498,7 @@ export function sendResultToParent({
   }
 
   if (output.error || !output.kclSource || !output.sceneGraphDelta) {
-    return {}
+    return
   }
 
   const sendData: SketchSolveMachineEvent = {
@@ -522,10 +509,6 @@ export function sendResultToParent({
     },
   }
   self._parent?.send(sendData)
-
-  return {
-    sceneGraphDelta: output.sceneGraphDelta || context.sceneGraphDelta,
-  }
 }
 
 export function storeCreatedArcResult({
@@ -594,7 +577,6 @@ export function storeCreatedArcResult({
     arcId,
     arcStartPointId,
     arcEndPointId,
-    sceneGraphDelta: output.sceneGraphDelta,
   }
 }
 

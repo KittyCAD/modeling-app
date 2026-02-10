@@ -31,7 +31,7 @@ export const machine = setup({
     'add point listener': addPointListener,
     'animate arc end point listener': animateArcEndPointListener,
     'remove point listener': removePointListener,
-    'send result to parent': assign(sendResultToParent),
+    'send result to parent': sendResultToParent,
     'store created arc result': assign(storeCreatedArcResult),
   },
   actors: {
@@ -44,7 +44,6 @@ export const machine = setup({
     arcId: undefined,
     arcStartPointId: undefined,
     arcEndPointId: undefined,
-    sceneGraphDelta: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
