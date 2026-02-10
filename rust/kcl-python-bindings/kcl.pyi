@@ -663,6 +663,42 @@ class UnitVolume(Enum):
     Milliliters (ml) <https://en.wikipedia.org/wiki/Litre>
     """
 
+class PhysicalPropertiesRequest:
+    r"""
+    Specifies which physical/material properties to query about a model.
+    """
+    def __new__(cls) -> PhysicalPropertiesRequest: ...
+    def set_volume(self, output_unit: UnitVolume) -> None: ...
+    def set_center_of_mass(self, output_unit: UnitLength) -> None: ...
+    def set_mass(
+        self,
+        output_unit: UnitMass,
+        material_density: builtins.float,
+        material_density_unit: UnitDensity,
+    ) -> None: ...
+    def set_surface_area(self, output_unit: UnitArea) -> None: ...
+    def set_density(
+        self,
+        output_unit: UnitDensity,
+        material_mass: builtins.float,
+        material_mass_unit: UnitMass,
+    ) -> None: ...
+
+class PhysicalPropertiesResponse:
+    r"""
+    The results of a PhysicalPropertiesRequest.
+    """
+    def get_center_of_mass(self) -> Point3d: ...
+    def get_center_of_mass_unit(self) -> UnitLength: ...
+    def get_volume(self) -> builtins.float: ...
+    def get_volume_unit(self) -> UnitVolume: ...
+    def get_surface_area(self) -> builtins.float: ...
+    def get_surface_area_unit(self) -> UnitArea: ...
+    def get_density(self) -> builtins.float: ...
+    def get_density_unit(self) -> UnitDensity: ...
+    def get_mass(self) -> builtins.float: ...
+    def get_mass_unit(self) -> UnitMass: ...
+
 async def execute(path:builtins.str) -> None:
     r"""
     Execute the kcl code from a file path.
@@ -700,6 +736,22 @@ async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageF
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
     If you don't provide any camera angles, a default head-on camera angle will be used.
+    """
+
+async def execute_and_measure(
+    path: builtins.str, request: PhysicalPropertiesRequest
+) -> PhysicalPropertiesResponse:
+    r"""
+    Execute a kcl file and measure physical properties of the resulting model.
+    NOTE: mass and density require a material assumption.
+    """
+
+async def execute_code_and_measure(
+    code: builtins.str, request: PhysicalPropertiesRequest
+) -> PhysicalPropertiesResponse:
+    r"""
+    Execute the kcl code and measure physical properties of the resulting model.
+    NOTE: mass and density require a material assumption.
     """
 
 def format(code:builtins.str) -> builtins.str:
