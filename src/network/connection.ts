@@ -160,7 +160,7 @@ export class Connection extends EventTarget {
       this.send({
         type: 'headers',
         headers: {
-          Authorization: `Bearer `,
+          Authorization: `Bearer ${this.token}`,
         },
       })
       this.deferredMediaStreamAndWebrtcStatsCollector?.resolve(true)
