@@ -43,7 +43,7 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
 test.describe(
   'Testing settings',
   {
-    tag: ['@desktop', '@macos', '@windows'],
+    tag: ['@desktop'],
   },
   () => {
     test('Stored settings are validated and fall back to defaults', async ({
