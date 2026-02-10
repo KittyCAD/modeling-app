@@ -448,6 +448,7 @@ pub enum PrimitiveType {
     Helix,
     Face,
     Edge,
+    BoundedEdge,
     Axis2d,
     Axis3d,
     ImportedGeometry,
@@ -472,6 +473,7 @@ impl PrimitiveType {
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
             PrimitiveType::Edge => "Edges".to_owned(),
+            PrimitiveType::BoundedEdge => "BoundedEdges".to_owned(),
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
@@ -515,6 +517,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
             PrimitiveType::Edge => write!(f, "Edge"),
+            PrimitiveType::BoundedEdge => write!(f, "BoundedEdge"),
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
@@ -1405,6 +1408,10 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::BoundedEdge => match self {
+                KclValue::BoundedEdge { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::TaggedEdge => match self {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1723,6 +1730,7 @@ impl KclValue {
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
             KclValue::Module { .. } | KclValue::Type { .. } => None,
+            KclValue::BoundedEdge { .. } => Some(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
         }
     }
 

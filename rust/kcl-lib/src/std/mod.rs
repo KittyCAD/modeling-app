@@ -361,6 +361,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::edge::get_common_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getCommonEdge"),
         ),
+        ("sketch", "getBoundedEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_bounded_edge(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::getBoundedEdge"),
+        ),
         ("sketch", "getNextAdjacentEdge") => (
             |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getNextAdjacentEdge"),
@@ -588,6 +592,10 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         ("types", "TaggedEdge") => (PrimitiveType::TaggedEdge, StdFnProps::default("std::types::TaggedEdge")),
         ("types", "TaggedFace") => (PrimitiveType::TaggedFace, StdFnProps::default("std::types::TaggedFace")),
+        ("types", "BoundedEdge") => (
+            PrimitiveType::BoundedEdge,
+            StdFnProps::default("std::types::BoundedEdge"),
+        ),
         _ => unreachable!(),
     }
 }

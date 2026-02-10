@@ -1132,6 +1132,19 @@ export fn getCommonEdge(
   faces: [TaggedFace; 2],
 ): Edge {}
 
+/// Get a bounded edge of a surface.
+@(impl = std_rust, feature_tree = false)
+export fn getBoundedEdge(
+  /// The solid that the edge belongs to.
+  @solid: Solid,
+  /// The tag of the edge that is part of the face
+  edge: TaggedEdge,
+  /// A lower percentage bound of the edge, must be between (0, 1)
+  lowerBound?: number,
+  /// A upper percentage bound of the edge, must be between (0, 1)
+  upperBound?: number,
+): BoundedEdge {}
+
 /// Construct a circle derived from 3 points.
 ///
 /// ```kcl
