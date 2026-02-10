@@ -2,7 +2,7 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
 import electronfs, { type ElectronFSOptions } from '@src/lib/fs-zds/electronfs'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
-import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/opfs'
+import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
 
 declare global {
   interface Window {

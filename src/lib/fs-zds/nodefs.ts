@@ -2,7 +2,7 @@
 // This is primarily used for unit tests.
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
-import fs from 'node:fs/promise'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 const attach = async () => {}

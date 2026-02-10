@@ -20,6 +20,13 @@ export interface IStat {
 }
 
 export interface IZooDesignStudioFS {
+  resolve: (...strs: string[]) => string
+  join: (...strs: string[]) => string
+  relative: (...strs: string[]) => string
+  extname: (str: string) => string
+  sep: string
+  basename: (...strs: string[]) => string
+  dirname: (str: string) => string
   getPath: (type: 'appData' | 'documents' | 'userData') => Promise<string>
   access: (path: string, bitflags: number) => Promise<void>
   cp: (
@@ -34,12 +41,16 @@ export interface IZooDesignStudioFS {
     ((src: string, options: 'utf8') => Promise<string>) &
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     ((src: string, options?: {}) => Promise<Uint8Array>)
-  rename: (src: string, dest: string, options?: any) => Promise<void>
+  rename: (
+    src: string,
+    dest: string,
+    options?: any
+  ) => Promise<void | undefined>
   writeFile: (
     src: string,
     data: Uint8Array<ArrayBuffer>,
     options?: any
-  ) => Promise<void>
+  ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
   stat: (path: string, options?: any) => Promise<IStat>
   mkdir: (path: string, options?: any) => Promise<undefined | string>

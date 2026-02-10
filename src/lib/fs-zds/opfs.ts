@@ -325,7 +325,7 @@ const writeFile = async (
   // 2 now due to this deficiency.
   // UNLESS ITS THE META_FILE ITSELF, THEN WE SKIP.
 
-  if (targetPath.includes(META_FILE)) return
+  if (targetPath.includes(META_FILE)) return undefined
 
   await writeFile(
     path.resolve(targetPath, '..', META_FILE),
@@ -335,6 +335,8 @@ const writeFile = async (
       })
     )
   )
+
+  return undefined
 }
 
 const getPath: IZooDesignStudioFS['getPath'] = async (type) => {
@@ -350,7 +352,7 @@ const access = async (_path: string, _bitflags: number): Promise<undefined> => {
 const rename = async (
   sourcePath: string,
   targetPath: string
-): Promise<void> => {
+): Promise<undefined> => {
   const handle = await walk(sourcePath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
@@ -362,6 +364,7 @@ const rename = async (
     await cp(sourcePath, targetPath)
     await rm(sourcePath, { recursive: true })
   }
+  return undefined
 }
 
 // OPFS takes a very minimal approach to its API surface via primitives.
@@ -402,6 +405,13 @@ const cp = async (
 }
 
 const impl: IZooDesignStudioFS = {
+  resolve: path.resolve.bind(path),
+  join: path.join.bind(path),
+  relative: path.relative.bind(path),
+  extname: path.extname.bind(path),
+  sep: path.sep,
+  basename: path.basename.bind(path),
+  dirname: path.dirname.bind(path),
   getPath,
   access,
   cp,

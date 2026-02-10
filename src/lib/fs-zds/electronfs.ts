@@ -16,6 +16,13 @@ const impl: IZooDesignStudioFS =
   typeof window === 'undefined' || window.electron === undefined
     ? noopfs.impl
     : {
+        resolve: window.electron.path.resolve.bind(window.electron.path),
+        join: window.electron.path.join.bind(window.electron.path),
+        relative: window.electron.path.relative.bind(window.electron.path),
+        extname: window.electron.path.extname.bind(window.electron.path),
+        sep: window.electron.path.sep,
+        basename: window.electron.path.basename.bind(window.electron.path),
+        dirname: window.electron.path.dirname.bind(window.electron.path),
         getPath: window.electron.getPath,
         access: window.electron.access,
         cp: window.electron.copy,
