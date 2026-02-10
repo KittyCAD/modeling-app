@@ -17,13 +17,13 @@ import {
   distance2d,
   isValidNumber,
   normalizeVec,
+  perpendicular,
   scaleVec,
   subVec,
 } from '@src/lib/utils2d'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { Group, type Object3D } from 'three'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Tangential arc tool'
@@ -80,10 +80,6 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-function perpendicular(v: Coords2d): Coords2d {
-  return [-v[1], v[0]]
-}
-
 function isInvalidUnitVector(v: Coords2d): boolean {
   return (
     !isValidNumber(v[0]) ||
@@ -135,22 +131,6 @@ function getLineTangentDirection({
   }
 
   return tangentDirection
-}
-
-function findNumericGroupId(obj: Object3D | undefined): number | null {
-  if (!obj) return null
-
-  let current: Object3D | null = obj
-  while (current) {
-    if (current instanceof Group) {
-      const id = Number(current.name)
-      if (!Number.isNaN(id)) {
-        return id
-      }
-    }
-    current = current.parent
-  }
-  return null
 }
 
 export function findTangentialArcCenter({
@@ -315,12 +295,8 @@ export function addTangentAnchorListener({ self, context }: ToolActionArgs) {
         self._parent?.getSnapshot()?.context?.sketchExecOutcome?.sceneGraphDelta
       if (!sceneGraphDelta?.new_graph?.objects) return
 
-      const selectedId = findNumericGroupId(args.selected)
-      const intersectId = args.intersects
-        .map((intersect) => findNumericGroupId(intersect.object))
-        .find((id): id is number => id !== null)
-      const clickedId = selectedId ?? intersectId
-      if (clickedId === undefined) return
+      const clickedId = Number(args.selected?.name)
+      if (Number.isNaN(clickedId)) return
 
       const anchor = resolveTangentAnchorFromClick({
         clickedId,
@@ -483,10 +459,7 @@ export function removePointListener({ context }: ToolActionArgs) {
   })
 }
 
-export function sendResultToParent({
-  event,
-  self,
-}: ToolAssignArgs<any>) {
+export function sendResultToParent({ event, self }: ToolActionArgs) {
   if (!('output' in event) || !event.output) {
     return
   }
@@ -514,7 +487,7 @@ export function sendResultToParent({
 export function storeCreatedArcResult({
   event,
   self,
-}: ToolAssignArgs<any>): Partial<ToolContext> {
+}: ToolAssignArgs): Partial<ToolContext> {
   if (!('output' in event) || !event.output) {
     return {}
   }
