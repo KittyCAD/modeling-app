@@ -1213,7 +1213,17 @@ impl Node<SketchBlock> {
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
             // Track that we're executing a sketch block.
-            let original_value = exec_state.mod_local.sketch_block.replace(SketchBlockState::default());
+            #[cfg(feature = "artifact-graph")]
+            let initial_sketch_block_state = {
+                SketchBlockState {
+                    sketch_id: Some(sketch_id),
+                    ..Default::default()
+                }
+            };
+            #[cfg(not(feature = "artifact-graph"))]
+            let initial_sketch_block_state = SketchBlockState::default();
+
+            let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
 
             // When executing the body of the sketch block, we no longer want to
             // skip any code.
@@ -2469,22 +2479,40 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, front::Distance};
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Distance,
+                                };
 
-                                let constraint = crate::front::Constraint::Distance(Distance {
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
-                                        kind: ObjectKind::Constraint { constraint },
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
@@ -2567,9 +2595,11 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::execution::ArtifactId;
-
+                                use crate::execution::{
+                                    Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType,
+                                };
                                 // Find the arc segment object ID from the sketch block state
+
                                 let arc_object_id = sketch_block_state
                                     .needed_by_engine
                                     .iter()
@@ -2609,13 +2639,26 @@ impl Node<BinaryExpression> {
                                     })
                                 };
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
@@ -2651,7 +2694,10 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, front::Distance};
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Distance,
+                                };
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -2660,13 +2706,26 @@ impl Node<BinaryExpression> {
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
@@ -2701,7 +2760,10 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::{execution::ArtifactId, front::Distance};
+                                use crate::{
+                                    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
+                                    front::Distance,
+                                };
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -2710,13 +2772,26 @@ impl Node<BinaryExpression> {
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        artifact_id: ArtifactId::constraint(),
+                                        artifact_id,
                                         source: range.into(),
                                     },
                                     range,
