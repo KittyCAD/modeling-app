@@ -45,11 +45,13 @@ export interface IZooDesignStudioFS {
     src: string,
     dest: string,
     options?: any
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<void | undefined>
   writeFile: (
     src: string,
     data: Uint8Array<ArrayBuffer>,
     options?: any
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
   stat: (path: string, options?: any) => Promise<IStat>
