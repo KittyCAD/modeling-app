@@ -228,6 +228,13 @@ export fn concat(
 /// assert(s[2], isEqualTo = 3)
 /// assert(count(s), isEqualTo = 3)
 /// ```
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], start = -2)
+/// assert(s[0], isEqualTo = 4)
+/// assert(s[1], isEqualTo = 5)
+/// assert(count(s), isEqualTo = 2)
+/// ```
 @(impl = std_rust, feature_tree = false)
 export fn slice(
   /// The array to slice.

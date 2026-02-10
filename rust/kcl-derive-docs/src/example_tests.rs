@@ -61,6 +61,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-array-reduce-2",
     "std-array-slice-0",
     "std-array-slice-1",
+    "std-array-slice-2",
     "std-clone-0",
     "std-clone-1",
     "std-clone-2",
