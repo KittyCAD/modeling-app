@@ -3,9 +3,11 @@ import {
   ActionType,
   AreaType,
   LayoutType,
+  type PaneChild,
   type Layout,
   type PaneLayout,
 } from '@src/lib/layout/types'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /** Temporary ID for getting the left toolbar of the layout */
 export enum DefaultLayoutToolbarID {
@@ -38,6 +40,38 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   areaType: AreaType.Debug,
 }
 
+/** TODO: remove this once we are happy with the bodies pane, ship it to prod for users. */
+const temporaryFeatureTreeConfig: PaneChild = IS_STAGING_OR_DEBUG
+  ? {
+      id: DefaultLayoutPaneID.FeatureTree,
+      label: 'Feature Tree',
+      type: LayoutType.Splits,
+      icon: 'model',
+      sizes: [75, 25],
+      orientation: 'block',
+      children: [
+        {
+          id: 'operations-list',
+          label: 'Feature Tree',
+          type: LayoutType.Simple,
+          areaType: AreaType.FeatureTree,
+        },
+        {
+          id: 'bodies-list',
+          label: 'Bodies List',
+          type: LayoutType.Simple,
+          areaType: AreaType.Bodies,
+        },
+      ],
+    }
+  : {
+      id: DefaultLayoutPaneID.FeatureTree,
+      label: 'Feature Tree',
+      type: LayoutType.Simple,
+      icon: 'model',
+      areaType: AreaType.FeatureTree,
+    }
+
 /**
  * The default layout has:
  * - a left (in LTR languages) sidebar with:
@@ -64,13 +98,7 @@ export const defaultLayoutConfig: Layout = {
       sizes: isDesktop() ? [50, 50] : [100],
       splitOrientation: 'block',
       children: [
-        {
-          id: DefaultLayoutPaneID.FeatureTree,
-          label: 'Feature Tree',
-          type: LayoutType.Simple,
-          icon: 'model',
-          areaType: AreaType.FeatureTree,
-        },
+        temporaryFeatureTreeConfig,
         {
           id: DefaultLayoutPaneID.Code,
           label: 'Code Editor',

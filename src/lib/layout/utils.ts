@@ -25,9 +25,11 @@ import {
   parseLayoutInner,
 } from '@src/lib/layout/parse'
 import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] =
+  IS_STAGING_OR_DEBUG ? 'v3' : 'v2'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
