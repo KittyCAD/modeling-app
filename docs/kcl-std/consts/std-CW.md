@@ -5,8 +5,6 @@ excerpt: "Clockwise circular direction, currently used by `region()`."
 layout: manual
 ---
 
-**WARNING:** This constant is experimental and may change or be removed.
-
 Clockwise circular direction, currently used by `region()`.
 
 ```kcl

@@ -91,11 +91,9 @@ export SOLID = "solid": string
 export SURFACE = "surface": string
 
 /// Counterclockwise circular direction, currently used by `region()`.
-@(experimental = true)
 export CCW = "ccw": string
 
 /// Clockwise circular direction, currently used by `region()`.
-@(experimental = true)
 export CW = "cw": string
 
 /// Create a helix.
