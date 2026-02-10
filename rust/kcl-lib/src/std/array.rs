@@ -220,45 +220,60 @@ pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     if start.is_none() && end.is_none() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "The `slice` function requires at least one of `start` or `end`".to_owned(),
+            "Either `start` or `end` must be provided".to_owned(),
             vec![args.source_range],
         )));
     }
 
-    let len = array.len() as i64;
-    let mut start_idx = start.unwrap_or(0);
-    let mut end_idx = end.unwrap_or(len);
-
-    if start_idx < 0 {
-        start_idx += len;
-    }
-    if end_idx < 0 {
-        end_idx += len;
-    }
-
-    if start_idx < 0 || start_idx > len {
+    let Ok(len) = i64::try_from(array.len()) else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Slice start index {start_idx} is out of bounds for array of length {len}"),
+            format!("Array length {} exceeds maximum supported length", array.len()),
+            vec![args.source_range],
+        )));
+    };
+    let mut computed_start = start.unwrap_or(0);
+    let mut computed_end = end.unwrap_or(len);
+
+    if computed_start < 0 {
+        computed_start += len;
+    }
+    if computed_end < 0 {
+        computed_end += len;
+    }
+
+    if let Some(start) = start
+        && (computed_start < 0 || computed_start >= len)
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Slice start index {start} is out of bounds for array of length {len}"),
             vec![args.source_range],
         )));
     }
-    if end_idx < 0 || end_idx > len {
+    if let Some(end) = end
+        && (computed_end < 0 || computed_end > len)
+    {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Slice end index {end_idx} is out of bounds for array of length {len}"),
-            vec![args.source_range],
-        )));
-    }
-    if start_idx > end_idx {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Slice start index {start_idx} must be less than or equal to end index {end_idx}"
-            ),
+            format!("Slice end index {end} is out of bounds for array of length {len}"),
             vec![args.source_range],
         )));
     }
 
-    let slice = array[start_idx as usize..end_idx as usize].to_vec();
-    Ok(KclValue::HomArray { value: slice, ty })
+    if computed_start >= computed_end {
+        return Ok(KclValue::HomArray { value: Vec::new(), ty });
+    }
+
+    let Some(sliced) = array.get(computed_start as usize..computed_end as usize) else {
+        let message = "Failed to compute array slice".to_owned();
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message,
+            vec![args.source_range],
+        )));
+    };
+    Ok(KclValue::HomArray {
+        value: sliced.to_vec(),
+        ty,
+    })
 }
 
 pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
