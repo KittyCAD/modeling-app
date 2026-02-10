@@ -384,6 +384,23 @@ sketch(on = XY) {
       await toolbar.openFeatureTreePane()
     })
 
+    // TODO: figure out why this is needed for frontend's deleteObjects to work
+    await test.step('Enter sketch edit mode and exit it', async () => {
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
+        'Solve Sketch',
+        0
+      )
+      await solveSketchOperation.dblclick()
+      await page.waitForTimeout(1000)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await toolbar.exitSketchBtn.click()
+      await page.waitForTimeout(1000)
+      await expect(toolbar.startSketchBtn).toBeEnabled()
+    })
+
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
@@ -391,7 +408,7 @@ sketch(on = XY) {
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await page.waitForTimeout(1000)
       await editor.expectEditor.not.toContain('sketch2::horizontal(line1)')
     })
 
@@ -402,7 +419,7 @@ sketch(on = XY) {
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await page.waitForTimeout(1000)
       await editor.expectEditor.not.toContain(
         'sketch2::coincident([line2.start, line1.end])'
       )
@@ -412,7 +429,6 @@ sketch(on = XY) {
       const op = await toolbar.getFeatureTreeOperation('Solve Sketch', 0)
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch(on')
     })
   })

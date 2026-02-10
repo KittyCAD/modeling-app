@@ -90,44 +90,32 @@ async fn inner_datum(
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let feature_control = AnnotationFeatureControl::builder()
+        .entity_id(face_id)
+        // Point to the center of the face.
+        .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+        .leader_type(AnnotationLineEnd::Dot)
+        .defined_datum(name_char)
+        .plane_id(frame_plane.id)
+        .offset(if let Some(offset) = &frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .precision(0)
+        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions {
-                        text: None,
-                        line_ends: None,
-                        line_width: None,
-                        color: None,
-                        position: None,
-                        dimension: None,
-                        feature_control: Some(AnnotationFeatureControl {
-                            entity_id: face_id,
-                            // Point to the center of the face.
-                            entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                            leader_type: AnnotationLineEnd::Dot,
-                            dimension: None,
-                            control_frame: None,
-                            defined_datum: Some(name_char),
-                            prefix: None,
-                            suffix: None,
-                            plane_id: frame_plane.id,
-                            offset: if let Some(offset) = &frame_position {
-                                KPoint2d {
-                                    x: offset[0].to_mm(),
-                                    y: offset[1].to_mm(),
-                                }
-                            } else {
-                                KPoint2d { x: 100.0, y: 100.0 }
-                            },
-                            precision: 0,
-                            font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                            font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
-                            leader_scale: leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                        }),
-                        feature_tag: None,
-                    })
+                    .options(AnnotationOptions::builder().feature_control(feature_control).build())
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -210,56 +198,38 @@ async fn inner_flatness(
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         let meta = vec![Metadata::from(args.source_range)];
         let annotation_id = exec_state.next_uuid();
+        let feature_control = AnnotationFeatureControl::builder()
+            .entity_id(face_id)
+            // Point to the center of the face.
+            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+            .leader_type(AnnotationLineEnd::Dot)
+            .control_frame(
+                AnnotationMbdControlFrame::builder()
+                    .symbol(MbdSymbol::Flatness)
+                    .tolerance(tolerance.to_mm())
+                    .build(),
+            )
+            .plane_id(frame_plane.id)
+            .offset(if let Some(offset) = &frame_position {
+                KPoint2d {
+                    x: offset[0].to_mm(),
+                    y: offset[1].to_mm(),
+                }
+            } else {
+                KPoint2d { x: 100.0, y: 100.0 }
+            })
+            .precision(precision)
+            .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .build();
+        let options = AnnotationOptions::builder().feature_control(feature_control).build();
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
                 ModelingCmd::from(
                     mcmd::NewAnnotation::builder()
-                        .options(AnnotationOptions {
-                            text: None,
-                            line_ends: None,
-                            line_width: None,
-                            color: None,
-                            position: None,
-                            dimension: None,
-                            feature_control: Some(AnnotationFeatureControl {
-                                entity_id: face_id,
-                                // Point to the center of the face.
-                                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                                leader_type: AnnotationLineEnd::Dot,
-                                dimension: None,
-                                control_frame: Some(AnnotationMbdControlFrame {
-                                    symbol: MbdSymbol::Flatness,
-                                    diameter_symbol: None,
-                                    tolerance: tolerance.to_mm(),
-                                    modifier: None,
-                                    primary_datum: None,
-                                    secondary_datum: None,
-                                    tertiary_datum: None,
-                                }),
-                                defined_datum: None,
-                                prefix: None,
-                                suffix: None,
-                                plane_id: frame_plane.id,
-                                offset: if let Some(offset) = &frame_position {
-                                    KPoint2d {
-                                        x: offset[0].to_mm(),
-                                        y: offset[1].to_mm(),
-                                    }
-                                } else {
-                                    KPoint2d { x: 100.0, y: 100.0 }
-                                },
-                                precision,
-                                font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                                font_point_size: style
-                                    .font_point_size
-                                    .as_ref()
-                                    .map(|n| n.n.round() as u32)
-                                    .unwrap_or(36),
-                                leader_scale: leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                            }),
-                            feature_tag: None,
-                        })
+                        .options(options)
                         .clobber(false)
                         .annotation_type(AnnotationType::T3D)
                         .build(),
