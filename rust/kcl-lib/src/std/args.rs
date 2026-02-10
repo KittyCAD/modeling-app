@@ -22,6 +22,7 @@ use crate::{
     front::Number,
     parsing::ast::types::TagNode,
     std::{
+        CircularDirection,
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
         sweep::SweepPath,
@@ -603,6 +604,17 @@ impl<'a> FromKclValue<'a> for BodyType {
     }
 }
 
+impl<'a> FromKclValue<'a> for CircularDirection {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let dir = match arg.as_str()? {
+            "ccw" => Self::Counterclockwise,
+            "cw" => Self::Clockwise,
+            _ => return None,
+        };
+        Some(dir)
+    }
+}
+
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
@@ -693,6 +705,30 @@ impl<'a> FromKclValue<'a> for FaceTag {
             Some(Self::Tag(Box::new(tag)))
         };
         case1().or_else(case2)
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::faces::FaceSpecifier {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        FaceTag::from_kcl_val(arg)
+            .map(super::faces::FaceSpecifier::FaceTag)
+            .or_else(|| {
+                crate::execution::Segment::from_kcl_val(arg)
+                    .map(Box::new)
+                    .map(super::faces::FaceSpecifier::Segment)
+            })
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Segment {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Segment { value } => match &value.repr {
+                crate::execution::SegmentRepr::Unsolved { .. } => None,
+                crate::execution::SegmentRepr::Solved { segment, .. } => Some(segment.as_ref().to_owned()),
+            },
+            _ => None,
+        }
     }
 }
 
