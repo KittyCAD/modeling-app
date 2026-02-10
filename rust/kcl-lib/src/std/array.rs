@@ -213,6 +213,54 @@ fn inner_concat(
     KclValue::HomArray { value: new, ty }
 }
 
+pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let start: Option<i64> = args.get_kw_arg_opt("start", &RuntimeType::count(), exec_state)?;
+    let end: Option<i64> = args.get_kw_arg_opt("end", &RuntimeType::count(), exec_state)?;
+
+    if start.is_none() && end.is_none() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The `slice` function requires at least one of `start` or `end`".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let len = array.len() as i64;
+    let mut start_idx = start.unwrap_or(0);
+    let mut end_idx = end.unwrap_or(len);
+
+    if start_idx < 0 {
+        start_idx += len;
+    }
+    if end_idx < 0 {
+        end_idx += len;
+    }
+
+    if start_idx < 0 || start_idx > len {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Slice start index {start_idx} is out of bounds for array of length {len}"),
+            vec![args.source_range],
+        )));
+    }
+    if end_idx < 0 || end_idx > len {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Slice end index {end_idx} is out of bounds for array of length {len}"),
+            vec![args.source_range],
+        )));
+    }
+    if start_idx > end_idx {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Slice start index {start_idx} must be less than or equal to end index {end_idx}"
+            ),
+            vec![args.source_range],
+        )));
+    }
+
+    let slice = array[start_idx as usize..end_idx as usize].to_vec();
+    Ok(KclValue::HomArray { value: slice, ty })
+}
+
 pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
     let mut flattened = Vec::new();

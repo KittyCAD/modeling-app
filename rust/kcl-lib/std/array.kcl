@@ -202,6 +202,41 @@ export fn concat(
   items: [any],
 ): [any] {}
 
+/// Get a subarray from `start` (inclusive) to `end` (exclusive).
+///
+/// Returns a new array containing the elements in the requested range.
+/// Negative indexes are supported. If an index is negative, its value is
+/// added to the length of the array before use.
+///
+/// If `start` is omitted, it defaults to `0`. If `end` is omitted, it
+/// defaults to the length of the array.
+///
+/// It is an error to omit both `start` and `end`.
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], start = 1, end = 3)
+/// assert(count(s), isEqualTo = 2)
+/// assert(s[0], isEqualTo = 2)
+/// assert(s[1], isEqualTo = 3)
+/// ```
+///
+/// ```kcl
+/// s = slice([1, 2, 3, 4, 5], end = -2)
+/// assert(count(s), isEqualTo = 3)
+/// assert(s[0], isEqualTo = 1)
+/// assert(s[1], isEqualTo = 2)
+/// assert(s[2], isEqualTo = 3)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn slice(
+  /// The array to slice.
+  @array: [any],
+  /// The starting index (inclusive). Defaults to `0`.
+  start?: number(Count),
+  /// The ending index (exclusive). Defaults to the array length.
+  end?: number(Count),
+): [any] {}
+
 /// Flatten an array by one level.
 ///
 /// Returns a new array where any nested arrays are expanded into the top-level

@@ -281,6 +281,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::array::concat(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::concat"),
         ),
+        ("array", "slice") => (
+            |e, a| Box::pin(crate::std::array::slice(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::array::slice"),
+        ),
         ("array", "flatten") => (
             |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::flatten"),

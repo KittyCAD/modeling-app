@@ -20,6 +20,7 @@ layout: manual
 | **Map a Collection**       | `list(map(lambda x: 2 * x, arr))`<br/>OR<br/>`[2 * x for x in arr]` | `map(arr, f = fn(@x) { return 2 * x })` |
 | **Reduce a Collection**    | <pre><code>result = 0<br/>for item in arr:<br/>    result += 2 * item</code></pre>OR<pre><code>from functools import reduce<br/>result = reduce(lambda sum, item: sum + 2 * item, arr, 0)</code></pre> | The accumulator parameter must be named `accum`. <pre><code>result = reduce(arr,<br/>               initial = 0,<br/>               f = fn(@item, accum) &lbrace; return accum + 2 * item &rbrace;)</code></pre> |
 | **Array Concatenation**    | `[1, 2, 3] + [4, 5, 6]` | `concat([1, 2, 3], items = [4, 5, 6])` |
+| **List Slicing**           | <pre><code>a[1:3]<br/>a[:3]<br/>a[2:]<br/>a[-3:-1]<br/>a[:]  # copy</code></pre> | <pre><code>slice(a, start = 1, end = 3)<br/>slice(a, end = 3)<br/>slice(a, start = 2)<br/>slice(a, start = -3, end = -1)<br/>a  // no copy needed; arrays are immutable<br/>// If you must force a new array:<br/>slice(a, start = 0, end = count(a))</code></pre> |
 | **Integer Division**       | `8 // 3`                        | `floor(8 / 3)` |
 | **Raise to a Power**       | `2**5`                          | `2^5`<br/>OR<br/>`pow(2, exp = 5)` |
 | **Minimum and Maximum**    | `min(x, y)`<br/>`max(a, b, c)`  | Varargs are still experimental, so use a single array argument.<br/>`min([x, y])`<br/>`max([a, b, c])` |
