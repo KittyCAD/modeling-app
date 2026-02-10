@@ -10,6 +10,7 @@ import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
@@ -64,7 +65,8 @@ export const useDefaultAreaLibrary = () => {
           Component: FeatureTreePane,
         },
         bodies: {
-          hide: () => false,
+          // TODO: Enable everywhere once bodies supports functions and imports
+          hide: () => !IS_STAGING_OR_DEBUG,
           Component: BodiesPane,
         },
         modeling: {
