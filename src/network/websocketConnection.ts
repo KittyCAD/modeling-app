@@ -32,6 +32,7 @@ export const createOnWebSocketOpen = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onWebSocketOpen = (event: Event) => {
+    token = ''
     // This is required for when the app is running stand-alone / within desktop app.
     // Otherwise when run in a browser, the token is sent implicitly via
     // the Cookie header.

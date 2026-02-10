@@ -111,7 +111,7 @@ export class Connection extends EventTarget {
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
     tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
-    callbackOnUnitTestingConnection?: () => void
+    callbackOnUnitTestingConnection?: (message: string) => void
     handleMessage: (event: MessageEvent<any>) => void
   }) {
     markOnce('code/startInitialEngineConnect')
@@ -150,7 +150,7 @@ export class Connection extends EventTarget {
     }
   }
 
-  connectUnitTesting(callback: () => void) {
+  connectUnitTesting(callback: (message: string) => void) {
     const url = withKittycadWebSocketURL(
       `?video_res_width=${256}&video_res_height=${256}`
     )
@@ -160,7 +160,7 @@ export class Connection extends EventTarget {
       this.send({
         type: 'headers',
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer `,
         },
       })
       this.deferredMediaStreamAndWebrtcStatsCollector?.resolve(true)
@@ -171,6 +171,16 @@ export class Connection extends EventTarget {
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('message', ((event: MessageEvent) => {
       const message: WebSocketResponse = JSON.parse(event.data)
+
+      if (!message.success && 'errors' in message) {
+        if (message.errors.length > 0) {
+          const firstError = message.errors[0]
+          if (firstError.error_code === 'auth_token_invalid') {
+            callback('auth_token_invalid')
+          }
+        }
+      }
+
       if (!('resp' in message)) return
 
       let resp = message.resp
@@ -186,7 +196,7 @@ export class Connection extends EventTarget {
 
         // Only fires on successful authentication.
         case 'ice_server_info':
-          callback()
+          callback('')
           return
       }
       if (!this.handleMessage) {
