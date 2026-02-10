@@ -726,9 +726,9 @@ function getLayoutMigrations(): LayoutMigrationMap {
       },
     ],
     [
-      'v2',
+      'v3',
       {
-        newVersion: 'v3',
+        newVersion: 'v4',
         transformationSets: [
           {
             matcher: (l) =>
