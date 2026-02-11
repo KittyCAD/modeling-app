@@ -226,6 +226,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

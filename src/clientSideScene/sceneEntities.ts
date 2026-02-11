@@ -4250,7 +4250,7 @@ function sketchFromPathToNode({
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
   const result = variables[varDec?.id?.name || '']
-  if (result?.type === 'Solid') {
+  if (result?.type === 'Solid' && result.value.sketch.creatorType == 'sketch') {
     return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)

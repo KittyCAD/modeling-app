@@ -27,7 +27,7 @@ import {
 import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v3'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
@@ -726,9 +726,9 @@ function getLayoutMigrations(): LayoutMigrationMap {
       },
     ],
     [
-      'v2',
+      'v3',
       {
-        newVersion: 'v3',
+        newVersion: 'v4',
         transformationSets: [
           {
             matcher: (l) =>
