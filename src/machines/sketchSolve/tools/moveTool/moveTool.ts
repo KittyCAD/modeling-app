@@ -312,22 +312,6 @@ export function findEntityUnderCursorId(
     }
   }
 
-  // const constraintHit = (intersects as any[]).find(
-  //     (intersect: any) =>
-  //       intersect.object?.userData?.type === 'distance-constraint-hit-area'
-  //   )
-  //   if (constraintHit) {
-  //     const constraintGroup = getParentGroup(constraintHit.object, [
-  //       'constraint',
-  //     ])
-  //     console.log('Constraint clicked:', {
-  //       constraintId: constraintGroup?.userData.object_id,
-  //       constraintType: constraintGroup?.userData.constraintType,
-  //       clickedOn: constraintHit.object.userData.subtype,
-  //     })
-  //     return
-  //   }
-
   // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
   const groupUnderCursor = getParentGroup(selected, [
     SEGMENT_TYPE_POINT,

@@ -505,9 +505,11 @@ export function updateSceneGraphFromDelta({
 
     // Render constraints
     if (obj.kind.type === 'Constraint') {
-      let constraintGroup = context.sceneInfra.scene.getObjectByName(
+      const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
-      ) as Group | null
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
       if (!constraintGroup) {
         constraintGroup = constraintUtils.init(obj, objects)
         if (constraintGroup) {
@@ -743,9 +745,11 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       return
     }
     if (obj.kind.type === 'Constraint') {
-      const constraintGroup = context.sceneInfra.scene.getObjectByName(
+      const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
-      ) as Group | null
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
         constraintUtils.update(
           constraintGroup,
@@ -820,7 +824,7 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
   const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
 
   const constraintGroups = sketchSolveGroup.children.filter(
-    (child) => child.userData.type === CONSTRAINT_TYPE
+    (child) => child.userData.type === CONSTRAINT_TYPE && child instanceof Group
   )
   constraintGroups.forEach((group) => {
     const objId = group.userData.object_id
