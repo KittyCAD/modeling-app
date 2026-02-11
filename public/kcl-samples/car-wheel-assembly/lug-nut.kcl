@@ -10,7 +10,7 @@ import * from "parameters.kcl"
 customPlane = {
   origin = {
     x = lugSpacing / 2,
-    y = (-tBell - 0.85) * 25.4,
+    y = -tBell - 0.85 - (lugLength * 25),
     z = 0
   },
   xAxis = { x = 1, y = 0, z = 0 },
