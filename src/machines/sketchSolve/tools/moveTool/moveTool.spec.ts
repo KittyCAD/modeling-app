@@ -1334,11 +1334,13 @@ describe('createOnClickCallback', () => {
   it('should select a segment when clicking on it to enable editing', async () => {
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
     const pointGroup = createPointSegmentGroup({ segmentId: 13 })
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1357,10 +1359,12 @@ describe('createOnClickCallback', () => {
   it('should clear selection when clicking on empty space to deselect all segments', async () => {
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1382,10 +1386,12 @@ describe('createOnClickCallback', () => {
     parentGroup.name = '42'
     const getParentGroup = vi.fn(() => parentGroup)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1407,10 +1413,12 @@ describe('createOnClickCallback', () => {
     nonSegmentGroup.userData = { type: 'other' }
     const getParentGroup = vi.fn(() => null)
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1434,10 +1442,12 @@ describe('createOnClickCallback', () => {
     pointGroup.add(handleChild)
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1459,10 +1469,12 @@ describe('createOnClickCallback', () => {
     lineGroup.userData = { type: 'LINE' }
     const getParentGroup = vi.fn()
     const onUpdateSelectedIds = vi.fn()
+    const onEditConstraint = vi.fn()
 
     const callback = createOnClickCallback({
       getParentGroup,
       onUpdateSelectedIds,
+      onEditConstraint,
     })
 
     await callback({
@@ -1484,12 +1496,14 @@ describe('createOnMouseEnterCallback', () => {
     const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
       updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1512,12 +1526,14 @@ describe('createOnMouseEnterCallback', () => {
     const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
       updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1535,12 +1551,14 @@ describe('createOnMouseEnterCallback', () => {
     const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
     const pointGroup = createPointSegmentGroup({ segmentId: 3 })
 
     const callback = createOnMouseEnterCallback({
       updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1558,12 +1576,14 @@ describe('createOnMouseEnterCallback', () => {
     const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [5, 13])
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 7 })
 
     const callback = createOnMouseEnterCallback({
       updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1585,11 +1605,13 @@ describe('createOnMouseEnterCallback', () => {
     const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseEnterCallback({
       updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1611,12 +1633,14 @@ describe('createOnMouseLeaveCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
       updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1641,12 +1665,14 @@ describe('createOnMouseLeaveCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
       updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1666,12 +1692,14 @@ describe('createOnMouseLeaveCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 7 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
       updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1694,12 +1722,14 @@ describe('createOnMouseLeaveCallback', () => {
     const getSelectedIds = vi.fn(() => [])
     const getLastHoveredMesh = vi.fn(() => null)
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
       updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({
@@ -1719,12 +1749,14 @@ describe('createOnMouseLeaveCallback', () => {
     const pointGroup = createPointSegmentGroup({ segmentId: 3 })
     const getLastHoveredMesh = vi.fn(() => null)
     const setLastHoveredMesh = vi.fn()
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
       updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
+      onUpdateHoveredId,
     })
 
     callback({

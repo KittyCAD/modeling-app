@@ -11,7 +11,7 @@ import {
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
-import { Group, OrthographicCamera, Mesh } from 'three'
+import { Group, Mesh } from 'three'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -29,7 +29,6 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
-import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -50,6 +49,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 export type EquipTool = keyof typeof equipTools
@@ -68,6 +68,7 @@ export type SpawnToolActor = <K extends EquipTool>(
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
+  | { type: 'camera scale change' }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {
@@ -86,6 +87,10 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids'
       data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
+    }
+  | {
+      type: 'update hovered id'
+      data: { hoveredId: number | null }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
@@ -113,6 +118,11 @@ export type SketchSolveMachineEvent =
     }
   | { type: 'clear draft entities' }
   | { type: 'delete draft entities' }
+  | {
+      type: 'start editing constraint'
+      data: { constraintId: number }
+    }
+  | { type: 'stop editing constraint' }
 
 type ToolActorRef =
   | ActorRefFrom<typeof dimensionTool>
@@ -140,6 +150,7 @@ export type SketchSolveContext = {
   pendingToolName?: EquipTool
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
+  hoveredId: number | null
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -148,6 +159,7 @@ export type SketchSolveContext = {
     segmentIds: Array<number>
     constraintIds: Array<number>
   }
+  editingConstraintId?: number
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchId: number
   // Dependencies passed from parent
@@ -437,15 +449,9 @@ export function updateSceneGraphFromDelta({
   duringAreaSelectIds: Array<number>
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
   const sketchSegments = context.sceneInfra.scene.children.find(
     ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
   )
@@ -486,9 +492,46 @@ export function updateSceneGraphFromDelta({
     if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
       return
     }
-    // sketch is no a drawable object, and
-    // TODO constraints have not been implemented yet
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    // sketch is not a drawable object
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+
+    // Combine selectedIds and duringAreaSelectIds for highlighting
+    const allSelectedIds = Array.from(
+      new Set([...selectedIds, ...duringAreaSelectIds])
+    )
+
+    // Render constraints
+    if (obj.kind.type === 'Constraint') {
+      const foundObject = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
+      if (!constraintGroup) {
+        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj, objects)
+        if (constraintGroup) {
+          const sketchSceneGroup =
+            context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+          if (sketchSceneGroup) {
+            constraintGroup.traverse((child) => child.layers.set(SKETCH_LAYER))
+            constraintGroup.layers.set(SKETCH_LAYER)
+            sketchSceneGroup.add(constraintGroup)
+          }
+        }
+      }
+      if (constraintGroup) {
+        segmentUtilsMap.DimensionConstraint.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra,
+          selectedIds,
+          context.hoveredId
+        )
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
@@ -527,11 +570,6 @@ export function updateSceneGraphFromDelta({
     if (!ctor) {
       return
     }
-
-    // Combine selectedIds and duringAreaSelectIds for highlighting
-    const allSelectedIds = Array.from(
-      new Set([...selectedIds, ...duringAreaSelectIds])
-    )
 
     // Get draft entity IDs from context
     const draftEntityIds = context.draftEntities
@@ -687,15 +725,9 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
-  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-  const factor =
-    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-    !context.sceneEntitiesManager.axisGroup
-      ? orthoFactor
-      : perspScale(
-          context.sceneInfra.camControls.camera,
-          context.sceneEntitiesManager.axisGroup
-        )) / context.sceneInfra.baseUnitMultiplier
+  const factor = context.sceneInfra.getClientSceneScaleFactor(
+    context.sceneEntitiesManager.axisGroup
+  )
 
   // Combine selectedIds and duringAreaSelectIds for highlighting
   const allSelectedIds = Array.from(
@@ -708,7 +740,26 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     : undefined
 
   sceneGraphDelta.new_graph.objects.forEach((obj) => {
-    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+    if (obj.kind.type === 'Sketch') {
+      return
+    }
+    if (obj.kind.type === 'Constraint') {
+      const foundObject = context.sceneInfra.scene.getObjectByName(
+        String(obj.id)
+      )
+      let constraintGroup: Group | null =
+        foundObject instanceof Group ? foundObject : null
+      if (constraintGroup) {
+        segmentUtilsMap.DimensionConstraint.update(
+          constraintGroup,
+          obj,
+          objects,
+          factor,
+          context.sceneInfra,
+          allSelectedIds,
+          context.hoveredId
+        )
+      }
       return
     }
     const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
@@ -759,6 +810,36 @@ export function initializeInitialSceneGraph({
     }
   }
   return {}
+}
+
+export function onCameraScaleChange({ context }: SolveActionArgs): void {
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (!sketchSolveGroup || !context.sketchExecOutcome?.sceneGraphDelta) {
+    return
+  }
+
+  const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
+  const scaleFactor = context.sceneInfra.getClientSceneScaleFactor()
+
+  const constraintGroups = sketchSolveGroup.children.filter(
+    (child) => child.userData.type === CONSTRAINT_TYPE && child instanceof Group
+  )
+  constraintGroups.forEach((group) => {
+    const objId = group.userData.object_id
+    const obj = objects[objId]
+    if (obj) {
+      segmentUtilsMap.DimensionConstraint.update(
+        group as Group,
+        obj,
+        objects,
+        scaleFactor,
+        context.sceneInfra,
+        context.selectedIds,
+        context.hoveredId
+      )
+    }
+  })
 }
 
 // Debounced editor update function - persists across calls
