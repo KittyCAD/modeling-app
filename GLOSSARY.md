@@ -80,22 +80,22 @@ An Area housing a chat interface with our AI agent. From it you can ask question
 
 ![Zookeeper](/public/glossary/zookeeper.png)
 
-## Prompt
+### Prompt
 
 The message or instruction you send to Zookeeper. Prompts can be questions, requests to generate or edit geometry, or anything else you want the agent to do.
 
-## Response
+### Response
 
 The message Zookeeper sends back after processing a prompt. Responses can include explanations, questions, or actions taken in the project. Zookeeper may suggest next steps as followup edits to the response.
 
-## Tool
+### Tool
 
 A specific capability Zookeeper can use to do something in Design Studio, like creating geometry, editing a feature, or reading project state.
 
-## Cancel
+### Cancel
 
 Stops the current Zookeeper operation. Use this when you don't want the current request to finish.
 
-## Reasoning
+### Reasoning
 
 The internal process Zookeeper uses to decide what to do. This is not always shown directly, but it influences the response and the actions taken.
