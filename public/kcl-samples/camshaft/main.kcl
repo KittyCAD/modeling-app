@@ -23,22 +23,30 @@ camSpacing = 0.50
 
 // Write a function to sketch a cam lobe profile given the specified parameters
 fn lobe(duration, lift) {
-  camProfile = startSketchOn(offsetPlane(XY, offset = supportBearingWidth * 2))
-    |> startProfile(at = polar(angle = 90 + duration / 4, length = baseCircle / 2))
-    |> arc(interiorAbsolute = [0, -baseCircle / 2], endAbsolute = polar(angle = 90 - (duration / 4), length = baseCircle / 2), tag = $seg02)
-    |> angledLine(angle = tangentToEnd(seg02), endAbsoluteY = baseCircle / 2 + lift, tag = $seg04)
-    |> xLine(endAbsolute = 0, tag = $seg03)
-    |> xLine(length = -segLen(seg03), tag = $seg01)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg05)
+  camSketch = startSketchOn(offsetPlane(XY, offset = supportBearingWidth * 2))
+
+  rb = baseCircle / 2
+  theta = duration / 2
+  liftY = rb + lift
+
+  // Choose nose radius
+  rn = rb * 0.35
+  noseCenter = [0, liftY - rn]
+
+  // Choose where the flank meets the nose (tuning knob)
+  phi = 35deg
+  noseJoin = [
+    rn * sin(phi),
+    liftY - rn + rn * cos(phi)
+  ]
+
+  camProfile = startProfile(camSketch, at = polar(angle = 90 + theta / 2, length = rb))
+    |> arc(interiorAbsolute = [0, -rb], endAbsolute = polar(angle = 90 - (theta / 2), length = rb), tag = $baseArc)
+    |> tangentialArc(endAbsolute = noseJoin, tag = $rightFlank)
+    |> tangentialArc(endAbsolute = [-noseJoin[0], noseJoin[1]], tag = $noseArc)
+    |> tangentialArc(endAbsolute = [profileStartX(), profileStartY()], tag = $leftFlank)
     |> close()
     |> extrude(length = camHeight)
-    |> fillet(
-         tags = [
-           getCommonEdge(faces = [seg04, seg03]),
-           getCommonEdge(faces = [seg01, seg05])
-         ],
-         radius = min([segLen(seg03), segLen(seg04)]) * 0.99,
-       )
     |> rotate(yaw = intakeCenterline)
 
   return camProfile
