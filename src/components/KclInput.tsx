@@ -117,7 +117,7 @@ export function KclInput(props: {
         // Allow middle mouse for panning camera, don't cancel
         return
       }
-      if (!containerRef.current?.contains(e.target as Node)) {
+      if (!(e.target instanceof Node) || !containerRef.current?.contains(e.target)) {
         props.onCancel()
       }
     }
