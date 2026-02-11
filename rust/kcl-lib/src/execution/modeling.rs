@@ -210,13 +210,19 @@ impl ExecState {
         let mut ids = Vec::new();
         for solid in solids {
             // We need to traverse the solids that share the same sketch.
-            let sketch_id = solid.sketch.id;
+            let sketch_id = solid.sketch_id().unwrap_or(solid.id);
             if !traversed_sketches.contains(&sketch_id) {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     self.stack()
                         .walk_call_stack()
-                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
+                        .filter(|v| {
+                            matches!(
+                                v,
+                                KclValue::Solid { value }
+                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
+                            )
+                        })
                         .flat_map(|v| match v {
                             KclValue::Solid { value } => value.get_all_edge_cut_ids(),
                             _ => unreachable!(),

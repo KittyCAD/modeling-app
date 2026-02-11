@@ -247,6 +247,7 @@ description: Variables in memory after executing extrude_face.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

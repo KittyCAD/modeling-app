@@ -67,7 +67,7 @@ impl Geometry {
     pub fn original_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.sketch.original_id,
+            Geometry::Solid(e) => e.original_id(),
         }
     }
 }
@@ -914,7 +914,7 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
-                Some(Geometry::Solid(solid)) => Some(solid.sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
         }
@@ -925,7 +925,10 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => sketch.is_closed,
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
-                Some(Geometry::Solid(solid)) => solid.sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
         }
@@ -1053,8 +1056,9 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch.
-    pub sketch: Sketch,
+    /// How this solid was created.
+    #[serde(rename = "sketch")]
+    pub creator: SolidCreator,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -1071,7 +1075,55 @@ pub struct Solid {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorFace {
+    /// The face id that served as the base.
+    pub face_id: uuid::Uuid,
+    /// The solid id that owned the face.
+    pub solid_id: uuid::Uuid,
+    /// The sketch used for the operation.
+    pub sketch: Sketch,
+}
+
+/// How a solid was created.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "creatorType", rename_all = "camelCase")]
+pub enum SolidCreator {
+    /// Created from a sketch.
+    Sketch(Sketch),
+    /// Created by extruding or modifying a face.
+    Face(CreatorFace),
+    /// Created procedurally without a sketch.
+    Procedural,
+}
+
 impl Solid {
+    pub fn sketch(&self) -> Option<&Sketch> {
+        match &self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_mut(&mut self) -> Option<&mut Sketch> {
+        match &mut self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_id(&self) -> Option<uuid::Uuid> {
+        self.sketch().map(|sketch| sketch.id)
+    }
+
+    pub fn original_id(&self) -> uuid::Uuid {
+        self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
     }
