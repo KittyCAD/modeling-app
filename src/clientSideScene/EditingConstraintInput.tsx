@@ -1,6 +1,7 @@
 import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useSingletons } from '@src/lib/boot'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -19,8 +20,9 @@ export const EditingConstraintInput = () => {
   const editingConstraintId = useSelector(
     state.children.sketchSolveMachine,
     (snapshot) =>
-      (snapshot as SnapshotFrom<typeof sketchSolveMachine>)?.context
-        ?.editingConstraintId
+      isSketchSolveSnapshot(snapshot)
+        ? snapshot.context.editingConstraintId
+        : undefined
   )
 
   const [position, setPosition] = useState<[number, number]>(() => {
@@ -65,12 +67,12 @@ export const EditingConstraintInput = () => {
       sketchSolveActor?.send({ type: 'stop editing constraint' })
 
       try {
-        const snapshot = sketchSolveActor?.getSnapshot() as
-          | SnapshotFrom<typeof sketchSolveMachine>
-          | undefined
-        const sketchId = snapshot?.context?.sketchId ?? 0
+        const snapshot = sketchSolveActor?.getSnapshot()
+        const sketchId = isSketchSolveSnapshot(snapshot)
+          ? snapshot.context.sketchId
+          : 0
         const result = await rustContext.editConstraint(
-          0,
+          SKETCH_FILE_VERSION,
           sketchId,
           editingConstraintId!,
           value,
@@ -105,6 +107,20 @@ export const EditingConstraintInput = () => {
       onCancel={onEditCancel}
     />
   ) : null
+}
+
+function isSketchSolveSnapshot(
+  snapshot: unknown
+): snapshot is SnapshotFrom<typeof sketchSolveMachine> {
+  return !!(
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'context' in snapshot &&
+    snapshot.context &&
+    typeof snapshot.context === 'object' &&
+    'editingConstraintId' in snapshot.context &&
+    'sketchId' in snapshot.context
+  )
 }
 
 function getInitialDimension(
