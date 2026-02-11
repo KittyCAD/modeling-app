@@ -22,7 +22,7 @@ use crate::{
     },
     front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef},
+    parsing::ast::types::{Annotation, NodeRef, TagNode},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
@@ -160,6 +160,7 @@ pub(crate) struct SketchBlockState {
     pub solver_constraints: Vec<kcl_ezpz::Constraint>,
     pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
+    pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
 
 impl ExecState {
@@ -835,7 +836,7 @@ impl SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
-        solve_outcome: Solved,
+        solve_outcome: &Solved,
         solution_ty: NumericType,
         range: SourceRange,
     ) -> Result<Vec<(SourceRange, Number)>, KclError> {

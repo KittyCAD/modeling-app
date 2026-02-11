@@ -238,6 +238,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
