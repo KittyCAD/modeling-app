@@ -2189,9 +2189,6 @@ fn to_stdlib_identifier_segments(path_str: &str) -> Vec<String> {
 /// Given an import path, is it a safe identifier? We support Unicode
 /// identifiers.
 fn is_path_safe_identifier(path_str: &str) -> bool {
-    if path_str.starts_with("_") || path_str.starts_with(is_char_ascii_digit) {
-        return false;
-    }
     if is_stdlib_import_path(path_str) {
         // stdlib case
         let segments = to_stdlib_identifier_segments(path_str);
@@ -2200,14 +2197,18 @@ fn is_path_safe_identifier(path_str: &str) -> bool {
         let Some(name) = segments.last() else {
             return false;
         };
-        return !name.starts_with('_') && name.chars().all(|c| c.is_alphanumeric() || c == '_');
+        return !name.starts_with('_')
+            && !name.starts_with(is_char_ascii_digit)
+            && name.chars().all(|c| c.is_alphanumeric() || c == '_');
     }
     // Non-stdlib case
     let typed_path = TypedPath::new(path_str);
     let Some(name) = ImportStatement::non_std_module_name(&typed_path) else {
         return false;
     };
-    name.chars().all(|c| c.is_alphanumeric() || c == '_')
+    !name.starts_with('_')
+        && !name.starts_with(is_char_ascii_digit)
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
 }
 
 /// Validates the path string in an `import` statement.
