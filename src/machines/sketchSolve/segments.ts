@@ -1138,8 +1138,8 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+  DimensionConstraint: new ConstraintUtils(),
 }
-export const constraintUtils = new ConstraintUtils()
 
 /**
  * Similar to src/clientSideScene/segments.ts / createArcGeometry, but:

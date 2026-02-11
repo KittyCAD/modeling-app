@@ -7,7 +7,6 @@ import type {
   Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  constraintUtils,
   segmentUtilsMap,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
@@ -511,7 +510,7 @@ export function updateSceneGraphFromDelta({
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (!constraintGroup) {
-        constraintGroup = constraintUtils.init(obj, objects)
+        constraintGroup = segmentUtilsMap.DimensionConstraint.init(obj, objects)
         if (constraintGroup) {
           const sketchSceneGroup =
             context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
@@ -523,7 +522,7 @@ export function updateSceneGraphFromDelta({
         }
       }
       if (constraintGroup) {
-        constraintUtils.update(
+        segmentUtilsMap.DimensionConstraint.update(
           constraintGroup,
           obj,
           objects,
@@ -751,7 +750,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       let constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
-        constraintUtils.update(
+        segmentUtilsMap.DimensionConstraint.update(
           constraintGroup,
           obj,
           objects,
@@ -830,7 +829,7 @@ export function onCameraScaleChange({ context }: SolveActionArgs): void {
     const objId = group.userData.object_id
     const obj = objects[objId]
     if (obj) {
-      constraintUtils.update(
+      segmentUtilsMap.DimensionConstraint.update(
         group as Group,
         obj,
         objects,
