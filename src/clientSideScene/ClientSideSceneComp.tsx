@@ -42,6 +42,7 @@ import {
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -200,6 +201,7 @@ export const ClientSideScene = ({
       ></div>
       <Overlays />
       <SketchSolveToolIconOverlay />
+      <EditingConstraintInput />
     </>
   )
 }
