@@ -18,7 +18,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 ## Code style
 
 - Format code using the nightly toolchain: `cargo +nightly fmt`.
-- Follow clippy lints: `just lint`.
+- Follow clippy lints: `just lint`. If the git stage is clean (i.e. there aren't any unstaged changes), you can run `just lint-fix` to automatically apply most lints.
 
 ## Build and test
 
@@ -30,19 +30,19 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 
 ## Simulation tests
 
-- Create a new sim test: `just new-sim-test foo_bar`
+- Create a new sim test: `just new-sim-test foo_bar` (this creates a directory for your sim test like `kcl-lib/tests/foo/`, with an empty `input.kcl` that you should put code in).
 - Run/update the sim test: `just overwrite-sim-test foo_bar`
 - Inspect generated outputs and check for `execution_error.snap` before committing.
 
 ## Python bindings
 
 - Uses `maturin` (install via `pipx install maturin` or `pip install maturin`).
-- Common commands: `maturin build`, `maturin develop`, `maturin publish`.
+- Common commands: Check the `kcl-python-bindings/justfile` 
 
 ## Standard library contributions (kcl-lib)
 
 - Add new functions in `rust/kcl-lib/kcl/src/std` near similar entries.
-- Provide doc comments with at least one example.
+- Provide doc comments with at least one example. When adding new examples in the KCL docs, you must register them in `example_tests.rs` under `const TEST_NAMES`.
 - Add the function to the `std_fn` list in `rust/kcl-lib/src/std/mod.rs`.
 - After changes, run snapshot tests and regenerate stdlib docs.
 
