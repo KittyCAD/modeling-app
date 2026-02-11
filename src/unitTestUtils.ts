@@ -110,7 +110,9 @@ export async function buildTheWorldAndConnectToEngine() {
             const reason =
               'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
             reject(reason)
-          } else {
+          }
+
+          if (message === 'auth success') {
             resolve(true)
             console.log('unit test connected!')
           }

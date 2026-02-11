@@ -171,7 +171,6 @@ export class Connection extends EventTarget {
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('message', ((event: MessageEvent) => {
       const message: WebSocketResponse = JSON.parse(event.data)
-
       if (!message.success && 'errors' in message) {
         if (message.errors.length > 0) {
           const firstError = message.errors[0]
@@ -196,7 +195,7 @@ export class Connection extends EventTarget {
 
         // Only fires on successful authentication.
         case 'ice_server_info':
-          callback('')
+          callback('auth success')
           return
       }
       if (!this.handleMessage) {
