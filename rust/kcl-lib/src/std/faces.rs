@@ -74,6 +74,12 @@ pub(super) async fn make_face(
         )));
     };
     let extrude_plane_id = face.face_id(&solid, exec_state, args, true).await?;
+    let sketch = solid.sketch().ok_or_else(|| {
+        KclError::new_type(crate::errors::KclErrorDetails::new(
+            "This solid was created without a sketch, so its face axes are unavailable.".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
 
     let object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
@@ -95,8 +101,8 @@ pub(super) async fn make_face(
         object_id,
         value: tag_name,
         // TODO: get this from the extrude plane data.
-        x_axis: solid.sketch.on.x_axis(),
-        y_axis: solid.sketch.on.y_axis(),
+        x_axis: sketch.on.x_axis(),
+        y_axis: sketch.on.y_axis(),
         units: solid.units,
         solid,
         meta: vec![args.source_range.into()],

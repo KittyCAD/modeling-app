@@ -44,6 +44,7 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -210,6 +211,7 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -335,6 +337,7 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
