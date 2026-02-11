@@ -900,7 +900,14 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
+    let face = args.get_kw_arg_opt(
+        "face",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::TaggedFace),
+            RuntimeType::Primitive(PrimitiveType::Segment),
+        ]),
+        exec_state,
+    )?;
     let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
     let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
     let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
