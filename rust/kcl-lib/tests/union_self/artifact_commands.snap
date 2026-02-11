@@ -223,7 +223,6 @@ description: Artifact commands union_self.kcl
                 "w": 45.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

@@ -3,6 +3,7 @@ import type { MouseEventHandler, useMemo } from 'react'
 
 export enum AreaType {
   TTC = 'ttc',
+  Bodies = 'bodies',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Bodies = 'bodies',

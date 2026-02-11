@@ -151,7 +151,7 @@ function testArea(name: string): AreaTypeDefinition {
 
 export const testAreaLibrary = Object.freeze({
   featureTree: testArea('Feature Tree'),
-  bodies: testArea('Bodies'),
+  bodies: testArea('bodies'),
   modeling: testArea('Modeling Scene'),
   ttc: testArea('TTC'),
   codeEditor: testArea('Code Editor'),

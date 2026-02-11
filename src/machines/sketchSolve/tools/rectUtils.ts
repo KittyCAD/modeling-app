@@ -9,6 +9,8 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import type { Coords2d } from '@src/lang/util'
+import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
+import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -73,10 +75,12 @@ export async function createDraftRectangle({
   rustContext,
   kclManager,
   sketchId,
+  mode,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  mode: RectOriginMode
 }): Promise<{
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -177,7 +181,7 @@ export async function createDraftRectangle({
   // - Sides (line2/right, line4/left) are parallel
   // - Top/bottom (line3/top, line1/bottom) are parallel
   // - Bottom (line1) is perpendicular to right (line2)
-  // - Top (line3) is horizontal (fixes overall orientation)
+  // - Top (line3) is horizontal (fixes overall orientation for axis-aligned modes)
   const parallelSides = await addTwoLineConstraint({
     type: 'Parallel',
     lines: [line2.lineId, line4.lineId],
@@ -199,19 +203,28 @@ export async function createDraftRectangle({
     sketchId,
     settings,
   })
-  const topHorizontal = await addSingleLineConstraint({
-    type: 'Horizontal',
-    line: line3.lineId,
-    rustContext,
-    sketchId,
-    settings,
-  })
+
   constraintIds.push(
     parallelSides.constraintId,
     parallelTopBottom.constraintId,
-    perpendicularBottomRight.constraintId,
-    topHorizontal.constraintId
+    perpendicularBottomRight.constraintId
   )
+
+  let lastOperation = perpendicularBottomRight
+
+  // Keep existing axis-aligned behavior for corner/center.
+  // Angled mode omits this orientation lock so the rectangle can rotate.
+  if (mode !== 'angled') {
+    const topHorizontal = await addSingleLineConstraint({
+      type: 'Horizontal',
+      line: line3.lineId,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    constraintIds.push(topHorizontal.constraintId)
+    lastOperation = topHorizontal
+  }
 
   const segmentIds = [
     line1.lineId,
@@ -228,8 +241,6 @@ export async function createDraftRectangle({
     end4,
   ]
 
-  const lastOperation = topHorizontal
-
   return {
     // Return the latest delta so the caller has all new ids
     kclSource: lastOperation.kclSource,
@@ -242,7 +253,8 @@ export async function createDraftRectangle({
   }
 }
 
-export async function updateDraftRectangle({
+// Updates draft rectangle for center and corner rectangles.
+export async function updateDraftRectangleAligned({
   rustContext,
   kclManager,
   sketchId,
@@ -266,12 +278,133 @@ export async function updateDraftRectangle({
   )
   const settings = await jsAppSettings(rustContext.settingsActor)
 
-  const [line1Id, line2Id, line3Id, line4Id] = draft.lineIds
+  return updateDraftRectangleFromCorners({
+    rustContext,
+    sketchId,
+    settings,
+    draft,
+    units,
+    corners: getAxisAlignedRectangleCorners(rect),
+  })
+}
 
+function getAxisAlignedRectangleCorners(rect: {
+  min: Coords2d
+  max: Coords2d
+}): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
   const start1: Coords2d = [rect.min[0], rect.min[1]]
   const start2: Coords2d = [rect.max[0], rect.min[1]]
   const start3: Coords2d = [rect.max[0], rect.max[1]]
   const start4: Coords2d = [rect.min[0], rect.max[1]]
+  return { start1, start2, start3, start4 }
+}
+
+// Updates draft rectangle for angled (rotated) rectangle
+export async function updateDraftRectangleAngled({
+  rustContext,
+  kclManager,
+  sketchId,
+  draft,
+  p1,
+  p2,
+  p3,
+}: {
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  draft: RectDraftIds
+  p1: Coords2d
+  p2: Coords2d
+  p3: Coords2d
+}): Promise<{
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+}> {
+  const units = baseUnitToNumericSuffix(
+    kclManager.fileSettings.defaultLengthUnit
+  )
+  const settings = await jsAppSettings(rustContext.settingsActor)
+
+  return updateDraftRectangleFromCorners({
+    rustContext,
+    sketchId,
+    settings,
+    draft,
+    units,
+    corners: getAngledRectangleCorners({
+      p1,
+      p2,
+      p3,
+    }),
+  })
+}
+
+// Returns a rotated rectangle from 3 points:
+// - first 2 points define a side of the rectangle
+// - third point defines the length of the other side of the rectangle
+export function getAngledRectangleCorners({
+  p1,
+  p2,
+  p3,
+}: {
+  p1: Coords2d
+  p2: Coords2d
+  p3: Coords2d
+}): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  const side = subVec(p2, p1)
+  const sideLength = Math.hypot(side[0], side[1])
+
+  // Unit normal to the first side: rotate 90deg
+  const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
+
+  // Signed perpendicular distance from the third point to segment (p1, p2).
+  const p1p3 = subVec(p3, p1)
+  const offsetLength = dot2d(p1p3, normal)
+  const offset = scaleVec(normal, offsetLength)
+
+  const start1: Coords2d = p1
+  const start2: Coords2d = p2
+  const start3: Coords2d = addVec(p2, offset)
+  const start4: Coords2d = addVec(p1, offset)
+
+  return { start1, start2, start3, start4 }
+}
+
+async function updateDraftRectangleFromCorners({
+  rustContext,
+  sketchId,
+  settings,
+  draft,
+  units,
+  corners,
+}: {
+  rustContext: RustContext
+  sketchId: number
+  settings: AppSettings
+  draft: RectDraftIds
+  units: NumericSuffix
+  corners: {
+    start1: Coords2d
+    start2: Coords2d
+    start3: Coords2d
+    start4: Coords2d
+  }
+}): Promise<{
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+}> {
+  const [line1Id, line2Id, line3Id, line4Id] = draft.lineIds
+  const { start1, start2, start3, start4 } = corners
 
   const edits = [
     {
@@ -292,9 +425,7 @@ export async function updateDraftRectangle({
     },
   ]
 
-  const result = await rustContext.editSegments(0, sketchId, edits, settings)
-
-  return result
+  return rustContext.editSegments(0, sketchId, edits, settings)
 }
 
 function makeVarExpr(value: number, units: NumericSuffix) {

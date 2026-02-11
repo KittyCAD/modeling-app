@@ -157,9 +157,11 @@ jobs:
         if: matrix.target == 'arm-unknown-linux-gnueabihf'
         run: sudo apt-get install gcc-arm-linux-gnueabihf
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
@@ -235,9 +237,11 @@ jobs:
           rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server

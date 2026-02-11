@@ -1,0 +1,72 @@
+// Contra-Rotor Module
+// Shaft, spine teeth, and sample instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Revolve the contra-shaft
+shaft = startSketchOn(YZ)
+  |> startProfile(at = [-100, 100])
+  |> yLine(endAbsolute = 150)
+  |> xLine(length = -200)
+  |> yLine(endAbsolute = 80)
+  |> xLine(length = -250)
+  |> yLine(endAbsolute = 30, tag = $seg01)
+  |> xLine(length = 370)
+  |> yLine(length = 20)
+  |> tangentialArc(angle = -45deg, radius = 10, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), length = 60)
+  |> yLine(endAbsolute = profileStartY())
+  |> xLine(endAbsolute = profileStartX())
+  |> close()
+  |> revolve(axis = X)
+
+// Spline shaft inputs
+toothWidth = 10
+toothHeight = 6
+shaftDiameter = 148
+
+// Tooth angle and count
+toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+toothCount = round(180deg / toothAngleDeg)
+
+// Sketch the spline portion of the shaft
+spine = startSketchOn(shaft, face = seg01)
+  |> startProfile(at = [shaftDiameter / 2, 0])
+  |> arc(angleStart = 0deg, angleEnd = toothAngleDeg, diameter = shaftDiameter)
+  |> angledLine(angle = toothAngleDeg, length = toothHeight)
+  |> arc(angleStart = toothAngleDeg, angleEnd = 2 * toothAngleDeg, diameter = shaftDiameter + 2 * toothHeight)
+  |> angledLine(angle = 2 * toothAngleDeg, length = -toothHeight)
+  |> line(endAbsolute = polar(angle = 360deg / toothCount, length = shaftDiameter / 2))
+  |> patternCircular2d(instances = toothCount, center = [0, 0])
+  |> close()
+  |> extrude(length = 200)
+
+// Hollow the front of the shaft
+frontBore = startSketchOn(spine, face = END)
+  |> circle(center = [0, 0], radius = 40)
+  |> extrude(length = -100)
+
+// Create a rear step and bore
+rearStep = startSketchOn(spine, face = END)
+  |> circle(diameter = 100)
+  |> extrude(length = 20)
+rearBore = startSketchOn(rearStep, face = END)
+  |> circle(center = [0, 0], radius = 37.48)
+  |> extrude(length = -20)
+
+// Build helical gear and propeller bodies
+helicalGear(nTeeth = 28, helixAngle = -25deg, bore = 300)
+  |> translate(y = -200)
+
+propeller(
+       twistAngle = -75deg,
+       toothWidth = toothWidth,
+       toothHeight = toothHeight,
+       shaftDiameter = shaftDiameter,
+     )
+  |> translate(y = -630)

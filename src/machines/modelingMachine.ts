@@ -267,7 +267,6 @@ export type ModelingMachineEvent =
       type: 'Hide'
       data: {
         objects: Selections
-        variableName: string
       }
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
@@ -3421,7 +3420,6 @@ export const modelingMachine = setup({
               data:
                 | {
                     objects: Selections
-                    variableName: string
                   }
                 | undefined
               kclManager: KclManager
@@ -3444,17 +3442,10 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager: input.kclManager,
-            rustContext: input.rustContext,
-          },
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
+        await updateModelingState(result.modifiedAst, EXECUTION_TYPE_REAL, {
+          kclManager: input.kclManager,
+          rustContext: input.rustContext,
+        })
       }
     ),
     gdtFlatnessAstMod: fromPromise(

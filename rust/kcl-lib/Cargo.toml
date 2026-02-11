@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.122"
+version = "0.2.124"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -51,7 +51,7 @@ clap = { version = "4.5.54", default-features = false, optional = true, features
   "std",
   "derive",
 ] }
-convert_case = "0.10.0"
+convert_case = "0.11.0"
 csscolorparser = "0.8.1"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
@@ -70,7 +70,7 @@ kcl-ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
-libm = "0.2.15"
+libm = "0.2.16"
 measurements = "0.11.1"
 miette = { workspace = true }
 mime_guess = "2.0.5"
@@ -99,7 +99,7 @@ serde_json = { workspace = true }
 sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.24"
-thiserror = "2.0.17"
+thiserror = "2.0.18"
 toml = "0.9.11"
 ts-rs = { version = "11.1.0", features = [
   "uuid-impl",
@@ -126,12 +126,13 @@ tokio-tungstenite = { version = "0.28.0", features = [
 tower-lsp = { workspace = true, features = ["proposed", "default"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
+gloo-utils = "0.2.0"
 console_error_panic_hook = { workspace = true }
 futures-lite = "2.6.1"
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
-typed-path = "0.12.0"
+typed-path = "0.12.1"
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
 wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }

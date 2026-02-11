@@ -18,14 +18,12 @@ use crate::{
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
 };
 
-fn transform_by<T>(property: T, set: bool, is_local: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
-    shared::TransformBy {
-        property,
-        set,
-        #[expect(deprecated)]
-        is_local,
-        origin,
-    }
+fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::TransformBy<T> {
+    shared::TransformBy::builder()
+        .property(property)
+        .set(set)
+        .origin(origin)
+        .build()
 }
 
 /// Scale a solid or a sketch.
@@ -104,34 +102,32 @@ async fn inner_scale(
 
     let is_global = global.unwrap_or(false);
     let origin = if is_global {
-        Some(OriginType::Global)
+        OriginType::Global
     } else {
-        Some(OriginType::Local)
+        OriginType::Local
     };
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
+        let transform = shared::ComponentTransform::builder()
+            .scale(transform_by(
+                Point3d {
+                    x: x.unwrap_or(1.0),
+                    y: y.unwrap_or(1.0),
+                    z: z.unwrap_or(1.0),
+                },
+                false,
+                origin,
+            ))
+            .build();
+        let transforms = vec![transform];
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::SetObjectTransform::builder()
                         .object_id(object_id)
-                        .transforms(vec![shared::ComponentTransform {
-                            scale: Some(transform_by(
-                                Point3d {
-                                    x: x.unwrap_or(1.0),
-                                    y: y.unwrap_or(1.0),
-                                    z: z.unwrap_or(1.0),
-                                },
-                                false,
-                                !is_global,
-                                origin,
-                            )),
-                            translate: None,
-                            rotate_rpy: None,
-                            rotate_angle_axis: None,
-                        }])
+                        .transforms(transforms)
                         .build(),
                 ),
             )
@@ -213,9 +209,9 @@ async fn inner_translate(
 
     let is_global = global.unwrap_or(false);
     let origin = if is_global {
-        Some(OriginType::Global)
+        OriginType::Global
     } else {
-        Some(OriginType::Local)
+        OriginType::Local
     };
 
     let translation = shared::Point3d {
@@ -225,18 +221,17 @@ async fn inner_translate(
     };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
+        let transform = shared::ComponentTransform::builder()
+            .translate(transform_by(translation, false, origin))
+            .build();
+        let transforms = vec![transform];
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::SetObjectTransform::builder()
                         .object_id(object_id)
-                        .transforms(vec![shared::ComponentTransform {
-                            translate: Some(transform_by(translation, false, !is_global, origin)),
-                            scale: None,
-                            rotate_rpy: None,
-                            rotate_angle_axis: None,
-                        }])
+                        .transforms(transforms)
                         .build(),
                 ),
             )
@@ -394,71 +389,67 @@ async fn inner_rotate(
     }
 
     let origin = if let Some(origin) = origin {
-        Some(OriginType::Custom {
+        OriginType::Custom {
             origin: shared::Point3d {
                 x: origin[0],
                 y: origin[1],
                 z: origin[2],
             },
-        })
+        }
     } else if global.unwrap_or(false) {
-        Some(OriginType::Global)
+        OriginType::Global
     } else {
-        Some(OriginType::Local)
+        OriginType::Local
     };
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         if let (Some(axis), Some(angle)) = (&axis, angle) {
+            let transform = shared::ComponentTransform::builder()
+                .rotate_angle_axis(transform_by(
+                    shared::Point4d {
+                        x: axis[0],
+                        y: axis[1],
+                        z: axis[2],
+                        w: angle,
+                    },
+                    false,
+                    origin,
+                ))
+                .build();
+            let transforms = vec![transform];
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(
                         mcmd::SetObjectTransform::builder()
                             .object_id(object_id)
-                            .transforms(vec![shared::ComponentTransform {
-                                rotate_angle_axis: Some(transform_by(
-                                    shared::Point4d {
-                                        x: axis[0],
-                                        y: axis[1],
-                                        z: axis[2],
-                                        w: angle,
-                                    },
-                                    false,
-                                    !global.unwrap_or(false),
-                                    origin,
-                                )),
-                                scale: None,
-                                rotate_rpy: None,
-                                translate: None,
-                            }])
+                            .transforms(transforms)
                             .build(),
                     ),
                 )
                 .await?;
         } else {
             // Do roll, pitch, and yaw.
+            let transform = shared::ComponentTransform::builder()
+                .rotate_rpy(transform_by(
+                    shared::Point3d {
+                        x: roll.unwrap_or(0.0),
+                        y: pitch.unwrap_or(0.0),
+                        z: yaw.unwrap_or(0.0),
+                    },
+                    false,
+                    origin,
+                ))
+                .build();
+            let transforms = vec![transform];
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(
                         mcmd::SetObjectTransform::builder()
                             .object_id(object_id)
-                            .transforms(vec![shared::ComponentTransform {
-                                rotate_rpy: Some(transform_by(
-                                    shared::Point3d {
-                                        x: roll.unwrap_or(0.0),
-                                        y: pitch.unwrap_or(0.0),
-                                        z: yaw.unwrap_or(0.0),
-                                    },
-                                    false,
-                                    !global.unwrap_or(false),
-                                    origin,
-                                )),
-                                scale: None,
-                                rotate_angle_axis: None,
-                                translate: None,
-                            }])
+                            .transforms(transforms)
                             .build(),
                     ),
                 )
@@ -486,12 +477,11 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 async fn hide_inner(
-    objects: HideableGeometry,
+    mut objects: HideableGeometry,
     hidden: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<HideableGeometry, KclError> {
-    let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(

@@ -68,20 +68,25 @@ jobs:
           workspaces: rust
       - name: Fetch the base branch
         if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch origin ${{ github.base_ref }} --depth=1
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: git fetch origin "${BASE_REF}" --depth=1
       - name: Check for path changes
         id: path-changes
         shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
 
           # Manual runs or push should run all tests.
-          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
+          if [[ "${EVENT_NAME}" != 'pull_request' ]]; then
             echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
+          changed_files=$(git diff --name-only origin/${BASE_REF})
           echo "$changed_files"
           if grep -Evq '^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
             echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
@@ -108,6 +113,17 @@ jobs:
       - name: Commit differences
         if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTA_UPDATE: always
+          NEXTEST_PROFILE: ci
+          RUST_BACKTRACE: full
+          RUST_MIN_STACK: 10485760000
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          ZOO_HOST: https://api.dev.zoo.dev
         run: |
           set -euo pipefail
           pushd rust
@@ -118,25 +134,16 @@ jobs:
             public/kcl-samples
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
+          echo "${GITHUB_HEAD_REF}"
+          git checkout "${GITHUB_HEAD_REF}"
           if ! git commit -m "Update kcl-samples simulation test output" ; then
             echo "No changes to commit"
             # This only runs if tests failed, so we should fail the step.
             exit 1
           fi
-          git push origin ${{ github.head_ref }}
-        env:
-          # The default is auto, and insta behaves differently in CI vs. not.
-          INSTA_UPDATE: always
-          ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
-          ZOO_HOST: https://api.dev.zoo.dev
-          # Configure nextest when it's run by insta (via just).
-          NEXTEST_PROFILE: ci
-          RUST_BACKTRACE: full
-          RUST_MIN_STACK: 10485760000
+          git push origin "${GITHUB_HEAD_REF}"
       - name: Build and archive tests
         run: |
           cd rust
