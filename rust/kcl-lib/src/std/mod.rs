@@ -15,6 +15,7 @@ pub mod faces;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
+pub mod ids;
 pub mod loft;
 pub mod math;
 pub mod mirror;
