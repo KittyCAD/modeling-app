@@ -688,7 +688,9 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                // Suppress warnings about types because they should only be
+                // warned about once for the function definition.
+                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
                 arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
@@ -783,7 +785,10 @@ fn type_check_params_kw(
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                        // Suppress warnings about types because they should
+                        // only be warned about once for the function
+                        // definition.
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                                 .value
@@ -888,7 +893,9 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
+            // Suppress warnings about types because they should only be warned
+            // about once for the function definition.
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_type(KclErrorDetails::new(

@@ -67,24 +67,9 @@ export const defaultLayoutConfig: Layout = {
         {
           id: DefaultLayoutPaneID.FeatureTree,
           label: 'Feature Tree',
-          type: LayoutType.Splits,
+          type: LayoutType.Simple,
           icon: 'model',
-          sizes: [75, 25],
-          orientation: 'block',
-          children: [
-            {
-              id: 'operations-list',
-              label: 'Feature Tree',
-              type: LayoutType.Simple,
-              areaType: AreaType.FeatureTree,
-            },
-            {
-              id: 'bodies-list',
-              label: 'Bodies List',
-              type: LayoutType.Simple,
-              areaType: AreaType.Bodies,
-            },
-          ],
+          areaType: AreaType.FeatureTree,
         },
         {
           id: DefaultLayoutPaneID.Code,

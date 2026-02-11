@@ -29,93 +29,123 @@ plateSketch = startSketchOn(XY)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
   |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
-plateBody = extrude(plateSketch, length = stockThickness)
-  |> chamfer(
-       length = boltDiameter * 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
-       ],
-     )
 
-// Define hole positions
-holePositions = [
-  [-boltSpacingX / 2, -boltSpacingY / 2],
-  [-boltSpacingX / 2, boltSpacingY / 2],
-  [boltSpacingX / 2, -boltSpacingY / 2],
-  [boltSpacingX / 2, boltSpacingY / 2]
+// Define hole positions (face-local: note X/Y swapped vs world XY)
+holePositionsSwapped = [
+  [-boltSpacingY / 2, -boltSpacingX / 2],
+  [-boltSpacingY / 2, boltSpacingX / 2],
+  [boltSpacingY / 2, -boltSpacingX / 2],
+  [boltSpacingY / 2, boltSpacingX / 2]
 ]
 
-// Function to create a counterdrilled hole
-fn counterdrill(@holePosition) {
-  cbdrill = startSketchOn(plateBody, face = END)
-    |> circle(center = holePosition, radius = counterdrillDiameter / 2)
-    |> extrude(length = -counterdrillDepth)
-  cbBolt = startSketchOn(cbdrill, face = START)
-    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
-    |> extrude(length = -stockThickness + counterdrillDepth)
-    // Use a chamfer to create a 90-degree counterdrill edge
-    |> chamfer(length = (counterdrillDiameter - boltDiameter) / 2 * sqrt(2), tags = [hole01])
-  return {  }
-}
+// 1) Extrude plate
+plateTopExtrude = extrude(plateSketch, length = stockThickness, tagEnd = $plateTop)
 
-// Place a counterdrilled hole at each bolt hole position
-map(holePositions, f = counterdrill)
+// 2) Chamfer perimeter (separate from extrude)
+plateChamfered = chamfer(
+  plateTopExtrude,
+  length = boltDiameter * 2,
+  tags = [
+    getNextAdjacentEdge(rectangleSegmentB001),
+    getNextAdjacentEdge(rectangleSegmentA001),
+    getNextAdjacentEdge(rectangleSegmentC001),
+    getNextAdjacentEdge(rectangleSegmentD001)
+  ],
+)
 
-// Drill a small pin hole in the side of the tube
-pinhole = startSketchOn(YZ)
+// 3) Hole pattern (separate statement for readability)
+plate = hole::holes(
+  plateChamfered,
+  face = plateTop,
+  cutsAt = holePositionsSwapped,
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = stockThickness, diameter = boltDiameter),
+  holeType =   hole::counterbore(diameter = counterdrillDiameter, depth = counterdrillDepth),
+)
+
+// Drill a small pin hole in the side of the tube (separate extrude)
+pinholeSketch = startSketchOn(YZ)
   |> circle(center = [0, 2.2], radius = 0.125)
-  |> extrude(length = -10)
+pinhole = extrude(pinholeSketch, length = -10)
 
-// Model the central tube and subtract the pin hole
-centralTube = startSketchOn(offsetPlane(XY, offset = stockThickness))
+// Model the central tube and subtract the pin hole (separate extrude)
+centralTubeSketch = startSketchOn(offsetPlane(XY, offset = stockThickness))
   |> circle(center = [0, 0], radius = tubeInnerDiameter / 2 + tubeThickness)
   |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
-  |> extrude(length = tubeHeight)
-  |> subtract(tools = [pinhole])
+centralTubeSolid = extrude(centralTubeSketch, length = tubeHeight)
+centralTube = subtract([centralTubeSolid], tools = [pinhole])
 
-// Create a function to create a fin which spans from the central tube to the bolt hole
-fn fin(@i) {
-  diagPlane = {
-    origin = [0.0, 0.0, 0.0],
-    xAxis = [
-      boltSpacingX / 2 * i,
-      boltSpacingY / 2,
-      0.0
-    ],
-    yAxis = [0.0, 0.0, 1.0]
-  }
-
-  finSketch = startSketchOn(diagPlane)
-    |> startProfile(at = [
-         tubeInnerDiameter / 2 + tubeThickness,
-         stockThickness
-       ])
-    |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
-    |> yLine(length = 0.15)
-    |> line(endAbsolute = [
-         profileStartX(%) + 0.15,
-         stockThickness + tubeHeight * .8
-       ])
-    |> xLine(length = -0.15)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-    |> extrude(length = tubeThickness, symmetric = true)
-
-  // Use a circular pattern to create an identical fin on the opposite side
-  otherFin = patternCircular3d(
-    finSketch,
-    instances = 2,
-    axis = [0, 0, 1],
-    center = [0, 0, 0],
-    arcDegrees = 360,
-    rotateDuplicates = true,
-  )
-  return {  }
+// Inline fins (no extrude piping)
+// Diagonal plane helper for i = 1
+finDiagPlane1 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [
+    boltSpacingX / 2 * 1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
 }
 
-// Place a pair of support fins along each diagonal axis of the bolt pattern
-fin(1)
-fin(-1)
+finProfile1 = startSketchOn(finDiagPlane1)
+  |> startProfile(at = [
+       tubeInnerDiameter / 2 + tubeThickness,
+       stockThickness
+     ])
+  |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
+  |> yLine(length = 0.15)
+  |> line(endAbsolute = [
+       profileStartX(%) + 0.15,
+       stockThickness + tubeHeight * .8
+     ])
+  |> xLine(length = -0.15)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+finSolid1 = extrude(finProfile1, length = tubeThickness, symmetric = true)
+
+// Pattern to opposite side around Z axis
+finPair1 = patternCircular3d(
+  finSolid1,
+  instances = 2,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)
+
+// Diagonal plane helper for i = -1
+finDiagPlane2 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [
+    boltSpacingX / 2 * -1,
+    boltSpacingY / 2,
+    0.0
+  ],
+  yAxis = [0.0, 0.0, 1.0]
+}
+
+finProfile2 = startSketchOn(finDiagPlane2)
+  |> startProfile(at = [
+       tubeInnerDiameter / 2 + tubeThickness,
+       stockThickness
+     ])
+  |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
+  |> yLine(length = 0.15)
+  |> line(endAbsolute = [
+       profileStartX(%) + 0.15,
+       stockThickness + tubeHeight * .8
+     ])
+  |> xLine(length = -0.15)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+finSolid2 = extrude(finProfile2, length = tubeThickness, symmetric = true)
+
+// Pattern to opposite side around Z axis
+finPair2 = patternCircular3d(
+  finSolid2,
+  instances = 2,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)

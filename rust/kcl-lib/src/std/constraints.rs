@@ -20,7 +20,7 @@ use crate::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
-    execution::ArtifactId,
+    execution::{Artifact, CodeRef, SketchBlockConstraint, SketchBlockConstraintType},
     front::{
         Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectKind, Parallel, Perpendicular, Vertical,
     },
@@ -69,6 +69,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             position: [at_x, at_y],
             ctor: Box::new(ctor),
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -117,7 +118,9 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -214,6 +217,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             end_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -292,7 +296,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -429,6 +435,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             center_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -555,7 +562,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -1022,13 +1031,32 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 #[cfg(feature = "artifact-graph")]
 fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state: &mut ExecState, args: &Args) {
+    let sketch_id = {
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            debug_assert!(false, "Constraint created outside a sketch block");
+            return;
+        };
+        sketch_state.sketch_id
+    };
+    let Some(sketch_id) = sketch_id else {
+        debug_assert!(false, "Constraint created without a sketch id");
+        return;
+    };
+    let artifact_id = exec_state.next_artifact_id();
+    exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+        id: artifact_id,
+        sketch_id,
+        constraint_id,
+        constraint_type: SketchBlockConstraintType::from(&constraint),
+        code_ref: CodeRef::placeholder(args.source_range),
+    }));
     exec_state.add_scene_object(
         Object {
             id: constraint_id,
             kind: ObjectKind::Constraint { constraint },
             label: Default::default(),
             comments: Default::default(),
-            artifact_id: ArtifactId::constraint(),
+            artifact_id,
             source: args.source_range.into(),
         },
         args.source_range,
