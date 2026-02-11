@@ -160,6 +160,8 @@ layout: manual
 ### Constants
 
 * [**std**](/docs/kcl-std/modules/std)
+  * [`CCW`](/docs/kcl-std/consts/std-CCW)
+  * [`CW`](/docs/kcl-std/consts/std-CW)
   * [`END`](/docs/kcl-std/consts/std-END)
   * [`MERGE`](/docs/kcl-std/consts/std-MERGE)
   * [`NEW`](/docs/kcl-std/consts/std-NEW)

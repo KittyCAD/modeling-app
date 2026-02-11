@@ -69,6 +69,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             position: [at_x, at_y],
             ctor: Box::new(ctor),
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -117,7 +118,9 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -214,6 +217,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             end_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -292,7 +296,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {
@@ -429,6 +435,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             center_object_id,
             construction,
         },
+        tag: None,
         meta: vec![args.source_range.into()],
     };
     #[cfg(feature = "artifact-graph")]
@@ -555,7 +562,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     let meta = segment.meta.clone();
     let abstract_segment = AbstractSegment {
-        repr: SegmentRepr::Unsolved { segment },
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
         meta,
     };
     Ok(KclValue::Segment {

@@ -10,8 +10,8 @@ use crate::{
     errors::KclErrorDetails,
     execution::{
         AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier,
-        UnsolvedExpr,
+        ImportedGeometry, Metadata, Plane, Segment, SegmentRepr, Sketch, SketchConstraint, SketchVar, SketchVarId,
+        Solid, TagIdentifier, UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -818,6 +818,17 @@ impl KclValue {
     pub fn as_sketch_var(&self) -> Option<&SketchVar> {
         match self {
             KclValue::SketchVar { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    /// A solved segment.
+    pub fn as_segment(&self) -> Option<&Segment> {
+        match self {
+            KclValue::Segment { value, .. } => match &value.repr {
+                SegmentRepr::Solved { segment } => Some(segment),
+                _ => None,
+            },
             _ => None,
         }
     }

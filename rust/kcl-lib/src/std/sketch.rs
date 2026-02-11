@@ -33,7 +33,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
-        faces::make_face,
+        faces::{FaceSpecifier, make_face},
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -330,7 +330,7 @@ pub(super) async fn straight_line_with_new_id(
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
-    straight_line(id, straight_line_params, exec_state, ctx, source_range).await
+    straight_line(id, straight_line_params, true, exec_state, ctx, source_range).await
 }
 
 pub(super) async fn straight_line(
@@ -342,6 +342,7 @@ pub(super) async fn straight_line(
         tag,
         relative_name,
     }: StraightLineParams,
+    send_to_engine: bool,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
     source_range: SourceRange,
@@ -364,20 +365,22 @@ pub(super) async fn straight_line(
         }
     };
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
-            ModelingCmd::from(
-                mcmd::ExtendPath::builder()
-                    .path(sketch.id.into())
-                    .segment(PathSegment::Line {
-                        end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
-                        relative: !is_absolute,
-                    })
-                    .build(),
-            ),
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
+                            relative: !is_absolute,
+                        })
+                        .build(),
+                ),
+            )
+            .await?;
+    }
 
     let end = if is_absolute {
         point_to_len_unit(point, from.units)
@@ -897,7 +900,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
     let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
     let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
     let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
@@ -910,8 +913,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
-    face: Option<FaceTag>,
-    normal_to_face: Option<FaceTag>,
+    face: Option<FaceSpecifier>,
+    normal_to_face: Option<FaceSpecifier>,
     align_axis: Option<Axis2dOrEdgeReference>,
     normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,
@@ -1179,6 +1182,21 @@ pub(crate) async fn inner_start_profile(
     ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    create_sketch(id, sketch_surface, at, tag, true, exec_state, ctx, source_range).await
+}
+
+#[expect(clippy::too_many_arguments)]
+pub(crate) async fn create_sketch(
+    id: Uuid,
+    sketch_surface: SketchSurface,
+    at: [TyF64; 2],
+    tag: Option<TagNode>,
+    send_to_engine: bool,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+) -> Result<Sketch, KclError> {
     match &sketch_surface {
         SketchSurface::Face(face) => {
             // Flush the batch for our fillets/chamfers if there are any.
@@ -1203,57 +1221,59 @@ pub(crate) async fn inner_start_profile(
         _ => {}
     }
 
+    let path_id = id;
     let enable_sketch_id = exec_state.next_uuid();
-    let path_id = exec_state.next_uuid();
     let move_pen_id = exec_state.next_uuid();
     let disable_sketch_id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmds(
-            ModelingCmdMeta::new(exec_state, ctx, source_range),
-            &[
-                // Enter sketch mode on the surface.
-                // We call this here so you can reuse the sketch surface for multiple sketches.
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &sketch_surface {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        mcmd::EnableSketchMode::builder()
-                            .animated(false)
-                            .ortho(false)
-                            .entity_id(sketch_surface.id())
-                            .adjust_camera(false)
-                            .planar_normal(normal.into())
-                            .build()
-                    } else {
-                        mcmd::EnableSketchMode::builder()
-                            .animated(false)
-                            .ortho(false)
-                            .entity_id(sketch_surface.id())
-                            .adjust_camera(false)
-                            .build()
-                    }),
-                    cmd_id: enable_sketch_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(mcmd::StartPath::default()),
-                    cmd_id: path_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(
-                        mcmd::MovePathPen::builder()
-                            .path(path_id.into())
-                            .to(KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit))
-                            .build(),
-                    ),
-                    cmd_id: move_pen_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                    cmd_id: disable_sketch_id.into(),
-                },
-            ],
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmds(
+                ModelingCmdMeta::new(exec_state, ctx, source_range),
+                &[
+                    // Enter sketch mode on the surface.
+                    // We call this here so you can reuse the sketch surface for multiple sketches.
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &sketch_surface {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            mcmd::EnableSketchMode::builder()
+                                .animated(false)
+                                .ortho(false)
+                                .entity_id(sketch_surface.id())
+                                .adjust_camera(false)
+                                .planar_normal(normal.into())
+                                .build()
+                        } else {
+                            mcmd::EnableSketchMode::builder()
+                                .animated(false)
+                                .ortho(false)
+                                .entity_id(sketch_surface.id())
+                                .adjust_camera(false)
+                                .build()
+                        }),
+                        cmd_id: enable_sketch_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(mcmd::StartPath::default()),
+                        cmd_id: path_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(
+                            mcmd::MovePathPen::builder()
+                                .path(path_id.into())
+                                .to(KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit))
+                                .build(),
+                        ),
+                        cmd_id: move_pen_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                        cmd_id: disable_sketch_id.into(),
+                    },
+                ],
+            )
+            .await?;
+    }
 
     // Convert to the units of the module.  This is what the frontend expects.
     let units = exec_state.length_unit();
@@ -1458,7 +1478,7 @@ pub(crate) async fn inner_arc(
     match (angle_start, angle_end, radius, diameter, interior_absolute, end_absolute) {
         (Some(angle_start), Some(angle_end), radius, diameter, None, None) => {
             let radius = get_radius(radius, diameter, args.source_range)?;
-            relative_arc(id, exec_state, sketch, from, angle_start, angle_end, radius, tag, &args.ctx, args.source_range).await
+            relative_arc(id, exec_state, sketch, from, angle_start, angle_end, radius, tag, true, &args.ctx, args.source_range).await
         }
         (None, None, None, None, Some(interior_absolute), Some(end_absolute)) => {
             absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
@@ -1551,6 +1571,7 @@ pub async fn relative_arc(
     angle_end: TyF64,
     radius: TyF64,
     tag: Option<TagNode>,
+    send_to_engine: bool,
     ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
@@ -1566,25 +1587,27 @@ pub async fn relative_arc(
     }
     let ccw = a_start < a_end;
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
-            ModelingCmd::from(
-                mcmd::ExtendPath::builder()
-                    .path(sketch.id.into())
-                    .segment(PathSegment::Arc {
-                        start: a_start,
-                        end: a_end,
-                        center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                        radius: LengthUnit(
-                            crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
-                        ),
-                        relative: false,
-                    })
-                    .build(),
-            ),
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Arc {
+                            start: a_start,
+                            end: a_end,
+                            center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
+                            radius: LengthUnit(
+                                crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                            ),
+                            relative: false,
+                        })
+                        .build(),
+                ),
+            )
+            .await?;
+    }
 
     let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
     let current_path = Path::Arc {
