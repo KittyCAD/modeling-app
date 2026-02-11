@@ -2265,7 +2265,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     // This check applies to all file types.
     if var_name && !is_path_safe_identifier(&path_string) {
         return Err(ErrMode::Cut(
-            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
+            CompilationError::fatal(path_range, "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`").into(),
         ));
     }
 
@@ -5288,17 +5288,17 @@ e
         assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
         assert_err(
             r#"import "_foo.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 17],
         );
         assert_err(
             r#"import "foo-bar.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
     }
@@ -5314,7 +5314,7 @@ e
     fn import_kcl_with_spaces_in_name_without_alias() {
         assert_err_contains(
             r#"import "my file.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
         );
     }
 
@@ -5322,7 +5322,7 @@ e
     fn import_kcl_starting_with_name_starting_with_number_without_alias() {
         assert_err_contains(
             r#"import "0th.kcl""#,
-            "import path is not a valid identifier and must be aliased.",
+            "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
         );
     }
 
