@@ -81,7 +81,9 @@ async fn inner_clone(
 
                 let mut new_solid = solid.clone();
                 new_solid.id = new_id;
-                new_solid.sketch.original_id = new_id;
+                if let Some(sketch) = new_solid.sketch_mut() {
+                    sketch.original_id = new_id;
+                }
                 new_solid.artifact_id = new_id.into();
                 GeometryWithImportedGeometry::Solid(new_solid)
             }
@@ -129,22 +131,23 @@ async fn fix_tags_and_references(
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-            // Make the sketch id the new geometry id.
-            solid.sketch.id = new_geometry_id;
-            solid.sketch.original_id = new_geometry_id;
-            solid.sketch.artifact_id = new_geometry_id.into();
-            solid.sketch.clone = Some(old_geometry_id);
-
-            fix_sketch_tags_and_references(
-                &mut solid.sketch,
-                &entity_id_map,
-                exec_state,
-                args,
-                Some(solid.value.clone()),
-            )
-            .await?;
-
             let (start_tag, end_tag) = get_named_cap_tags(solid);
+            let solid_value = solid.value.clone();
+
+            // Make the sketch id the new geometry id.
+            let sketch = solid.sketch_mut().ok_or_else(|| {
+                KclError::new_type(KclErrorDetails::new(
+                    "Cloning solids created without a sketch is not yet supported.".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?;
+            sketch.id = new_geometry_id;
+            sketch.original_id = new_geometry_id;
+            sketch.artifact_id = new_geometry_id.into();
+            sketch.clone = Some(old_geometry_id);
+
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
+            let sketch_for_post = sketch.clone();
 
             // Fix the edge cuts.
             for edge_cut in solid.edge_cuts.iter_mut() {
@@ -166,7 +169,7 @@ async fn fix_tags_and_references(
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
             let new_solid = do_post_extrude(
-                &solid.sketch,
+                &sketch_for_post,
                 new_geometry_id.into(),
                 solid.sectional,
                 &NamedCapTags {
@@ -429,16 +432,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -448,8 +453,8 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        assert_eq!(cube.sketch.tags.len(), 0);
-        assert_eq!(cloned_cube.sketch.tags.len(), 0);
+        assert_eq!(cube_sketch.tags.len(), 0);
+        assert_eq!(cloned_cube_sketch.tags.len(), 0);
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
@@ -543,16 +548,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -562,8 +569,8 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        for (tag_name, tag) in &cube.sketch.tags {
-            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+        for (tag_name, tag) in &cube_sketch.tags {
+            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
 
             let tag_info = tag.get_cur_info().unwrap();
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
@@ -615,16 +622,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -634,8 +643,8 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        for (tag_name, tag) in &cube.sketch.tags {
-            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+        for (tag_name, tag) in &cube_sketch.tags {
+            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
 
             let tag_info = tag.get_cur_info().unwrap();
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
@@ -715,12 +724,14 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 

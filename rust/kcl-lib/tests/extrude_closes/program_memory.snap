@@ -40,6 +40,7 @@ description: Variables in memory after executing extrude_closes.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

@@ -47,6 +47,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -250,6 +251,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -545,6 +547,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                       }
                     ],
                     "sketch": {
+                      "creatorType": "sketch",
                       "type": "Sketch",
                       "id": "[uuid]",
                       "paths": [
@@ -837,6 +840,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                       }
                     ],
                     "sketch": {
+                      "creatorType": "sketch",
                       "type": "Sketch",
                       "id": "[uuid]",
                       "paths": [
@@ -1129,6 +1133,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                       }
                     ],
                     "sketch": {
+                      "creatorType": "sketch",
                       "type": "Sketch",
                       "id": "[uuid]",
                       "paths": [
@@ -1421,6 +1426,7 @@ description: Variables in memory after executing sketch_block_on_face.kcl
                       }
                     ],
                     "sketch": {
+                      "creatorType": "sketch",
                       "type": "Sketch",
                       "id": "[uuid]",
                       "paths": [

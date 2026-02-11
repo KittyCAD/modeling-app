@@ -2454,6 +2454,7 @@ export const modelingMachine = setup({
           if (
             // if the variable is an sweep, check if the underlying sketch matches the artifact
             variable?.type === 'Solid' &&
+            variable.value.sketch.creatorType === 'sketch' &&
             variable.value.sketch.artifactId === mainPath
           ) {
             sketch = {
