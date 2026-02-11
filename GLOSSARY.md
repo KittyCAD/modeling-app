@@ -76,4 +76,26 @@ An Area housing a code editor for our underlying language for CAD, called [KCL](
 
 ## Zookeeper
 
-An Area housing a chat interface with our Machine Learning tools. From it you can ask questions about your model, request edits, and more.
+An Area housing a chat interface with our AI agent. From it you can ask questions about your project, generate CAD models, request edits, and more.
+
+![Zookeeper](/public/glossary/zookeeper.png)
+
+## Prompt
+
+The message or instruction you send to Zookeeper. Prompts can be questions, requests to generate or edit geometry, or anything else you want the agent to do.
+
+## Response
+
+The message Zookeeper sends back after processing a prompt. Responses can include explanations, questions, or actions taken in the project. Zookeeper may suggest next steps as followup edits to the response.
+
+## Tool
+
+A specific capability Zookeeper can use to do something in Design Studio, like creating geometry, editing a feature, or reading project state.
+
+## Cancel
+
+Stops the current Zookeeper operation. Use this when you don't want the current request to finish.
+
+## Reasoning
+
+The internal process Zookeeper uses to decide what to do. This is not always shown directly, but it influences the response and the actions taken.
