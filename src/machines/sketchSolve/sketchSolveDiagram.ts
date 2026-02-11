@@ -29,6 +29,7 @@ import {
   type SketchSolveMachineEvent,
   type SketchSolveContext,
   type SpawnToolActor,
+  type SolveActionArgs,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
   initializeIntersectionPlane,
@@ -53,7 +54,7 @@ const DEFAULT_DISTANCE_FALLBACK = 5
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
-  self: any,
+  self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
   constraintType: 'HorizontalDistance' | 'VerticalDistance'
 ) {
@@ -126,7 +127,10 @@ async function addAxisDistanceConstraint(
   if (result) {
     self.send({
       type: 'update sketch outcome',
-      data: result,
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+      },
     })
   }
 }
