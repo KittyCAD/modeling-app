@@ -35,9 +35,10 @@ pub async fn assert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let gte = args.get_kw_arg_opt("isGreaterThanOrEqual", &RuntimeType::num_any(), exec_state)?;
     let lte = args.get_kw_arg_opt("isLessThanOrEqual", &RuntimeType::num_any(), exec_state)?;
     let eq = args.get_kw_arg_opt("isEqualTo", &RuntimeType::num_any(), exec_state)?;
+    let neq = args.get_kw_arg_opt("isNotEqualTo", &RuntimeType::num_any(), exec_state)?;
     let tolerance = args.get_kw_arg_opt("tolerance", &RuntimeType::num_any(), exec_state)?;
     let error = args.get_kw_arg_opt("error", &RuntimeType::string(), exec_state)?;
-    inner_assert(actual, gt, lt, gte, lte, eq, tolerance, error, &args).await?;
+    inner_assert(actual, gt, lt, gte, lte, eq, neq, tolerance, error, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -57,6 +58,7 @@ async fn inner_assert(
     is_greater_than_or_equal: Option<TyF64>,
     is_less_than_or_equal: Option<TyF64>,
     is_equal_to: Option<TyF64>,
+    is_not_equal_to: Option<TyF64>,
     tolerance: Option<TyF64>,
     error: Option<String>,
     args: &Args,
@@ -68,6 +70,7 @@ async fn inner_assert(
         &is_greater_than_or_equal,
         &is_less_than_or_equal,
         &is_equal_to,
+        &is_not_equal_to,
     ]
     .iter()
     .all(|cond| cond.is_none());
@@ -78,9 +81,9 @@ async fn inner_assert(
         )));
     }
 
-    if tolerance.is_some() && is_equal_to.is_none() {
+    if tolerance.is_some() && is_equal_to.is_none() && is_not_equal_to.is_none() {
         return Err(KclError::new_type(KclErrorDetails::new(
-            "The `tolerance` arg is only used with `isEqualTo`. Either remove `tolerance` or add an `isEqualTo` arg."
+            "The `tolerance` arg is only used with `isEqualTo` and `isNotEqualTo`. Either remove `tolerance` or add an `isEqualTo` or `isNotEqualTo` arg."
                 .to_owned(),
             vec![args.source_range],
         )));
@@ -130,12 +133,23 @@ async fn inner_assert(
         )
         .await?;
     }
+    const DEFAULT_TOLERANCE: f64 = 0.0000000001;
     if let Some(exp) = is_equal_to {
         let exp = exp.n;
-        let tolerance = tolerance.map(|e| e.n).unwrap_or(0.0000000001);
+        let tolerance = tolerance.as_ref().map(|e| e.n).unwrap_or(DEFAULT_TOLERANCE);
         _assert(
             (actual - exp).abs() < tolerance,
             &format!("Expected {actual} to be equal to {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    if let Some(exp) = is_not_equal_to {
+        let exp = exp.n;
+        let tolerance = tolerance.as_ref().map(|e| e.n).unwrap_or(DEFAULT_TOLERANCE);
+        _assert(
+            (actual - exp).abs() >= tolerance,
+            &format!("Expected {actual} to not be equal to {exp} but it was{suffix}"),
             args,
         )
         .await?;
