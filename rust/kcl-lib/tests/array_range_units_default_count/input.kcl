@@ -1,1 +1,4 @@
 indices = [0 ..< 3_]
+assert(indices[0], isEqualTo = 0, error = "first element should be 0")
+assert(indices[2], isEqualTo = 2, error = "last element should be 2")
+assert(indices[count(indices) - 1], isNotEqualTo = 3, error = "last element should not be 3")
