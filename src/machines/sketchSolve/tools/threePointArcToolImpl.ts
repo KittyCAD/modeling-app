@@ -37,6 +37,10 @@ type CreateArcOutput = {
   arcId: number
 }
 
+type ErrorOutput = {
+  error: string
+}
+
 type ToolDoneOutput = {
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -181,14 +185,20 @@ async function editArcWithThreePoints({
   kclManager: KclManager
   sketchId: number
   settings: Awaited<ReturnType<typeof jsAppSettings>>
-}) {
+}): Promise<
+  | {
+      kclSource: SourceDelta
+      sceneGraphDelta: SceneGraphDelta
+    }
+  | ErrorOutput
+> {
   const centerPoint = findThreePointArcCenter({
     startPoint,
     endPoint,
     throughPoint,
   })
   if (!centerPoint) {
-    throw new Error('Cannot create arc from collinear points')
+    return { error: 'Cannot create arc from collinear points' }
   }
 
   const arcEndpoints = resolveArcEndpoints({
@@ -292,6 +302,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           settings: cachedSettings,
         })
+        if ('error' in result) return
 
         const sendData: SketchSolveMachineEvent = {
           type: 'update sketch outcome',
@@ -547,9 +558,7 @@ export async function finalizeArcActor({
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
     }
-  | {
-      error: string
-    }
+  | ErrorOutput
 > {
   if ('error' in input) {
     return { error: input.error }
@@ -568,7 +577,7 @@ export async function finalizeArcActor({
   } = input
 
   const settings = await jsAppSettings(rustContext.settingsActor)
-  await editArcWithThreePoints({
+  const editResult = await editArcWithThreePoints({
     arcId,
     startPoint,
     endPoint,
@@ -578,6 +587,9 @@ export async function finalizeArcActor({
     sketchId,
     settings,
   })
+  if ('error' in editResult) {
+    return editResult
+  }
 
   const constraintResult = await rustContext.addConstraint(
     0,
