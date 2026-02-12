@@ -601,6 +601,7 @@ export fn assertIs(
 /// assert(n, isEqualTo = 10)
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
 /// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
+/// assert(PI, isNotEqualTo = 3, tolerance = 0.0001, error = "PI should not be exactly 3")
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn assert(
@@ -614,10 +615,12 @@ export fn assert(
   isGreaterThanOrEqual?: number,
   /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
   isLessThanOrEqual?: number,
-  /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
+  /// Comparison argument. If given, checks the `actual` value is equal to this.
   @(includeInSnippet = true)
   isEqualTo?: number,
-  /// If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places.
+  /// Comparison argument. If given, checks the `actual` value is not equal to this.
+  isNotEqualTo?: number,
+  /// If `isEqualTo` or `isNotEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places.
   tolerance?: number,
   /// If the value was false, the program will terminate with this error message
   error?: string,
