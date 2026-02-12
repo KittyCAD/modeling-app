@@ -34,58 +34,39 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> arc(angleStart = 180deg, angleEnd = startAngle, radius = holeRadius)
     |> close()
 
-  // Define a function to create a rotated gear sketch on an offset plane
-  fn helicalGearSketch(offsetHeight) {
-    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
-    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  helicalGear = startSketchOn(XY)
+    |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+    |> involuteCircular(
+         startDiameter = baseDiameter,
+         endDiameter = tipDiameter,
+         angle = 0,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160deg / nTeeth, length = tipDiameter / 2))
+    |> involuteCircular(
+         startDiameter = baseDiameter,
+         endDiameter = tipDiameter,
+         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
+         reverse = true,
+       )
 
-    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-    helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
-      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
-      |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
-           angle = helixCalc,
-           tag = $seg01,
-         )
-      |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
-      |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
-           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
-           reverse = true,
-         )
+    // Position the end line of the sketch at the start of the next tooth
+    |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
 
-      // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+    |> close()
 
-      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
-      |> patternCircular2d(
-           instances = nTeeth,
-           center = [0, 0],
-           arcDegrees = 360deg,
-           rotateDuplicates = true,
-         )
-      |> close()
-      |> subtract2d(tool = holeWithKeyway)
-    return helicalGearSketch
-  }
-
-  // Draw a gear sketch on the base plane
-  gearSketch001 = helicalGearSketch(offsetHeight = 0)
-
-  // Draw a rotated gear sketch on a middle interstitial plane
-  gearSketch002 = helicalGearSketch(offsetHeight = gearHeight / 2)
-
-  // Draw a rotated gear sketch at the gear height offset plane
-  gearSketch003 = helicalGearSketch(offsetHeight = gearHeight)
-
-  // Loft each rotated gear sketch together to form a helical gear
-  helicalGear = loft([
-    gearSketch001,
-    gearSketch002,
-    gearSketch003
-  ])
+    // Compute twist angle so the tooth helix matches helixAngle over the gear height
+    |> extrude(length = gearHeight, twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter), twistAngleStep = 0)
+    |> subtract(tools =     holeWithKeyway
+      |> extrude(length = gearHeight))
 
   return helicalGear
 }
@@ -99,30 +80,27 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
   baseDiameter = pitchDiameter * cos(pressureAngle)
   tipDiameter = pitchDiameter + 2 * module
 
-  // Define a function to create a rotated gear sketch on an offset plane
-  fn ringGearSketch(offsetHeight) {
-    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
-    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
-
-    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-    ringTeeth = startSketchOn(offsetPlane(XY, offset = offsetHeight))
-      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  ringGear = startSketchOn(XY)
+    |> circle(radius = tipDiameter / 1.85)
+    |> subtract2d(tool =     startSketchOn(XY)
+      |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
       |> involuteCircular(
            startRadius = baseDiameter / 2,
            endRadius = tipDiameter / 2,
-           angle = helixCalc,
+           angle = 0,
            tag = $seg01,
          )
-      |> line(endAbsolute = polar(angle = 200deg / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> line(endAbsolute = polar(angle = 200deg / nTeeth, length = tipDiameter / 2))
       |> involuteCircular(
            startRadius = baseDiameter / 2,
            endRadius = tipDiameter / 2,
-           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
            reverse = true,
          )
 
       // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+      |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
 
       // Pattern the sketch about the center by the specified number of teeth, then close the sketch
       |> patternCircular2d(
@@ -131,37 +109,17 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
            arcDegrees = 360deg,
            rotateDuplicates = true,
          )
-      |> close()
+      |> close())
 
     // Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body
-    ringGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
-      |> circle(center = [0, 0], radius = tipDiameter / 1.85)
-      |> subtract2d(tool = ringTeeth)
-    return ringGearSketch
-  }
-
-  // Draw a gear sketch on the base plane
-  gearSketch001 = ringGearSketch(offsetHeight = 0)
-
-  // Draw a rotated gear sketch on a middle interstitial plane
-  gearSketch002 = ringGearSketch(offsetHeight = gearHeight / 2)
-
-  // Draw a rotated gear sketch at the gear height offset plane
-  gearSketch003 = ringGearSketch(offsetHeight = gearHeight)
-
-  // Loft each rotated gear sketch together to form a ring gear
-  ringGear = loft([
-    gearSketch001,
-    gearSketch002,
-    gearSketch003
-  ])
+    |> extrude(length = gearHeight, twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter), twistAngleStep = 0)
 
   return ringGear
 }
 
 // Create the outer ring gear for the planetary gearset
 ringGear(
-  nTeeth = 42,
+  nTeeth = 40,
   module = 1.5,
   pressureAngle = 14deg,
   helixAngle = -25deg,
@@ -170,15 +128,16 @@ ringGear(
 
 // Create a central sun gear using a small helical gear
 helicalGear(
-  nTeeth = 12,
-  module = 1.5,
-  pressureAngle = 14deg,
-  helixAngle = 25deg,
-  gearHeight = 5,
-)
+       nTeeth = 12,
+       module = 1.5,
+       pressureAngle = 14deg,
+       helixAngle = 25deg,
+       gearHeight = 5,
+     )
+  |> rotate(yaw = -4)
 
 // Create the helical planet gears
-numPlanetGears = 3
+numPlanetGears = 4
 helicalGear(
        nTeeth = 12,
        module = 1.5,
@@ -186,7 +145,7 @@ helicalGear(
        helixAngle = -25deg,
        gearHeight = 5,
      )
-  |> translate(y = (12 + 12) / 2 * 1.5 + 2.7)
+  |> translate(y = (12 + 12) / 2 * 1.5 + 2)
   |> patternCircular3d(
        instances = numPlanetGears,
        axis = [0, 0, 1],
