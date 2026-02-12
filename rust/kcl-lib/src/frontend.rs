@@ -749,13 +749,60 @@ impl SketchApi for FrontendState {
 
     async fn edit_constraint(
         &mut self,
-        _ctx: &ExecutorContext,
+        ctx: &ExecutorContext,
         _version: Version,
-        _sketch: ObjectId,
-        _constraint_id: ObjectId,
-        _constraint: Constraint,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        value_expression: String,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
+        // TODO: Check version.
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {constraint_id:?}"),
+        })?;
+        if !matches!(&object.kind, ObjectKind::Constraint { .. }) {
+            return Err(Error {
+                msg: format!("Object is not a constraint: {constraint_id:?}"),
+            });
+        }
+
+        let mut new_ast = self.program.ast.clone();
+
+        // Parse the expression string into an AST node.
+        let (parsed, errors) = Program::parse(&value_expression).map_err(|e| Error { msg: e.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing value expression: {errors:?}"),
+            });
+        }
+        let mut parsed = parsed.ok_or_else(|| Error {
+            msg: "No AST produced from value expression".to_string(),
+        })?;
+        if parsed.ast.body.is_empty() {
+            return Err(Error {
+                msg: "Empty value expression".to_string(),
+            });
+        }
+        let first = parsed.ast.body.remove(0);
+        let ast::BodyItem::ExpressionStatement(expr_stmt) = first else {
+            return Err(Error {
+                msg: "Value expression must be a simple expression".to_string(),
+            });
+        };
+
+        let new_value: ast::BinaryPart = expr_stmt
+            .inner
+            .expression
+            .try_into()
+            .map_err(|e: String| Error { msg: e })?;
+
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditConstraintValue { value: new_value },
+        )?;
+
+        self.execute_after_edit(ctx, sketch, Default::default(), EditDeleteKind::Edit, &mut new_ast)
+            .await
     }
 
     /// Splitting a segment means creating a new segment, editing the old one, and then
@@ -2902,6 +2949,9 @@ enum AstMutateCommand {
         center: ast::Expr,
         construction: Option<bool>,
     },
+    EditConstraintValue {
+        value: ast::BinaryPart,
+    },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
         value: Number,
@@ -3154,6 +3204,25 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
                     }
                 }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditConstraintValue { value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_constraint = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(call)
+                        if matches!(
+                            call.callee.name.name.as_str(),
+                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
+                        )
+                );
+                if left_is_constraint {
+                    binary_expr.right = value.clone();
+                } else {
+                    binary_expr.left = value.clone();
+                }
+
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -4913,6 +4982,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -4974,6 +5044,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -5106,6 +5177,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)

@@ -68,6 +68,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

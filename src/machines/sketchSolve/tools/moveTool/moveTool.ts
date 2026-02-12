@@ -61,6 +61,7 @@ import {
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints'
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -316,6 +317,7 @@ export function findEntityUnderCursorId(
     SEGMENT_TYPE_POINT,
     SEGMENT_TYPE_LINE,
     SEGMENT_TYPE_ARC,
+    CONSTRAINT_TYPE,
   ])
   if (groupUnderCursor) {
     const groupId = Number(groupUnderCursor.name)
@@ -339,6 +341,7 @@ export function createOnMouseEnterCallback({
   getSelectedIds,
   setLastHoveredMesh,
   getDraftEntityIds,
+  onUpdateHoveredId,
 }: {
   updateSegmentHover: (
     mesh: Mesh,
@@ -349,6 +352,7 @@ export function createOnMouseEnterCallback({
   getSelectedIds: () => Array<number>
   setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -361,6 +365,12 @@ export function createOnMouseEnterCallback({
       return
     }
     if (!selected) return
+
+    // Constraint hit area hover
+    if (selected.parent?.userData.type === CONSTRAINT_TYPE) {
+      onUpdateHoveredId(selected.parent.userData.object_id)
+      return
+    }
 
     // Only highlight segment meshes (lines or arcs), not points or other objects
     const mesh = selected
@@ -395,6 +405,7 @@ export function createOnMouseLeaveCallback({
   getLastHoveredMesh,
   setLastHoveredMesh,
   getDraftEntityIds,
+  onUpdateHoveredId,
 }: {
   updateSegmentHover: (
     mesh: Mesh,
@@ -406,6 +417,7 @@ export function createOnMouseLeaveCallback({
   getLastHoveredMesh: () => Mesh | null
   setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -417,6 +429,9 @@ export function createOnMouseLeaveCallback({
     if (isAreaSelectActive) {
       return
     }
+
+    // Clear constraint hover
+    onUpdateHoveredId(null)
 
     // Clear hover state for the previously hovered mesh
     const hoveredMesh = getLastHoveredMesh()
@@ -456,24 +471,35 @@ export function createOnMouseLeaveCallback({
 export function createOnClickCallback({
   getParentGroup,
   onUpdateSelectedIds,
+  onEditConstraint,
 }: {
   getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
   onUpdateSelectedIds: (data: {
     selectedIds: Array<number>
     duringAreaSelectIds: Array<number>
   }) => void
+  onEditConstraint: (constraintId: number) => void
 }): (arg: {
   selected?: Object3D
   mouseEvent: MouseEvent
   intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
   intersects: Array<unknown>
 }) => Promise<void> {
-  return async ({ selected }) => {
+  return async ({ selected, mouseEvent }) => {
     // Find the segment group under the cursor using the same logic as drag operations
     const entityUnderCursorId = findEntityUnderCursorId(
       selected,
       getParentGroup
     )
+    if (
+      mouseEvent.detail === 2 &&
+      selected?.parent?.userData.type === CONSTRAINT_TYPE &&
+      entityUnderCursorId
+    ) {
+      // Double clicking on Constraint
+      onEditConstraint(entityUnderCursorId)
+      return
+    }
 
     if (entityUnderCursorId !== null) {
       // Segment found - select it and clear any area selection
@@ -1393,6 +1419,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
     return intersectingIds
   }
 
+  context.sceneInfra.scaleFactor.subscribe(() => {
+    self.send({ type: 'camera scale change' })
+  })
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
@@ -1450,6 +1479,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
         selectedIds: Array<number>
         duringAreaSelectIds: Array<number>
       }) => self.send({ type: 'update selected ids', data }),
+      onEditConstraint: (constraintId: number) => {
+        self.send({
+          type: 'start editing constraint',
+          data: { constraintId },
+        })
+      },
     }),
     onMouseEnter: createOnMouseEnterCallback({
       updateSegmentHover,
@@ -1469,6 +1504,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return snapshot.context.draftEntities
           ? [...snapshot.context.draftEntities.segmentIds]
           : undefined
+      },
+      onUpdateHoveredId: (hoveredId: number | null) => {
+        self.send({ type: 'update hovered id', data: { hoveredId } })
       },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
@@ -1490,6 +1528,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return snapshot.context.draftEntities
           ? [...snapshot.context.draftEntities.segmentIds]
           : undefined
+      },
+      onUpdateHoveredId: (hoveredId: number | null) => {
+        self.send({ type: 'update hovered id', data: { hoveredId } })
       },
     }),
     onAreaSelectStart: ({ startPoint }) => {

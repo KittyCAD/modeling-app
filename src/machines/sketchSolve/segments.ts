@@ -1,25 +1,12 @@
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  SEGMENT_WIDTH_PX,
-  STRAIGHT_SEGMENT_BODY,
-} from '@src/clientSideScene/sceneConstants'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
-import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { type Themes } from '@src/lib/theme'
 import { hasNumericValue } from '@src/lib/kclHelpers'
-import type { Themes } from '@src/lib/theme'
-import { hasProperty, isArray } from '@src/lib/utils'
-import {
-  setupConstructionArcDashShader,
-  setupConstructionLineDashShader,
-} from '@src/machines/sketchSolve/constructionDashShader'
-// Import and re-export pure utility functions
-import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import type { Mesh } from 'three'
 import {
   BufferGeometry,
@@ -30,10 +17,24 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import {
+  SEGMENT_WIDTH_PX,
+  STRAIGHT_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
+import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
+import { hasProperty, isArray } from '@src/lib/utils'
+// Import and re-export pure utility functions
+import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  setupConstructionLineDashShader,
+  setupConstructionArcDashShader,
+} from '@src/machines/sketchSolve/constructionDashShader'
+import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+import { ConstraintUtils } from '@src/machines/sketchSolve/constraints'
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.
@@ -1137,6 +1138,7 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+  DimensionConstraint: new ConstraintUtils(),
 }
 
 /**
