@@ -26,6 +26,14 @@ export const CIRCLE_THREE_POINT_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_THREE_POINT_SEGMENT_DASH =
   'circle-three-point-segment-body-dashed'
 
+// Constraint types
+export const DISTANCE_CONSTRAINT_BODY = 'distance-constraint-body'
+export const DISTANCE_CONSTRAINT_ARROW = 'distance-constraint-arrow'
+export const DISTANCE_CONSTRAINT_LEADER_LINE =
+  'distance-constraint-leading-line'
+export const DISTANCE_CONSTRAINT_LABEL = 'distance-constraint-label'
+export const DISTANCE_CONSTRAINT_HIT_AREA = 'distance-constraint-hit-area'
+
 // Handle names
 export const ARC_ANGLE_END = 'arc-angle-end'
 export const ARC_ANGLE_REFERENCE_LINE = 'arc-angle-reference-line'

@@ -2551,6 +2551,24 @@ impl Node<BinaryExpression> {
                         debug_assert!(false, "{}", &message);
                         return Err(internal_err(message, self));
                     };
+                    // Recast the number side of == to get the source expression text.
+                    #[cfg(feature = "artifact-graph")]
+                    let number_binary_part = if matches!(&left_value, KclValue::SketchConstraint { .. }) {
+                        &self.right
+                    } else {
+                        &self.left
+                    };
+                    #[cfg(feature = "artifact-graph")]
+                    let source = {
+                        use crate::unparser::ExprContext;
+                        let mut buf = String::new();
+                        number_binary_part.recast(&mut buf, &Default::default(), 0, ExprContext::Other);
+                        crate::frontend::sketch::ConstraintSource {
+                            expr: buf,
+                            is_literal: matches!(number_binary_part, BinaryPart::Literal(_)),
+                        }
+                    };
+
                     match &constraint.kind {
                         SketchConstraintKind::Distance { points } => {
                             let range = self.as_source_range();
@@ -2592,6 +2610,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 let artifact_id = exec_state.next_artifact_id();
@@ -2802,6 +2821,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
@@ -2868,6 +2888,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
