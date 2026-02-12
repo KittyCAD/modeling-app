@@ -9,7 +9,7 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
+import { getAngleDiff, roundOff } from '@src/lib/utils'
 import { addVec, scaleVec, subVec } from '@src/lib/utils2d'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
@@ -82,16 +82,6 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
-function normalizeAngle(angle: number): number {
-  const tau = 2 * Math.PI
-  return ((angle % tau) + tau) % tau
-}
-
-function ccwDistance(from: number, to: number): number {
-  const tau = 2 * Math.PI
-  return (to - from + tau) % tau
-}
-
 function collectDraftSegmentIds(ids: Array<number | undefined>): Array<number> {
   return [...new Set(ids.filter((id): id is number => id !== undefined))]
 }
@@ -159,18 +149,12 @@ function resolveArcEndpoints({
   const endFromCenter = subVec(endPoint, centerPoint)
   const throughFromCenter = subVec(throughPoint, centerPoint)
 
-  const startAngle = normalizeAngle(
-    Math.atan2(startFromCenter[1], startFromCenter[0])
-  )
-  const endAngle = normalizeAngle(
-    Math.atan2(endFromCenter[1], endFromCenter[0])
-  )
-  const throughAngle = normalizeAngle(
-    Math.atan2(throughFromCenter[1], throughFromCenter[0])
-  )
+  const startAngle = Math.atan2(startFromCenter[1], startFromCenter[0])
+  const endAngle = Math.atan2(endFromCenter[1], endFromCenter[0])
+  const throughAngle = Math.atan2(throughFromCenter[1], throughFromCenter[0])
 
-  const endSpan = ccwDistance(startAngle, endAngle)
-  const throughSpan = ccwDistance(startAngle, throughAngle)
+  const endSpan = getAngleDiff(startAngle, endAngle, true)
+  const throughSpan = getAngleDiff(startAngle, throughAngle, true)
   const throughIsOnArc = throughSpan <= endSpan + EPSILON
 
   if (throughIsOnArc) {
