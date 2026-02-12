@@ -1553,7 +1553,7 @@ export fn deleteFace(
   faceIndices?: [number(Count); 1+],
 ): Solid {}
 
-/// Blend two surfaces together
+/// Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 /// profile001 = startProfile(sketch001, at = [-2, 0])
@@ -1567,7 +1567,7 @@ export fn deleteFace(
 ///   |> extrude(length = 2, bodyType = SURFACE)
 ///   |> flipSurface()
 /// 
-/// edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001)
+/// edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001, lowerBound = 0.1, upperBound = 0.9)
 /// edge002 = getBoundedEdge(profile002, edge = rectangleSegmentA002)
 /// 
 /// blend([edge001, edge002])

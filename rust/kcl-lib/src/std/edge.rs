@@ -336,7 +336,7 @@ pub async fn inner_get_bounded_edge(
 
     Ok(BoundedEdge {
         face_id: face.id,
-        edge_id: edge.get_engine_id(exec_state, &args).unwrap(),
+        edge_id: edge.get_engine_id(exec_state, &args)?,
         lower_bound,
         upper_bound,
     })

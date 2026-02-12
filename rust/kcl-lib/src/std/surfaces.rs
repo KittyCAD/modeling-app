@@ -221,7 +221,10 @@ async fn inner_delete_face(
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let bounded_edges = args.get_unlabeled_kw_arg(
         "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            ArrayLen::Known(2),
+        ),
         exec_state,
     )?;
 
