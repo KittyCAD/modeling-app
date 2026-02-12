@@ -1329,6 +1329,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1884,6 +1906,14 @@ impl Annotation {
                 None => props.push(ObjectProperty::new(Identifier::new(label), value)),
             },
             None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
+        }
+    }
+
+    /// Get a property by name. This is O(n) in the number of properties.
+    pub(crate) fn property(&self, name: &str) -> Option<&Node<ObjectProperty>> {
+        match &self.properties {
+            Some(props) => props.iter().find(|p| p.key.name == name),
+            None => None,
         }
     }
 }
@@ -3688,6 +3718,9 @@ impl DefaultParamVal {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
+    /// Whether it's experimental.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub experimental: bool,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -3732,6 +3765,10 @@ impl From<&Parameter> for SourceRange {
         }
         sr
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 fn is_true(b: &bool) -> bool {
@@ -4412,6 +4449,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4432,6 +4470,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4453,6 +4492,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4463,6 +4503,7 @@ cylinder = startSketchOn(-XZ)
                             digest: None,
                         },
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

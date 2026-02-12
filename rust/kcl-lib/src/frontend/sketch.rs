@@ -9,6 +9,15 @@ use crate::{
     },
 };
 
+/// Information about a newly created segment for batch operations
+#[derive(Debug, Clone)]
+pub struct NewSegmentInfo {
+    pub segment_id: ObjectId,
+    pub start_point_id: ObjectId,
+    pub end_point_id: ObjectId,
+    pub center_point_id: Option<ObjectId>,
+}
+
 pub trait SketchApi {
     /// Execute the sketch in mock mode, without changing anything. This is
     /// useful after editing segments, and the user releases the mouse button.
@@ -97,7 +106,34 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        constraint: Constraint,
+        value_expression: String,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
+    /// Batch operations for split segment: edit segments, add constraints, delete objects.
+    /// All operations are applied to a single AST and execute_after_edit is called once at the end.
+    /// new_segment_info contains the IDs from the segment(s) added in a previous step.
+    #[allow(clippy::too_many_arguments)]
+    async fn batch_split_segment_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
+        new_segment_info: NewSegmentInfo,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
+    /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
+    /// delete constraints, and execute once.
+    async fn batch_tail_cut_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 }
 
@@ -307,6 +343,14 @@ pub struct Coincident {
 pub struct Distance {
     pub points: Vec<ObjectId>,
     pub distance: Number,
+    pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ConstraintSource {
+    pub expr: String,
+    pub is_literal: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

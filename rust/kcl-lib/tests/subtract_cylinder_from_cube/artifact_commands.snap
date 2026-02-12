@@ -371,7 +371,6 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
                 "z": 3.14
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

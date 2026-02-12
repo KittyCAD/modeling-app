@@ -271,6 +271,25 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
+    "multipleFiles": true,
+    "title": "Contra-Rotor Assembly",
+    "description": "A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
+    "files": [
+      "contra.kcl",
+      "helical.kcl",
+      "main.kcl",
+      "primary.kcl",
+      "propeller.kcl",
+      "secondary.kcl",
+      "tertiary.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Manufacturing",
       "Construction"
     ],
@@ -415,7 +434,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
     "multipleFiles": true,
-    "title": "A Dog House for a Great Dane",
+    "title": "Dog House for a Great Dane",
     "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
     "files": [
       "1528A31_strap-hinge.stp",
@@ -534,7 +553,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
+    "title": "Mounting bracket for the Focusrite Scarlett Solo audio interface",
     "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
     "files": [
       "main.kcl"
@@ -1193,6 +1212,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "racing-seat-brackets/main.kcl",
+    "multipleFiles": false,
+    "title": "Race Car Seat Brackets",
+    "description": "Two of these modular brackets are used to mount a race car seat",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Computer Hardware"
     ],
     "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
@@ -1326,10 +1358,14 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Construction",
+      "Manufacturing"
+    ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "@settings(defaultLengthUnit = mm)",
-    "description": "",
+    "title": "Sheet Metal Bracket",
+    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
     "files": [
       "main.kcl"
     ]
@@ -1891,6 +1927,19 @@
     "multipleFiles": false,
     "title": "Wing Spar",
     "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wood-screw/main.kcl",
+    "multipleFiles": false,
+    "title": "Wood Screw",
+    "description": "An Oval Head Phillips Wood Screw flange is a threaded fastener with a slightly domed head, a cross‑shaped (Phillips) drive, and a sharp point for entering wood. This kind of wood screw is often used for furniture assembly and household construction projects, like attaching hinges and trims.",
     "files": [
       "main.kcl"
     ]

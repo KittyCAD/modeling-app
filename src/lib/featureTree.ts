@@ -16,6 +16,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { ActorRefFrom } from 'xstate'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 
 export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
@@ -76,17 +77,25 @@ export function prepareEditCommand(
   })
 }
 
-export function sendSelectionEvent(input: {
-  sourceRange: SourceRange
-  kclManager: KclManager
-  modelingSend: ActorRefFrom<typeof modelingMachine>['send']
-}) {
+export function sendSelectionEvent(
+  input: {
+    sourceRange: SourceRange
+    kclManager: KclManager
+    modelingSend: ActorRefFrom<typeof modelingMachine>['send']
+  },
+  convertRangeToUtf16 = false
+) {
   const artifact =
     getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
     undefined
 
   const selection = {
-    codeRef: codeRefFromRange(input.sourceRange, input.kclManager.ast),
+    codeRef: codeRefFromRange(
+      convertRangeToUtf16
+        ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
+        : input.sourceRange,
+      input.kclManager.ast
+    ),
     artifact,
   }
 

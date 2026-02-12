@@ -54,6 +54,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -278,6 +279,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -469,6 +471,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -718,6 +721,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1086,6 +1090,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2535,6 +2540,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
