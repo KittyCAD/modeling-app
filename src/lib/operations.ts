@@ -1976,6 +1976,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  'hole::holes': {
+    label: 'Holes',
+    icon: 'hole',
+    supportsAppearance: false,
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
