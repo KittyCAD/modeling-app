@@ -1,6 +1,7 @@
 export interface IStat {
   dev: number
   ino: number
+  /** Slight divergence from NodeJS stat. We don't support the string literals or null. */
   mode: number // 'read' | 'write' | 'execute' | null
   nlink: number
   uid: number
