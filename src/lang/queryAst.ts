@@ -1264,6 +1264,23 @@ export function retrieveSelectionsFromOpArg(
   return { graphSelections, otherSelections: [] } as Selections
 }
 
+export function findOperationArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(operation.nodePath)
+  const artifact = artifactGraph
+    .values()
+    .toArray()
+    .find(
+      (a) =>
+        'codeRef' in a &&
+        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
+        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+    )
+  return artifact
+}
+
 export function findOperationPlaneArtifact(
   operation: StdLibCallOp,
   artifactGraph: ArtifactGraph

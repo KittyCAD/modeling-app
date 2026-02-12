@@ -208,7 +208,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6604.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -236,7 +235,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -451,7 +449,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6606.54
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -479,7 +476,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -694,7 +690,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6609.079999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -722,7 +717,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 72.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -937,7 +931,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6611.62
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -965,7 +958,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 144.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1180,7 +1172,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6614.159999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1208,7 +1199,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 216.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1423,7 +1413,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6616.7
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1451,7 +1440,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 288.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1666,7 +1654,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6619.24
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1694,7 +1681,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1909,7 +1895,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6621.78
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1937,7 +1922,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 36.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2152,7 +2136,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6624.32
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2180,7 +2163,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 108.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2395,7 +2377,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6626.859999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2423,7 +2404,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2638,7 +2618,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6606.794
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2666,7 +2645,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 252.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2881,7 +2859,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": -6607.048
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2909,7 +2886,6 @@ description: Artifact commands dodecahedron.kcl
                 "z": 324.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

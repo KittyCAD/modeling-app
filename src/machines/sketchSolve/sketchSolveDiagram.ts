@@ -29,6 +29,7 @@ import {
   type SketchSolveMachineEvent,
   type SketchSolveContext,
   type SpawnToolActor,
+  type SolveActionArgs,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
   initializeIntersectionPlane,
@@ -44,14 +45,16 @@ import {
   deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
+  onCameraScaleChange,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
-  self: any,
+  self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
   constraintType: 'HorizontalDistance' | 'VerticalDistance'
 ) {
@@ -114,13 +117,20 @@ async function addAxisDistanceConstraint(
       type: constraintType,
       distance: { value: distance, units },
       points: segmentsToConstrain,
+      source: {
+        expr: distance.toString(),
+        is_literal: true,
+      },
     },
     await jsAppSettings(context.rustContext.settingsActor)
   )
   if (result) {
     self.send({
       type: 'update sketch outcome',
-      data: result,
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+      },
     })
   }
 }
@@ -178,8 +188,13 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update hovered id': assign(({ event }) => {
+      assertEvent(event, 'update hovered id')
+      return { hoveredId: event.data.hoveredId }
+    }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
+    'camera scale change': onCameraScaleChange,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -219,9 +234,10 @@ export const sketchSolveMachine = setup({
       sketchSolveToolName: null,
       selectedIds: [],
       duringAreaSelectIds: [],
+      hoveredId: null,
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
-        kclSource: {
+        sourceDelta: {
           text: input.kclManager.code,
         },
         sceneGraphDelta: input.initialSceneGraphDelta,
@@ -246,6 +262,9 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
+    },
+    'camera scale change': {
+      actions: 'camera scale change',
     },
     'set draft entities': {
       actions: 'set draft entities',
@@ -283,7 +302,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -383,7 +405,10 @@ export const sketchSolveMachine = setup({
             if (result) {
               self.send({
                 type: 'update sketch outcome',
-                data: result,
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                },
               })
             }
             return
@@ -442,13 +467,20 @@ export const sketchSolveMachine = setup({
             type: 'Distance',
             distance: { value: distance, units },
             points: pointsForDistance,
+            source: {
+              expr: distance.toString(),
+              is_literal: true,
+            },
           },
           await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -488,7 +520,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -508,7 +543,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -528,7 +566,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -551,7 +592,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -574,7 +618,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -665,13 +712,19 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
     },
     'update selected ids': {
       actions: ['update selected ids', 'refresh selection styling'],
+    },
+    'update hovered id': {
+      actions: ['update hovered id', 'refresh selection styling'],
     },
     'delete selected': {
       actions: async ({ self, context }) => {
@@ -682,13 +735,26 @@ export const sketchSolveMachine = setup({
           return
         }
 
-        // Call deleteObjects with the selected segment IDs
+        // Partition selectedIds into constraints and segments
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const constraintIds: number[] = []
+        const segmentIds: number[] = []
+        for (const id of selectedIds) {
+          const obj = objects[id]
+          if (obj?.kind.type === 'Constraint') {
+            constraintIds.push(id)
+          } else {
+            segmentIds.push(id)
+          }
+        }
+
         const result = await context.rustContext
           .deleteObjects(
-            0,
+            SKETCH_FILE_VERSION,
             context.sketchId,
-            [],
-            selectedIds,
+            constraintIds,
+            segmentIds,
             await jsAppSettings(context.rustContext.settingsActor)
           )
           .catch((err) => {
@@ -706,10 +772,30 @@ export const sketchSolveMachine = setup({
           // Send the update sketch outcome event
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
+    },
+    'start editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: ({ event }) => {
+            assertEvent(event, 'start editing constraint')
+            return event.data.constraintId
+          },
+        }),
+      ],
+    },
+    'stop editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: undefined,
+        }),
+      ],
     },
   },
   states: {

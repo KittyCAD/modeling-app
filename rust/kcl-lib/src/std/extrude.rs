@@ -22,8 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed,
-        Sketch, SketchSurface, Solid,
+        ArtifactId, CreatorFace, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path,
+        ProfileClosed, Sketch, SketchSurface, Solid, SolidCreator, annotations,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -347,7 +347,18 @@ async fn inner_extrude(
 
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::Face(..) => BeingExtruded::Face,
+            Extrudable::Face(face_tag) => {
+                let face_id = sketch_or_face_id;
+                let solid_id = match face_tag.geometry() {
+                    Some(crate::execution::Geometry::Solid(solid)) => solid.id,
+                    Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
+                        SketchSurface::Face(face) => face.solid.id,
+                        SketchSurface::Plane(_) => sketch.id,
+                    },
+                    None => face_id,
+                };
+                BeingExtruded::Face { face_id, solid_id }
+            }
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -399,7 +410,7 @@ pub(crate) struct NamedCapTags<'a> {
 #[derive(Debug, Clone, Copy)]
 pub enum BeingExtruded {
     Sketch,
-    Face,
+    Face { face_id: Uuid, solid_id: Uuid },
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -462,27 +473,23 @@ pub(crate) async fn do_post_extrude<'a>(
             sketch.is_closed = ProfileClosed::Explicitly;
         }
         BodyType::Surface => {}
+        _other => {
+            // At some point in the future we'll add sheet metal or something.
+            // Figure this out then.
+        }
     }
 
-    // 1st time: Merge, Sketch
-    // 2nd time: New, Face
     match (extrude_method, being_extruded) {
-        (ExtrudeMethod::Merge, BeingExtruded::Face) => {
+        (ExtrudeMethod::Merge, BeingExtruded::Face { .. }) => {
             // Merge the IDs.
             // If we were sketching on a face, we need the original face id.
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
             }
         }
-        (ExtrudeMethod::New, BeingExtruded::Face) => {
+        (ExtrudeMethod::New, BeingExtruded::Face { .. }) => {
             // We're creating a new solid, it's not based on any existing sketch (it's based on a face).
             // So we need a new ID, the extrude command ID.
             sketch.id = extrude_cmd_id.into();
@@ -493,16 +500,17 @@ pub(crate) async fn do_post_extrude<'a>(
         }
         (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
             if let SketchSurface::Face(ref face) = sketch.on {
-                match extrude_method {
-                    // If we are creating a new body we need to preserve its new id.
-                    ExtrudeMethod::New => {
-                        // The sketch's ID is already correct here, it should be the ID of the sketch.
-                    }
-                    // If we're merging into an existing body, then assign the existing body's ID,
-                    // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                    ExtrudeMethod::Merge => sketch.id = face.solid.sketch.id,
-                }
+                // If we're merging into an existing body, then assign the existing body's ID,
+                // because the variable binding for this solid won't be its own object, it's just modifying the original one.
+                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
             }
+        }
+        (other, _) => {
+            // If you ever hit this, you should add a new arm to the match expression, and implement support for the new ExtrudeMethod variant.
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Zoo does not yet support creating bodies via {other:?}"),
+                vec![args.source_range],
+            )));
         }
     }
 
@@ -681,14 +689,34 @@ pub(crate) async fn do_post_extrude<'a>(
         }));
     }
 
+    let meta = sketch.meta.clone();
+    let units = sketch.units;
+    let id = sketch.id;
+    // let creator = match &sketch.on {
+    //     SketchSurface::Plane(_) => SolidCreator::Sketch(sketch),
+    //     SketchSurface::Face(face) => SolidCreator::Face(CreatorFace {
+    //         face_id: face.id,
+    //         solid_id: face.solid.id,
+    //         sketch,
+    //     }),
+    // };
+    let creator = match being_extruded {
+        BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
+        BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
+            face_id,
+            solid_id,
+            sketch,
+        }),
+    };
+
     Ok(Solid {
-        id: sketch.id,
+        id,
         artifact_id: extrude_cmd_id,
         value: new_value,
-        meta: sketch.meta.clone(),
-        units: sketch.units,
+        meta,
+        units,
         sectional,
-        sketch,
+        creator,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
@@ -727,6 +755,18 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
                 if let Some(curve_id) = face_info.curve_id {
                     faces.sides.insert(curve_id, face_info.face_id);
                 }
+            }
+            other => {
+                exec_state.warn(
+                    crate::CompilationError {
+                        source_range: args.source_range,
+                        message: format!("unknown extrusion face type {other:?}"),
+                        suggestion: None,
+                        severity: crate::errors::Severity::Warning,
+                        tag: crate::errors::Tag::Unnecessary,
+                    },
+                    annotations::WARN_NOT_YET_SUPPORTED,
+                );
             }
         }
     }

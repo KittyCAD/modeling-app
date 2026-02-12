@@ -151,9 +151,9 @@ impl crate::engine::EngineManager for EngineConnection {
                 request_id: Some(id),
                 resp: OkWebSocketResponseData::Modeling {
                     modeling_response: OkModelingCmdResponse::ImportFiles(
-                        kittycad_modeling_cmds::output::ImportFiles {
-                            object_id: cmd_id.into(),
-                        },
+                        kittycad_modeling_cmds::output::ImportFiles::builder()
+                            .object_id(cmd_id.into())
+                            .build(),
                     ),
                 },
                 success: true,

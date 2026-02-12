@@ -118,7 +118,7 @@ description: Result of parsing contra-rotor.kcl
         },
         "preComments": [
           "// Contra-Rotor Assembly",
-          "// Entry point and module imports",
+          "// A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
           "// Categories: Aerospace",
           "",
           "",

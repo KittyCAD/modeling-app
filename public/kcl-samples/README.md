@@ -306,6 +306,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![wind-turbine-blade-root-inserts](screenshots/wind-turbine-blade-root-inserts.png)](wind-turbine-blade-root-inserts/main.kcl)
 #### [wing-spar](wing-spar/main.kcl) ([screenshot](screenshots/wing-spar.png))
 [![wing-spar](screenshots/wing-spar.png)](wing-spar/main.kcl)
+#### [wood-screw](wood-screw/main.kcl) ([screenshot](screenshots/wood-screw.png))
+[![wood-screw](screenshots/wood-screw.png)](wood-screw/main.kcl)
 #### [zoo-logo](zoo-logo/main.kcl) ([screenshot](screenshots/zoo-logo.png))
 [![zoo-logo](screenshots/zoo-logo.png)](zoo-logo/main.kcl)
 

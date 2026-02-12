@@ -252,6 +252,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  body: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 7C16 8.65685 13.3137 10 10 10C6.68629 10 4 8.65685 4 7M16 7C16 5.34315 13.3137 4 10 4C6.68629 4 4 5.34315 4 7M16 7V13C16 14.6569 13.3137 16 10 16C6.68629 16 4 14.6569 4 13V7"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   booleanExclude: (
     <svg
       viewBox="0 0 20 20"
@@ -1651,6 +1659,23 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  rectangleAngled: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle angled"
+    >
+      <g transform="rotate(-45 10 10)">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M16 5H4V15H16V5ZM4 4H3V5V15V16H4H16H17V15V5V4H16H4Z"
+          fill="currentColor"
+        />
+      </g>
+    </svg>
+  ),
   rectangleCenter: (
     <svg
       viewBox="0 0 20 20"
@@ -1911,6 +1936,22 @@ const CustomIconMap = Object.freeze({
       <path
         d="M8.5 6H5V8H6M8.5 6V4H11.5V6M8.5 6H11.5M11.5 6H15V8H14M6 8V15.5H8M6 8H14M14 8V15.5H12M8 15.5V10M8 15.5H10M12 15.5V10M12 15.5H10M10 15.5V12"
         stroke="currentColor"
+      />
+    </svg>
+  ),
+  trimTool: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m7.848 8.25 1.536.887M7.848 8.25a3 3 0 1 1-5.196-3 3 3 0 0 1 5.196 3Zm1.536.887a2.165 2.165 0 0 1 1.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 1 1-5.196 3 3 3 0 0 1 5.196-3Zm1.536-.887a2.165 2.165 0 0 0 1.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863 2.077-1.199m0-3.328a4.323 4.323 0 0 1 2.068-1.379l5.325-1.628a4.5 4.5 0 0 1 2.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.33 4.33 0 0 0 10.607 12m3.736 0 7.794 4.5-.802.215a4.5 4.5 0 0 1-2.48-.043l-5.326-1.629a4.324 4.324 0 0 1-2.068-1.379M14.343 12l-2.882 1.664"
       />
     </svg>
   ),
