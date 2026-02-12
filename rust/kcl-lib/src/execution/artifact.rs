@@ -13,7 +13,7 @@ use crate::{
     KclError, ModuleId, NodePath, SourceRange,
     errors::KclErrorDetails,
     execution::{ArtifactId, state::ModuleInfoMap},
-    front::ObjectId,
+    front::{Constraint, ObjectId},
     modules::ModulePath,
     parsing::ast::types::{BodyItem, ImportPath, ImportSelector, Node, Program},
 };
@@ -243,6 +243,54 @@ pub struct SketchBlock {
     pub sketch_id: ObjectId,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SketchBlockConstraintType {
+    Coincident,
+    Distance,
+    Diameter,
+    HorizontalDistance,
+    VerticalDistance,
+    Horizontal,
+    LinesEqualLength,
+    Parallel,
+    Perpendicular,
+    Radius,
+    Vertical,
+}
+
+impl From<&Constraint> for SketchBlockConstraintType {
+    fn from(constraint: &Constraint) -> Self {
+        match constraint {
+            Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
+            Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
+            Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
+            Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
+            Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,
+            Constraint::LinesEqualLength { .. } => SketchBlockConstraintType::LinesEqualLength,
+            Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
+            Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
+            Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchBlockConstraint {
+    pub id: ArtifactId,
+    /// The sketch ID (ObjectId) that owns this constraint.
+    pub sketch_id: ObjectId,
+    /// The constraint ID (ObjectId) for the constraint scene object.
+    pub constraint_id: ObjectId,
+    pub constraint_type: SketchBlockConstraintType,
+    pub code_ref: CodeRef,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -386,6 +434,7 @@ pub enum Artifact {
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     SketchBlock(SketchBlock),
+    SketchBlockConstraint(SketchBlockConstraint),
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
@@ -406,6 +455,7 @@ impl Artifact {
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::SketchBlock(a) => a.id,
+            Artifact::SketchBlockConstraint(a) => a.id,
             Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
@@ -429,6 +479,7 @@ impl Artifact {
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::SketchBlock(a) => Some(&a.code_ref),
+            Artifact::SketchBlockConstraint(a) => Some(&a.code_ref),
             Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
@@ -453,6 +504,7 @@ impl Artifact {
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::SketchBlock(_)
+            | Artifact::SketchBlockConstraint(_)
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
@@ -472,6 +524,7 @@ impl Artifact {
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::SketchBlock { .. } => Some(new),
+            Artifact::SketchBlockConstraint { .. } => Some(new),
             Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
@@ -809,6 +862,12 @@ fn fill_in_node_paths(
                     code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
                 block.code_ref.range = range;
                 block.code_ref.node_path = node_path;
+            }
+        }
+        Artifact::SketchBlockConstraint(constraint) => {
+            if constraint.code_ref.node_path.is_empty() {
+                constraint.code_ref.node_path =
+                    NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
             }
         }
         _ => {}

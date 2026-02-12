@@ -5,7 +5,7 @@
 /// This module contains functions for creating and manipulating sketches, and making them into solids.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
@@ -245,9 +245,9 @@ export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
   /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`.
-  face?: TaggedFace,
+  face?: TaggedFace | Segment,
   /// Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`.
-  normalToFace?: TaggedFace,
+  normalToFace?: TaggedFace | Segment,
   /// If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`.
   alignAxis?: Axis2d,
   /// Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`.
@@ -2594,7 +2594,7 @@ export fn planeOf(
   /// The solid whose face is being queried.
   @solid: Solid,
   /// Find the plane which this face lies on.
-  face: TaggedFace,
+  face: TaggedFace | Segment,
 ): Plane {}
 
 /// Get the face of a solid.
@@ -2620,5 +2620,5 @@ export fn faceOf(
   /// The solid that has the face.
   @solid: Solid,
   /// Which face of the solid.
-  face: TaggedFace,
+  face: TaggedFace | Segment,
 ): Face {}

@@ -43,6 +43,7 @@ import type {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { signal } from '@preact/signals-core'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -107,7 +108,10 @@ export class SceneInfra {
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
+
   public readonly baseUnitChange = new Signal()
+  public readonly scaleFactor = signal<number>(1)
+
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -351,6 +355,7 @@ export class SceneInfra {
       engineCommandManager,
       false
     )
+    this.camControls.cameraChange.add(this.onCameraChange)
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -397,6 +402,10 @@ export class SceneInfra {
     this.labelRenderer.setSize(cssSize[0], cssSize[1])
   }
 
+  onCameraChange = () => {
+    this.scaleFactor.value = this.getClientSceneScaleFactor()
+  }
+
   animate = () => {
     this.animationFrameId = requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
@@ -437,12 +446,12 @@ export class SceneInfra {
   //   // Dispose of any other resources like geometries, materials, textures
   // }
 
-  getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
+  getClientSceneScaleFactor(target?: Mesh | Group | null) {
     const orthoFactor = orthoScale(this.camControls.camera)
     const factor =
-      (this.camControls.camera instanceof OrthographicCamera
+      (this.camControls.camera instanceof OrthographicCamera || !target
         ? orthoFactor
-        : perspScale(this.camControls.camera, meshOrGroup)) /
+        : perspScale(this.camControls.camera, target)) /
       this._baseUnitMultiplier
     return factor
   }
