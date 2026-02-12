@@ -271,6 +271,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

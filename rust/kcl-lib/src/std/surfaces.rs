@@ -15,7 +15,7 @@ use kittycad_modeling_cmds::{
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid,
+        BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid, SolidCreator,
         types::{ArrayLen, RuntimeType},
     },
     std::{Args, args::TyF64, sketch::FaceTag},
@@ -221,27 +221,29 @@ async fn inner_delete_face(
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let bounded_edges = args.get_unlabeled_kw_arg("edges", &RuntimeType::any_array(), exec_state)?;
 
-    let res = inner_blend(bounded_edges, exec_state, args.clone()).await?;
-    Ok(KclValue::Bool {
-        value: res,
-        meta: vec![crate::execution::Metadata {
-            source_range: args.source_range,
-        }],
-    })
+    inner_blend(bounded_edges, exec_state, args.clone())
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
 }
 
-async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<bool, KclError> {
+async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
     let id = exec_state.next_uuid();
 
     let surface_refs: Vec<SurfaceEdgeReference> = edges
         .iter()
-        .map(|edge| SurfaceEdgeReference::builder().object_id(edge.face_id).edges(vec![
-                FractionOfEdge::builder()
-                    .edge_id(edge.edge_id)
-                    .lower_bound(edge.lower_bound)
-                    .upper_bound(edge.upper_bound)
-                    .build(),
-            ]).build())
+        .map(|edge| {
+            SurfaceEdgeReference::builder()
+                .object_id(edge.face_id)
+                .edges(vec![
+                    FractionOfEdge::builder()
+                        .edge_id(edge.edge_id)
+                        .lower_bound(edge.lower_bound)
+                        .upper_bound(edge.upper_bound)
+                        .build(),
+                ])
+                .build()
+        })
         .collect();
 
     exec_state
@@ -250,20 +252,21 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
             ModelingCmd::from(mcmd::SurfaceBlend::builder().surfaces(surface_refs).build()),
         )
         .await?;
-    // let solid = Solid {
-    //     id,
-    //     artifact_id: id.into(),
-    //     value: vec![],
-    //     sketch: Sketch{},
-    //     start_cap_id: None,
-    //     end_cap_id: None,
-    //     edge_cuts: vec![],
-    //     units: exec_state.length_unit(),
-    //     sectional: false,
-    //     meta: vec![],
-    // };
-    //TODO: Ben do this properly by returning the new surface that is created
-    // Ok(edges[0].face_id)
+
+    let solid = Solid {
+        id,
+        artifact_id: id.into(),
+        value: vec![],
+        creator: SolidCreator::Procedural,
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: vec![],
+        units: exec_state.length_unit(),
+        sectional: false,
+        meta: vec![crate::execution::Metadata {
+            source_range: args.source_range,
+        }],
+    };
     //TODO: How do we pass back the two new edge ids that were created?
-    Ok(true)
+    Ok(solid)
 }

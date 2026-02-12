@@ -1576,4 +1576,4 @@ export fn deleteFace(
 export fn blend(
    /// The two edges that will be blended.
    @edges: [BoundedEdge; 2],
-): bool {}
+): Solid {}

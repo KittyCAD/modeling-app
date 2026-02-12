@@ -553,6 +553,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
         ),
+        ("sketch2", "region") => (
+            |e, a| Box::pin(crate::std::sketch2::region(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch2::region"),
+        ),
         ("solid", "isSurface") => (
             |e, a| Box::pin(crate::std::surfaces::is_surface(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::isSurface"),
@@ -607,3 +611,18 @@ const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;
 /// WARNING: This must match the tolerance in engine/cpp/engine/scene/constants.h
 #[allow(clippy::excessive_precision)]
 const EQUAL_POINTS_DIST_EPSILON: f64 = 2.3283064365386962890625e-10;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CircularDirection {
+    Counterclockwise,
+    Clockwise,
+}
+
+impl CircularDirection {
+    pub fn is_clockwise(self) -> bool {
+        match self {
+            CircularDirection::Counterclockwise => false,
+            CircularDirection::Clockwise => true,
+        }
+    }
+}
