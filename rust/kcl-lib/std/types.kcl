@@ -327,7 +327,7 @@ export type Helix
 @(impl = std_rust)
 export type Edge
 
-/// A bounded edge of a solid.
+/// A [bounded edge](/docs/kcl-std/functions/std-sketch-getBoundedEdge) of a solid.
 @(impl = std_rust)
 export type BoundedEdge
 

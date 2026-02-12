@@ -29,7 +29,7 @@ getBoundedEdge(
 
 ### Returns
 
-[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) - A bounded edge of a solid.
+[`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge) - A [bounded edge](/docs/kcl-std/functions/std-sketch-getBoundedEdge) of a solid.
 
 
 
