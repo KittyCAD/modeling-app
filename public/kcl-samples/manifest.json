@@ -434,7 +434,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
     "multipleFiles": true,
-    "title": "A Dog House for a Great Dane",
+    "title": "Dog House for a Great Dane",
     "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
     "files": [
       "1528A31_strap-hinge.stp",
@@ -553,7 +553,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
+    "title": "Mounting bracket for the Focusrite Scarlett Solo audio interface",
     "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
     "files": [
       "main.kcl"
