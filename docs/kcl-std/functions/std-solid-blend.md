@@ -1,11 +1,11 @@
 ---
 title: "blend"
 subtitle: "Function in std::solid"
-excerpt: "Blend two surfaces together"
+excerpt: "Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface."
 layout: manual
 ---
 
-Blend two surfaces together
+Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
 
 ```kcl
 blend(@edges: [BoundedEdge; 2]): Solid
@@ -39,7 +39,12 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()
 
-edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001)
+edge001 = getBoundedEdge(
+  profile001,
+  edge = rectangleSegmentA001,
+  lowerBound = 0.1,
+  upperBound = 0.9,
+)
 edge002 = getBoundedEdge(profile002, edge = rectangleSegmentA002)
 
 blend([edge001, edge002])
