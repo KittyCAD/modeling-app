@@ -7,11 +7,11 @@
 // Import parameters
 import * from "parameters.kcl"
 
-// Model the center of the fan
+// Model the center hub of the fan
 fanCenter = startSketchOn(XZ)
   |> startProfile(at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = 90)
+  |> tangentialArc(radius = 1.5, angle = 90deg)
   |> yLine(endAbsolute = 4.5)
   |> xLine(endAbsolute = -13)
   |> yLine(endAbsolute = profileStartY(%) - 5)
@@ -32,52 +32,35 @@ fanCenter = startSketchOn(XZ)
      })
   |> appearance(color = "#f3e2d8")
 
-// Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
-fn fanBlade(offsetHeight, startAngle: number(deg)) {
-  fanBlade = startSketchOn(offsetPlane(XY, offset = offsetHeight))
-    |> startProfile(at = [
-         15 * cos(startAngle),
-         15 * sin(startAngle)
-       ])
-    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
-    |> arc(
-         endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
-         ],
-         interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
-         ],
-       )
-    |> arc(
-         endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
-         ],
-         interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
-         ],
-       )
-    |> arc(
-         endAbsolute = [profileStartX(%), profileStartY(%)],
-         interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
-         ],
-       )
-    |> close()
-  return fanBlade
-}
+// Define blade construction
+bladeBaseZ = 4.5
+bladeLengthZ = fanHeight - 2 - bladeBaseZ
+bladeRootAngle = 50deg
+bladeOuterR = fanSize * 22 / 50
+bladeInnerR = 15
+bladeTwist = -bladeRootAngle
 
-// Loft the fan blade cross sections into a single blade, then pattern them about the fan center
-crossSections = [
-  fanBlade(offsetHeight = 4.5, startAngle = 50),
-  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
-  fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
-]
-loft(crossSections)
+// Base planform sketch for one blade (on XY at bladeBaseZ)
+bladeBase = startSketchOn(offsetPlane(XY, offset = bladeBaseZ))
+  |> startProfile(at = polar(angle = bladeRootAngle, length = bladeInnerR))
+  // Leading-edge arc segment near the root
+  |> arc(angleStart = bladeRootAngle, angleEnd = bladeRootAngle + 14deg, radius = bladeInnerR)
+  // Camber to mid radius
+  |> arc(endAbsolute = polar(angle = bladeRootAngle - 20deg, length = bladeOuterR), interiorAbsolute = polar(angle = bladeRootAngle + 3deg, length = fanSize * 11 / 50))
+  // Slight sweep back near the tip
+  |> arc(endAbsolute = polar(angle = bladeRootAngle - 24deg, length = bladeOuterR), interiorAbsolute = polar(angle = bladeRootAngle - 22deg, length = bladeOuterR))
+  // Return to root to close the profile with gentle camber
+  |> arc(endAbsolute = [profileStartX(%), profileStartY(%)], interiorAbsolute = polar(angle = bladeRootAngle - 5deg, length = fanSize * 11 / 50))
+  |> close()
+
+// Create the twisted blade solid and pattern
+twistedBlade = extrude(
+       bladeBase,
+       length = bladeLengthZ,
+       twistAngle = bladeTwist,
+       twistAngleStep = 12deg,
+       twistCenter = [0, 0],
+     )
   |> appearance(color = "#f3e2d8")
   |> patternCircular3d(
        instances = 9,

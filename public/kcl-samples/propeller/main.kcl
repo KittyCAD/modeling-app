@@ -1,96 +1,82 @@
-// Ceiling Propeller
-// A twisted 3-blade ceiling fan geometry made using boolean cutouts
+// Propeller
+// A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = mm)
+// Set units
+@settings(defaultLengthUnit = in)
 
-// Main Parameters
-bladeTwistAngle = 5deg // Twist angle applied to the void cut geometry
-bladeSpanLength = 100 // Blade span (radial length)
-bladeWidth = 17.5 // Half-width of the blade at its widest point
-bladeBaseThickness = 10 // Total thickness of the extruded root/base
-bladeThickness = 2 // Thickness of the profile at void section
+// Define parameters
+bladeCount = 2
+bladeDiameter = 86
+hubDiameter = 8
+hubThickness = 4
+holeDiameter = .25
+twistAngle = 45
 
-
-// Root geometry
-bladeRootWidth = bladeWidth * 2
-bladeSeamLength = bladeRootWidth / 2 / cos(30deg) // Angled base segment (30°)
-bladeNeckLength = (bladeRootWidth / 2 - (bladeWidth / 2)) / sin(30deg) // Neck connects to span
-
-
-// Fillet radii
-rootFillet = bladeNeckLength / tan(30deg) * 0.5 // Rounded base root
-tipFillet = bladeWidth * 0.49 // Rounded blade tip
-
-
-// Void cutout dimensions
-voidCutoutLength = bladeSpanLength + 30 // Longitudinal length of the void
-voidCutoutWidth = bladeWidth * 3 // Width of the void cut
-voidCutoutHeight = bladeWidth * 2 // Height (used in tangential arc)
-
-
-// Construct blade profile
-bladePlane = offsetPlane(XY, offset = -bladeBaseThickness / 2)
-bladeSketch = startSketchOn(XY)
-bladeProfile = startProfile(bladePlane, at = [0, 0])
-  |> angledLine(angle = 30deg, length = bladeSeamLength)
-  |> angledLine(angle = 120deg, length = bladeNeckLength, tag = $segUpperNeck)
-  |> yLine(length = bladeSpanLength, tag = $segSpanTop)
-  |> xLine(length = -bladeWidth, tag = $seg01)
-  |> yLine(length = -bladeSpanLength, tag = $segSpanBottom)
-  |> angledLine(angle = 240deg, length = bladeNeckLength, tag = $segLowerNeck)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-
-// Extrude blade solid and apply fillets
-bladeSolid = extrude(bladeProfile, length = bladeBaseThickness)
-  |> fillet(
-       radius = rootFillet,
-       tags = [
-         getCommonEdge(faces = [segSpanBottom, segLowerNeck]),
-         getCommonEdge(faces = [segUpperNeck, segSpanTop])
-       ],
+// Model the central hub of the propeller
+hub = startSketchOn(XY)
+  |> circle(diameter = hubDiameter, tag = $seg01)
+  // Create mounting holes around the perimeter of the hub
+  |> subtract2d(tool =   circle(center = [0, hubDiameter / 3], diameter = holeDiameter)
+    |> patternCircular2d(instances = 10, center = [0, 0]))
+  |> extrude(
+       length = hubThickness,
+       symmetric = true,
+       tagEnd = $capEnd001,
+       tagStart = $capStart001,
      )
   |> fillet(
-       radius = tipFillet,
        tags = [
-         getCommonEdge(faces = [segSpanTop, seg01]),
-         getCommonEdge(faces = [seg01, segSpanBottom])
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg01, capStart001])
        ],
+       radius = hubThickness / 6,
      )
 
-// Construct twisted void cutout (one side only)
-voidPlane = offsetPlane(YZ, offset = -voidCutoutWidth / 2)
-voidSketch = startSketchOn(voidPlane)
-voidProfile = startProfile(
-       voidSketch,
-       at = [
-         bladeSpanLength * 1.5,
-         bladeThickness / 2
+// Bore a central hole from the hub. Chamfer the interior edges
+hubBore = startSketchOn(hub, face = END)
+  |> circle(diameter = hubDiameter / 4, tag = $seg02)
+  |> extrude(length = -hubThickness)
+  |> chamfer(
+       tags = [
+         getCommonEdge(faces = [capEnd001, seg02])
        ],
+       length = hubThickness / 10,
      )
-  |> xLine(length = -bladeSpanLength * 1.15)
-  // Arc defining central void (based on voidCutoutHeight)
-  |> tangentialArc(end = [-voidCutoutHeight, voidCutoutHeight])
-  |> xLine(length = bladeSpanLength * 1.5)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+
+// Sketch the design space of each propeller blade, and revolve around the neutral axis
+bladeRevolve = startSketchOn(YZ)
+  |> startProfile(at = polar(angle = 40deg, length = hubDiameter / 2.01))
+  |> arc(angleStart = 230, angleEnd = 280, radius = bladeDiameter / 50)
+  |> tangentialArc(end = [
+       bladeDiameter / 2.6,
+       bladeDiameter / 30
+     ])
+  |> tangentialArc(endAbsolute = [bladeDiameter / 2, 0.01])
+  |> yLine(endAbsolute = 0)
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
   |> close()
+  |> revolve(axis = X)
+  // Subtract out a mounting face to the center hub
+  |> subtract(tools =   startSketchOn(XY)
+    |> circle(diameter = hubDiameter)
+    |> extrude(length = hubThickness * 5, symmetric = true))
 
-voidCutoutOne = extrude(voidProfile, length = voidCutoutWidth)
-  |> rotate(roll = 0, pitch = bladeTwistAngle, yaw = 0)
+// Sketch the cross-section of the blade. Extrude with a twist down the length of the blade
+bladeTwist = startSketchOn(-XZ)
+  |> startProfile(at = [bladeDiameter / 10, 0])
+  |> arc(angleStart = 0, angleEnd = 83, radius = 0.05)
+  |> tangentialArc(endAbsolute = [-lastSegX(), lastSegY()])
+  |> tangentialArc(angle = 83deg, radius = 0.05)
+  |> mirror2d(axis = X)
+  |> close()
+  |> extrude(twistAngle, length = bladeDiameter / 1.9)
 
-// Mirror second void cut to other side
-voidCutoutTwo = clone(voidCutoutOne)
-  |> rotate(roll = 0, pitch = 180, yaw = 0)
+// Model the blades by intersecting the outer profile to the twisted section. Pattern about the shaft axis
+blades = intersect([bladeRevolve, bladeTwist])
+  |> patternCircular3d(instances = bladeCount, axis = Z, center = [0, 0, 0])
 
-// Subtract voids from blade
-bladeWithVoidOne = subtract([bladeSolid], tools = [voidCutoutOne])
-bladeWithVoids = subtract([bladeWithVoidOne], tools = [voidCutoutTwo])
-
-// Circular pattern: 3 blade instance fan
-propellerAssembly = patternCircular3d(
-  bladeWithVoids,
-  instances = 3,
-  axis = [0, 0, 1],
-  center = [0, 0, 0],
-)
+// Apply wood appearance to the entire propeller model
+[hub, blades]
+  |> appearance(color = "#8b5a2b")

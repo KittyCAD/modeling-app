@@ -1,0 +1,58 @@
+// Liquid Impeller
+// An open-style impeller for a centrifugal liquid pump
+// Categories: Aerospace, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+impellerDiameter = 4
+plateHeight = 0.1
+vaneCount = 7
+vaneHeight = 0.3
+vaneThickness = 0.15
+mountDiameter = 0.25
+
+// Draw the profile of the mounting hole
+mountingHole = startSketchOn(XY)
+  |> startProfile(at = [mountDiameter / 2, 0])
+  |> arc(angleStart = 0, angleEnd = 60, diameter = mountDiameter)
+  |> xLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
+  |> mirror2d(axis = Y)
+  |> close()
+  |> extrude(length = plateHeight * 4)
+
+// Revolve the base plate of the impeller
+basePlate = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = impellerDiameter / 2)
+  |> yLine(length = plateHeight)
+  |> xLine(length = -impellerDiameter / 2.6, tag = $seg01)
+  |> tangentialArc(angle = -45deg, radius = plateHeight, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = mountDiameter)
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
+  |> close()
+  |> revolve(axis = Y)
+
+  // Subtract the mounting hole from the base plate
+  |> subtract(tools = mountingHole)
+
+// Model a vane of the impeller
+vane = startSketchOn(basePlate, face = seg01)
+  |> startProfile(at = polar(angle = 15, length = impellerDiameter / 2))
+  |> arc(angleStart = 0, angleEnd = -100, radius = impellerDiameter / 3)
+  |> tangentialArc(angle = -180deg, diameter = vaneThickness)
+  |> tangentialArc(angle = 100deg, radius = impellerDiameter / 3 - vaneThickness)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = vaneHeight)
+
+  // Pattern the vane around the Z axis
+  |> patternCircular3d(
+       useOriginal = true,
+       instances = vaneCount,
+       axis = Z,
+       center = [0, 0, 0],
+     )
