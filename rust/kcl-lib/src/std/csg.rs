@@ -34,11 +34,17 @@ pub(crate) async fn inner_union(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let solid_out_id = exec_state.next_uuid();
+    let Some(first_input) = solids.first() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "At least one solid is required for a union operation.".to_string(),
+            vec![args.source_range],
+        )));
+    };
 
-    let mut solid = solids[0].clone();
+    let solid_out_id = exec_state.next_uuid();
+    let mut solid = first_input.clone();
     solid.set_id(solid_out_id);
-    let mut new_solids = vec![solid.clone()];
+    let mut new_solids = vec![solid];
 
     if args.ctx.no_engine_commands().await {
         return Ok(new_solids);
@@ -76,7 +82,7 @@ pub(crate) async fn inner_union(
         if extra_solid_id == solid_out_id {
             continue;
         }
-        let mut new_solid = solid.clone();
+        let mut new_solid = first_input.clone();
         new_solid.set_id(extra_solid_id);
         new_solids.push(new_solid);
     }
@@ -107,11 +113,17 @@ pub(crate) async fn inner_intersect(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let solid_out_id = exec_state.next_uuid();
+    let Some(first_input) = solids.first() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "At least one solid is required for an intersect operation.".to_string(),
+            vec![args.source_range],
+        )));
+    };
 
-    let mut solid = solids[0].clone();
+    let solid_out_id = exec_state.next_uuid();
+    let mut solid = first_input.clone();
     solid.set_id(solid_out_id);
-    let mut new_solids = vec![solid.clone()];
+    let mut new_solids = vec![solid];
 
     if args.ctx.no_engine_commands().await {
         return Ok(new_solids);
@@ -149,7 +161,7 @@ pub(crate) async fn inner_intersect(
         if extra_solid_id == solid_out_id {
             continue;
         }
-        let mut new_solid = solid.clone();
+        let mut new_solid = first_input.clone();
         new_solid.set_id(extra_solid_id);
         new_solids.push(new_solid);
     }
@@ -175,11 +187,17 @@ pub(crate) async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let solid_out_id = exec_state.next_uuid();
+    let Some(first_input) = solids.first() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "At least one solid is required for a subtract operation.".to_string(),
+            vec![args.source_range],
+        )));
+    };
 
-    let mut solid = solids[0].clone();
+    let solid_out_id = exec_state.next_uuid();
+    let mut solid = first_input.clone();
     solid.set_id(solid_out_id);
-    let mut new_solids = vec![solid.clone()];
+    let mut new_solids = vec![solid];
 
     if args.ctx.no_engine_commands().await {
         return Ok(new_solids);
@@ -219,7 +237,7 @@ pub(crate) async fn inner_subtract(
         if extra_solid_id == solid_out_id {
             continue;
         }
-        let mut new_solid = solid.clone();
+        let mut new_solid = first_input.clone();
         new_solid.set_id(extra_solid_id);
         new_solids.push(new_solid);
     }
