@@ -30,6 +30,7 @@ import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDia
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
+import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
@@ -133,6 +134,7 @@ type ToolActorRef =
   | ActorRefFrom<typeof trimTool>
   | ActorRefFrom<typeof centerArcTool>
   | ActorRefFrom<typeof tangentialArcTool>
+  | ActorRefFrom<typeof threePointArcTool>
 
 export const equipTools = Object.freeze({
   trimTool,
@@ -145,6 +147,7 @@ export const equipTools = Object.freeze({
   lineTool,
   centerArcTool,
   tangentialArcTool,
+  threePointArcTool,
 })
 
 export type SketchSolveContext = {
