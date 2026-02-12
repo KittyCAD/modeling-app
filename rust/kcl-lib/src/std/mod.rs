@@ -290,6 +290,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::clone"),
         ),
+        ("prelude", "faceId") => (
+            |e, a| Box::pin(crate::std::ids::face_id(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::faceId"),
+        ),
+        ("prelude", "edgeId") => (
+            |e, a| Box::pin(crate::std::ids::edge_id(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::edgeId"),
+        ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::conic"),
