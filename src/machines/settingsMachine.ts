@@ -234,6 +234,12 @@ export const settingsMachine = setup({
     setCursorBlinking: ({ context, self }) => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
+    /**
+     * Update the root font-size based on the app.appFontSize multiplier.
+     */
+    setAppFontSize: ({ context }) => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
       // Peel off all non-settings context
@@ -412,6 +418,11 @@ export const settingsMachine = setup({
 
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
+        'set.app.appFontSize': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setAppFontSize', 'toastSuccess'],
+        },
 
         'set.app.allowOrbitInSketchMode': {
           target: 'persisting settings',
@@ -454,6 +465,7 @@ export const settingsMachine = setup({
             'setEngineHighlightEdges',
             'setEditorLineWrapping',
             'setCursorBlinking',
+            'setAppFontSize',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -474,6 +486,7 @@ export const settingsMachine = setup({
             'setEngineHighlightEdges',
             'setEditorLineWrapping',
             'setCursorBlinking',
+            'setAppFontSize',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -555,6 +568,7 @@ export const settingsMachine = setup({
             'setEngineHighlightEdges',
             'setEditorLineWrapping',
             'setCursorBlinking',
+            'setAppFontSize',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -592,6 +606,7 @@ export const settingsMachine = setup({
             'setEngineHighlightEdges',
             'setEditorLineWrapping',
             'setCursorBlinking',
+            'setAppFontSize',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
