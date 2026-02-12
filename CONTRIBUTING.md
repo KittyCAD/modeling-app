@@ -1,6 +1,6 @@
 # Contributing Guide
 
-## Quick start: Build the desktop app locally
+## Building the app
 
 This section applies to all potential contributors, internal and external to the Zoo team.
 
@@ -28,7 +28,7 @@ This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) wit
 ```
 # macOS/Linux
 npm run install:rust
-npm run install:wasm-pack:cargo 
+npm run install:wasm-pack:cargo
 
 # Windows
 npm run install:rust:windows
@@ -67,7 +67,7 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
-## Environment variables and hot reload
+## Developing locally
 
 This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
 
@@ -95,6 +95,10 @@ Note that it leverages a web server and by default points to our non-production 
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
+## Adding KCL samples
+
+Follow the instructions [here](public/kcl-samples/README.md).
+
 ## Writing tests
 
 How to identify the types of tests and where to put your test.
@@ -102,7 +106,7 @@ How to identify the types of tests and where to put your test.
 Unit tests should be fast, minimal dependencies, and minimal async code.
 Integration tests will be slower, require more dependencies, and could be flaky.
 
-- Vitest [config](./vitest.config.ts) 
+- Vitest [config](./vitest.config.ts)
   - Code written under `/src/**/*`
   - Projects
     - `unit` -- `npm run test:unit`
