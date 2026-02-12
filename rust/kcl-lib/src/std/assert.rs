@@ -139,7 +139,7 @@ async fn inner_assert(
         let tolerance = tolerance.as_ref().map(|e| e.n).unwrap_or(DEFAULT_TOLERANCE);
         _assert(
             (actual - exp).abs() < tolerance,
-            &format!("Expected {actual} to be equal to {exp} but it wasn't{suffix}"),
+            &format!("Expected {actual} to be equal to {exp} using tolerance {tolerance} but it wasn't{suffix}"),
             args,
         )
         .await?;
@@ -149,7 +149,7 @@ async fn inner_assert(
         let tolerance = tolerance.as_ref().map(|e| e.n).unwrap_or(DEFAULT_TOLERANCE);
         _assert(
             (actual - exp).abs() >= tolerance,
-            &format!("Expected {actual} to not be equal to {exp} but it was{suffix}"),
+            &format!("Expected {actual} to not be equal to {exp} using tolerance {tolerance} but it was{suffix}"),
             args,
         )
         .await?;
