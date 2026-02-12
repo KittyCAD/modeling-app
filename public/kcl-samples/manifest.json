@@ -170,6 +170,19 @@
     "categories": [
       "Automotive"
     ],
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -193,6 +206,19 @@
     "multipleFiles": false,
     "title": "Sprocket Cassette",
     "description": "A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
+    "multipleFiles": false,
+    "title": "Ceiling Propeller",
+    "description": "A twisted ceiling fan geometry made using boolean cutouts",
     "files": [
       "main.kcl"
     ]
@@ -602,6 +628,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "gas-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Gas Impeller",
+    "description": "The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Automotive"
     ],
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
@@ -925,6 +965,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "liquid-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Liquid Impeller",
+    "description": "An open-style impeller for a centrifugal liquid pump",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Construction",
       "Maker"
     ],
@@ -1190,8 +1244,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
     "multipleFiles": false,
-    "title": "Ceiling Propeller",
-    "description": "A twisted 3-blade ceiling fan geometry made using boolean cutouts",
+    "title": "Propeller",
+    "description": "A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward",
     "files": [
       "main.kcl"
     ]

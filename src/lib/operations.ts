@@ -1985,6 +1985,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  'hole::holes': {
+    label: 'Holes',
+    icon: 'hole',
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
