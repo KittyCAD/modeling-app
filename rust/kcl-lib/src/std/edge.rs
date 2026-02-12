@@ -302,9 +302,9 @@ pub async fn inner_get_bounded_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<BoundedEdge, KclError> {
-    let lower_bound = if lower_bound.is_some() {
-        let val = lower_bound.unwrap().n as f32;
-        if val < 0.0 || val > 1.0 {
+    let lower_bound = if let Some(lower_bound) = lower_bound {
+        let val = lower_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Invalid value: lowerBound must be between 0.0 and 1.0, provided {}",
@@ -315,12 +315,12 @@ pub async fn inner_get_bounded_edge(
         }
         val
     } else {
-        0.0 as f32
+        0.0_f32
     };
 
-    let upper_bound = if upper_bound.is_some() {
-        let val = upper_bound.unwrap().n as f32;
-        if val < 0.0 || val > 1.0 {
+    let upper_bound = if let Some(upper_bound) = upper_bound {
+        let val = upper_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Invalid value: upperBound must be between 0.0 and 1.0, provided {}",
@@ -331,7 +331,7 @@ pub async fn inner_get_bounded_edge(
         }
         val
     } else {
-        1.0 as f32
+        1.0_f32
     };
 
     Ok(BoundedEdge {
