@@ -331,10 +331,7 @@ export function removePointListener({ context }: ToolActionArgs) {
 export function sendResultToParent({ event, self }: ToolActionArgs) {
   if (!('output' in event) || !event.output) return
 
-  const output = event.output as {
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-  }
+  const output = event.output
   if (!output.kclSource || !output.sceneGraphDelta) return
 
   const sendData: SketchSolveMachineEvent = {
@@ -353,7 +350,7 @@ export function storeFirstPointResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as ToolDoneOutput
+  const output = event.output
   if (output.pointId === undefined || !output.point) return {}
 
   sendDraftEntitiesToParent({
@@ -374,7 +371,7 @@ export function storeSecondPointResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as ToolDoneOutput
+  const output = event.output
   if (output.pointId === undefined || !output.point) return {}
 
   sendDraftEntitiesToParent({
@@ -395,7 +392,7 @@ export function storeCreatedArcResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as ToolDoneOutput
+  const output = event.output
   if (output.arcId === undefined) return {}
 
   sendDraftEntitiesToParent({
