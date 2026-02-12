@@ -5,6 +5,11 @@ import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 
+const getFileType = (fileName: string): string => {
+  const extension = fileName.split('.').pop()
+  return extension?.toLowerCase() || 'bin'
+}
+
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
     if (window.electron) {
@@ -67,7 +72,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       // Create a new blob.
       const blob = new Blob([new Uint8Array(file.contents)])
       // Save the file.
-      await browserSaveFile(blob, file.name, toastId)
+      await browserSaveFile(blob, file.name, toastId, getFileType(file.name))
     }
   } catch (e) {
     // TODO: do something real with the error.

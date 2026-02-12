@@ -188,7 +188,8 @@ describe('DXF Export', () => {
       expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
         expect.any(Blob),
         'sketch.dxf',
-        'toast-id'
+        'toast-id',
+        'dxf'
       )
     })
 
@@ -572,7 +573,8 @@ describe('DXF Export', () => {
       expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
         expect.any(Blob),
         'sketch.dxf', // Filename from sketch name, not from selected file
-        'toast-id'
+        'toast-id',
+        'dxf'
       )
     })
   })

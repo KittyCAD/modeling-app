@@ -5,39 +5,29 @@ import toast from 'react-hot-toast'
 
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 
-const getSuggestedExtension = (suggestedName: string): `.${string}` | null => {
-  const finalDotIndex = suggestedName.lastIndexOf('.')
-  if (finalDotIndex <= 0 || finalDotIndex === suggestedName.length - 1) {
-    return null
-  }
-
-  const ext = suggestedName.slice(finalDotIndex + 1).toLowerCase()
-  if (!ext) return null
-
-  return `.${ext}`
+const normalizeFileType = (fileType: string): `.${string}` => {
+  const trimmed = fileType.trim().toLowerCase().replace(/^\./, '')
+  const safeExt = trimmed || 'bin'
+  return `.${safeExt}`
 }
 
 export const getShowSaveFilePickerOptions = (
-  suggestedName: string
+  suggestedName: string,
+  fileType: string
 ): SaveFilePickerOptions => {
+  const extension = normalizeFileType(fileType)
   const options: SaveFilePickerOptions = {
     suggestedName,
-  }
-
-  const extension = getSuggestedExtension(suggestedName)
-  if (!extension) {
-    return options
-  }
-
-  options.types = [
-    {
-      description: `${extension.slice(1).toUpperCase()} files`,
-      accept: {
-        'application/octet-stream': [extension],
+    types: [
+      {
+        description: `${extension.slice(1).toUpperCase()} files`,
+        accept: {
+          'application/octet-stream': [extension],
+        },
       },
-    },
-  ]
-  options.excludeAcceptAllOption = true
+    ],
+    excludeAcceptAllOption: true,
+  }
 
   return options
 }
@@ -46,7 +36,8 @@ export const getShowSaveFilePickerOptions = (
 export const browserSaveFile = async (
   blob: Blob,
   suggestedName: string,
-  toastId: string
+  toastId: string,
+  fileType: string
 ) => {
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
@@ -68,7 +59,7 @@ export const browserSaveFile = async (
     try {
       // Show the file save dialog.
       const handle = await window.showSaveFilePicker(
-        getShowSaveFilePickerOptions(suggestedName)
+        getShowSaveFilePickerOptions(suggestedName, fileType)
       )
       // Write the blob to the file.
       const writable = await handle.createWritable()

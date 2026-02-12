@@ -31,7 +31,8 @@ export async function exportSketchToDxf(
     browserSaveFile: (
       blob: Blob,
       filename: string,
-      toastId: string
+      toastId: string,
+      fileType: string
     ) => Promise<void>
   }
 ): Promise<boolean | Error> {
@@ -256,7 +257,7 @@ export async function exportSketchToDxf(
       const blob = new Blob([decodedData], {
         type: 'application/dxf',
       })
-      await browserSaveFile(blob, fileName, toastId)
+      await browserSaveFile(blob, fileName, toastId, 'dxf')
       return true
     }
   } catch (error: any) {

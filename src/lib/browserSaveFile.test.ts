@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { getShowSaveFilePickerOptions } from '@src/lib/browserSaveFile'
 
 describe('getShowSaveFilePickerOptions', () => {
-  it('adds extension-constrained picker options when suggestedName has an extension', () => {
-    expect(getShowSaveFilePickerOptions('main.step')).toEqual({
+  it('uses the explicit file type passed by the caller', () => {
+    expect(getShowSaveFilePickerOptions('main.step', 'step')).toEqual({
       suggestedName: 'main.step',
       types: [
         {
@@ -18,9 +18,18 @@ describe('getShowSaveFilePickerOptions', () => {
     })
   })
 
-  it('only sets suggestedName when there is no extension', () => {
-    expect(getShowSaveFilePickerOptions('foo')).toEqual({
+  it('normalizes dotted and uppercase file types', () => {
+    expect(getShowSaveFilePickerOptions('foo', '.STeP')).toEqual({
       suggestedName: 'foo',
+      types: [
+        {
+          description: 'STEP files',
+          accept: {
+            'application/octet-stream': ['.step'],
+          },
+        },
+      ],
+      excludeAcceptAllOption: true,
     })
   })
 })

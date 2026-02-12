@@ -115,7 +115,8 @@ export const MlEphantConversationMenu = ({
                 void browserSaveFile(
                   blob,
                   `${context.conversationId ?? new Date().toISOString()}.md`,
-                  ''
+                  '',
+                  'md'
                 )
               }}
               className={styles.button}
