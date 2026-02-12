@@ -16,7 +16,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid, SolidCreator,
-        types::{ArrayLen, RuntimeType},
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, sketch::FaceTag},
 };
@@ -219,7 +219,11 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let bounded_edges = args.get_unlabeled_kw_arg("edges", &RuntimeType::any_array(), exec_state)?;
+    let bounded_edges = args.get_unlabeled_kw_arg(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        exec_state,
+    )?;
 
     inner_blend(bounded_edges, exec_state, args.clone())
         .await
