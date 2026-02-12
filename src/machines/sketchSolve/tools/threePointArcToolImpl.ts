@@ -10,10 +10,11 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import { addVec, scaleVec } from '@src/lib/utils2d'
+import { addVec, scaleVec, subVec } from '@src/lib/utils2d'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 export const TOOL_ID = 'Three-point arc tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding first point`
@@ -36,13 +37,13 @@ type CreateArcOutput = {
   arcId: number
 }
 
-type ToolDoneOutput =
-  | AddDraftPointOutput
-  | CreateArcOutput
-  | {
-      kclSource: SourceDelta
-      sceneGraphDelta: SceneGraphDelta
-    }
+type ToolDoneOutput = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+  pointId?: number
+  point?: Coords2d
+  arcId?: number
+}
 
 export type ToolEvents =
   | BaseToolEvent
@@ -110,7 +111,7 @@ function sendDraftEntitiesToParent({
   self._parent?.send(sendData)
 }
 
-export function findThreePointArcCenter({
+function findThreePointArcCenter({
   startPoint,
   endPoint,
   throughPoint,
@@ -119,27 +120,25 @@ export function findThreePointArcCenter({
   endPoint: Coords2d
   throughPoint: Coords2d
 }): Coords2d | null {
-  const [ax, ay] = startPoint
-  const [bx, by] = endPoint
-  const [cx, cy] = throughPoint
+  const { center_x, center_y, radius } = calculate_circle_from_3_points(
+    startPoint[0],
+    startPoint[1],
+    endPoint[0],
+    endPoint[1],
+    throughPoint[0],
+    throughPoint[1]
+  )
 
-  const d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
-  if (Math.abs(d) < EPSILON) {
+  if (
+    !Number.isFinite(center_x) ||
+    !Number.isFinite(center_y) ||
+    !Number.isFinite(radius) ||
+    radius < EPSILON
+  ) {
     return null
   }
 
-  const ax2ay2 = ax * ax + ay * ay
-  const bx2by2 = bx * bx + by * by
-  const cx2cy2 = cx * cx + cy * cy
-
-  const ux = (ax2ay2 * (by - cy) + bx2by2 * (cy - ay) + cx2cy2 * (ay - by)) / d
-  const uy = (ax2ay2 * (cx - bx) + bx2by2 * (ax - cx) + cx2cy2 * (bx - ax)) / d
-
-  if (!Number.isFinite(ux) || !Number.isFinite(uy)) {
-    return null
-  }
-
-  return [ux, uy]
+  return [center_x, center_y]
 }
 
 function resolveArcEndpoints({
@@ -156,17 +155,18 @@ function resolveArcEndpoints({
   start: Coords2d
   end: Coords2d
 } {
+  const startFromCenter = subVec(startPoint, centerPoint)
+  const endFromCenter = subVec(endPoint, centerPoint)
+  const throughFromCenter = subVec(throughPoint, centerPoint)
+
   const startAngle = normalizeAngle(
-    Math.atan2(startPoint[1] - centerPoint[1], startPoint[0] - centerPoint[0])
+    Math.atan2(startFromCenter[1], startFromCenter[0])
   )
   const endAngle = normalizeAngle(
-    Math.atan2(endPoint[1] - centerPoint[1], endPoint[0] - centerPoint[0])
+    Math.atan2(endFromCenter[1], endFromCenter[0])
   )
   const throughAngle = normalizeAngle(
-    Math.atan2(
-      throughPoint[1] - centerPoint[1],
-      throughPoint[0] - centerPoint[0]
-    )
+    Math.atan2(throughFromCenter[1], throughFromCenter[0])
   )
 
   const endSpan = ccwDistance(startAngle, endAngle)
@@ -369,7 +369,7 @@ export function storeFirstPointResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as Partial<AddDraftPointOutput>
+  const output = event.output as ToolDoneOutput
   if (output.pointId === undefined || !output.point) return {}
 
   sendDraftEntitiesToParent({
@@ -390,7 +390,7 @@ export function storeSecondPointResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as Partial<AddDraftPointOutput>
+  const output = event.output as ToolDoneOutput
   if (output.pointId === undefined || !output.point) return {}
 
   sendDraftEntitiesToParent({
@@ -411,7 +411,7 @@ export function storeCreatedArcResult({
 }: ToolAssignArgs<any>): Partial<ToolContext> {
   if (!('output' in event) || !event.output) return {}
 
-  const output = event.output as Partial<CreateArcOutput>
+  const output = event.output as ToolDoneOutput
   if (output.arcId === undefined) return {}
 
   sendDraftEntitiesToParent({
