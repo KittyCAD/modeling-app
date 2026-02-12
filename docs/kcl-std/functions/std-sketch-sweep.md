@@ -188,3 +188,36 @@ sweep(circleSketch, path = sweepPath, sectional = true)
 </model-viewer>
 
 
+
+```kcl
+// Sweep a square edge along a path
+square = startSketchOn(XY)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> close()
+
+path = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [100, 0])
+  |> tangentialArc(end = [107, -48])
+
+sweep(square, path, bodyType = SURFACE)
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep4.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+

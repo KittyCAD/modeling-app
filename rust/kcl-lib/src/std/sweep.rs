@@ -105,6 +105,7 @@ async fn inner_sweep(
                             tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                         ))
                         .relative_to(relative_to)
+                        .body_type(body_type)
                         .build(),
                 ),
             )
