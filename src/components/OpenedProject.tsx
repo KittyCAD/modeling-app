@@ -37,7 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -74,6 +74,7 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  const { auth } = useApp()
   const {
     billingActor,
     systemIOActor,
@@ -86,7 +87,6 @@ export function OpenedProject() {
     setLayout,
     getLayout,
     useSettings,
-    useToken,
   } = useSingletons()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
@@ -157,7 +157,7 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settings = useSettings()
-  const authToken = useToken()
+  const authToken = auth.useToken()
   const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
