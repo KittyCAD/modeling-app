@@ -29,6 +29,22 @@ extrusion.
 You can provide more than one sketch to sweep, and they will all be
 swept along the same path.
 
+
+
+
+
+// Sweep a segment along a path
+segment = startSketchOn(YZ)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [100, 0])
+
+path = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [100, 0])
+  |> tangentialArc(end = [117, 34.5])
+
+sweep(segment, path, bodyType = SURFACE)
+
 ### Arguments
 
 | Name | Type | Description | Required |
