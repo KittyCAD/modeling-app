@@ -12,7 +12,7 @@ Get the face of a solid.
 ```kcl
 faceOf(
   @solid: Solid,
-  face: TaggedFace,
+  face: TaggedFace | Segment,
 ): Face
 ```
 
@@ -23,7 +23,7 @@ faceOf(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid that has the face. | Yes |
-| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Which face of the solid. | Yes |
+| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Which face of the solid. | Yes |
 
 ### Returns
 

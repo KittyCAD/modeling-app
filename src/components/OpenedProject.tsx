@@ -231,6 +231,7 @@ export function OpenedProject() {
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
+            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -249,6 +250,7 @@ export function OpenedProject() {
     authToken,
     kclManager,
     systemIOActor,
+    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

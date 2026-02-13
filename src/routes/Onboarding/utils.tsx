@@ -265,6 +265,7 @@ export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
   systemIOActor: SystemIOActor
+  settingsActor: SettingsActorType
   navigate: NavigateFunction
 }
 
@@ -503,7 +504,6 @@ export async function catchOnboardingWarnError(
 }
 
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
-  const { settingsActor } = useSingletons()
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
     resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
@@ -531,7 +531,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             }}
             data-negative-button="dismiss"
             name="dismiss"
-            onClick={() => onDismissOnboardingInvite(settingsActor)}
+            onClick={() => onDismissOnboardingInvite(props.settingsActor)}
           >
             I'll save it
           </ActionButton>

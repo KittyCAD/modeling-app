@@ -9,10 +9,10 @@ use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, TagIdentifier,
+        BoundedEdge, ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
-    std::{Args, sketch::FaceTag},
+    std::{Args, args::TyF64, fillet::EdgeReference, sketch::FaceTag},
 };
 
 /// Get the opposite edge to the edge given.
@@ -278,5 +278,66 @@ async fn inner_get_common_edge(
             ),
             vec![args.source_range],
         ))
+    })
+}
+
+pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let face = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let edge = args.get_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
+    let lower_bound = args.get_kw_arg_opt("lowerBound", &RuntimeType::num_any(), exec_state)?;
+    let upper_bound = args.get_kw_arg_opt("upperBound", &RuntimeType::num_any(), exec_state)?;
+
+    let bounded_edge = inner_get_bounded_edge(face, edge, lower_bound, upper_bound, exec_state, args.clone()).await?;
+    Ok(KclValue::BoundedEdge {
+        value: bounded_edge,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+pub async fn inner_get_bounded_edge(
+    face: Solid,
+    edge: EdgeReference,
+    lower_bound: Option<TyF64>,
+    upper_bound: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<BoundedEdge, KclError> {
+    let lower_bound = if let Some(lower_bound) = lower_bound {
+        let val = lower_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Invalid value: lowerBound must be between 0.0 and 1.0, provided {}",
+                    val
+                ),
+                vec![args.source_range],
+            )));
+        }
+        val
+    } else {
+        0.0_f32
+    };
+
+    let upper_bound = if let Some(upper_bound) = upper_bound {
+        let val = upper_bound.n as f32;
+        if !(0.0..=1.0).contains(&val) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Invalid value: upperBound must be between 0.0 and 1.0, provided {}",
+                    val
+                ),
+                vec![args.source_range],
+            )));
+        }
+        val
+    } else {
+        1.0_f32
+    };
+
+    Ok(BoundedEdge {
+        face_id: face.id,
+        edge_id: edge.get_engine_id(exec_state, &args)?,
+        lower_bound,
+        upper_bound,
     })
 }

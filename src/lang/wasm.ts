@@ -319,7 +319,16 @@ export function sketchFromKclValueOptional(
   varName: string | null
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
-  if (obj?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'Solid') {
+    if (obj?.value.sketch.creatorType == 'sketch') {
+      return obj.value.sketch
+    } else {
+      const created = obj?.value.sketch.creatorType
+      return new Reason(
+        `${varName} is a solid created from a ${created} which we don't support yet`
+      )
+    }
+  }
   if (obj?.type === 'HomArray') {
     // Note: no artifact id, finding the first sketch
     const sketch = obj.value.find((sk) => sk.type === 'Sketch')

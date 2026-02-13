@@ -1,15 +1,8 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import type { Page } from '@playwright/test'
-import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
-import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
-test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
-  async function runCopilotHappyPathTest({
+test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
+  test('Happy path: new project, easy prompt, good result', async ({
     page,
     editor,
     homePage,
@@ -17,15 +10,7 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
     copilot,
-  }: {
-    page: Page
-    editor: EditorFixture
-    homePage: HomePageFixture
-    scene: SceneFixture
-    toolbar: ToolbarFixture
-    cmdBar: CmdBarFixture
-    copilot: CopilotFixture
-  }) {
+  }) => {
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
@@ -58,42 +43,6 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
       await expect(extrude).toBeVisible()
-    })
-  }
-
-  test(
-    'Web copilot happy path: new project, easy prompt, good result',
-    { tag: ['@web'] },
-    async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runCopilotHappyPathTest({
-        page,
-        editor,
-        homePage,
-        scene,
-        toolbar,
-        cmdBar,
-        copilot,
-      })
-    }
-  )
-
-  test('Desktop copilot happy path: new project, easy prompt, good result', async ({
-    page,
-    editor,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    copilot,
-  }) => {
-    await runCopilotHappyPathTest({
-      page,
-      editor,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      copilot,
     })
   })
 })

@@ -247,6 +247,7 @@ const Home = () => {
                       navigate,
                       kclManager,
                       systemIOActor,
+                      settingsActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
