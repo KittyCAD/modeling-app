@@ -4,7 +4,6 @@ import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
-
 import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
@@ -71,7 +70,7 @@ export const AllSettingsFields = forwardRef(
         navigate,
         kclManager,
         systemIOActor,
-        settingsActor,
+        settingsActor: settings.actor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
