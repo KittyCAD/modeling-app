@@ -19,7 +19,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  11["StartSketchOnFace<br>[144, 176, 0]"]
+  11["StartSketchOnFace<br>[134, 173, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3

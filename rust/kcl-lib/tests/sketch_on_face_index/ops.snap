@@ -104,13 +104,6 @@ description: Operations executed sketch_on_face_index.kcl
             }
           },
           "sourceRange": []
-        },
-        "tag": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "a"
-          },
-          "sourceRange": []
         }
       },
       "nodePath": {
@@ -145,7 +138,7 @@ description: Operations executed sketch_on_face_index.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "a",
+            "value": "face_id_b4e7673f_ca57_5ff5_ade3_3bad8f62201c",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []

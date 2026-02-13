@@ -5,6 +5,6 @@ description: Result of unparsing sketch_on_face_index.kcl
 mySolid = startSketchOn(XY)
   |> circle(radius = 1)
   |> extrude(length = 1)
-someFace = faceId(mySolid, index = 1, tag = $a)
+someFace = faceId(mySolid, index = 1)
 
-sketchOnFace = startSketchOn(mySolid, face = a)
+sketchOnFace = startSketchOn(mySolid, face = someFace)

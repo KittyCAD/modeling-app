@@ -225,26 +225,6 @@ description: Result of parsing sketch_on_face_index.kcl
                     "suffix": "None"
                   }
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tag",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "TagDeclarator",
-                  "type": "TagDeclarator",
-                  "value": "a"
-                }
               }
             ],
             "callee": {
@@ -334,7 +314,7 @@ description: Result of parsing sketch_on_face_index.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "a",
+                    "name": "someFace",
                     "start": 0,
                     "type": "Identifier"
                   },
