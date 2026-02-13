@@ -224,28 +224,6 @@ flowchart LR
       %% [ProgramBodyItem { index: 2 }]
     248[Solid2d]
   end
-  subgraph path250 [Path]
-    250["Path<br>[305, 328, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }]
-    251["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    252["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    253["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    254["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    255["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    256[Solid2d]
-  end
-  subgraph path258 [Path]
-    258["Path<br>[305, 328, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }]
-    263["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    264[Solid2d]
-  end
   1["Plane<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
   24["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
@@ -466,53 +444,45 @@ flowchart LR
   240["SweepEdge Adjacent"]
   241["Plane<br>[305, 328, 0]"]
     %% [ProgramBodyItem { index: 2 }]
-  249["Plane<br>[305, 328, 0]"]
+  249["Sweep ExtrusionTwist<br>[305, 328, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }]
-  257["Plane<br>[305, 328, 0]"]
-    %% [ProgramBodyItem { index: 2 }]
-  259["SweepEdge Opposite"]
+  250[Wall]
+    %% face_code_ref=Missing NodePath
+  251[Wall]
+    %% face_code_ref=Missing NodePath
+  252[Wall]
+    %% face_code_ref=Missing NodePath
+  253[Wall]
+    %% face_code_ref=Missing NodePath
+  254["Cap End"]
+    %% face_code_ref=Missing NodePath
+  255["Cap End"]
+    %% face_code_ref=Missing NodePath
+  256["SweepEdge Opposite"]
+  257["SweepEdge Adjacent"]
+  258["SweepEdge Opposite"]
+  259["SweepEdge Adjacent"]
   260["SweepEdge Opposite"]
-  261["SweepEdge Opposite"]
+  261["SweepEdge Adjacent"]
   262["SweepEdge Opposite"]
-  265["Sweep Loft<br>[305, 328, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }]
-  266[Wall]
-    %% face_code_ref=Missing NodePath
-  267[Wall]
-    %% face_code_ref=Missing NodePath
-  268[Wall]
-    %% face_code_ref=Missing NodePath
-  269[Wall]
-    %% face_code_ref=Missing NodePath
-  270["Cap End"]
-    %% face_code_ref=Missing NodePath
-  271["Cap End"]
-    %% face_code_ref=Missing NodePath
-  272["SweepEdge Adjacent"]
-  273["SweepEdge Adjacent"]
-  274["SweepEdge Adjacent"]
-  275["SweepEdge Adjacent"]
-  276["StartSketchOnFace<br>[238, 276, 0]"]
+  263["SweepEdge Adjacent"]
+  264["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  277["StartSketchOnFace<br>[238, 276, 0]"]
+  265["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  278["StartSketchOnFace<br>[238, 276, 0]"]
+  266["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  279["StartSketchOnFace<br>[238, 276, 0]"]
+  267["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  280["StartSketchOnFace<br>[238, 276, 0]"]
+  268["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  281["StartSketchOnFace<br>[238, 276, 0]"]
+  269["StartSketchOnFace<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  282["StartSketchOnPlane<br>[277, 304, 0]"]
+  270["StartSketchOnPlane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  283["StartSketchOnPlane<br>[277, 304, 0]"]
+  271["StartSketchOnPlane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 1 }]
-  284["StartSketchOnPlane<br>[305, 328, 0]"]
-    %% [ProgramBodyItem { index: 2 }]
-  285["StartSketchOnPlane<br>[305, 328, 0]"]
-    %% [ProgramBodyItem { index: 2 }]
-  286["StartSketchOnPlane<br>[305, 328, 0]"]
+  272["StartSketchOnPlane<br>[305, 328, 0]"]
     %% [ProgramBodyItem { index: 2 }]
   1 --- 2
   1 --- 9
@@ -633,9 +603,9 @@ flowchart LR
   31 --- 163
   164 <--x 31
   176 <--x 31
-  31 <--x 276
-  31 <--x 277
-  31 <--x 280
+  31 <--x 264
+  31 <--x 265
+  31 <--x 268
   33 <--x 178
   42 --- 43
   42 --- 44
@@ -818,8 +788,8 @@ flowchart LR
   99 --- 136
   99 --- 139
   99 --- 142
-  99 <--x 278
-  99 <--x 279
+  99 <--x 266
+  99 <--x 267
   116 --- 117
   116 --- 118
   116 ---- 119
@@ -929,7 +899,7 @@ flowchart LR
   169 <--x 168
   168 --- 171
   172 <--x 168
-  168 <--x 281
+  168 <--x 269
   171 --- 172
   171 --- 173
   171 ---- 174
@@ -942,7 +912,7 @@ flowchart LR
   175 --- 176
   175 --- 177
   179 --- 180
-  179 <--x 282
+  179 <--x 270
   180 --- 181
   180 --- 182
   180 ---- 183
@@ -960,7 +930,7 @@ flowchart LR
   187 <--x 186
   187 <--x 189
   190 --- 191
-  190 <--x 283
+  190 <--x 271
   191 --- 192
   191 --- 193
   191 ---- 194
@@ -1077,76 +1047,58 @@ flowchart LR
   239 <--x 228
   228 --- 240
   241 --- 242
-  241 <--x 284
+  241 <--x 272
   242 --- 243
   242 --- 244
   242 --- 245
   242 --- 246
   242 --- 247
   242 --- 248
-  242 ---- 265
-  243 --- 259
-  243 --- 266
-  243 x--> 270
-  243 --- 272
-  244 --- 260
-  244 --- 267
-  244 x--> 270
-  244 --- 273
+  242 ---- 249
+  243 --- 250
+  243 x--> 254
+  243 --- 256
+  243 --- 257
+  244 --- 251
+  244 x--> 254
+  244 --- 258
+  244 --- 259
+  245 --- 252
+  245 x--> 254
+  245 --- 260
   245 --- 261
-  245 --- 268
-  245 x--> 270
-  245 --- 274
+  246 --- 253
+  246 x--> 254
   246 --- 262
-  246 --- 269
-  246 x--> 270
-  246 --- 275
+  246 --- 263
   249 --- 250
-  249 <--x 285
-  250 --- 251
-  250 --- 252
-  250 --- 253
-  250 --- 254
-  250 --- 255
+  249 --- 251
+  249 --- 252
+  249 --- 253
+  249 --- 254
+  249 --- 255
+  249 --- 256
+  249 --- 257
+  249 --- 258
+  249 --- 259
+  249 --- 260
+  249 --- 261
+  249 --- 262
+  249 --- 263
   250 --- 256
-  250 x---> 265
-  257 --- 258
-  257 <--x 286
-  258 x--> 259
-  258 x--> 260
-  258 x--> 261
-  258 x--> 262
-  258 --- 263
-  258 --- 264
-  258 x---> 265
-  265 --- 259
-  259 --- 266
-  259 x--> 271
-  265 --- 260
-  260 --- 267
-  260 x--> 271
-  265 --- 261
-  261 --- 268
-  261 x--> 271
-  265 --- 262
-  262 --- 269
-  262 x--> 271
-  265 --- 266
-  265 --- 267
-  265 --- 268
-  265 --- 269
-  265 --- 270
-  265 --- 271
-  265 --- 272
-  265 --- 273
-  265 --- 274
-  265 --- 275
-  266 --- 272
-  273 <--x 266
-  267 --- 273
-  274 <--x 267
-  268 --- 274
-  275 <--x 268
-  272 <--x 269
-  269 --- 275
+  250 --- 257
+  259 <--x 250
+  251 --- 258
+  251 --- 259
+  261 <--x 251
+  252 --- 260
+  252 --- 261
+  263 <--x 252
+  257 <--x 253
+  253 --- 262
+  253 --- 263
+  256 <--x 255
+  258 <--x 255
+  260 <--x 255
+  262 <--x 255
 ```
