@@ -41,9 +41,10 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 
 ## Standard library contributions (kcl-lib)
 
-- Add new functions in `rust/kcl-lib/kcl/src/std` near similar entries.
-- Provide doc comments with at least one example. When adding new examples in the KCL docs, you must register them in `example_tests.rs` under `const TEST_NAMES`.
-- Add the function to the `std_fn` list in `rust/kcl-lib/src/std/mod.rs`.
+- Add new KCL functions in `rust/kcl-lib/kcl/std` in the correct module using camel case naming.
+- Add Rust implementations of functions in `rust/kcl-lib/kcl/src/std` near similar items using snake case naming.
+- Add the function to the `std_fn` list in `rust/kcl-lib/src/std/mod.rs` to map between KCL and Rust.
+- Provide doc comments on the KCL function with at least one example. When adding new examples in the KCL docs, you must register them in `example_tests.rs` under `const TEST_NAMES`.
 - After changes, run snapshot tests and regenerate stdlib docs.
 
 ## Release notes (Rust crates)
