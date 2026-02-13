@@ -381,6 +381,14 @@ export function createSettings() {
         description: 'Default back-face color for surfaces',
         hideOnLevel: 'project',
         validate: (v) => isValidRgbaColor(v),
+        commandConfig: {
+          inputType: 'color',
+          // Command bar color input expects a hex string.
+          defaultValueFromContext: (context) =>
+            rgbaToHex(
+              context.modeling.backfaceColor.current
+            ) as unknown as RgbaColor,
+        },
         Component: ({ value, updateValue }) => {
           const hexValue = rgbaToHex(value)
           return (

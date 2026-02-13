@@ -22,6 +22,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type {
   BaseUnit,
+  RgbaColor,
   SetEventTypes,
   SettingsLevel,
   SettingsPaths,
@@ -39,6 +40,7 @@ import {
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
+import { rgbaToHex } from '@src/lib/utils'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type SettingsActorDepsType = {
@@ -48,6 +50,45 @@ export type SettingsActorDepsType = {
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
+
+const formatSettingValueForToast = (value: unknown): string | undefined => {
+  if (value === undefined || value === null) {
+    return undefined
+  }
+
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return String(value)
+  }
+
+  if (typeof value === 'object') {
+    if (
+      'r' in value &&
+      'g' in value &&
+      'b' in value &&
+      'a' in value &&
+      typeof value.r === 'number' &&
+      typeof value.g === 'number' &&
+      typeof value.b === 'number' &&
+      typeof value.a === 'number'
+    ) {
+      const rgba = value as RgbaColor
+      const hex = rgbaToHex(rgba).toUpperCase()
+      return rgba.a === 1 ? hex : `${hex} (alpha ${rgba.a.toFixed(2)})`
+    }
+
+    try {
+      return JSON.stringify(value)
+    } catch {
+      return String(value)
+    }
+  }
+
+  return String(value)
+}
 
 export const settingsMachine = setup({
   types: {
@@ -207,7 +248,8 @@ export const settingsMachine = setup({
         keyof SettingsType,
         string,
       ]
-      const truncatedNewValue = event.data.value?.toString().slice(0, 28)
+      const formattedNewValue = formatSettingValueForToast(event.data.value)
+      const truncatedNewValue = formattedNewValue?.slice(0, 28)
       const message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
         (truncatedNewValue
@@ -297,6 +339,12 @@ export const settingsMachine = setup({
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
     setEngineHighlightEdges: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
+    setEngineBackfaceColor: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
+    setEngineBackfaceColorAndRebuildScene: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
@@ -445,7 +493,11 @@ export const settingsMachine = setup({
         'set.modeling.backfaceColor': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineBackfaceColorAndRebuildScene',
+          ],
         },
 
         'Reset settings': {
@@ -458,6 +510,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -478,6 +531,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -559,6 +613,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',
@@ -596,6 +651,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEngineBackfaceColor',
             'setEditorLineWrapping',
             'setCursorBlinking',
             'setAllowOrbitInSketchMode',

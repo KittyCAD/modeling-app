@@ -30,7 +30,10 @@ import {
   settingsMachine,
   type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  jsAppSettings,
+  loadAndValidateSettings,
+} from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -239,6 +242,23 @@ export class App {
               .setHighlightEdges(context.modeling.highlightEdges.current)
               .catch(reportRejection)
           },
+          setEngineBackfaceColor: ({ context }) => {
+            engineCommandManager
+              .setBackfaceColor(context.modeling.backfaceColor.current)
+              .catch(reportRejection)
+          },
+          setEngineBackfaceColorAndRebuildScene: ({ context }) => {
+            ;(async () => {
+              await engineCommandManager.setBackfaceColor(
+                context.modeling.backfaceColor.current
+              )
+              await rustContext.clearSceneAndBustCache(
+                await jsAppSettings(rustContext.settingsActor),
+                kclManager.currentFilePath || undefined
+              )
+              await kclManager.executeCode()
+            })().catch(reportRejection)
+          },
           setClientTheme: ({ context }) => {
             const resolvedTheme = getResolvedTheme(context.app.theme.current)
             const opposingTheme = getOppositeTheme(context.app.theme.current)
@@ -259,6 +279,8 @@ export class App {
                     context.modeling.defaultUnit.current ||
                   s.modeling.showScaleGrid.current !==
                     context.modeling.showScaleGrid.current ||
+                  s.modeling.backfaceColor.current !==
+                    context.modeling.backfaceColor.current ||
                   s.modeling?.highlightEdges.current !==
                     context.modeling.highlightEdges.current
                 )
@@ -272,6 +294,7 @@ export class App {
                 kclManager !== undefined &&
                 (event.type === 'set.modeling.defaultUnit' ||
                   event.type === 'set.modeling.showScaleGrid' ||
+                  event.type === 'set.modeling.backfaceColor' ||
                   event.type === 'set.modeling.highlightEdges' ||
                   event.type === 'Reset settings' ||
                   allSettingsIncludesUnitChange)

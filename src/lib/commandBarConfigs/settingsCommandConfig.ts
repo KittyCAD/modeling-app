@@ -18,6 +18,7 @@ import type {
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
+import { hexToRgb } from '@src/lib/utils'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>
@@ -128,7 +129,40 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
         'level' in data
       ) {
         // TS would not let me get this to type properly
-        const coercedData = data as unknown as SetEventTypes['data']
+        let coercedData = data as unknown as SetEventTypes['data']
+
+        // Command bar color inputs submit hex strings; settings store RGBA.
+        if (
+          valueArgConfig.inputType === 'color' &&
+          typeof coercedData.value === 'string'
+        ) {
+          const rgb = hexToRgb(coercedData.value)
+          if (!rgb) {
+            console.error('Invalid color submitted to settings command', data)
+            return new Error('Invalid color submitted to settings command')
+          }
+
+          const currentSetting = getPropertyByPath(
+            actor.getSnapshot().context,
+            type
+          ) as Setting<S['default']>
+          const currentValue =
+            currentSetting[coercedData.level] ??
+            currentSetting.getFallback(coercedData.level)
+          const alpha =
+            typeof currentValue === 'object' &&
+            currentValue !== null &&
+            'a' in currentValue &&
+            typeof currentValue.a === 'number'
+              ? currentValue.a
+              : 1
+
+          coercedData = {
+            ...coercedData,
+            value: { ...rgb, a: alpha },
+          } as SetEventTypes['data']
+        }
+
         actor.send({ type: `set.${type}`, data: coercedData })
       } else {
         console.error('Invalid data submitted to settings command', data)
