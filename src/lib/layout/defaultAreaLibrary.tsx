@@ -1,4 +1,4 @@
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
@@ -20,8 +20,8 @@ import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 
 function ModelingArea() {
-  const { useToken } = useSingletons()
-  const authToken = useToken()
+  const { auth } = useApp()
+  const authToken = auth.useToken()
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />

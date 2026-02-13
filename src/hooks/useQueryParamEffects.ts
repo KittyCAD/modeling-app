@@ -18,7 +18,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { findKclSample } from '@src/lib/kclSamples'
 import type { FileLinkParams } from '@src/lib/links'
 import { webSafePathSplit } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -37,8 +37,8 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects(kclManager: KclManager) {
-  const { commandBarActor, useAuthState } = useSingletons()
-  const authState = useAuthState()
+  const { auth, commands } = useApp()
+  const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
@@ -62,7 +62,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       isDesktop()
     ) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
@@ -92,7 +92,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
     // Process regular commands
     if (commandData.name !== 'add-kcl-file-to-project' || isDesktop()) {
-      commandBarActor.send({
+      commands.send({
         type: 'Find and select command',
         data: commandData,
       })

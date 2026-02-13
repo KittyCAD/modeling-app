@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -84,7 +84,7 @@ export const isToolbarItemResolvedDropdown = (
 }
 
 export const useToolbarConfig = () => {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => ({
       modeling: {
@@ -149,7 +149,7 @@ export const useToolbarConfig = () => {
           {
             id: 'extrude',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Extrude', groupId: 'modeling' },
               }),
@@ -171,7 +171,7 @@ export const useToolbarConfig = () => {
           {
             id: 'sweep',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Sweep', groupId: 'modeling' },
               }),
@@ -193,7 +193,7 @@ export const useToolbarConfig = () => {
           {
             id: 'loft',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Loft', groupId: 'modeling' },
               }),
@@ -213,7 +213,7 @@ export const useToolbarConfig = () => {
           {
             id: 'revolve',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Revolve', groupId: 'modeling' },
               }),
@@ -240,7 +240,7 @@ export const useToolbarConfig = () => {
           {
             id: 'fillet3d',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Fillet', groupId: 'modeling' },
               }),
@@ -261,7 +261,7 @@ export const useToolbarConfig = () => {
           {
             id: 'chamfer3d',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Chamfer', groupId: 'modeling' },
               }),
@@ -288,7 +288,7 @@ export const useToolbarConfig = () => {
           {
             id: 'shell',
             onClick: () => {
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Shell', groupId: 'modeling' },
               })
@@ -307,7 +307,7 @@ export const useToolbarConfig = () => {
           {
             id: 'hole',
             onClick: () => {
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Hole', groupId: 'modeling' },
               })
@@ -331,7 +331,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'boolean-union',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Boolean Union', groupId: 'modeling' },
                   }),
@@ -351,7 +351,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'boolean-subtract',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Boolean Subtract', groupId: 'modeling' },
                   }),
@@ -371,7 +371,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'boolean-intersect',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Boolean Intersect', groupId: 'modeling' },
                   }),
@@ -394,7 +394,7 @@ export const useToolbarConfig = () => {
           {
             id: 'split',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Boolean Split', groupId: 'modeling' },
               }),
@@ -415,7 +415,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'flip-surface',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Flip Surface', groupId: 'modeling' },
                   }),
@@ -472,7 +472,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'plane-offset',
                 onClick: () => {
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Offset plane', groupId: 'modeling' },
                   })
@@ -505,7 +505,7 @@ export const useToolbarConfig = () => {
           {
             id: 'helix',
             onClick: () => {
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Helix', groupId: 'modeling' },
               })
@@ -526,7 +526,7 @@ export const useToolbarConfig = () => {
           {
             id: 'insert',
             onClick: () =>
-              commandBarActor.send({
+              commands.send({
                 type: 'Find and select command',
                 data: { name: 'Insert', groupId: 'code' },
               }),
@@ -549,7 +549,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'translate',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Translate', groupId: 'modeling' },
                   }),
@@ -569,7 +569,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'rotate',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Rotate', groupId: 'modeling' },
                   }),
@@ -589,7 +589,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'scale',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Scale', groupId: 'modeling' },
                   }),
@@ -607,7 +607,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'clone',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Clone', groupId: 'modeling' },
                   }),
@@ -625,7 +625,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'appearance',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Appearance', groupId: 'modeling' },
                   }),
@@ -651,7 +651,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'pattern-circular-3d',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
                   }),
@@ -672,7 +672,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'pattern-linear-3d',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
                   }),
@@ -699,7 +699,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'gdt-flatness',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'GDT Flatness', groupId: 'modeling' },
                   }),
@@ -720,7 +720,7 @@ export const useToolbarConfig = () => {
               {
                 id: 'gdt-datum',
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: { name: 'GDT Datum', groupId: 'modeling' },
                   }),
@@ -1097,7 +1097,7 @@ export const useToolbarConfig = () => {
                     })
                   ),
                 onClick: () =>
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       name: 'Constrain length',
@@ -1658,7 +1658,7 @@ export const useToolbarConfig = () => {
         ],
       },
     }),
-    [commandBarActor]
+    [commands]
   )
 }
 

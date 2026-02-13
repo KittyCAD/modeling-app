@@ -1,6 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import env from '@src/env'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
@@ -23,7 +23,7 @@ export function EnvironmentChip() {
 }
 
 export function EnvironmentDescription() {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
@@ -41,7 +41,7 @@ export function EnvironmentDescription() {
               onClick={() => {
                 const environment = env().VITE_ZOO_BASE_DOMAIN
                 if (environment) {
-                  commandBarActor.send({
+                  commands.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
@@ -77,7 +77,7 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'application',
@@ -104,7 +104,7 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'application',

@@ -14,6 +14,9 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { Project } from '@src/lib/project'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -196,6 +199,7 @@ export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
   useNewSketchMode?: Setting<boolean>
+  defaultUnit?: Setting<BaseUnit>
 }
 
 export type SketchTool =
@@ -220,6 +224,9 @@ export type ModelingMachineInput = {
   rustContext: RustContext
   machineManager: MachineManager
   wasmInstance: ModuleType
+  commandBarActor: CommandBarActorType
+  fileName?: string
+  projectRef?: { current: Project | undefined }
   store?: Store
 }
 export type ModelingMachineInternalContext = {

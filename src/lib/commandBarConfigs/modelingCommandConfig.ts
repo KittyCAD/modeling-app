@@ -175,6 +175,7 @@ export type ModelingCommandSchema = {
     relativeTo?: SweepRelativeTo
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Loft: {
     // Enables editing workflow
@@ -705,7 +706,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -737,6 +738,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
