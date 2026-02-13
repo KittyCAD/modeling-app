@@ -131,17 +131,19 @@ async function executeTrimFlow({
 }): Promise<{ sourceDelta: { text: string } } | Error> {
   // Parse and execute initial KCL code
   const ast = assertParse(kclCode, instanceInThisFile)
-  const { sceneGraph, execOutcome } =
-    await rustContextInThisFile.hackSetProgram(
-      ast,
-      await jsAppSettings(rustContextInThisFile.settingsActor)
-    )
+  const setProgramOutcome = await rustContextInThisFile.hackSetProgram(
+    ast,
+    await jsAppSettings(rustContextInThisFile.settingsActor)
+  )
+  if (setProgramOutcome.type !== 'Success') {
+    return new Error(setProgramOutcome.error.error.details.msg)
+  }
 
   const initialSceneGraphDelta: SceneGraphDelta = {
-    new_graph: sceneGraph,
+    new_graph: setProgramOutcome.sceneGraph,
     new_objects: [],
     invalidates_ids: false,
-    exec_outcome: execOutcome,
+    exec_outcome: setProgramOutcome.execOutcome,
   }
 
   // Track the last result to return it
