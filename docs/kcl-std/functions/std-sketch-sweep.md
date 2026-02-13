@@ -29,22 +29,6 @@ extrusion.
 You can provide more than one sketch to sweep, and they will all be
 swept along the same path.
 
-
-
-
-
-// Sweep a segment along a path
-segment = startSketchOn(YZ)
-  |> startProfile(at = [-100, 200])
-  |> line(end = [100, 0])
-
-path = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [100, 0])
-  |> tangentialArc(end = [117, 34.5])
-
-sweep(segment, path, bodyType = SURFACE)
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -216,6 +200,7 @@ path = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [100, 0])
   |> tangentialArc(end = [107, -48])
+
 sweep(square, path, bodyType = SURFACE)
 
 ```
@@ -228,6 +213,35 @@ sweep(square, path, bodyType = SURFACE)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep4.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Sweep a segment along a path
+segment = startSketchOn(YZ)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [100, 0])
+
+path = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [100, 0])
+  |> tangentialArc(end = [117, 34.5])
+
+sweep(segment, path, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep5_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep5.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
