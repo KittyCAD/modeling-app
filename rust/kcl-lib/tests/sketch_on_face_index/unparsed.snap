@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_on_face_index.kcl
+---
+mySolid = startSketchOn(XY)
+  |> circle(radius = 1)
+  |> extrude(length = 1)
+someFace = faceId(mySolid, index = 0, tag = $a)
+
+sketchOnFace = startSketchOn(mySolid, face = a)

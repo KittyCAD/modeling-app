@@ -3,12 +3,11 @@
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
-use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{ExecState, Metadata, ModelingCmdMeta, Solid, types::RuntimeType},
+    execution::{ExecState, ExtrudeSurface, Metadata, ModelingCmdMeta, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::Args,
 };
@@ -17,14 +16,14 @@ use crate::{
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
     let face_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
-    let tag = args.get_kw_arg("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let tag: TagNode = args.get_kw_arg("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     inner_face_id(body, face_index, tag, exec_state, args).await
 }
 
 /// Translates face indices to face IDs.
 async fn inner_face_id(
-    body: Solid,
+    mut body: Solid,
     face_index: u32,
     tag: TagNode,
     exec_state: &mut ExecState,
@@ -54,27 +53,38 @@ async fn inner_face_id(
             vec![args.source_range],
         )));
     };
-    let new_tagged_face = todo!();
-    Ok(new_tagged_face)
+    let face_id = inner_resp.face_id;
+
+    for surface in body.value.iter_mut() {
+        if surface.get_id() == face_id {
+            match surface {
+                ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane.tag = Some(tag.clone()),
+                ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc.tag = Some(tag.clone()),
+                ExtrudeSurface::Chamfer(chamfer) => chamfer.tag = Some(tag.clone()),
+                ExtrudeSurface::Fillet(fillet) => fillet.tag = Some(tag.clone()),
+            }
+            break;
+        }
+    }
+
+    Ok(KclValue::Solid { value: Box::new(body) })
 }
 
 /// Translates edge indices to edge IDs.
 pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
     let edge_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
-    let tag = args.get_kw_arg("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let meta = vec![Metadata {
         source_range: args.source_range,
     }];
-    inner_edge_id(body, edge_index, tag, exec_state, args).await
+    inner_edge_id(body, edge_index, exec_state, args).await
 }
 
 /// Translates edge indices to edge IDs.
 async fn inner_edge_id(
     body: Solid,
     edge_index: u32,
-    tag: TagNode,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {

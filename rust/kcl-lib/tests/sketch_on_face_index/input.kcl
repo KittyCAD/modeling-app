@@ -1,0 +1,8 @@
+mySolid = startSketchOn(XY)
+  |> circle(radius = 1)
+  |> extrude(length = 1)
+  
+someFace = faceId(mySolid, index = 0, tag = $a)
+
+sketchOnFace = startSketchOn(mySolid, face = a)
+
