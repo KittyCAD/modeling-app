@@ -34,7 +34,7 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -181,10 +181,12 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { kclManager, systemIOActor, useSettings } = useSingletons()
+  const { settings } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
   const errors = kclManager.errorsSignal.value
-  const settings = useSettings()
-  const applicationProjectDirectory = settings.app.projectDirectory.current
+  const settingsValues = settings.useSettings()
+  const applicationProjectDirectory =
+    settingsValues.app.projectDirectory.current
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file

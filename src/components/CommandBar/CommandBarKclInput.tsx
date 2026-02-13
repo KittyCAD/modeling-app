@@ -70,14 +70,14 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commands } = useApp()
-  const { kclManager, rustContext, useSettings } = useSingletons()
+  const { commands, settings } = useApp()
+  const { kclManager, rustContext } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const {
     context: { selectionRanges },
   } = useModelingContext()
@@ -239,10 +239,10 @@ function CommandBarKclInput({
   useEffect(() => {
     miniEditor.dispatch({
       effects: themeCompartment.reconfigure(
-        editorTheme[getResolvedTheme(settings.app.theme.current)]
+        editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
       ),
     })
-  }, [settings.app.theme])
+  }, [settingsValues.app.theme])
 
   useEffect(() => {
     if (editorRef.current) {

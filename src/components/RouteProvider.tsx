@@ -16,7 +16,7 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -24,7 +24,9 @@ import { useSignals } from '@preact/signals-react/runtime'
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
-  const { kclManager, settingsActor } = useSingletons()
+  const { settings } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsActor = settings.actor
   useSignals()
   useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData

@@ -45,13 +45,10 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
-  const {
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    settingsActor,
-    systemIOActor,
-  } = useSingletons()
+  const { settings } = useApp()
+  const { engineCommandManager, kclManager, rustContext, systemIOActor } =
+    useSingletons()
+  const settingsActor = settings.actor
   const networkStatus = useNetworkStatus(engineCommandManager)
   const router = useMemo(
     () =>

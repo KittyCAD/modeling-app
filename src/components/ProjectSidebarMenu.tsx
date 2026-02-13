@@ -99,8 +99,8 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commands } = useApp()
-  const { engineCommandManager, kclManager, settingsActor } = useSingletons()
+  const { commands, settings } = useApp()
+  const { engineCommandManager, kclManager } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
@@ -157,7 +157,7 @@ function ProjectMenuPopover({
           ),
           onClick: () =>
             sendAddFileToProjectCommandForCurrentProject(
-              settingsActor,
+              settings.actor,
               commands.actor
             ),
         },

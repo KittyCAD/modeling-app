@@ -14,10 +14,10 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
-  const { auth, billing } = useApp()
-  const { engineCommandManager, systemIOActor, useSettings } = useSingletons()
+  const { auth, billing, settings } = useApp()
+  const { engineCommandManager, systemIOActor } = useSingletons()
   const clearURLParams = useClearURLParams()
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const token = auth.useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
@@ -66,7 +66,11 @@ export function SystemIOMachineLogicListenerWeb() {
     }
   )
 
-  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    systemIOActor,
+    settingsValues
+  )
 
   return null
 }
