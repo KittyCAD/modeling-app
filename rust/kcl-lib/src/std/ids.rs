@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, w
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{ExecState, ExtrudeSurface, Metadata, ModelingCmdMeta, Solid, types::RuntimeType},
+    execution::{ExecState, ExtrudeSurface, GeoMeta, Metadata, ModelingCmdMeta, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::Args,
 };
@@ -55,16 +55,28 @@ async fn inner_face_id(
     };
     let face_id = inner_resp.face_id;
 
+    let mut found_surface = false;
     for surface in body.value.iter_mut() {
-        if surface.get_id() == face_id {
+        if surface.face_id() == face_id {
             match surface {
                 ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane.tag = Some(tag.clone()),
                 ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc.tag = Some(tag.clone()),
                 ExtrudeSurface::Chamfer(chamfer) => chamfer.tag = Some(tag.clone()),
                 ExtrudeSurface::Fillet(fillet) => fillet.tag = Some(tag.clone()),
             }
+            found_surface = true;
             break;
         }
+    }
+    if !found_surface && (body.start_cap_id == Some(face_id) || body.end_cap_id == Some(face_id)) {
+        body.value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+            face_id,
+            tag: Some(tag),
+            geo_meta: GeoMeta {
+                id: face_id,
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(KclValue::Solid { value: Box::new(body) })

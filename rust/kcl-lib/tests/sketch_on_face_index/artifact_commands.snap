@@ -173,7 +173,7 @@ description: Artifact commands sketch_on_face_index.kcl
       "command": {
         "type": "solid3d_get_face_uuid",
         "object_id": "[uuid]",
-        "face_index": 0
+        "face_index": 1
       }
     }
   ]
