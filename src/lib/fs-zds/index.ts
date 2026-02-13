@@ -68,4 +68,9 @@ export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
 // This reference is modified by `moduleFsViaModuleImport`, to support using fs
 // functions like a developer normally would when dealing with a nodejs
 // program.
+/** 
+  * A swappable adapter for most operations provided by NodeJS's `fs` and `path` modules.
+  * In the web app these functions will call into operations on OPFS browser storage.
+  * In the desktop app they will call into the NodeJS implementations.
+*/
 export default _impl
