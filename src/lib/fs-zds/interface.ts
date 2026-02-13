@@ -65,8 +65,10 @@ export interface IZooDesignStudioFS {
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>
+  /** Lifecycle hook for module, where additional resources can be gathered asynchronously if needed. */
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   detach: () => Promise<undefined | void>
+  /** Lifecycle hook for module, where resources can be cleaned up asynchronously if needed. */
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   attach: () => Promise<undefined | void>
 }
