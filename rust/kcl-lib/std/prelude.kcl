@@ -625,3 +625,26 @@ export fn assert(
   /// If the value was false, the program will terminate with this error message
   error?: string,
 ) {}
+
+
+/// Given a face index, find its ID.
+@(impl = std_rust, feature_tree = true)
+export fn faceId(
+  /// The solid whose faces we're trying to find
+  @body: Solid,
+  /// Face to identify.
+  /// The index is a stable ordering of faces, used when you can't get the
+  /// usual ID (UUID) of a face.
+  index: number(Count),
+): TaggedFace {}
+
+/// Given a edge index, find its ID.
+@(impl = std_rust, feature_tree = true)
+export fn edgeId(
+  /// The solid whose edges we're trying to find
+  @body: Solid,
+  /// Edge to identify.
+  /// The index is a stable ordering of edges, used when you can't get the
+  /// usual ID (UUID) of a edge.
+  index: number(Count),
+): Edge {}
