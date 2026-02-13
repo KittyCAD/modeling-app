@@ -52,6 +52,7 @@ description: Variables in memory after executing cold-plate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -242,6 +243,7 @@ description: Variables in memory after executing cold-plate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -432,6 +434,7 @@ description: Variables in memory after executing cold-plate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -622,6 +625,7 @@ description: Variables in memory after executing cold-plate.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -912,6 +916,7 @@ description: Variables in memory after executing cold-plate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1610,6 +1615,7 @@ description: Variables in memory after executing cold-plate.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

@@ -9,12 +9,7 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -33,6 +28,13 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    kclManager,
+    sceneEntitiesManager,
+    useCommandBarState,
+  } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
@@ -41,7 +43,7 @@ function CommandBarSelectionInput({
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
-  }, [selection])
+  }, [selection, kclManager.astSignal.value])
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
@@ -129,7 +131,7 @@ function CommandBarSelectionInput({
         },
       }) &&
       setHasClearedSelection(true)
-  }, [arg])
+  }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)

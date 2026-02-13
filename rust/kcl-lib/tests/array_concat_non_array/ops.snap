@@ -41,7 +41,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -103,7 +103,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -165,7 +165,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -227,7 +227,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -289,7 +289,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -534,6 +534,54 @@ description: Operations executed array_concat_non_array.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

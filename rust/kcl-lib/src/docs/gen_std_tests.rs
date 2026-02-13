@@ -1,7 +1,6 @@
 use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
-use base64::Engine;
 use serde_json::json;
 use tokio::task::JoinSet;
 
@@ -9,6 +8,11 @@ use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyD
 use crate::ExecutorContext;
 
 mod type_formatter;
+
+fn escape_frontmatter_value(value: &str) -> String {
+    // YAML frontmatter is double-quoted in templates, so escape backslashes and quotes.
+    value.replace('\\', "\\\\").replace('"', "\\\"")
+}
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -35,6 +39,23 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
+    hbs.register_helper(
+        "frontmatter_escape",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let input = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                let first_line = input.lines().next().unwrap_or("");
+                out.write(&escape_frontmatter_value(first_line))?;
+                Ok(())
+            },
+        ),
+    );
+
     // Register a helper to do safe YAML new lines.
     hbs.register_helper(
         "safe_yaml",
@@ -50,8 +71,8 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
                 {
                     // Only get the first part before the newline.
                     // This is to prevent the YAML from breaking.
-                    let string = string.split('\n').next().unwrap_or("");
-                    out.write(string)?;
+                    let first_line = string.lines().next().unwrap_or("");
+                    out.write(&escape_frontmatter_value(first_line))?;
                     return Ok(());
                 }
                 out.write("")?;
@@ -181,20 +202,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         crate::unparser::fmt(src).unwrap()
     };
 
-    let image_base64 = if props.norun {
-        String::new()
-    } else {
-        let image_path = format!(
-            "{}/tests/outputs/serial_test_example_{}{}.png",
-            env!("CARGO_MANIFEST_DIR"),
-            file_name,
-            index
-        );
-        let image_data =
-            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {image_path}"));
-        base64::engine::general_purpose::STANDARD.encode(&image_data)
-    };
-
     let gltf_path = if props.norun || props.no3d {
         String::new()
     } else {
@@ -217,7 +224,6 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         "content": content,
         "gltf_path": gltf_path,
         "image_path": image_path,
-        "image_base64": image_base64,
     }))
 }
 

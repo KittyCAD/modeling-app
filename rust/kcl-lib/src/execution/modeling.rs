@@ -29,18 +29,18 @@ pub(crate) struct ModelingCmdMeta<'a> {
 }
 
 impl<'a> ModelingCmdMeta<'a> {
-    pub fn new(ctx: &'a ExecutorContext, source_range: SourceRange) -> Self {
+    pub fn new(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: None,
         }
     }
 
-    pub fn with_id(ctx: &'a ExecutorContext, source_range: SourceRange, id: Uuid) -> Self {
+    pub fn with_id(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange, id: Uuid) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: Some(id),
         }
     }
@@ -210,13 +210,19 @@ impl ExecState {
         let mut ids = Vec::new();
         for solid in solids {
             // We need to traverse the solids that share the same sketch.
-            let sketch_id = solid.sketch.id;
+            let sketch_id = solid.sketch_id().unwrap_or(solid.id);
             if !traversed_sketches.contains(&sketch_id) {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     self.stack()
                         .walk_call_stack()
-                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
+                        .filter(|v| {
+                            matches!(
+                                v,
+                                KclValue::Solid { value }
+                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
+                            )
+                        })
                         .flat_map(|v| match v {
                             KclValue::Solid { value } => value.get_all_edge_cut_ids(),
                             _ => unreachable!(),

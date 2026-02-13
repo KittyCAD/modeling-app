@@ -251,7 +251,8 @@ export class KclManager extends EventTarget {
   }
   livePathsToWatch = signal<string[]>([])
 
-  private _execState: ExecState = emptyExecState()
+  private _execState = signal<ExecState>(emptyExecState())
+
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
@@ -355,11 +356,14 @@ export class KclManager extends EventTarget {
   }
 
   private set execState(execState) {
-    this._execState = execState
+    this._execState.value = execState
     this.variables = execState.variables
   }
 
   get execState() {
+    return this._execState.value
+  }
+  get execStateSignal() {
     return this._execState
   }
 
@@ -881,6 +885,7 @@ export class KclManager extends EventTarget {
           ast,
           sourceCode: this.code,
           instance: await this._wasmInstancePromise,
+          rustContext: this.singletons.rustContext,
         })
       )
       if (this._sceneEntitiesManager) {
@@ -998,7 +1003,7 @@ export class KclManager extends EventTarget {
     })
 
     this.logs = logs
-    this._execState = execState
+    this._execState.value = execState
     this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
@@ -1446,6 +1451,7 @@ export class KclManager extends EventTarget {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
     diagnostics = this.makeUniqueDiagnostics(diagnostics)
+
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -1703,6 +1709,11 @@ export class KclManager extends EventTarget {
       this._currentFilePath = path
       this.lastWrite = null
     }
+  }
+  get currentFileName() {
+    return (
+      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+    )
   }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {

@@ -1546,7 +1546,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.96862745,
           "g": 0.96862745,
           "b": 0.96862745,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1630,7 +1630,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1713,7 +1713,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.96862745,
           "g": 0.96862745,
           "b": 0.96862745,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2589,7 +2589,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2606,7 +2606,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2623,7 +2623,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2640,7 +2640,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3050,7 +3050,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.96862745,
           "g": 0.96862745,
           "b": 0.96862745,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4161,7 +4161,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.05882353,
           "g": 0.05882353,
           "b": 0.05882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4505,7 +4505,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.6509804,
           "g": 0.6509804,
           "b": 0.6509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4522,7 +4522,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.6509804,
           "g": 0.6509804,
           "b": 0.6509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4903,7 +4903,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.6509804,
           "g": 0.6509804,
           "b": 0.6509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4920,7 +4920,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
           "r": 0.6509804,
           "g": 0.6509804,
           "b": 0.6509804,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

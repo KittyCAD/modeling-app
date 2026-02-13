@@ -707,7 +707,6 @@ description: Artifact commands herringbone-planetary-gearset.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1387,7 +1386,6 @@ description: Artifact commands herringbone-planetary-gearset.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2067,7 +2065,6 @@ description: Artifact commands herringbone-planetary-gearset.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2137,7 +2134,6 @@ description: Artifact commands herringbone-planetary-gearset.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

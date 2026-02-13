@@ -97,6 +97,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -263,6 +264,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -400,6 +402,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -537,6 +540,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -807,6 +811,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -907,6 +912,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1399,6 +1405,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1536,6 +1543,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1673,6 +1681,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1810,6 +1819,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1999,6 +2009,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2136,6 +2147,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2307,6 +2319,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2444,6 +2457,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2684,6 +2698,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2821,6 +2836,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3019,6 +3035,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3156,6 +3173,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3384,6 +3402,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3509,6 +3528,7 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3702,6 +3722,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3827,6 +3848,7 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -4082,6 +4104,7 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -4267,6 +4290,7 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -4471,6 +4495,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4658,6 +4683,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4758,6 +4784,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4858,6 +4885,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4958,6 +4986,7 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -5082,6 +5111,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5219,6 +5249,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5390,6 +5421,7 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5527,6 +5559,7 @@ description: Variables in memory after executing utility-sink.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

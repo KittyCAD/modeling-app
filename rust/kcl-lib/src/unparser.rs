@@ -383,7 +383,13 @@ impl AscribedExpression {
 }
 
 impl BinaryPart {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+    pub(crate) fn recast(
+        &self,
+        buf: &mut String,
+        options: &FormatOptions,
+        indentation_level: usize,
+        ctxt: ExprContext,
+    ) {
         match &self {
             BinaryPart::Literal(literal) => {
                 literal.recast(buf);
@@ -633,6 +639,24 @@ impl TagDeclarator {
 
 impl ArrayExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        fn indent_multiline_item(item: &str, indent: &str) -> String {
+            if !item.contains('\n') {
+                return item.to_owned();
+            }
+            let mut out = String::with_capacity(item.len() + indent.len() * 2);
+            let mut first = true;
+            for segment in item.split_inclusive('\n') {
+                if first {
+                    out.push_str(segment);
+                    first = false;
+                    continue;
+                }
+                out.push_str(indent);
+                out.push_str(segment);
+            }
+            out
+        }
+
         // Reconstruct the order of items in the array.
         // An item can be an element (i.e. an expression for a KCL value),
         // or a non-code item (e.g. a comment)
@@ -684,12 +708,14 @@ impl ArrayExpression {
             options.get_indentation(indentation_level + 1)
         };
         for format_item in format_items {
-            buf.push_str(&inner_indentation);
-            buf.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+            let item = if let Some(x) = format_item.strip_suffix(" ") {
                 x
             } else {
                 &format_item
-            });
+            };
+            let item = indent_multiline_item(item, &inner_indentation);
+            buf.push_str(&inner_indentation);
+            buf.push_str(&item);
             if !format_item.ends_with('\n') {
                 buf.push('\n')
             }
@@ -1768,16 +1794,14 @@ myNestedVar = [
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast_top(&Default::default(), 0);
-        assert_eq!(
-            recasted,
-            r#"bing = { yo = 55 }
+        let expected = r#"bing = { yo = 55 }
 myNestedVar = [
   {
-  prop = line(a = [bing.yo, 21], b = sketch001)
-}
+    prop = line(a = [bing.yo, 21], b = sketch001)
+  }
 ]
-"#
-        );
+"#;
+        assert_eq!(recasted, expected,);
     }
 
     #[test]
@@ -3279,6 +3303,28 @@ startSketchOn(XY)
   } else {
     xLine(length = 1)
   }
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn badly_formatted_inline_calls() {
+        let code = "\
+return union([right, left])
+  |> subtract(tools = [
+       translate(axle(), y = pitchStabL + forkBaseL + wheelRGap + wheelR + addedLength),
+       socket(rakeAngle = rearRake, xyTrans = [0, 12]),
+       socket(
+         rakeAngle = frontRake,
+         xyTrans = [
+           wheelW / 2 + wheelWGap + forkTineW / 2,
+           40 + addedLength
+         ],
+       )
+     ])
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);

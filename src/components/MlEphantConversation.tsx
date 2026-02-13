@@ -10,11 +10,12 @@ import type {
   Conversation,
   Exchange,
 } from '@src/machines/mlEphantManagerMachine'
-import type { ReactNode } from 'react'
+import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
 
 const noop = () => {}
 
@@ -22,7 +23,7 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
-  onProcess: (request: string, mode: MlCopilotMode) => void
+  onProcess: (request: string, mode: MlCopilotMode, attachments: File[]) => void
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
@@ -105,6 +106,8 @@ export interface MlEphantExtraInputsProps {
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
+  onAttachFiles: () => void
+  attachmentsDisabled?: boolean
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
@@ -121,6 +124,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           })}
           {ML_COPILOT_MODE_META[props.mode].pretty}
         </MlCopilotModes>
+        <button
+          type="button"
+          data-testid="ml-ephant-attachments-button"
+          onClick={props.onAttachFiles}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Attach files"
+        >
+          <CustomIcon name="paperclip" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Attach files</span>
+          </Tooltip>
+        </button>
       </div>
     </div>
   )
@@ -145,6 +161,7 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
+  const { kclManager } = useSingletons()
   const selectionText = getSelectionTypeDisplayText(
     kclManager.astSignal.value,
     props.selections.data
@@ -173,8 +190,11 @@ export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
   const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [attachments, setAttachments] = useState<File[]>([])
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -185,8 +205,97 @@ export const MlEphantConversationInput = (
     if (!value) return
     if (!refDiv.current) return
 
-    props.onProcess(value, mode)
+    props.onProcess(value, mode, attachments)
     setValue('')
+    setAttachments([])
+  }
+
+  const appendAttachments = (files: File[]) => {
+    if (!files.length) return
+    setAttachments((current) => {
+      const next = [...current]
+      for (const file of files) {
+        const exists = next.some(
+          (existing) =>
+            existing.name === file.name &&
+            existing.size === file.size &&
+            (existing.lastModified === file.lastModified ||
+              existing.lastModified === 0 ||
+              file.lastModified === 0)
+        )
+        if (!exists) {
+          next.push(file)
+        }
+      }
+      return next
+    })
+  }
+
+  const onAttachFiles = () => {
+    if (props.disabled) return
+    fileInputRef.current?.click()
+  }
+
+  const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? [])
+    if (!files.length) return
+
+    appendAttachments(files)
+
+    event.target.value = ''
+  }
+
+  const onRemoveAttachment = (index: number) => {
+    setAttachments((current) => current.filter((_, i) => i !== index))
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (props.disabled) return
+    if (isExternalFileDrag(e)) {
+      setIsDraggingOver(true)
+    }
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Only set to false if we're leaving the container (not entering a child)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX
+    const y = e.clientY
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      setIsDraggingOver(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDraggingOver(false)
+    if (props.disabled) return
+
+    const files = Array.from(e.dataTransfer.files)
+    if (!files.length) return
+
+    appendAttachments(files)
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const files = Array.from(e.clipboardData.files)
+    if (!files.length) return
+    if (props.disabled) return
+
+    // Prevent default only if we have files to handle
+    e.preventDefault()
+
+    appendAttachments(files)
   }
 
   const selectionsContext:
@@ -195,7 +304,27 @@ export const MlEphantConversationInput = (
 
   return (
     <div className="flex flex-col p-4 gap-2">
-      <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
+      <div
+        className={`p-2 border b-4 focus-within:b-default flex flex-col gap-2 relative ${isDraggingOver ? 'border-ml-green border-dashed' : ''}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDraggingOver && (
+          <div className="absolute inset-0 bg-ml-green/10 flex items-center justify-center pointer-events-none z-10 rounded">
+            <span className="text-sm text-ml-green font-medium">
+              Drop files to attach
+            </span>
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          onChange={onFileInputChange}
+          className="hidden"
+        />
         <textarea
           autoCapitalize="off"
           autoCorrect="off"
@@ -217,15 +346,40 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
+          onPaste={handlePaste}
           className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {attachments.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${file.size}`}
+                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                title={file.name}
+              >
+                <CustomIcon name="file" className="w-4 h-4" />
+                <span className="max-w-[160px] truncate">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => onRemoveAttachment(index)}
+                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
+                  aria-label={`Remove ${file.name}`}
+                >
+                  <CustomIcon name="close" className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
             mode={mode}
             onSetMode={setMode}
+            onAttachFiles={onAttachFiles}
+            attachmentsDisabled={props.disabled}
           />
           <div className="flex flex-row gap-1">
             {!props.disabled && props.needsReconnect && (
@@ -295,10 +449,16 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const exchangesLength = props.conversation?.exchanges.length ?? 0
+  const lastExchange = exchangesLength
+    ? props.conversation?.exchanges[exchangesLength - 1]
+    : undefined
+  const isEndOfStream = lastExchange?.responses.some(
+    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
+  )
 
-  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
+  // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    const exchangesLength = props.conversation?.exchanges.length ?? 0
     if (exchangesLength === 0) return
 
     requestAnimationFrame(() => {
@@ -309,7 +469,21 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         })
       }
     })
-  }, [props.conversation?.exchanges.length])
+  }, [exchangesLength])
+
+  // Autoscroll: right after Zookeeper completes its turn in the exchange.
+  useEffect(() => {
+    if (isEndOfStream) {
+      requestAnimationFrame(() => {
+        if (refScroll.current) {
+          refScroll.current.scrollTo({
+            top: refScroll.current.scrollHeight,
+            behavior: 'smooth',
+          })
+        }
+      })
+    }
+  }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -330,15 +504,20 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto">
+          <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
               {props.userBlockedOnPayment ? (
                 <StarterCard
-                  text={`Zookeeper is unavailable because your balance is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
+                  text={`Zookeeper is unavailable because your remaining reasoning time is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
                 />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
-                  exchangeCards
+                  <>
+                    {exchangeCards}
+                    {lastExchange && !isEndOfStream && (
+                      <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
+                    )}
+                  </>
                 ) : (
                   <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
                 )

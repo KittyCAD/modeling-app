@@ -461,6 +461,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

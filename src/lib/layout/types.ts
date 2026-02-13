@@ -3,6 +3,7 @@ import type { MouseEventHandler, useMemo } from 'react'
 
 export enum AreaType {
   TTC = 'ttc',
+  Bodies = 'bodies',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Files = 'files',
@@ -112,7 +113,7 @@ export type PaneLayout = BaseLayout &
     onExpandSize?: number
   }
 export interface Closeable {
-  onClose: () => void
+  onClose: (idOverride?: string) => void
 }
 export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple

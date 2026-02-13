@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useAuthState } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 import { generateSignInUrl } from '@src/routes/utils'
 
 /**
@@ -12,9 +12,10 @@ import { generateSignInUrl } from '@src/routes/utils'
  * accordingly.
  */
 export function useAuthNavigation() {
+  const { auth } = useApp()
   const navigate = useNavigate()
   const location = useLocation()
-  const authState = useAuthState()
+  const authState = auth.useAuthState()
   const [searchParams] = useSearchParams()
   const requestingImmediateSignInIfNecessary = searchParams.has(
     IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM

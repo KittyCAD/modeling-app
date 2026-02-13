@@ -29,6 +29,7 @@ import {
   type SketchSolveMachineEvent,
   type SketchSolveContext,
   type SpawnToolActor,
+  type SolveActionArgs,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
   initializeIntersectionPlane,
@@ -44,14 +45,16 @@ import {
   deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
   buildSegmentCtorFromObject,
+  onCameraScaleChange,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 
 async function addAxisDistanceConstraint(
   context: SketchSolveContext,
-  self: any,
+  self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
   constraintType: 'HorizontalDistance' | 'VerticalDistance'
 ) {
@@ -114,13 +117,20 @@ async function addAxisDistanceConstraint(
       type: constraintType,
       distance: { value: distance, units },
       points: segmentsToConstrain,
+      source: {
+        expr: distance.toString(),
+        is_literal: true,
+      },
     },
     await jsAppSettings(context.rustContext.settingsActor)
   )
   if (result) {
     self.send({
       type: 'update sketch outcome',
-      data: result,
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+      },
     })
   }
 }
@@ -178,8 +188,13 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update hovered id': assign(({ event }) => {
+      assertEvent(event, 'update hovered id')
+      return { hoveredId: event.data.hoveredId }
+    }),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
+    'camera scale change': onCameraScaleChange,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -219,9 +234,10 @@ export const sketchSolveMachine = setup({
       sketchSolveToolName: null,
       selectedIds: [],
       duringAreaSelectIds: [],
+      hoveredId: null,
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
-        kclSource: {
+        sourceDelta: {
           text: input.kclManager.code,
         },
         sceneGraphDelta: input.initialSceneGraphDelta,
@@ -246,6 +262,9 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
+    },
+    'camera scale change': {
+      actions: 'camera scale change',
     },
     'set draft entities': {
       actions: 'set draft entities',
@@ -283,30 +302,18 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
     },
-    Distance: {
+    Dimension: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        let segmentsToConstrain = context.selectedIds
-        if (segmentsToConstrain.length === 1) {
-          const first =
-            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-              segmentsToConstrain[0]
-            ]
-          if (
-            first?.kind?.type === 'Segment' &&
-            first?.kind?.segment?.type === 'Line'
-          ) {
-            segmentsToConstrain = [
-              first.kind.segment.start,
-              first.kind.segment.end,
-            ]
-          }
-        }
+        const segmentsToConstrain = context.selectedIds
         const currentSelections = segmentsToConstrain
           .map(
             (id) =>
@@ -346,21 +353,134 @@ export const sketchSolveMachine = setup({
               distance = roundOff(distanceResult.distance)
             }
           }
+        } else if (currentSelections.length === 1) {
+          const first = currentSelections[0]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Arc'
+          ) {
+            // Calculate radius for arc segment from its center and start point
+            const centerPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.center
+              ]
+            const startPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.start
+              ]
+            if (
+              centerPoint?.kind?.type === 'Segment' &&
+              centerPoint.kind.segment?.type === 'Point' &&
+              startPoint?.kind?.type === 'Segment' &&
+              startPoint.kind.segment?.type === 'Point'
+            ) {
+              const point1 = {
+                x: centerPoint.kind.segment.position.x,
+                y: centerPoint.kind.segment.position.y,
+              }
+              const point2 = {
+                x: startPoint.kind.segment.position.x,
+                y: startPoint.kind.segment.position.y,
+              }
+              const distanceResult = distanceBetweenPoint2DExpr(
+                point1,
+                point2,
+                await context.kclManager.wasmInstancePromise
+              )
+              if (!(distanceResult instanceof Error)) {
+                distance = roundOff(distanceResult.distance)
+              }
+            }
+            // Apply radius constraint for arc
+            const result = await context.rustContext.addConstraint(
+              0,
+              context.sketchId,
+              {
+                type: 'Radius',
+                radius: { value: distance, units },
+                arc: segmentsToConstrain[0],
+              },
+              await jsAppSettings(context.rustContext.settingsActor)
+            )
+            if (result) {
+              self.send({
+                type: 'update sketch outcome',
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                },
+              })
+            }
+            return
+          } else if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            // Calculate distance for line segment from its endpoints
+            const startPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.start
+              ]
+            const endPoint =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+                first.kind.segment.end
+              ]
+            if (
+              startPoint?.kind?.type === 'Segment' &&
+              startPoint.kind.segment?.type === 'Point' &&
+              endPoint?.kind?.type === 'Segment' &&
+              endPoint.kind.segment?.type === 'Point'
+            ) {
+              const point1 = {
+                x: startPoint.kind.segment.position.x,
+                y: startPoint.kind.segment.position.y,
+              }
+              const point2 = {
+                x: endPoint.kind.segment.position.x,
+                y: endPoint.kind.segment.position.y,
+              }
+              const distanceResult = distanceBetweenPoint2DExpr(
+                point1,
+                point2,
+                await context.kclManager.wasmInstancePromise
+              )
+              if (!(distanceResult instanceof Error)) {
+                distance = roundOff(distanceResult.distance)
+              }
+            }
+          }
         }
+        // distance() accepts two points: when user selects one line, pass its endpoints
+        const pointsForDistance =
+          currentSelections.length === 1 &&
+          currentSelections[0]?.kind?.type === 'Segment' &&
+          currentSelections[0].kind.segment?.type === 'Line'
+            ? [
+                currentSelections[0].kind.segment.start,
+                currentSelections[0].kind.segment.end,
+              ]
+            : segmentsToConstrain
         const result = await context.rustContext.addConstraint(
           0,
           context.sketchId,
           {
             type: 'Distance',
             distance: { value: distance, units },
-            points: segmentsToConstrain,
+            points: pointsForDistance,
+            source: {
+              expr: distance.toString(),
+              is_literal: true,
+            },
           },
           await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -400,7 +520,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -420,7 +543,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -440,7 +566,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -463,7 +592,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -486,7 +618,10 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
@@ -577,13 +712,19 @@ export const sketchSolveMachine = setup({
         if (result) {
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
     },
     'update selected ids': {
       actions: ['update selected ids', 'refresh selection styling'],
+    },
+    'update hovered id': {
+      actions: ['update hovered id', 'refresh selection styling'],
     },
     'delete selected': {
       actions: async ({ self, context }) => {
@@ -594,13 +735,26 @@ export const sketchSolveMachine = setup({
           return
         }
 
-        // Call deleteObjects with the selected segment IDs
+        // Partition selectedIds into constraints and segments
+        const objects =
+          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+        const constraintIds: number[] = []
+        const segmentIds: number[] = []
+        for (const id of selectedIds) {
+          const obj = objects[id]
+          if (obj?.kind.type === 'Constraint') {
+            constraintIds.push(id)
+          } else {
+            segmentIds.push(id)
+          }
+        }
+
         const result = await context.rustContext
           .deleteObjects(
-            0,
+            SKETCH_FILE_VERSION,
             context.sketchId,
-            [],
-            selectedIds,
+            constraintIds,
+            segmentIds,
             await jsAppSettings(context.rustContext.settingsActor)
           )
           .catch((err) => {
@@ -618,10 +772,30 @@ export const sketchSolveMachine = setup({
           // Send the update sketch outcome event
           self.send({
             type: 'update sketch outcome',
-            data: result,
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+            },
           })
         }
       },
+    },
+    'start editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: ({ event }) => {
+            assertEvent(event, 'start editing constraint')
+            return event.data.constraintId
+          },
+        }),
+      ],
+    },
+    'stop editing constraint': {
+      actions: [
+        assign({
+          editingConstraintId: undefined,
+        }),
+      ],
     },
   },
   states: {

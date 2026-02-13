@@ -19,7 +19,7 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import type { SystemIOActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/app'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
