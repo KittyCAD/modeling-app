@@ -349,12 +349,13 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
     }
 
-    Ok(Transform {
-        replicate,
-        scale,
-        translate,
-        rotation,
-    })
+    let transform = Transform::builder()
+        .replicate(replicate)
+        .scale(scale)
+        .translate(translate)
+        .rotation(rotation)
+        .build();
+    Ok(transform)
 }
 
 fn array_to_point3d(
@@ -442,7 +443,9 @@ impl GeometryTrait for Solid {
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
         // We need this for in extrude.rs when you sketch on face.
-        self.sketch.id = id;
+        if let Some(sketch) = self.sketch_mut() {
+            sketch.id = id;
+        }
     }
 
     fn id(&self) -> Uuid {
@@ -450,7 +453,7 @@ impl GeometryTrait for Solid {
     }
 
     fn original_id(&self) -> Uuid {
-        self.sketch.original_id
+        Solid::original_id(self)
     }
 
     fn array_to_point3d(
@@ -586,10 +589,7 @@ async fn inner_pattern_linear_2d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(
@@ -646,10 +646,7 @@ async fn inner_pattern_linear_3d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(transforms, solids, use_original.unwrap_or_default(), exec_state, &args).await

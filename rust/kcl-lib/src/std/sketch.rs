@@ -3,7 +3,7 @@
 use std::f64;
 
 use anyhow::Result;
-use indexmap::IndexMap;
+use kcl_error::SourceRange;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
@@ -11,6 +11,7 @@ use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::{
     shapes::{get_radius, get_radius_labelled},
@@ -19,11 +20,12 @@ use super::{
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
+    ExecutorContext,
     errors::{KclError, KclErrorDetails},
     exec::PlaneKind,
     execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        BasePath, ExecState, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -31,7 +33,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
-        faces::make_face,
+        faces::{FaceSpecifier, make_face},
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -98,6 +100,13 @@ impl FaceTag {
                 "Could not find the face corresponding to this tag".to_string(),
                 vec![args.source_range],
             ))),
+        }
+    }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        match self {
+            FaceTag::Tag(t) => t.geometry(),
+            _ => None,
         }
     }
 }
@@ -270,7 +279,7 @@ async fn inner_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute,
@@ -279,12 +288,13 @@ async fn inner_line(
             relative_name: "end",
         },
         exec_state,
-        args,
+        &args.ctx,
+        args.source_range,
     )
     .await
 }
 
-struct StraightLineParams {
+pub(super) struct StraightLineParams {
     sketch: Sketch,
     end_absolute: Option<[TyF64; 2]>,
     end: Option<[TyF64; 2]>,
@@ -302,7 +312,7 @@ impl StraightLineParams {
             relative_name: "end",
         }
     }
-    fn absolute(p: [TyF64; 2], sketch: Sketch, tag: Option<TagNode>) -> Self {
+    pub(super) fn absolute(p: [TyF64; 2], sketch: Sketch, tag: Option<TagNode>) -> Self {
         Self {
             sketch,
             tag,
@@ -313,7 +323,18 @@ impl StraightLineParams {
     }
 }
 
-async fn straight_line(
+pub(super) async fn straight_line_with_new_id(
+    straight_line_params: StraightLineParams,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    straight_line(id, straight_line_params, true, exec_state, ctx, source_range).await
+}
+
+pub(super) async fn straight_line(
+    id: Uuid,
     StraightLineParams {
         sketch,
         end,
@@ -321,15 +342,17 @@ async fn straight_line(
         tag,
         relative_name,
     }: StraightLineParams,
+    send_to_engine: bool,
     exec_state: &mut ExecState,
-    args: Args,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let (point, is_absolute) = match (end_absolute, end) {
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other".to_owned(),
-                vec![args.source_range],
+                vec![source_range],
             )));
         }
         (Some(end_absolute), None) => (end_absolute, true),
@@ -337,26 +360,27 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("You must supply either `{relative_name}` or `endAbsolute` arguments"),
-                vec![args.source_range],
+                vec![source_range],
             )));
         }
     };
 
-    let id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::ExtendPath::builder()
-                    .path(sketch.id.into())
-                    .segment(PathSegment::Line {
-                        end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
-                        relative: !is_absolute,
-                    })
-                    .build(),
-            ),
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
+                            relative: !is_absolute,
+                        })
+                        .build(),
+                ),
+            )
+            .await?;
+    }
 
     let end = if is_absolute {
         point_to_len_unit(point, from.units)
@@ -377,7 +401,7 @@ async fn straight_line(
             units: sketch.units,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: source_range.into(),
             },
         },
     };
@@ -423,7 +447,7 @@ async fn inner_x_line(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute: end_absolute.map(|x| [x, from.into_y()]),
@@ -432,7 +456,8 @@ async fn inner_x_line(
             relative_name: "length",
         },
         exec_state,
-        args,
+        &args.ctx,
+        args.source_range,
     )
     .await
 }
@@ -459,7 +484,7 @@ async fn inner_y_line(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    straight_line(
+    straight_line_with_new_id(
         StraightLineParams {
             sketch,
             end_absolute: end_absolute.map(|y| [from.into_x(), y]),
@@ -468,7 +493,8 @@ async fn inner_y_line(
             relative_name: "length",
         },
         exec_state,
-        args,
+        &args.ctx,
+        args.source_range,
     )
     .await
 }
@@ -649,7 +675,13 @@ async fn inner_angled_line_of_x_length(
     let to = get_y_component(Angle::from_degrees(angle_degrees), length.n);
     let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
-    let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
+    let new_sketch = straight_line_with_new_id(
+        StraightLineParams::relative(to, sketch, tag),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     Ok(new_sketch)
 }
@@ -682,10 +714,11 @@ async fn inner_angled_line_to_x(
     let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::absolute([x_to, TyF64::new(y_to, from.units.into())], sketch, tag),
         exec_state,
-        args,
+        &args.ctx,
+        args.source_range,
     )
     .await?;
     Ok(new_sketch)
@@ -716,7 +749,13 @@ async fn inner_angled_line_of_y_length(
     let to = get_x_component(Angle::from_degrees(angle_degrees), length.n);
     let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
-    let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
+    let new_sketch = straight_line_with_new_id(
+        StraightLineParams::relative(to, sketch, tag),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     Ok(new_sketch)
 }
@@ -749,10 +788,11 @@ async fn inner_angled_line_to_y(
     let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
-    let new_sketch = straight_line(
+    let new_sketch = straight_line_with_new_id(
         StraightLineParams::absolute([TyF64::new(x_to, from.units.into()), y_to], sketch, tag),
         exec_state,
-        args,
+        &args.ctx,
+        args.source_range,
     )
     .await?;
     Ok(new_sketch)
@@ -804,7 +844,13 @@ pub async fn inner_angled_line_that_intersects(
         TyF64::new(to[1], from.units.into()),
     ];
 
-    straight_line(StraightLineParams::absolute(to, sketch, tag), exec_state, args).await
+    straight_line_with_new_id(
+        StraightLineParams::absolute(to, sketch, tag),
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await
 }
 
 /// Data for start sketch on.
@@ -854,7 +900,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
     let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
     let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
     let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
@@ -867,8 +913,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
-    face: Option<FaceTag>,
-    normal_to_face: Option<FaceTag>,
+    face: Option<FaceSpecifier>,
+    normal_to_face: Option<FaceSpecifier>,
     align_axis: Option<Axis2dOrEdgeReference>,
     normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,
@@ -1059,6 +1105,13 @@ pub async fn ensure_sketch_plane_in_engine(
     if plane.is_initialized() {
         return Ok(());
     }
+    #[cfg(feature = "artifact-graph")]
+    {
+        if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
+            plane.object_id = Some(existing_object_id);
+            return Ok(());
+        }
+    }
 
     let clobber = false;
     let size = LengthUnit(60.0);
@@ -1115,7 +1168,7 @@ pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let start: [TyF64; 2] = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    let sketch = inner_start_profile(sketch_surface, start, tag, exec_state, args).await?;
+    let sketch = inner_start_profile(sketch_surface, start, tag, exec_state, &args.ctx, args.source_range).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -1126,14 +1179,33 @@ pub(crate) async fn inner_start_profile(
     at: [TyF64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
-    args: Args,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    create_sketch(id, sketch_surface, at, tag, true, exec_state, ctx, source_range).await
+}
+
+#[expect(clippy::too_many_arguments)]
+pub(crate) async fn create_sketch(
+    id: Uuid,
+    sketch_surface: SketchSurface,
+    at: [TyF64; 2],
+    tag: Option<TagNode>,
+    send_to_engine: bool,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
     match &sketch_surface {
         SketchSurface::Face(face) => {
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &[(*face.solid).clone()])
+                .flush_batch_for_solids(
+                    ModelingCmdMeta::new(exec_state, ctx, source_range),
+                    &[(*face.solid).clone()],
+                )
                 .await?;
         }
         SketchSurface::Plane(plane) if !plane.is_standard() => {
@@ -1141,7 +1213,7 @@ pub(crate) async fn inner_start_profile(
             // This is especially helpful for offset planes, which would be visible otherwise.
             exec_state
                 .batch_end_cmd(
-                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmdMeta::new(exec_state, ctx, source_range),
                     ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(plane.id).hidden(true).build()),
                 )
                 .await?;
@@ -1149,57 +1221,59 @@ pub(crate) async fn inner_start_profile(
         _ => {}
     }
 
+    let path_id = id;
     let enable_sketch_id = exec_state.next_uuid();
-    let path_id = exec_state.next_uuid();
     let move_pen_id = exec_state.next_uuid();
     let disable_sketch_id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmds(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            &[
-                // Enter sketch mode on the surface.
-                // We call this here so you can reuse the sketch surface for multiple sketches.
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &sketch_surface {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        mcmd::EnableSketchMode::builder()
-                            .animated(false)
-                            .ortho(false)
-                            .entity_id(sketch_surface.id())
-                            .adjust_camera(false)
-                            .planar_normal(normal.into())
-                            .build()
-                    } else {
-                        mcmd::EnableSketchMode::builder()
-                            .animated(false)
-                            .ortho(false)
-                            .entity_id(sketch_surface.id())
-                            .adjust_camera(false)
-                            .build()
-                    }),
-                    cmd_id: enable_sketch_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(mcmd::StartPath::default()),
-                    cmd_id: path_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(
-                        mcmd::MovePathPen::builder()
-                            .path(path_id.into())
-                            .to(KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit))
-                            .build(),
-                    ),
-                    cmd_id: move_pen_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                    cmd_id: disable_sketch_id.into(),
-                },
-            ],
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmds(
+                ModelingCmdMeta::new(exec_state, ctx, source_range),
+                &[
+                    // Enter sketch mode on the surface.
+                    // We call this here so you can reuse the sketch surface for multiple sketches.
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &sketch_surface {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            mcmd::EnableSketchMode::builder()
+                                .animated(false)
+                                .ortho(false)
+                                .entity_id(sketch_surface.id())
+                                .adjust_camera(false)
+                                .planar_normal(normal.into())
+                                .build()
+                        } else {
+                            mcmd::EnableSketchMode::builder()
+                                .animated(false)
+                                .ortho(false)
+                                .entity_id(sketch_surface.id())
+                                .adjust_camera(false)
+                                .build()
+                        }),
+                        cmd_id: enable_sketch_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(mcmd::StartPath::default()),
+                        cmd_id: path_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::from(
+                            mcmd::MovePathPen::builder()
+                                .path(path_id.into())
+                                .to(KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit))
+                                .build(),
+                        ),
+                        cmd_id: move_pen_id.into(),
+                    },
+                    ModelingCmdReq {
+                        cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                        cmd_id: disable_sketch_id.into(),
+                    },
+                ],
+            )
+            .await?;
+    }
 
     // Convert to the units of the module.  This is what the frontend expects.
     let units = exec_state.length_unit();
@@ -1211,41 +1285,30 @@ pub(crate) async fn inner_start_profile(
         units,
         geo_meta: GeoMeta {
             id: move_pen_id,
-            metadata: args.source_range.into(),
+            metadata: source_range.into(),
         },
     };
 
-    let sketch = Sketch {
+    let mut sketch = Sketch {
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
-        on: sketch_surface.clone(),
+        on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
         units,
         mirror: Default::default(),
         clone: Default::default(),
-        meta: vec![args.source_range.into()],
-        tags: if let Some(tag) = &tag {
-            let mut tag_identifier: TagIdentifier = tag.into();
-            tag_identifier.info = vec![(
-                exec_state.stack().current_epoch(),
-                TagEngineInfo {
-                    id: current_path.geo_meta.id,
-                    sketch: path_id,
-                    path: Some(Path::Base {
-                        base: current_path.clone(),
-                    }),
-                    surface: None,
-                },
-            )];
-            IndexMap::from([(tag.name.to_string(), tag_identifier)])
-        } else {
-            Default::default()
-        },
-        start: current_path,
+        meta: vec![source_range.into()],
+        tags: Default::default(),
+        start: current_path.clone(),
         is_closed: ProfileClosed::No,
     };
+    if let Some(tag) = &tag {
+        let path = Path::Base { base: current_path };
+        sketch.add_tag(tag, &path, exec_state, None);
+    }
+
     Ok(sketch)
 }
 
@@ -1415,7 +1478,7 @@ pub(crate) async fn inner_arc(
     match (angle_start, angle_end, radius, diameter, interior_absolute, end_absolute) {
         (Some(angle_start), Some(angle_end), radius, diameter, None, None) => {
             let radius = get_radius(radius, diameter, args.source_range)?;
-            relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
+            relative_arc(id, exec_state, sketch, from, angle_start, angle_end, radius, tag, true, &args.ctx, args.source_range).await
         }
         (None, None, None, None, Some(interior_absolute), Some(end_absolute)) => {
             absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
@@ -1500,7 +1563,6 @@ pub async fn absolute_arc(
 
 #[allow(clippy::too_many_arguments)]
 pub async fn relative_arc(
-    args: &Args,
     id: uuid::Uuid,
     exec_state: &mut ExecState,
     sketch: Sketch,
@@ -1509,38 +1571,43 @@ pub async fn relative_arc(
     angle_end: TyF64,
     radius: TyF64,
     tag: Option<TagNode>,
+    send_to_engine: bool,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
-    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
+    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, source_range));
+    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, source_range));
     let radius = radius.to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
         return Err(KclError::new_type(KclErrorDetails::new(
             "Arc start and end angles must be different".to_string(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     }
     let ccw = a_start < a_end;
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, id),
-            ModelingCmd::from(
-                mcmd::ExtendPath::builder()
-                    .path(sketch.id.into())
-                    .segment(PathSegment::Arc {
-                        start: a_start,
-                        end: a_end,
-                        center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                        radius: LengthUnit(
-                            crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
-                        ),
-                        relative: false,
-                    })
-                    .build(),
-            ),
-        )
-        .await?;
+    if send_to_engine {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::with_id(exec_state, ctx, source_range, id),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Arc {
+                            start: a_start,
+                            end: a_end,
+                            center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
+                            radius: LengthUnit(
+                                crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                            ),
+                            relative: false,
+                        })
+                        .build(),
+                ),
+            )
+            .await?;
+    }
 
     let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
     let current_path = Path::Arc {
@@ -1551,7 +1618,7 @@ pub async fn relative_arc(
             units: from.units,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: source_range.into(),
             },
         },
         center,
@@ -1964,6 +2031,8 @@ async fn inner_bezier_curve(
         }
     };
 
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
+
     let current_path = Path::Bezier {
         base: BasePath {
             from: from.ignore_units(),
@@ -1982,6 +2051,9 @@ async fn inner_bezier_curve(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);

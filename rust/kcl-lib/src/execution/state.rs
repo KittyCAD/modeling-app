@@ -22,7 +22,7 @@ use crate::{
     },
     front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef},
+    parsing::ast::types::{Annotation, NodeRef, TagNode},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
@@ -97,6 +97,8 @@ pub struct ModuleArtifactState {
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    /// Map from artifact ID to object ID in the scene.
+    pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
 }
@@ -152,10 +154,13 @@ pub(super) struct ModuleState {
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
     #[cfg(feature = "artifact-graph")]
+    pub sketch_id: Option<ObjectId>,
+    #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<kcl_ezpz::Constraint>,
     pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
+    pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
 
 impl ExecState {
@@ -355,8 +360,13 @@ impl ExecState {
             id.0,
             self.mod_local.artifacts.scene_objects.len()
         );
+        let artifact_id = obj.artifact_id;
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
         id
     }
 
@@ -377,7 +387,21 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub fn set_scene_object(&mut self, object: Object) {
         let id = object.id;
+        let artifact_id = object.artifact_id;
         self.mod_local.artifacts.scene_objects[id.0] = object;
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .insert(artifact_id, id);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn scene_object_id_by_artifact_id(&self, artifact_id: ArtifactId) -> Option<ObjectId> {
+        self.mod_local
+            .artifacts
+            .artifact_id_to_scene_object
+            .get(&artifact_id)
+            .cloned()
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -602,6 +626,7 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
             &programs,
+            &self.global.module_infos,
         );
 
         let artifact_graph = graph_result?;
@@ -709,6 +734,8 @@ impl ModuleArtifactState {
                 .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
         }
         self.source_range_to_object.extend(other.source_range_to_object);
+        self.artifact_id_to_scene_object
+            .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
     }
 
@@ -809,7 +836,7 @@ impl SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
-        solve_outcome: Solved,
+        solve_outcome: &Solved,
         solution_ty: NumericType,
         range: SourceRange,
     ) -> Result<Vec<(SourceRange, Number)>, KclError> {

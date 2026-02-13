@@ -54,7 +54,7 @@ use crate::{
     parsing::{
         PIPE_OPERATOR,
         ast::types::{Expr, Node, VariableKind},
-        token::TokenStream,
+        token::{RESERVED_WORDS, TokenStream},
     },
 };
 
@@ -110,6 +110,8 @@ pub struct Backend {
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
     pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
+    /// KCL keywords
+    pub kcl_keywords: HashMap<String, CompletionItem>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -179,6 +181,7 @@ impl Backend {
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
         let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
+        let kcl_keywords = get_keywords();
 
         Ok(Self {
             client,
@@ -186,6 +189,7 @@ impl Backend {
             stdlib_completions,
             stdlib_signatures,
             stdlib_args,
+            kcl_keywords,
             zoo_client,
             can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
@@ -1327,6 +1331,7 @@ impl LanguageServer for Backend {
         }
 
         completions.extend(self.stdlib_completions.values().cloned());
+        completions.extend(self.kcl_keywords.values().cloned());
 
         // Add more to the completions if we have more.
         let Some(ast) = self
@@ -1765,6 +1770,37 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
     }
 
     signatures
+}
+
+/// Get KCL keywords
+pub fn get_keywords() -> HashMap<String, CompletionItem> {
+    RESERVED_WORDS
+        .keys()
+        .map(|k| (k.to_string(), keyword_to_completion(k.to_string())))
+        .collect()
+}
+
+fn keyword_to_completion(kw: String) -> CompletionItem {
+    CompletionItem {
+        label: kw,
+        label_details: None,
+        kind: Some(CompletionItemKind::KEYWORD),
+        detail: None,
+        documentation: None,
+        deprecated: Some(false),
+        preselect: None,
+        sort_text: None,
+        filter_text: None,
+        insert_text: None,
+        insert_text_format: None,
+        insert_text_mode: None,
+        text_edit: None,
+        additional_text_edits: None,
+        command: None,
+        commit_characters: None,
+        data: None,
+        tags: None,
+    }
 }
 
 #[derive(Clone, Debug)]

@@ -128,7 +128,7 @@ export class ConnectionManager extends EventTarget {
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
 
-  callbackOnUnitTestingConnection: (() => void) | null
+  callbackOnUnitTestingConnection: ((message: string) => void) | null
 
   constructor(settings?: SettingsViaQueryString) {
     super()
@@ -177,7 +177,7 @@ export class ConnectionManager extends EventTarget {
     height: number
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
-    callbackOnUnitTestingConnection?: () => void
+    callbackOnUnitTestingConnection?: (message: string) => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',

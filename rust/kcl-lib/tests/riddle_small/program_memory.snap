@@ -67,6 +67,7 @@ description: Variables in memory after executing riddle_small.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

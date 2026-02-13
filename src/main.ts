@@ -33,6 +33,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { registerFileProtocolCsp } from '@src/lib/csp'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -43,6 +44,7 @@ import {
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { configureWindowsSystemCertificates } from '@src/windowsSystemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
@@ -57,7 +59,7 @@ if (
 }
 
 // If we're on Windows, pull the local system TLS CAs in
-require('win-ca')
+configureWindowsSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
 /** All Electron windows will share this WASM module */
@@ -327,6 +329,8 @@ app.on('window-all-closed', () => {
 app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
+
+  registerFileProtocolCsp()
 
   // Create the mainWindow
   mainWindow = createWindow()

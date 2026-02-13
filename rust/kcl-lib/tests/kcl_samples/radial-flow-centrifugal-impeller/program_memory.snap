@@ -19,6 +19,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -176,6 +177,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -363,6 +365,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -529,6 +532,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -695,6 +699,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -861,6 +866,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1027,6 +1033,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1193,6 +1200,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1359,6 +1367,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1525,6 +1534,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1691,6 +1701,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1857,6 +1868,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2023,6 +2035,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2189,6 +2202,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2336,6 +2350,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2675,6 +2690,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2734,6 +2750,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2907,6 +2924,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3064,6 +3082,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -3166,6 +3185,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3225,6 +3245,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3542,6 +3563,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

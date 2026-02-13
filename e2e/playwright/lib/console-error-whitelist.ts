@@ -32,7 +32,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: '{"kind"',
-      // eslint-disable-next-line no-useless-escape
+
       message: 'no connection to send on',
       stack: '',
       foundInSpec: 'e2e/playwright/various.spec.ts',

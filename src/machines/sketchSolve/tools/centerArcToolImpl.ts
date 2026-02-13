@@ -16,6 +16,7 @@ import {
   shouldSwapStartEnd,
   calculateArcSwapState,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -255,10 +256,15 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
             ],
             settings
           )
-          self._parent?.send({
+          const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
-            data: { ...result, writeToDisk: false },
-          })
+            data: {
+              sourceDelta: result.kclSource,
+              sceneGraphDelta: result.sceneGraphDelta,
+              writeToDisk: false,
+            },
+          }
+          self._parent?.send(sendData)
 
           // Update context with the swapped state
           self.send({
@@ -378,13 +384,14 @@ export function sendResultToParent({
 
   // Send result to parent if we have valid data
   if (output.kclSource && output.sceneGraphDelta) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'update sketch outcome',
       data: {
-        kclSource: output.kclSource,
+        sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
       },
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   return {
@@ -481,10 +488,11 @@ export function storeCreatedArcResult({
 
   // Send draft entities to parent for tracking
   if (entitiesToTrack.segmentIds.length > 0) {
-    self._parent?.send({
+    const sendData: SketchSolveMachineEvent = {
       type: 'set draft entities',
       data: entitiesToTrack,
-    })
+    }
+    self._parent?.send(sendData)
   }
 
   return {

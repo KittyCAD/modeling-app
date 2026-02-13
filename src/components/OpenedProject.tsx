@@ -231,6 +231,7 @@ export function OpenedProject() {
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
+            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -249,6 +250,7 @@ export function OpenedProject() {
     authToken,
     kclManager,
     systemIOActor,
+    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -274,7 +276,6 @@ export function OpenedProject() {
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   })
 
   // Only create the native file menus on desktop

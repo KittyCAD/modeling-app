@@ -36,7 +36,6 @@ export function setSelectionFilterToDefault({
   handleSelectionBatchFn?: typeof handleSelectionBatch
   wasmInstance: ModuleType
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter({
     filter: defaultSelectionFilter,
     engineCommandManager,
