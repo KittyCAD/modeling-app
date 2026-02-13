@@ -1710,6 +1710,11 @@ export class KclManager extends EventTarget {
       this.lastWrite = null
     }
   }
+  get currentFileName() {
+    return (
+      this._currentFilePath?.split(window.electron?.sep || '/').pop() || null
+    )
+  }
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
     shouldExecute: false,
