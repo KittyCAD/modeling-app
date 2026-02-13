@@ -86,6 +86,19 @@ export class App {
     useUser: () => useSelector(this.authActor, (state) => state.context.user),
   }
 
+  private billingActor = createActor(billingMachine, {
+    input: {
+      ...BILLING_CONTEXT_DEFAULTS,
+      urlUserService: () => withAPIBaseURL(''),
+    },
+  }).start()
+  /** The billing system for the app, which today focuses on Zookeeper credits */
+  billing = {
+    actor: this.billingActor,
+    send: this.billingActor.send.bind(this),
+    useContext: () => useSelector(this.billingActor, ({ context }) => context),
+  }
+
   constructor() {
     this.singletons = this.buildSingletons()
   }
@@ -165,7 +178,7 @@ export class App {
           },
         })
     }
-    const { SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
+    const { SETTINGS, SYSTEM_IO } = ACTOR_IDS
     const appMachineActors = {
       [SETTINGS]: settingsMachine.provide({
         actors: {
@@ -299,8 +312,6 @@ export class App {
         },
       }),
       [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      [COMMAND_BAR]: commandBarMachine,
-      [BILLING]: billingMachine,
     } as const
 
     const appMachine = setup({
@@ -336,19 +347,6 @@ export class App {
           systemId: SYSTEM_IO,
           input: {
             wasmInstancePromise: this.wasmPromise,
-          },
-        }),
-        spawnChild(appMachineActors[COMMAND_BAR], {
-          systemId: COMMAND_BAR,
-          input: {
-            commands: [],
-          },
-        }),
-        spawnChild(appMachineActors[BILLING], {
-          systemId: BILLING,
-          input: {
-            ...BILLING_CONTEXT_DEFAULTS,
-            urlUserService: () => withAPIBaseURL(''),
           },
         }),
       ],
@@ -409,10 +407,6 @@ export class App {
     sceneEntitiesManager.commandBarActor = commandBarActor
     commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
-    const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
-      (typeof appMachineActors)[typeof BILLING]
-    >
-
     const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
       state
     const useCommandBarState = () => {
@@ -449,7 +443,6 @@ export class App {
       getSettings,
       useSettings,
       systemIOActor,
-      billingActor,
       useCommandBarState,
       getLayout,
       useLayout,
