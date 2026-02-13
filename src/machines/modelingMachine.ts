@@ -106,7 +106,12 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addOffsetPlane,
+  addShell,
+  addHole,
+} from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -284,6 +289,7 @@ export type ModelingMachineEvent =
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
+  | { type: 'Delete Face'; data?: ModelingCommandSchema['Delete Face'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
@@ -1570,6 +1576,45 @@ export const modelingMachine = setup({
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
           return {
             selectionRanges: setSelections.selection,
+          }
+        }
+
+        if (setSelections.selectionType === 'enginePrimitiveSelection') {
+          const isSamePrimitiveSelection = (
+            selection: Selections['otherSelections'][number]
+          ) => {
+            return (
+              typeof selection === 'object' &&
+              'type' in selection &&
+              selection.type === 'enginePrimitive' &&
+              selection.entityId === setSelections.selection.entityId &&
+              selection.parentEntityId ===
+                setSelections.selection.parentEntityId &&
+              selection.primitiveIndex ===
+                setSelections.selection.primitiveIndex &&
+              selection.primitiveType === setSelections.selection.primitiveType
+            )
+          }
+
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            isSamePrimitiveSelection
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) => !isSamePrimitiveSelection(selection)
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          return {
+            selectionRanges: {
+              graphSelections: kclManager.isShiftDown
+                ? selectionRanges.graphSelections
+                : [],
+              otherSelections,
+            },
           }
         }
 
@@ -4269,6 +4314,46 @@ export const modelingMachine = setup({
         )
       }
     ),
+    deleteFaceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Delete Face'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const astResult = addDeleteFace({
+          ...input.data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     holeAstMod: fromPromise(
       async ({
         input,
@@ -5409,6 +5494,10 @@ export const modelingMachine = setup({
 
         Hole: {
           target: 'Applying hole',
+        },
+
+        'Delete Face': {
+          target: 'Applying delete face',
         },
 
         Fillet: {
@@ -7259,6 +7348,26 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Shell') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying delete face': {
+      invoke: {
+        src: 'deleteFaceAstMod',
+        id: 'deleteFaceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Delete Face') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

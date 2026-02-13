@@ -25,7 +25,18 @@ export type DefaultPlaneSelection = {
   id: string
 }
 
-export type NonCodeSelection = Axis | DefaultPlaneSelection
+export type EnginePrimitiveSelection = {
+  type: 'enginePrimitive'
+  entityId: string
+  parentEntityId?: string
+  primitiveIndex: number
+  primitiveType: 'face' | 'edge'
+}
+
+export type NonCodeSelection =
+  | Axis
+  | DefaultPlaneSelection
+  | EnginePrimitiveSelection
 
 export interface Selection {
   artifact?: Artifact
@@ -50,6 +61,10 @@ export type SetSelections =
   | {
       selectionType: 'defaultPlaneSelection'
       selection: DefaultPlaneSelection
+    }
+  | {
+      selectionType: 'enginePrimitiveSelection'
+      selection: EnginePrimitiveSelection
     }
   | {
       selectionType: 'completeSelection'
