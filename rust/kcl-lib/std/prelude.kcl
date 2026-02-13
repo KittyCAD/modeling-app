@@ -628,7 +628,7 @@ export fn assert(
 
 
 /// Given a face index, find its ID.
-@(impl = std_rust, feature_tree = true)
+@(impl = std_rust, feature_tree = false)
 export fn faceId(
   /// The solid whose faces we're trying to find
   @body: Solid,
