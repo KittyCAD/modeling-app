@@ -419,7 +419,7 @@ export const useToolbarConfig = () => {
                     type: 'Find and select command',
                     data: { name: 'Blend', groupId: 'modeling' },
                   }),
-                icon: 'fillet', // TODO: update
+                icon: 'blend',
                 status: 'available',
                 title: 'Blend',
                 description: 'Blend two selected surface edges.',

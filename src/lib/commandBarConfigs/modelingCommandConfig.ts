@@ -2242,7 +2242,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Blend: {
     description: 'Blend two selected surface edges into a new surface.',
-    icon: 'fillet', // TODO: update
+    icon: 'blend',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {

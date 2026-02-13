@@ -1775,7 +1775,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   blend: {
     label: 'Blend',
-    icon: 'fillet', // TODO: update
+    icon: 'blend',
   },
   chamfer: {
     label: 'Chamfer',
