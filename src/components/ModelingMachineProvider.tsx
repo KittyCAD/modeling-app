@@ -87,6 +87,7 @@ import {
   EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
@@ -363,7 +364,14 @@ export const ModelingMachineProvider = ({
               return new Error('No input provided')
             }
 
-            let fileName = file?.name?.replace('.kcl', `.${input.type}`) || ''
+            // Use the project name as the file name when exporting the
+            // project entrypoint (main.kcl) so the downloaded file carries
+            // a meaningful name instead of "main".
+            const baseName =
+              file?.name === PROJECT_ENTRYPOINT && project?.name
+                ? project.name
+                : file?.name?.replace(/\.kcl$/, '') || ''
+            let fileName = baseName ? `${baseName}.${input.type}` : ''
             // Ensure the file has an extension.
             if (!fileName.includes('.')) {
               fileName += `.${input.type}`
