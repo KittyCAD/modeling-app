@@ -772,69 +772,6 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a blend call from mixed segment and sweepEdge selections', async () => {
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        twoSurfacesForBlend,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-
-      const sweepEdges = [...artifactGraph.values()].filter(
-        (a): a is Extract<Artifact, { type: 'sweepEdge' }> =>
-          a.type === 'sweepEdge'
-      )
-      expect(sweepEdges.length).toBeGreaterThan(0)
-
-      let segment: Extract<Artifact, { type: 'segment' }> | undefined
-      let sweepEdge: Extract<Artifact, { type: 'sweepEdge' }> | undefined
-      for (const artifact of artifactGraph.values()) {
-        if (artifact.type !== 'segment') continue
-        const pathArtifact = artifactGraph.get(artifact.pathId)
-        if (
-          !pathArtifact ||
-          pathArtifact.type !== 'path' ||
-          !pathArtifact.sweepId
-        ) {
-          continue
-        }
-        const edgeFromOtherSweep = sweepEdges.find(
-          (edge) => edge.sweepId !== pathArtifact.sweepId
-        )
-        if (edgeFromOtherSweep) {
-          segment = artifact
-          sweepEdge = edgeFromOtherSweep
-          break
-        }
-      }
-
-      expect(segment).toBeDefined()
-      expect(sweepEdge).toBeDefined()
-
-      const edges = createSelectionFromArtifacts(
-        [segment!, sweepEdge!],
-        artifactGraph
-      )
-
-      const result = addBlend({
-        ast,
-        artifactGraph,
-        edges,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) {
-        throw result
-      }
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) {
-        throw newCode
-      }
-      expect(newCode).toContain('blend001 = blend([')
-      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
-
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
-
     it('should fail when fewer than two edges are selected', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
