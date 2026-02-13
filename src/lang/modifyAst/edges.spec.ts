@@ -739,28 +739,18 @@ chamfer001 = chamfer(
   })
 
   describe('Testing addBlend', () => {
-    it('should add a blend call from exactly two selected edges', async () => {
+    it('should add a blend call from exactly two segments', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
         kclManagerInThisFile
       )
 
-      const sweepEdges = [...artifactGraph.values()].filter(
-        (a) => a.type === 'sweepEdge'
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
       )
-      expect(sweepEdges.length).toBeGreaterThan(1)
-
-      const firstEdgeBySweep = new Map<string, (typeof sweepEdges)[number]>()
-      for (const edge of sweepEdges) {
-        if (!firstEdgeBySweep.has(edge.sweepId)) {
-          firstEdgeBySweep.set(edge.sweepId, edge)
-        }
-      }
-      const selectedEdges = [...firstEdgeBySweep.values()].slice(0, 2)
-      expect(selectedEdges.length).toBe(2)
-
-      const edges = createSelectionFromArtifacts(selectedEdges, artifactGraph)
+      expect(segments.length).toBe(2)
+      const edges = createSelectionFromArtifacts(segments, artifactGraph)
 
       const result = addBlend({
         ast,
