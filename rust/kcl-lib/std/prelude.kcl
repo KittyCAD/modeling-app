@@ -639,7 +639,7 @@ export fn faceId(
 ): TaggedFace {}
 
 /// Given a edge index, find its ID.
-@(impl = std_rust, feature_tree = true)
+@(impl = std_rust, feature_tree = false)
 export fn edgeId(
   /// The solid whose edges we're trying to find
   @body: Solid,
