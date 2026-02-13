@@ -7,7 +7,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
+    StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
@@ -1650,12 +1651,6 @@ impl ArtifactId {
 
     /// A placeholder artifact ID that will be filled in later.
     pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-
-    /// The constraint artifact ID is a special. They don't need to be
-    /// represented in the artifact graph.
-    pub fn constraint() -> Self {
         Self(Uuid::nil())
     }
 }

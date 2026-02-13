@@ -1,0 +1,14 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = sketch2::line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
+  line2 = sketch2::line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var 0.92mm, var 4.67mm], end = [var -0.03mm, var -0.04mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line1.start, line3.end])
+  sketch2::horizontal(line1)
+  sketch2::equalLength([line2, line3])
+}
+
+r = sketch2::region(segments = [s.line1, s.line2])

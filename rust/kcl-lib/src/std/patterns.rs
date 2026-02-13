@@ -443,7 +443,9 @@ impl GeometryTrait for Solid {
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
         // We need this for in extrude.rs when you sketch on face.
-        self.sketch.id = id;
+        if let Some(sketch) = self.sketch_mut() {
+            sketch.id = id;
+        }
     }
 
     fn id(&self) -> Uuid {
@@ -451,7 +453,7 @@ impl GeometryTrait for Solid {
     }
 
     fn original_id(&self) -> Uuid {
-        self.sketch.original_id
+        Solid::original_id(self)
     }
 
     fn array_to_point3d(

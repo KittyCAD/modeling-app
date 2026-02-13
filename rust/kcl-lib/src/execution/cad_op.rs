@@ -234,6 +234,7 @@ pub enum OpKclValue {
     Module {},
     Type {},
     KclNone {},
+    BoundedEdge {},
 }
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
@@ -329,6 +330,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
+            KclValue::BoundedEdge { .. } => Self::BoundedEdge {},
         }
     }
 }

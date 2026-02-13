@@ -255,16 +255,26 @@ export function getCookie(): string | null {
   }
 }
 
-/**
- * Get token from environment variable or cookie.
- * This is a synchronous utility function that can be used in both
- * React hooks and non-React contexts (like singleton initialization).
- * @returns The token string, or empty string if neither source has a token
- */
-export function getTokenFromEnvOrCookie(): string {
+function getTokenFromEnvOrCookie(): string {
   const envToken = env().VITE_ZOO_API_TOKEN
   const cookieToken = getCookie()
   return envToken || cookieToken || ''
+}
+
+async function getTokenFromFile(): Promise<string> {
+  const environmentName = env().VITE_ZOO_BASE_DOMAIN
+  if (!window.electron || !environmentName) return ''
+  return readEnvironmentConfigurationToken(window.electron, environmentName)
+}
+
+/**
+ * Get token from environment variable, cookie (web), or file (desktop).
+ * @returns The token string, or empty string if no source has a token
+ */
+export async function getToken(): Promise<string> {
+  const token = getTokenFromEnvOrCookie()
+  if (token) return token
+  return getTokenFromFile()
 }
 
 function getCookieByName(cname: string): string | null {

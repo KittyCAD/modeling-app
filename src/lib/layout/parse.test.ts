@@ -264,10 +264,6 @@ describe('Layout utils', () => {
       expect(parsedDefaultLayout).toHaveProperty('type', 'split')
       expect(parsedDefaultLayout).toHaveProperty(
         'children.0.children.0.type',
-        'split'
-      )
-      expect(parsedDefaultLayout).toHaveProperty(
-        'children.0.children.1.type',
         'simple'
       )
       expect(parsedDefaultLayout).toHaveProperty('children.2.type', 'panes')
