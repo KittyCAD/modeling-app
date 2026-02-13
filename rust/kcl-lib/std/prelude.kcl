@@ -647,4 +647,4 @@ export fn edgeId(
   /// The index is a stable ordering of edges, used when you can't get the
   /// usual ID (UUID) of a edge.
   index: number(Count),
-) {}
+): Edge {}
