@@ -187,8 +187,6 @@ sweep(circleSketch, path = sweepPath, sectional = true)
 >
 </model-viewer>
 
-
-
 ```kcl
 // Sweep a square edge along a path
 square = startSketchOn(XY)
@@ -202,8 +200,8 @@ path = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [100, 0])
   |> tangentialArc(end = [107, -48])
-
 sweep(square, path, bodyType = SURFACE)
+
 ```
 
 

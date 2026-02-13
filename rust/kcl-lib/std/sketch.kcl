@@ -1295,6 +1295,23 @@ export fn polygon(
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
+///
+/// ```kcl
+/// // Sweep a square edge along a path
+/// square = startSketchOn(XY)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [200, 0])
+///   |> line(end = [0, -200])
+///   |> line(end = [-200, 0])
+///  |> close()
+///
+/// path = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [100, 0])
+///   |> tangentialArc(end = [107, -48])
+////
+/// sweep(square, path, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
