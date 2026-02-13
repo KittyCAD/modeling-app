@@ -166,7 +166,6 @@ test.describe(
           page
         )
         await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await page.waitForTimeout(10000)
         await editor.expectEditor.toContain(
           `
           import "nested/twice/main.kcl" as main

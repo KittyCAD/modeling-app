@@ -12,7 +12,7 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
@@ -32,21 +32,16 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
-  const {
-    billingActor,
-    engineCommandManager,
-    kclManager,
-    systemIOActor,
-    useSettings,
-    useToken,
-  } = useSingletons()
+  const { auth, billing } = useApp()
+  const { engineCommandManager, kclManager, systemIOActor, useSettings } =
+    useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
-  const token = useToken()
+  const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -240,7 +235,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billingActor,
+    billing.actor,
     token,
     engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {

@@ -2,7 +2,7 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
@@ -14,16 +14,11 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
-  const {
-    billingActor,
-    engineCommandManager,
-    systemIOActor,
-    useSettings,
-    useToken,
-  } = useSingletons()
+  const { auth, billing } = useApp()
+  const { engineCommandManager, systemIOActor, useSettings } = useSingletons()
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
-  const token = useToken()
+  const token = auth.useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
     // Clear the search parameters related to the "Import file from URL" command
@@ -50,7 +45,7 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billingActor,
+    billing.actor,
     token,
     engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {

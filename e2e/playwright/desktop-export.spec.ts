@@ -142,13 +142,8 @@ test(
         await expect
           .poll(
             async () => {
-              try {
-                const outputGltf = await fsp.readFile(secondFileFullPath)
-                return outputGltf.byteLength
-              } catch (error: unknown) {
-                void error
-                return 0
-              }
+              const outputGltf = await fsp.readFile(secondFileFullPath)
+              return outputGltf.byteLength
             },
             { timeout: 15_000 }
           )

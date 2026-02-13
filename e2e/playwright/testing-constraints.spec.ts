@@ -395,7 +395,6 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         } else {
           await scene.clickXAxis()
         }
-        // await page.waitForTimeout(120_000)
         await page.keyboard.down('Shift')
         await page.waitForTimeout(100)
         console.log('clicking line', line3)

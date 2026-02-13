@@ -5,7 +5,7 @@
 
 /// GD&T datum feature.
 ///
-/// ```kcl
+/// ```kcl,no3d
 /// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
 ///
 /// width = 5
@@ -50,7 +50,7 @@ export fn datum(
 
 /// GD&T annotation specifying how flat faces should be.
 ///
-/// ```kcl
+/// ```kcl,no3d
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -64,7 +64,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,no3d
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
@@ -78,7 +78,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl
+/// ```kcl,no3d
 /// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)

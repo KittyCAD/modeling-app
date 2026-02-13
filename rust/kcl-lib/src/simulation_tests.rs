@@ -154,6 +154,10 @@ where
         r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
         "[uuid]",
     );
+    settings.add_filter(
+        r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
+        "face_id_[uuid]",
+    );
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);
 }

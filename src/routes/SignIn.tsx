@@ -19,7 +19,7 @@ import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -28,7 +28,8 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
-  const { authActor, useSettings } = useSingletons()
+  const { auth } = useApp()
+  const { useSettings } = useSingletons()
   // Only create the native file menus on desktop
   if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
@@ -134,11 +135,11 @@ const SignIn = () => {
       return
     }
 
-    authActor.send({ type: 'Log in', token })
+    auth.send({ type: 'Log in', token })
   }
 
   const cancelSignIn = async () => {
-    authActor.send({ type: 'Log out' })
+    auth.send({ type: 'Log out' })
     setUserCode('')
   }
 

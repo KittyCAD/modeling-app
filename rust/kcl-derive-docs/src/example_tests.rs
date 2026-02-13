@@ -152,6 +152,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-sweep-1",
     "std-sketch-sweep-2",
     "std-sketch-sweep-3",
+    "std-sketch-sweep-4",
+    "std-sketch-sweep-5",
     "std-sketch-loft-0",
     "std-sketch-loft-1",
     "std-sketch-loft-2",
