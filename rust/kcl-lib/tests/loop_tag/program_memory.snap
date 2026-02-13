@@ -1976,6 +1976,7 @@ description: Variables in memory after executing loop_tag.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

@@ -29,7 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
+import { getToken } from '@src/machines/authMachine'
 
 /**
  * A setting that can be set at the user or project level
@@ -152,9 +152,7 @@ function hideWithoutFeatureFlag(
 ): () => Promise<HideOnPlatformValue | null> {
   return async (): Promise<HideOnPlatformValue | null> => {
     try {
-      // Try to get a token - check env first, then cookie for web
-      const token = getTokenFromEnvOrCookie()
-
+      const token = await getToken()
       if (!token) {
         return defaultHide
       }

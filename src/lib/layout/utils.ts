@@ -7,9 +7,10 @@ import type {
   LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
+  PaneChild,
   Side,
 } from '@src/lib/layout/types'
-import { LayoutType } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
@@ -722,6 +723,43 @@ function getLayoutMigrations(): LayoutMigrationMap {
       {
         newVersion: 'v2',
         transformationSets: [{ matcher: true, transformations: [(l) => l] }],
+      },
+    ],
+    [
+      'v3',
+      {
+        newVersion: 'v4',
+        transformationSets: [
+          {
+            matcher: (l) =>
+              l.id === 'feature-tree' && l.type === LayoutType.Simple,
+            transformations: [
+              () =>
+                ({
+                  id: 'feature-tree',
+                  label: 'Feature Tree',
+                  icon: 'model',
+                  type: LayoutType.Splits,
+                  orientation: 'block',
+                  sizes: [70, 30],
+                  children: [
+                    {
+                      id: 'operations-list',
+                      label: 'Feature Tree',
+                      type: LayoutType.Simple,
+                      areaType: AreaType.FeatureTree,
+                    },
+                    {
+                      id: 'bodies-list',
+                      label: 'Bodies',
+                      type: LayoutType.Simple,
+                      areaType: AreaType.Bodies,
+                    },
+                  ],
+                }) satisfies PaneChild,
+            ],
+          },
+        ],
       },
     ],
   ])

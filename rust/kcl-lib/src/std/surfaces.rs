@@ -106,7 +106,6 @@ async fn inner_offset(body: Solid, distance: TyF64, exec_state: &mut ExecState, 
             ModelingCmd::from(
                 mcmd::OffsetSurface::builder()
                 .surface_id(body.id)
-                .new_surface(true)
                 .distance(LengthUnit(distance.to_mm()))
                 .build(),
             ),
@@ -197,7 +196,7 @@ async fn inner_delete_face(
             .await?;
 
         let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(mout::Solid3dGetFaceUuid { face_id }),
+            modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(inner_resp),
         } = face_uuid_response
         else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -207,7 +206,7 @@ async fn inner_delete_face(
                 vec![args.source_range],
             )));
         };
-        face_ids.insert(face_id);
+        face_ids.insert(inner_resp.face_id);
     }
 
     // Now that we've got all the faces, delete them all.

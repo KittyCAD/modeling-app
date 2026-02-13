@@ -352,7 +352,7 @@ describe('centerArcToolImpl', () => {
       expect(mockSelf._parent.send).toHaveBeenCalledWith({
         type: 'update sketch outcome',
         data: {
-          kclSource: { text: 'test' },
+          sourceDelta: { text: 'test' },
           sceneGraphDelta,
         },
       })

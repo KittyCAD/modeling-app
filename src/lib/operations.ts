@@ -1,6 +1,5 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -34,6 +33,7 @@ import {
   type VariableDeclaration,
   type ArtifactGraph,
   pathToNodeFromRustNodePath,
+  type PathToNode,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -53,9 +53,19 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeExtrudeMethod,
+  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { ActorRefFrom } from 'xstate'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import type { KclManager } from '@src/lang/KclManager'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -1966,6 +1976,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  'hole::holes': {
+    label: 'Holes',
+    icon: 'hole',
+  },
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
@@ -2205,9 +2219,6 @@ export function getOperationVariableName(
 
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
-  if (pathToNode.length === 0) {
-    return undefined
-  }
 
   // If this is a module instance, the variable name is the import alias.
   if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
@@ -2230,6 +2241,18 @@ export function getOperationVariableName(
   }
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
+  return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
+}
+
+export function getVariableNameFromNodePath(
+  pathToNode: PathToNode,
+  program: Program,
+  wasmInstance: ModuleType
+): string | undefined {
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
@@ -2293,6 +2316,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
+  isNotHideOperation,
 ]
 
 /**
@@ -2358,6 +2382,20 @@ function isNotUserFunctionWithNoOperations(
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
+}
+
+/**
+ * A filter to exclude `hide()` operations from a list of operations.
+ */
+function isNotHideOperation(ops: Operation[]): Operation[] {
+  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+}
+
+/**
+ * Filter Operations list to just hide() calls
+ */
+export function getHideOperations(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type === 'StdLibCall' && op.name === 'hide')
 }
 
 export interface EnterEditFlowProps {
@@ -2797,4 +2835,117 @@ async function prepareToEditAppearance({
     ...baseCommand,
     argDefaultValues,
   }
+}
+
+export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+export function getHideOpByArtifactId(
+  ops: Operation[],
+  searchId: string
+): HideOperation | undefined {
+  const found = ops.find((op) => {
+    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+      return undefined
+    }
+    if (op.unlabeledArg?.value.type === 'Array') {
+      const found = op.unlabeledArg.value.value.find(
+        (a) =>
+          'value' in a &&
+          typeof a.value === 'object' &&
+          'artifactId' in a.value &&
+          typeof a.value?.artifactId === 'string' &&
+          a.value.artifactId === searchId
+      )
+
+      return found ? op : undefined
+    } else if (
+      op.unlabeledArg?.value &&
+      'value' in op.unlabeledArg.value &&
+      op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value === 'object' &&
+      'artifactId' in op.unlabeledArg.value.value &&
+      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
+      op.unlabeledArg.value.value.artifactId
+    ) {
+      return op.unlabeledArg.value.value.artifactId === searchId
+        ? op
+        : undefined
+    }
+    return undefined
+  })
+
+  return found as HideOperation | undefined
+}
+
+export function onHide(props: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+}) {
+  const selection = props.modelingActor.getSnapshot().context.selectionRanges
+
+  props.modelingActor.send({
+    type: 'Hide',
+    data: {
+      objects: selection,
+    },
+  })
+}
+
+export async function onUnhide(props: {
+  hideOperation: HideOperation
+  targetArtifact: Artifact
+  systemDeps: {
+    kclManager: KclManager
+    rustContext: RustContext
+  }
+}) {
+  if (props.hideOperation.unlabeledArg === null) {
+    return new Error('Missing unlabeled arg for hide operation')
+  }
+  let modifiedAst = structuredClone(props.systemDeps.kclManager.ast)
+  const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+
+  if (
+    props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    'codeRef' in props.targetArtifact
+  ) {
+    const wasmInstance = await props.systemDeps.rustContext.wasmInstancePromise
+    // Multi-item case: remove that target artifact's name
+    const termToDelete = getVariableNameFromNodePath(
+      pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),
+      modifiedAst,
+      wasmInstance
+    )
+    if (!termToDelete) {
+      return new Error(
+        'Variable name to delete not found while trying to unhide'
+      )
+    }
+
+    const deleteResult = deleteTermFromUnlabeledArgumentArray(
+      props.systemDeps.kclManager.ast,
+      pathToNode,
+      wasmInstance,
+      termToDelete
+    )
+    if (err(deleteResult)) {
+      return deleteResult
+    }
+    modifiedAst = deleteResult
+  } else {
+    // Single item case: Delete the node
+    const result = deleteTopLevelStatement(modifiedAst, pathToNode)
+    if (err(result)) {
+      return result
+    }
+  }
+
+  return updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    props.systemDeps,
+    {
+      focusPath: [],
+    }
+  )
 }

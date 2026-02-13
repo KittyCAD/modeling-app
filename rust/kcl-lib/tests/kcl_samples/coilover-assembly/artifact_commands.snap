@@ -2668,7 +2668,6 @@ description: Artifact commands coilover-assembly.kcl
                 "z": 200.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

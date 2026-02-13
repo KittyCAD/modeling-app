@@ -22,7 +22,10 @@ import {
   storePendingSketchOutcome,
   sendStoredResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
-import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
 // when TOOL_ID and constants are imported directly
@@ -381,8 +384,10 @@ export const machine = setup({
     },
     'delete newly added entities': {
       entry: ({ self }) => {
-        // Request parent to delete draft entities
-        self._parent?.send({ type: 'delete draft entities' })
+        const sendData: SketchSolveMachineEvent = {
+          type: 'delete draft entities',
+        }
+        self._parent?.send(sendData)
       },
       always: {
         target: 'ready for user click',
@@ -401,8 +406,10 @@ export const machine = setup({
       entry: [
         'remove point listener',
         ({ self }) => {
-          // Clear draft entities when unequipping normally
-          self._parent?.send({ type: 'clear draft entities' })
+          const sendData: SketchSolveMachineEvent = {
+            type: 'clear draft entities',
+          }
+          self._parent?.send(sendData)
         },
       ],
       description: 'Any teardown logic should go here.',
@@ -458,8 +465,10 @@ export const machine = setup({
     },
     'delete draft entities on unequip': {
       entry: ({ self }) => {
-        // Request parent to delete draft entities
-        self._parent?.send({ type: 'delete draft entities' })
+        const sendData: SketchSolveMachineEvent = {
+          type: 'delete draft entities',
+        }
+        self._parent?.send(sendData)
       },
       always: [
         {

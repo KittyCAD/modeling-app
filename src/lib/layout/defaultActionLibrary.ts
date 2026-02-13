@@ -4,6 +4,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
 import { useSingletons } from '@src/lib/boot'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
 /**
  * For now we have strict action types but in future
@@ -32,22 +33,11 @@ export const useDefaultActionLibrary = () => {
       useHidden: () => false,
       useDisabled: () => undefined,
       shortcut: 'Mod + Alt + L',
-      execute: () => {
-        const currentProject =
-          settingsActor.getSnapshot().context.currentProject
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: {
-            name: 'add-kcl-file-to-project',
-            groupId: 'application',
-            argDefaultValues: {
-              method: 'existingProject',
-              projectName: currentProject?.name,
-              ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
-            },
-          },
-        })
-      },
+      execute: () =>
+        sendAddFileToProjectCommandForCurrentProject(
+          settingsActor,
+          commandBarActor
+        ),
     },
     make: {
       useDisabled: () => {

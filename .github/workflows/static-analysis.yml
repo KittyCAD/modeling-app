@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   npm-fmt-check:
-    runs-on: 'ubuntu-22.04'
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

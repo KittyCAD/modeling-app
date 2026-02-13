@@ -68,8 +68,8 @@ export const defaultLayoutConfig: Layout = {
           id: DefaultLayoutPaneID.FeatureTree,
           label: 'Feature Tree',
           type: LayoutType.Simple,
-          areaType: AreaType.FeatureTree,
           icon: 'model',
+          areaType: AreaType.FeatureTree,
         },
         {
           id: DefaultLayoutPaneID.Code,
