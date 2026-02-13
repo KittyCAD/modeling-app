@@ -5,11 +5,11 @@ use std::{
 };
 
 use indexmap::IndexMap;
-use kcl_error::SourceRange;
+use kcl_error::{CompilationError, SourceRange};
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
-    ExecOutcome, ExecutorContext, Program,
+    ExecOutcome, ExecutorContext, KclErrorWithOutputs, Program,
     collections::AhashIndexSet,
     exec::WarningLevel,
     execution::MockConfig,
@@ -991,14 +991,70 @@ impl FrontendState {
         // Clear the freedom cache since IDs might have changed after direct editing
         // and we're about to run freedom analysis which will repopulate it.
         self.point_freedom_cache.clear();
-        let outcome = ctx.run_with_caching(program).await.map_err(|err| Error {
-            msg: err.error.message().to_owned(),
-        })?;
-        let freedom_analysis_ran = true;
-
-        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
+        let outcome = match ctx.run_with_caching(program).await {
+            Ok(outcome) => outcome,
+            Err(err) => {
+                // Don't return an error just because execution failed. Instead,
+                // update state as much as possible.
+                self.exec_outcome_from_exec_error(err)?
+            }
+        };
+        let outcome = self.update_state_after_exec(outcome, true);
 
         Ok((self.scene_graph.clone(), outcome))
+    }
+
+    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> api::Result<ExecOutcome> {
+        if err.error.message().contains("websocket closed early") {
+            // It's not ideal to special-case this, but this error is very
+            // common during development, and it causes confusing downstream
+            // errors that have nothing to do with the actual problem.
+            return Err(Error {
+                msg: err.error.message().to_owned(),
+            });
+        }
+
+        let KclErrorWithOutputs {
+            error,
+            mut non_fatal,
+            variables,
+            #[cfg(feature = "artifact-graph")]
+            operations,
+            #[cfg(feature = "artifact-graph")]
+            artifact_graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions,
+            filenames,
+            default_planes,
+            ..
+        } = err;
+
+        if let Some(source_range) = error.source_ranges().first() {
+            non_fatal.push(CompilationError::fatal(*source_range, error.get_message()));
+        } else {
+            non_fatal.push(CompilationError::fatal(SourceRange::synthetic(), error.get_message()));
+        }
+
+        Ok(ExecOutcome {
+            variables,
+            filenames,
+            #[cfg(feature = "artifact-graph")]
+            operations,
+            #[cfg(feature = "artifact-graph")]
+            artifact_graph,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions,
+            errors: non_fatal,
+            default_planes,
+        })
     }
 
     async fn add_point(
@@ -3532,6 +3588,8 @@ pub(crate) fn create_equal_length_ast(line1_expr: ast::Expr, line2_expr: ast::Ex
 
 #[cfg(test)]
 mod tests {
+    use kcl_error::Severity;
+
     use super::*;
     use crate::{
         engine::PlaneName,
@@ -3565,6 +3623,49 @@ mod tests {
         } else {
             panic!("Object is not a sketch: {:?}", object);
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hack_set_program_exec_error_still_allows_edit_sketch() {
+        let source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+
+bad = missing_name
+";
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        let (scene_graph, outcome) = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(
+            outcome.errors.iter().any(|error| error.severity == Severity::Fatal),
+            "Expected a fatal error in exec outcome, got: {:#?}",
+            outcome.errors
+        );
+
+        let sketch_id = scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| matches!(obj.kind, ObjectKind::Sketch(_)).then_some(obj.id))
+            .expect("Expected sketch object from errored hack_set_program");
+
+        frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

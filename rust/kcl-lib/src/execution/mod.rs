@@ -1400,9 +1400,12 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
-
-        if !self.is_mock() {
+        /// Write the memory of an execution to the cache for reuse in mock
+        /// execution.
+        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+            if ctx.is_mock() {
+                return;
+            }
             let mut stack = exec_state.stack().deep_clone();
             stack.restore_env(env_ref);
             let state = cache::SketchModeState {
@@ -1415,6 +1418,21 @@ impl ExecutorContext {
             };
             cache::write_old_memory(state).await;
         }
+
+        let env_ref = match result {
+            Ok(env_ref) => env_ref,
+            Err((err, env_ref)) => {
+                // Preserve memory on execution failures so follow-up mock
+                // execution can still reuse stable IDs before the error.
+                if let Some(env_ref) = env_ref {
+                    write_old_memory(self, exec_state, env_ref).await;
+                }
+                return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
+            }
+        };
+
+        write_old_memory(self, exec_state, env_ref).await;
+
         let session_data = self.engine.get_session_data().await;
 
         Ok((env_ref, session_data))
