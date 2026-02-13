@@ -272,6 +272,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-split-0",
     "std-solid-isSolid-0",
     "std-solid-isSurface-0",
+    "std-solid-blend-0",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",
