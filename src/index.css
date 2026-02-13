@@ -84,6 +84,21 @@ textarea,
   @apply bg-chalkboard-70;
 }
 
+/* This is used to hide the reasoning scrollbar until the user interacts */
+.scrollbar-hide {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.scrollbar-hide::-webkit-scrollbar-track,
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
 button {
   @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
   @apply focus-visible:outline-none;
