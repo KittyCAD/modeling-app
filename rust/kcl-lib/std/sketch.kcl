@@ -1132,6 +1132,19 @@ export fn getCommonEdge(
   faces: [TaggedFace; 2],
 ): Edge {}
 
+/// Get a bounded edge of a surface used for the [blend](/docs/kcl-std/functions/std-solid-blend) operation. A bounded edge is a reference to an existing edge that can be clipped at both ends. This will result in only the non-clipped portion of the edge being used during the blend.
+@(impl = std_rust, feature_tree = false)
+export fn getBoundedEdge(
+  /// The solid that the edge belongs to.
+  @solid: Solid,
+  /// The tag of the edge that is part of the face
+  edge: TaggedEdge,
+  /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
+  lowerBound?: number(Count),
+  /// A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1.
+  upperBound?: number(Count),
+): BoundedEdge {}
+
 /// Construct a circle derived from 3 points.
 ///
 /// ```kcl
