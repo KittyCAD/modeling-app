@@ -64,24 +64,23 @@ async fn inner_face_id(
     let new_tag_name = format!("face_id_{}", face_id.to_string().replace('-', "_"));
     let new_tag_node = TagDeclarator::new(&new_tag_name);
 
-    let mut tagged_surface = body.value.iter().find(|surface| surface.face_id() == face_id).cloned();
-    if tagged_surface.is_none() && (body.start_cap_id == Some(face_id) || body.end_cap_id == Some(face_id)) {
-        tagged_surface = Some(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
-            face_id,
-            tag: None,
-            geo_meta: GeoMeta {
-                id: face_id,
-                metadata: args.source_range.into(),
-            },
-        }));
-    }
-
-    let Some(mut tagged_surface) = tagged_surface else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Could not find face `{face_id}` on the given solid"),
-            vec![args.source_range],
-        )));
-    };
+    let mut tagged_surface = body
+        .value
+        .iter()
+        .find(|surface| surface.face_id() == face_id)
+        .cloned()
+        .unwrap_or_else(|| {
+            // Booleans and imported solids can have engine face IDs that we don't track in
+            // `body.value`, but `faceId` should still return a usable tagged face.
+            ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id,
+                tag: None,
+                geo_meta: GeoMeta {
+                    id: face_id,
+                    metadata: args.source_range.into(),
+                },
+            })
+        });
     set_surface_tag(&mut tagged_surface, &new_tag_node);
 
     let new_tag = TagIdentifier {
