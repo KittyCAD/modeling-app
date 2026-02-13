@@ -21,10 +21,10 @@ export interface IStat {
 }
 
 /**
-  * Common interface for swappable implementations of most NodeJS `fs` and `path` operations.
-  * We built this so that our web and desktop targets (and any future targets) could perform I/O operations
-  * to a common interface, and provide implementations that work on their platform.
-*/
+ * Common interface for swappable implementations of most NodeJS `fs` and `path` operations.
+ * We built this so that our web and desktop targets (and any future targets) could perform I/O operations
+ * to a common interface, and provide implementations that work on their platform.
+ */
 export interface IZooDesignStudioFS {
   resolve: (...strs: string[]) => string
   join: (...strs: string[]) => string
