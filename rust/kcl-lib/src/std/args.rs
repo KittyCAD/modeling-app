@@ -14,8 +14,8 @@ use crate::{
     CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
-        SketchSurface, Solid, TagIdentifier, annotations,
+        BoundedEdge, ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane,
+        PlaneInfo, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -928,6 +928,7 @@ impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
 impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
+impl_from_kcl_for_vec!(crate::execution::BoundedEdge);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -1323,6 +1324,15 @@ impl<'a> FromKclValue<'a> for bool {
 impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Solid { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for BoundedEdge {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::BoundedEdge { value, .. } = arg else {
             return None;
         };
         Some(value.to_owned())
