@@ -245,7 +245,7 @@ export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
   /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`.
-  face?: TaggedFace | Segment | FaceId,
+  face?: TaggedFace | Segment,
   /// Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`.
   normalToFace?: TaggedFace | Segment,
   /// If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`.

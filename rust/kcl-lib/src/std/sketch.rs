@@ -905,7 +905,6 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::TaggedFace),
             RuntimeType::Primitive(PrimitiveType::Segment),
-            RuntimeType::Primitive(PrimitiveType::FaceId),
         ]),
         exec_state,
     )?;
