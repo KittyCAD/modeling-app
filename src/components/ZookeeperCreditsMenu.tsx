@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import type { BillingContext } from '@src/machines/billingMachine'
 import {
@@ -10,7 +10,6 @@ import {
 } from '@kittycad/react-shared'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useSelector } from '@xstate/react'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -54,9 +53,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
 }
 
 export function ZookeeperCreditsMenu() {
-  const { billingActor } = useSingletons()
-  const billingContext = useSelector(billingActor, (actor) => {
-    return actor.context
-  })
+  const { billing } = useApp()
+  const billingContext = billing.useContext()
   return <BillingStatusBarItem billingContext={billingContext} />
 }
