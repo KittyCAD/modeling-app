@@ -1,4 +1,9 @@
-import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
+import {
+  assertParse,
+  type Artifact,
+  type PathToNode,
+  recast,
+} from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
@@ -734,7 +739,7 @@ chamfer001 = chamfer(
   })
 
   describe('Testing addBlend', () => {
-    it('should add a blend call from exactly two selected sweep edges', async () => {
+    it('should add a blend call from exactly two selected edges', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
@@ -777,7 +782,70 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should fail when fewer than two sweep edges are selected', async () => {
+    it('should add a blend call from mixed segment and sweepEdge selections', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweepEdges = [...artifactGraph.values()].filter(
+        (a): a is Extract<Artifact, { type: 'sweepEdge' }> =>
+          a.type === 'sweepEdge'
+      )
+      expect(sweepEdges.length).toBeGreaterThan(0)
+
+      let segment: Extract<Artifact, { type: 'segment' }> | undefined
+      let sweepEdge: Extract<Artifact, { type: 'sweepEdge' }> | undefined
+      for (const artifact of artifactGraph.values()) {
+        if (artifact.type !== 'segment') continue
+        const pathArtifact = artifactGraph.get(artifact.pathId)
+        if (
+          !pathArtifact ||
+          pathArtifact.type !== 'path' ||
+          !pathArtifact.sweepId
+        ) {
+          continue
+        }
+        const edgeFromOtherSweep = sweepEdges.find(
+          (edge) => edge.sweepId !== pathArtifact.sweepId
+        )
+        if (edgeFromOtherSweep) {
+          segment = artifact
+          sweepEdge = edgeFromOtherSweep
+          break
+        }
+      }
+
+      expect(segment).toBeDefined()
+      expect(sweepEdge).toBeDefined()
+
+      const edges = createSelectionFromArtifacts(
+        [segment!, sweepEdge!],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should fail when fewer than two edges are selected', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
@@ -799,9 +867,7 @@ chamfer001 = chamfer(
         throw new Error('Expected addBlend to fail for a single selected edge')
       }
 
-      expect(result.message).toBe(
-        'Blend requires exactly two selected sweep edges.'
-      )
+      expect(result.message).toBe('Blend requires exactly two selected edges.')
     })
   })
 

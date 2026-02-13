@@ -224,25 +224,29 @@ export function addBlend({
 
   // 2. Validate the edge selection
   if (edges.graphSelections.length !== 2) {
-    return new Error('Blend requires exactly two selected sweep edges.')
+    return new Error('Blend requires exactly two selected edges.')
   }
 
-  const selectedSweepEdges = edges.graphSelections
-  for (const edgeSelection of selectedSweepEdges) {
+  const selectedEdges = edges.graphSelections
+  for (const edgeSelection of selectedEdges) {
     if (
       !edgeSelection.artifact ||
-      edgeSelection.artifact.type !== 'sweepEdge'
+      (edgeSelection.artifact.type !== 'sweepEdge' &&
+        edgeSelection.artifact.type !== 'segment')
     ) {
-      return new Error('Blend only supports sweep edge selections.')
+      return new Error('Blend only supports segment and sweepEdge selections.')
     }
   }
 
   // 3. Build two bounded edges and use them in blend([edge1, edge2])
   const boundedEdgeExprs: Expr[] = []
-  for (const edgeSelection of selectedSweepEdges) {
+  for (const edgeSelection of selectedEdges) {
     const edgeArtifact = edgeSelection.artifact
-    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-      return new Error('Blend only supports sweep edge selections.')
+    if (
+      !edgeArtifact ||
+      (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+    ) {
+      return new Error('Blend only supports segment and sweepEdge selections.')
     }
 
     const sweepArtifact = getSweepArtifactFromSelection(
