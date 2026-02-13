@@ -78,9 +78,9 @@ export const ModelingMachineProvider = ({
       sceneInfra,
       rustContext,
       sceneEntitiesManager,
-      commandBarActor,
+      commandBarActor: commands.actor,
     }),
-    [sceneInfra, rustContext, sceneEntitiesManager, commandBarActor]
+    [sceneInfra, rustContext, sceneEntitiesManager, commands.actor]
   )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
@@ -144,7 +144,7 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
-        commandBarActor,
+        commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
         // React Suspense will await this
