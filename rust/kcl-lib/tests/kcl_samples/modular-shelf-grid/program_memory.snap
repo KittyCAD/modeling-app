@@ -82,6 +82,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -411,6 +412,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -577,6 +579,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -743,6 +746,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -909,6 +913,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1075,6 +1080,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1241,6 +1247,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1407,6 +1414,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1573,6 +1581,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1739,6 +1748,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1905,6 +1915,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2071,6 +2082,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2237,6 +2249,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2403,6 +2416,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2569,6 +2583,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2735,6 +2750,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2872,6 +2888,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3009,6 +3026,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3146,6 +3164,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3283,6 +3302,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3420,6 +3440,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3557,6 +3578,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3694,6 +3716,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3831,6 +3854,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3968,6 +3992,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4105,6 +4130,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4242,6 +4268,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4379,6 +4406,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4516,6 +4544,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4653,6 +4682,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4790,6 +4820,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4956,6 +4987,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5122,6 +5154,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5288,6 +5321,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5454,6 +5488,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5620,6 +5655,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5786,6 +5822,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5952,6 +5989,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6118,6 +6156,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6284,6 +6323,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6450,6 +6490,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6616,6 +6657,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6782,6 +6824,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6948,6 +6991,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7114,6 +7158,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7280,6 +7325,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7446,6 +7492,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7612,6 +7659,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7778,6 +7826,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7944,6 +7993,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8110,6 +8160,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8276,6 +8327,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8442,6 +8494,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8608,6 +8661,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8774,6 +8828,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8940,6 +8995,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9106,6 +9162,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9272,6 +9329,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9438,6 +9496,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9604,6 +9663,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9770,6 +9830,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9995,6 +10056,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10161,6 +10223,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10600,6 +10663,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10737,6 +10801,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

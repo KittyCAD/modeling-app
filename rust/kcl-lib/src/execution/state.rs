@@ -22,7 +22,7 @@ use crate::{
     },
     front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef},
+    parsing::ast::types::{Annotation, NodeRef, TagNode},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
@@ -154,10 +154,13 @@ pub(super) struct ModuleState {
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
     #[cfg(feature = "artifact-graph")]
+    pub sketch_id: Option<ObjectId>,
+    #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<kcl_ezpz::Constraint>,
     pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
+    pub segment_tags: IndexMap<ObjectId, TagNode>,
 }
 
 impl ExecState {
@@ -833,7 +836,7 @@ impl SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
-        solve_outcome: Solved,
+        solve_outcome: &Solved,
         solution_ty: NumericType,
         range: SourceRange,
     ) -> Result<Vec<(SourceRange, Number)>, KclError> {
