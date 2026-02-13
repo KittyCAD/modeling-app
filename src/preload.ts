@@ -10,6 +10,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { join } from 'node:path'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -117,6 +118,83 @@ const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
 
+/**
+ * Recursively move a file or folder to a destination
+ * using the native Node `.rename` function,
+ * creating any folders necessary to do so,
+ * and falling back to copy-and-delete if rename fails.
+ */
+export async function move(
+  source: string | URL,
+  destination: string | URL
+): Promise<undefined | Error> {
+  const sourceIsDir = (await fs.stat(source)).isDirectory()
+
+  if (sourceIsDir) {
+    const destinationStat = await fs.stat(destination).catch((e) => {
+      console.error(e)
+      return e
+    })
+    const destinationIsDir =
+      'isDirectory' in destinationStat && destinationStat.isDirectory()
+    const destinationIsNotEmpty =
+      (await fs.readdir(destination).catch((e) => e)).length !== 0
+
+    if (destinationIsDir && destinationIsNotEmpty) {
+      const sourceContents = await fs.readdir(source)
+      const bundledContentsResults = await Promise.all(
+        sourceContents.map((relPath) =>
+          move(
+            join(source.toString(), relPath),
+            join(destination.toString(), relPath)
+          )
+        )
+      )
+      const bundledContentsErrors = bundledContentsResults.filter(
+        (r) => r !== undefined
+      )
+      if (bundledContentsErrors.length) {
+        return new Error(
+          `Several errors occurred while attempting move: ${bundledContentsErrors.map((e) => e.message).join(', ')}`
+        )
+      }
+      await fs.rm(source, { recursive: true })
+      return undefined
+    }
+  }
+
+  return fs
+    .rename(source, destination)
+    .catch(async (e) => {
+      if (e.code === 'ENOENT') {
+        // We need to make the directories in the destination
+        const dirToMake = sourceIsDir
+          ? destination
+          : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
+        await fs.mkdir(dirToMake, { recursive: true })
+        return fs.rename(source, destination)
+      }
+      // I want the catch below to catch it
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw e
+    })
+    .catch((e) => {
+      console.error(e)
+      if (e.code === 'EXDEV') {
+        // Rename somehow isn't allowed, but copy+delete might be 🤞
+        return Promise.all([
+          fs.cp(source, destination, {
+            recursive: true,
+          }),
+          fs.rm(source, {
+            recursive: true,
+          }),
+        ])
+      }
+      return e
+    })
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
 async function statIsDirectory(path: string): Promise<boolean> {
@@ -221,6 +299,10 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
+// Get the user data folder according to Electron
+const getPathUserData = async (): Promise<string> =>
+  ipcRenderer.invoke('get-path-userdata')
+
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
  * when passing it over the IPC layer it will not map to the same function.
@@ -272,7 +354,7 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join,
+  join: path.join.bind(path),
   sep: path.sep,
   takeElectronWindowScreenshot,
   os: {
@@ -316,4 +398,6 @@ contextBridge.exposeInMainWorld('electron', {
   menuOn,
   canReadWriteDirectory,
   copy,
+  move,
+  getPathUserData,
 })

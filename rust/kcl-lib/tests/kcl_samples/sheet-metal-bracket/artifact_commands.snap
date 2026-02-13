@@ -147,28 +147,11 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 45.74662409445834,
             "y": 62.678249531799494,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 45.74662409445834,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
         }
       }
     },
@@ -330,28 +313,11 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": -45.746624094458326,
             "y": 65.85324953179949,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -45.746624094458326,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
         }
       }
     },
@@ -471,7 +437,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": 139.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -684,7 +651,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -741,7 +709,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -910,7 +879,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -967,7 +937,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1216,7 +1187,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1273,7 +1245,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1330,7 +1303,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1387,7 +1361,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1516,7 +1491,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

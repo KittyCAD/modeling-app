@@ -303,7 +303,8 @@ description: Artifact commands mug.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -664,6 +665,7 @@ description: Artifact commands mug.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -1048,7 +1050,8 @@ description: Artifact commands mug.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1087,7 +1090,7 @@ description: Artifact commands mug.kcl
           "r": 0.60784316,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -1104,7 +1107,7 @@ description: Artifact commands mug.kcl
           "r": 0.60784316,
           "g": 0.07058824,
           "b": 0.07058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,

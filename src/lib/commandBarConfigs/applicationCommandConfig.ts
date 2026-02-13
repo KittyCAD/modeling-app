@@ -2,7 +2,8 @@ import env from '@src/env'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  writeEnvironmentConfigurationPool,
+  writeEnvironmentConfigurationKittycadWebSocketUrl,
+  writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
@@ -25,9 +26,12 @@ import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { appActor, setLayout } from '@src/lib/singletons'
-import { AppMachineEventType } from '@src/lib/types'
+import { AppMachineEventType, type AppMachineEvent } from '@src/lib/types'
+import type { Layout } from '@src/lib/layout'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -129,8 +133,14 @@ function onSubmitKCLSampleCreation({
 
 export function createApplicationCommands({
   systemIOActor,
+  wasmInstance,
+  appActor,
+  setLayout,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  wasmInstance: ModuleType
+  appActor: { send: (event: AppMachineEvent) => void }
+  setLayout: (layout: Layout) => void
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
@@ -305,8 +315,8 @@ export function createApplicationCommands({
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [
           {
-            name: `Import ${relevantFileExtensions().map((f) => ` .${f}`)}`,
-            extensions: relevantFileExtensions(),
+            name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
+            extensions: relevantFileExtensions(wasmInstance),
           },
         ],
       },
@@ -387,11 +397,10 @@ export function createApplicationCommands({
 
   const switchEnvironmentsCommand: Command = {
     name: 'switch-environments',
-    displayName: 'Switch environments',
-    description:
-      'Switch between different environments to connect your application runtime',
+    displayName: 'Switch Environments',
+    description: 'Connect the application runtime to a different environment',
     needsReview: false,
-    icon: 'importFile',
+    icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
       if (!window.electron) {
@@ -414,41 +423,105 @@ export function createApplicationCommands({
       environment: {
         inputType: 'string',
         required: true,
+        displayName: 'Domain',
       },
     },
   }
 
-  const choosePoolCommand: Command = {
-    name: 'choose-pool',
-    displayName: 'Choose pool',
-    description: 'Switch between different engine pools',
-    needsReview: true,
-    icon: 'importFile',
+  const overrideEngineCommand: Command = {
+    name: 'override-engine',
+    displayName: 'Override Engine',
+    description: 'Connect the scene to a custom Engine WebSocket URL',
+
+    icon: 'gear',
     groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const url = context.argumentsToSubmit.url as string | undefined
+      if (url) {
+        try {
+          new URL(url)
+        } catch {
+          return new Error('Invalid Engine WebSocket URL')
+        }
+      }
+    },
     onSubmit: (data) => {
       if (!window.electron) {
         console.error(new Error('No file system present'))
         return
       }
-      if (data) {
-        const environmentName = env().VITE_ZOO_BASE_DOMAIN
-        if (environmentName)
-          writeEnvironmentConfigurationPool(
-            window.electron,
-            environmentName,
-            data.pool
-          )
-            .then(() => {
-              // Reload the application and it will trigger the correct sign in workflow for the new environment
-              window.location.reload()
-            })
-            .catch(reportRejection)
-      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationKittycadWebSocketUrl(
+          window.electron,
+          environmentName,
+          data?.url ?? ''
+        )
+          .then(() => {
+            window.location.reload()
+          })
+          .catch(reportRejection)
     },
     args: {
-      pool: {
+      url: {
         inputType: 'string',
         required: false,
+        displayName: 'URL',
+        description: `
+          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
+          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+        `.trim(),
+        defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
+      },
+    },
+  }
+
+  const overrideZookeeperCommand: Command = {
+    name: 'override-zookeeper',
+    displayName: 'Override Zookeeper',
+    description: 'Connect to a custom Zookeeper WebSocket URL',
+    icon: 'gear',
+    groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const url = context.argumentsToSubmit.url as string | undefined
+      if (url) {
+        try {
+          new URL(url)
+        } catch {
+          return new Error('Invalid Zookeeper WebSocket URL')
+        }
+      }
+    },
+    onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationMlephantWebSocketUrl(
+          window.electron,
+          environmentName,
+          data?.url ?? ''
+        )
+          .then(() => {
+            window.location.reload()
+          })
+          .catch(reportRejection)
+    },
+    args: {
+      url: {
+        inputType: 'string',
+        required: false,
+        displayName: 'URL',
+        description: `
+          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
+          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+        `.trim(),
+        defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },
     },
   }
@@ -511,7 +584,27 @@ export function createApplicationCommands({
         setLayoutCommand,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
-        choosePoolCommand,
+        overrideEngineCommand,
+        overrideZookeeperCommand,
       ]
     : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
+}
+
+export function sendAddFileToProjectCommandForCurrentProject(
+  settingsActor: SettingsActorType,
+  commandBarActor: CommandBarActorType
+) {
+  const currentProject = settingsActor.getSnapshot().context.currentProject
+  commandBarActor.send({
+    type: 'Find and select command',
+    data: {
+      name: 'add-kcl-file-to-project',
+      groupId: 'application',
+      argDefaultValues: {
+        method: 'existingProject',
+        projectName: currentProject?.name,
+        ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
+      },
+    },
+  })
 }

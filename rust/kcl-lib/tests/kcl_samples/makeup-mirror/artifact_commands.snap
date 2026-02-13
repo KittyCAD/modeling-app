@@ -153,7 +153,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -338,7 +339,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -523,7 +525,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -708,7 +711,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -893,7 +897,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1078,7 +1083,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1263,7 +1269,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 24.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1425,7 +1432,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 170.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1587,7 +1595,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 170.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1772,7 +1781,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1971,7 +1981,8 @@ description: Artifact commands makeup-mirror.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

@@ -60,7 +60,7 @@ export const ErrorPage = () => {
             <ActionButton
               Element="link"
               to={'/'}
-              iconStart={{ icon: 'arrowLeft' }}
+              iconStart={{ icon: 'arrowShortLeft' }}
               data-testid="unexpected-error-home"
             >
               Go Home

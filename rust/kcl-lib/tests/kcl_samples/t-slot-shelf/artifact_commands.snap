@@ -502,7 +502,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -536,7 +535,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 2438.3999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -588,7 +588,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1217,7 +1216,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1251,7 +1249,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1905,7 +1904,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1939,7 +1937,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": -838.1999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1991,7 +1990,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2620,7 +2618,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2654,7 +2651,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2705,7 +2703,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 609.5999999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3255,7 +3252,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3289,7 +3285,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": -838.1999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3341,7 +3338,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3367,7 +3363,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 609.5999999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

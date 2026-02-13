@@ -127,7 +127,8 @@ description: Artifact commands basic_revolve_circle.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

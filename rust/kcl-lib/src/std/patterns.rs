@@ -19,7 +19,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
+        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
         fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -154,11 +154,13 @@ async fn send_pattern_transform<T: GeometryTrait>(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: if use_original { solid.original_id() } else { solid.id() },
-                transform: Default::default(),
-                transforms,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityLinearPatternTransform::builder()
+                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .transform(Default::default())
+                    .transforms(transforms)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -223,6 +225,19 @@ async fn make_transform<T: GeometryTrait>(
             source_ranges.clone(),
         ))
     })?;
+
+    let transform_fn_return = match transform_fn_return.control {
+        ControlFlowKind::Continue => transform_fn_return.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside pattern transform function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
+
     let transforms = match transform_fn_return {
         KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
@@ -274,6 +289,14 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
+    for (dim, name) in [(scale.x, "x"), (scale.y, "y"), (scale.z, "z")] {
+        if dim == 0.0 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("cannot set {name} = 0, scale factor must be nonzero"),
+                source_ranges,
+            )));
+        }
+    }
     let translate = match transform.get("translate") {
         Some(x) => {
             let arr = point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
@@ -326,12 +349,13 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
     }
 
-    Ok(Transform {
-        replicate,
-        scale,
-        translate,
-        rotation,
-    })
+    let transform = Transform::builder()
+        .replicate(replicate)
+        .scale(scale)
+        .translate(translate)
+        .rotation(rotation)
+        .build();
+    Ok(transform)
 }
 
 fn array_to_point3d(
@@ -419,7 +443,9 @@ impl GeometryTrait for Solid {
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
         // We need this for in extrude.rs when you sketch on face.
-        self.sketch.id = id;
+        if let Some(sketch) = self.sketch_mut() {
+            sketch.id = id;
+        }
     }
 
     fn id(&self) -> Uuid {
@@ -427,7 +453,7 @@ impl GeometryTrait for Solid {
     }
 
     fn original_id(&self) -> Uuid {
-        self.sketch.original_id
+        Solid::original_id(self)
     }
 
     fn array_to_point3d(
@@ -563,10 +589,7 @@ async fn inner_pattern_linear_2d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(
@@ -623,10 +646,7 @@ async fn inner_pattern_linear_3d(
         .map(|i| {
             let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
-            vec![Transform {
-                translate,
-                ..Default::default()
-            }]
+            vec![Transform::builder().translate(translate).build()]
         })
         .collect();
     execute_pattern_transform(transforms, solids, use_original.unwrap_or_default(), exec_state, &args).await
@@ -940,22 +960,24 @@ async fn pattern_circular(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::EntityCircularPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: if data.use_original() {
-                    geometry.original_id()
-                } else {
-                    geometry.id()
-                },
-                center: kcmc::shared::Point3d {
-                    x: LengthUnit(center[0]),
-                    y: LengthUnit(center[1]),
-                    z: LengthUnit(center[2]),
-                },
-                num_repetitions,
-                arc_degrees: data.arc_degrees().unwrap_or(360.0),
-                rotate_duplicates: data.rotate_duplicates().unwrap_or(true),
-            }),
+            ModelingCmd::from(
+                mcmd::EntityCircularPattern::builder()
+                    .axis(kcmc::shared::Point3d::from(data.axis()))
+                    .entity_id(if data.use_original() {
+                        geometry.original_id()
+                    } else {
+                        geometry.id()
+                    })
+                    .center(kcmc::shared::Point3d {
+                        x: LengthUnit(center[0]),
+                        y: LengthUnit(center[1]),
+                        z: LengthUnit(center[2]),
+                    })
+                    .num_repetitions(num_repetitions)
+                    .arc_degrees(data.arc_degrees().unwrap_or(360.0))
+                    .rotate_duplicates(data.rotate_duplicates().unwrap_or(true))
+                    .build(),
+            ),
         )
         .await?;
 

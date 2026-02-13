@@ -6,7 +6,7 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 
-test.describe('Testing Camera Movement', () => {
+test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
   /**
    * hack that we're implemented our own retry instead of using retries built into playwright.
    * however each of these camera drags can be flaky, because of udp

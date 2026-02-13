@@ -8,13 +8,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -66,10 +67,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           ],
           "radius": 11.0,
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1278,
+            "end": 1295,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1278,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -84,6 +85,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -91,7 +94,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -177,10 +179,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1278,
+            "end": 1295,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1278,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -191,10 +193,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1966,
-            "end": 1983,
+            "commentStart": 1991,
+            "end": 2008,
             "moduleId": 0,
-            "start": 1966,
+            "start": 1991,
             "type": "TagDeclarator",
             "value": "chamferStartFace"
           },
@@ -205,10 +207,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1996,
-            "end": 2011,
+            "commentStart": 2021,
+            "end": 2036,
             "moduleId": 0,
-            "start": 1996,
+            "start": 2021,
             "type": "TagDeclarator",
             "value": "chamferEndFace"
           },
@@ -216,6 +218,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -235,10 +238,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             ],
             "radius": 11.0,
             "tag": {
-              "commentStart": 1253,
-              "end": 1270,
+              "commentStart": 1278,
+              "end": 1295,
               "moduleId": 0,
-              "start": 1253,
+              "start": 1278,
               "type": "TagDeclarator",
               "value": "chamferCircleTag"
             },
@@ -253,6 +256,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -260,7 +265,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -337,10 +341,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1278,
+            "end": 1295,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1278,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -351,10 +355,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1966,
-            "end": 1983,
+            "commentStart": 1991,
+            "end": 2008,
             "moduleId": 0,
-            "start": 1966,
+            "start": 1991,
             "type": "TagDeclarator",
             "value": "chamferStartFace"
           },
@@ -365,10 +369,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1996,
-            "end": 2011,
+            "commentStart": 2021,
+            "end": 2036,
             "moduleId": 0,
-            "start": 1996,
+            "start": 2021,
             "type": "TagDeclarator",
             "value": "chamferEndFace"
           },
@@ -376,6 +380,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -395,10 +400,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             ],
             "radius": 11.0,
             "tag": {
-              "commentStart": 1253,
-              "end": 1270,
+              "commentStart": 1278,
+              "end": 1295,
               "moduleId": 0,
-              "start": 1253,
+              "start": 1278,
               "type": "TagDeclarator",
               "value": "chamferCircleTag"
             },
@@ -413,6 +418,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -420,7 +427,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -561,6 +567,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -670,6 +677,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -677,7 +686,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -844,6 +852,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -851,7 +861,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -889,8 +898,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm",
-      "isClosed": false
+      "units": "mm"
     }
   },
   "holeRadius": {
@@ -935,6 +943,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -942,7 +952,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -999,6 +1008,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1029,6 +1039,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1036,7 +1048,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1142,6 +1153,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1251,6 +1263,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1258,7 +1272,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1364,6 +1377,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1473,6 +1487,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1480,7 +1496,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

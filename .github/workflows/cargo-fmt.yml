@@ -27,7 +27,7 @@ jobs:
     name: cargo fmt
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -37,6 +37,7 @@ jobs:
         with:
           cache-workspaces: rust
           components: rustfmt
+          rustflags: '' # Use .cargo/config.toml
 
       - name: Run nightly cargo fmt
         run: |

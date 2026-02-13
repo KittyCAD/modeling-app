@@ -53,6 +53,7 @@ describe('processMemory', () => {
     |> startProfile(at = [0, 0])
     |> line(endAbsolute = [-2.4, myVar])
     |> line(endAbsolute = [-0.76, otherVar])
+    |> line(endAbsolute = profileStart())
     |> extrude(length = 4)
 
   theSketch = startSketchOn(XY)
@@ -62,12 +63,7 @@ describe('processMemory', () => {
     |> line(endAbsolute = [2.15, 4.32])
     // |> rx(90)`
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const output = processMemory(execState.variables, instanceInThisFile)
     expect(output.nFeet).toEqual('2: number(ft)')
     expect(output.nInches).toEqual('2: number(in)')
@@ -82,6 +78,13 @@ describe('processMemory', () => {
     expect(output.otherVar).toEqual('3 (no units, defaulting to mm or deg)')
     expect(output.myFn).toEqual('__function__')
     expect(output.theExtrude).toEqual([
+      {
+        type: 'extrudePlane',
+        tag: null,
+        id: expect.any(String),
+        faceId: expect.any(String),
+        sourceRange: [expect.any(Number), expect.any(Number), 0],
+      },
       {
         type: 'extrudePlane',
         tag: null,

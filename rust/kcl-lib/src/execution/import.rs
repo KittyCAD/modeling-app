@@ -78,10 +78,12 @@ pub async fn import_foreign(
             vec![source_range],
         ))
     })?;
-    let mut import_files = vec![kcmc::ImportFile {
-        path: file_name.to_string(),
-        data: file_contents.clone(),
-    }];
+    let mut import_files = vec![
+        kcmc::ImportFile::builder()
+            .path(file_name.to_string())
+            .data(file_contents.clone())
+            .build(),
+    ];
 
     // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
@@ -110,10 +112,7 @@ pub async fn import_foreign(
                             KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range]))
                         })?;
 
-                    import_files.push(ImportFile {
-                        path: uri.to_string(),
-                        data: bin_contents,
-                    });
+                    import_files.push(ImportFile::builder().path(uri.to_string()).data(bin_contents).build());
                 }
             }
         }
@@ -121,10 +120,10 @@ pub async fn import_foreign(
     Ok(PreImportedGeometry {
         id: exec_state.next_uuid(),
         source_range,
-        command: mcmd::ImportFiles {
-            files: import_files.clone(),
-            format,
-        },
+        command: mcmd::ImportFiles::builder()
+            .files(import_files.clone())
+            .format(format)
+            .build(),
     })
 }
 
@@ -218,6 +217,7 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
     match fmt {
         InputFormat3d::Obj(opts) => opts.coords = coords,
         InputFormat3d::Ply(opts) => opts.coords = coords,
+        InputFormat3d::Step(opts) => opts.coords = coords,
         InputFormat3d::Stl(opts) => opts.coords = coords,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -274,7 +274,7 @@ pub async fn send_to_engine(
 
     exec_state
         .async_modeling_cmd(
-            ModelingCmdMeta::with_id(ctxt, pre.source_range, pre.id),
+            ModelingCmdMeta::with_id(exec_state, ctxt, pre.source_range, pre.id),
             &ModelingCmd::from(pre.command.clone()),
         )
         .await?;
@@ -309,26 +309,38 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     // * Up: +Z
     // * Handedness: Right
     match format {
-        FileImportFormat::Step => Ok(InputFormat3d::Step(kcmc::format::step::import::Options {
-            split_closed_faces: false,
-        })),
-        FileImportFormat::Stl => Ok(InputFormat3d::Stl(kcmc::format::stl::import::Options {
-            coords: ZOO_COORD_SYSTEM,
-            units: ul,
-        })),
-        FileImportFormat::Obj => Ok(InputFormat3d::Obj(kcmc::format::obj::import::Options {
-            coords: ZOO_COORD_SYSTEM,
-            units: ul,
-        })),
-        FileImportFormat::Gltf => Ok(InputFormat3d::Gltf(kcmc::format::gltf::import::Options {})),
-        FileImportFormat::Ply => Ok(InputFormat3d::Ply(kcmc::format::ply::import::Options {
-            coords: ZOO_COORD_SYSTEM,
-            units: ul,
-        })),
-        FileImportFormat::Fbx => Ok(InputFormat3d::Fbx(kcmc::format::fbx::import::Options {})),
-        FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(kcmc::format::sldprt::import::Options {
-            split_closed_faces: false,
-        })),
+        FileImportFormat::Step => Ok(InputFormat3d::Step(
+            kcmc::format::step::import::Options::builder()
+                .coords(ZOO_COORD_SYSTEM)
+                .split_closed_faces(false)
+                .build(),
+        )),
+        FileImportFormat::Stl => Ok(InputFormat3d::Stl(
+            kcmc::format::stl::import::Options::builder()
+                .coords(ZOO_COORD_SYSTEM)
+                .units(ul)
+                .build(),
+        )),
+        FileImportFormat::Obj => Ok(InputFormat3d::Obj(
+            kcmc::format::obj::import::Options::builder()
+                .coords(ZOO_COORD_SYSTEM)
+                .units(ul)
+                .build(),
+        )),
+        FileImportFormat::Gltf => Ok(InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default())),
+        FileImportFormat::Ply => Ok(InputFormat3d::Ply(
+            kcmc::format::ply::import::Options::builder()
+                .coords(ZOO_COORD_SYSTEM)
+                .units(ul)
+                .build(),
+        )),
+        FileImportFormat::Fbx => Ok(InputFormat3d::Fbx(kcmc::format::fbx::import::Options::default())),
+        FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(
+            kcmc::format::sldprt::import::Options::builder()
+                .split_closed_faces(false)
+                .build(),
+        )),
+        other => anyhow::bail!("Unknown format {other}"),
     }
 }
 
@@ -351,27 +363,21 @@ fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result
         return Ok(());
     }
 
+    if let InputFormat3d::Step(_) = ext
+        && let InputFormat3d::Step(_) = given
+    {
+        return Ok(());
+    }
+
     if ext == given {
         return Ok(());
     }
 
     anyhow::bail!(
         "The given format does not match the file extension. Expected: `{}`, Given: `{}`",
-        get_name_of_format(ext),
-        get_name_of_format(given)
+        ext.name(),
+        given.name()
     )
-}
-
-fn get_name_of_format(type_: InputFormat3d) -> &'static str {
-    match type_ {
-        InputFormat3d::Fbx(_) => "fbx",
-        InputFormat3d::Gltf(_) => "gltf",
-        InputFormat3d::Obj(_) => "obj",
-        InputFormat3d::Ply(_) => "ply",
-        InputFormat3d::Sldprt(_) => "sldprt",
-        InputFormat3d::Step(_) => "step",
-        InputFormat3d::Stl(_) => "stl",
-    }
 }
 
 #[cfg(test)]
@@ -415,10 +421,7 @@ mod test {
         let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.gltf"), SourceRange::default())
             .unwrap()
             .unwrap();
-        assert_eq!(
-            fmt,
-            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
-        );
+        assert_eq!(fmt, InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default()));
 
         // format, no options
         let text = "@(format = gltf)\nimport '../foo.txt' as foo";
@@ -427,19 +430,13 @@ mod test {
         let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
-        assert_eq!(
-            fmt,
-            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
-        );
+        assert_eq!(fmt, InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default()));
 
         // format, no extension (wouldn't parse but might some day)
         let fmt = format_from_annotations(attrs, &TypedPath::from("../foo"), SourceRange::default())
             .unwrap()
             .unwrap();
-        assert_eq!(
-            fmt,
-            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
-        );
+        assert_eq!(fmt, InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default()));
 
         // format, options
         let text = "@(format = obj, coords = vulkan, lengthUnit = ft)\nimport '../foo.txt' as foo";
@@ -450,10 +447,12 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat3d::Obj(kittycad_modeling_cmds::format::obj::import::Options {
-                coords: *kittycad_modeling_cmds::coord::VULKAN,
-                units: kittycad_modeling_cmds::units::UnitLength::Feet,
-            })
+            InputFormat3d::Obj(
+                kcmc::format::obj::import::Options::builder()
+                    .coords(*kcmc::coord::VULKAN)
+                    .units(kcmc::units::UnitLength::Feet)
+                    .build()
+            )
         );
 
         // no format, options
@@ -465,10 +464,12 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat3d::Obj(kittycad_modeling_cmds::format::obj::import::Options {
-                coords: *kittycad_modeling_cmds::coord::VULKAN,
-                units: kittycad_modeling_cmds::units::UnitLength::Feet,
-            })
+            InputFormat3d::Obj(
+                kcmc::format::obj::import::Options::builder()
+                    .coords(*kcmc::coord::VULKAN)
+                    .units(kcmc::units::UnitLength::Feet)
+                    .build()
+            )
         );
 
         // err - format, options, but no options for specified format

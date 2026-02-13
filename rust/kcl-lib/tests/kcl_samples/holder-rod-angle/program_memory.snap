@@ -33,10 +33,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 413,
-            "end": 419,
+            "commentStart": 441,
+            "end": 447,
             "moduleId": 0,
-            "start": 413,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -47,10 +47,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 487,
-            "end": 493,
+            "commentStart": 515,
+            "end": 521,
             "moduleId": 0,
-            "start": 487,
+            "start": 515,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -61,10 +61,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 563,
-            "end": 569,
+            "commentStart": 591,
+            "end": 597,
             "moduleId": 0,
-            "start": 563,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -75,10 +75,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 684,
-            "end": 696,
+            "commentStart": 712,
+            "end": 724,
             "moduleId": 0,
-            "start": 684,
+            "start": 712,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -89,10 +89,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 714,
-            "end": 724,
+            "commentStart": 742,
+            "end": 752,
             "moduleId": 0,
-            "start": 714,
+            "start": 742,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -100,6 +100,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -113,10 +114,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 413,
-              "end": 419,
+              "commentStart": 441,
+              "end": 447,
               "moduleId": 0,
-              "start": 413,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -137,10 +138,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               4.0
             ],
             "tag": {
-              "commentStart": 487,
-              "end": 493,
+              "commentStart": 515,
+              "end": 521,
               "moduleId": 0,
-              "start": 487,
+              "start": 515,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -161,10 +162,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 563,
-              "end": 569,
+              "commentStart": 591,
+              "end": 597,
               "moduleId": 0,
-              "start": 563,
+              "start": 591,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -179,6 +180,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -186,7 +189,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -342,10 +344,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 413,
-            "end": 419,
+            "commentStart": 441,
+            "end": 447,
             "moduleId": 0,
-            "start": 413,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -366,10 +368,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             4.0
           ],
           "tag": {
-            "commentStart": 487,
-            "end": 493,
+            "commentStart": 515,
+            "end": 521,
             "moduleId": 0,
-            "start": 487,
+            "start": 515,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -390,10 +392,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 563,
-            "end": 569,
+            "commentStart": 591,
+            "end": 597,
             "moduleId": 0,
-            "start": 563,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -408,6 +410,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -415,7 +419,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -528,10 +531,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2964,
-            "end": 2972,
+            "commentStart": 2992,
+            "end": 3000,
             "moduleId": 0,
-            "start": 2964,
+            "start": 2992,
             "type": "TagDeclarator",
             "value": "p_seg03"
           },
@@ -542,10 +545,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3024,
-            "end": 3030,
+            "commentStart": 3052,
+            "end": 3058,
             "moduleId": 0,
-            "start": 3024,
+            "start": 3052,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -556,10 +559,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3088,
-            "end": 3094,
+            "commentStart": 3116,
+            "end": 3122,
             "moduleId": 0,
-            "start": 3088,
+            "start": 3116,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -570,10 +573,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3149,
-            "end": 3155,
+            "commentStart": 3177,
+            "end": 3183,
             "moduleId": 0,
-            "start": 3149,
+            "start": 3177,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -584,10 +587,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3174,
-            "end": 3180,
+            "commentStart": 3202,
+            "end": 3208,
             "moduleId": 0,
-            "start": 3174,
+            "start": 3202,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -598,10 +601,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3430,
-            "end": 3442,
+            "commentStart": 3458,
+            "end": 3470,
             "moduleId": 0,
-            "start": 3430,
+            "start": 3458,
             "type": "TagDeclarator",
             "value": "capStart002"
           },
@@ -612,10 +615,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3460,
-            "end": 3470,
+            "commentStart": 3488,
+            "end": 3498,
             "moduleId": 0,
-            "start": 3460,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "capEnd002"
           },
@@ -623,6 +626,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -636,10 +640,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               -0.8
             ],
             "tag": {
-              "commentStart": 2964,
-              "end": 2972,
+              "commentStart": 2992,
+              "end": 3000,
               "moduleId": 0,
-              "start": 2964,
+              "start": 2992,
               "type": "TagDeclarator",
               "value": "p_seg03"
             },
@@ -660,10 +664,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               -0.8
             ],
             "tag": {
-              "commentStart": 3024,
-              "end": 3030,
+              "commentStart": 3052,
+              "end": 3058,
               "moduleId": 0,
-              "start": 3024,
+              "start": 3052,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -684,10 +688,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               4.8
             ],
             "tag": {
-              "commentStart": 3088,
-              "end": 3094,
+              "commentStart": 3116,
+              "end": 3122,
               "moduleId": 0,
-              "start": 3088,
+              "start": 3116,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -708,10 +712,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               4.8
             ],
             "tag": {
-              "commentStart": 3149,
-              "end": 3155,
+              "commentStart": 3177,
+              "end": 3183,
               "moduleId": 0,
-              "start": 3149,
+              "start": 3177,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -732,10 +736,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               -0.7999999999999998
             ],
             "tag": {
-              "commentStart": 3174,
-              "end": 3180,
+              "commentStart": 3202,
+              "end": 3208,
               "moduleId": 0,
-              "start": 3174,
+              "start": 3202,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -751,6 +755,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -774,10 +779,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 413,
-                  "end": 419,
+                  "commentStart": 441,
+                  "end": 447,
                   "moduleId": 0,
-                  "start": 413,
+                  "start": 441,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -788,10 +793,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 487,
-                  "end": 493,
+                  "commentStart": 515,
+                  "end": 521,
                   "moduleId": 0,
-                  "start": 487,
+                  "start": 515,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -802,10 +807,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 563,
-                  "end": 569,
+                  "commentStart": 591,
+                  "end": 597,
                   "moduleId": 0,
-                  "start": 563,
+                  "start": 591,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -816,10 +821,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 684,
-                  "end": 696,
+                  "commentStart": 712,
+                  "end": 724,
                   "moduleId": 0,
-                  "start": 684,
+                  "start": 712,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -830,10 +835,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 714,
-                  "end": 724,
+                  "commentStart": 742,
+                  "end": 752,
                   "moduleId": 0,
-                  "start": 714,
+                  "start": 742,
                   "type": "TagDeclarator",
                   "value": "capEnd001"
                 },
@@ -841,6 +846,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -854,10 +860,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 413,
-                    "end": 419,
+                    "commentStart": 441,
+                    "end": 447,
                     "moduleId": 0,
-                    "start": 413,
+                    "start": 441,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -878,10 +884,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 487,
-                    "end": 493,
+                    "commentStart": 515,
+                    "end": 521,
                     "moduleId": 0,
-                    "start": 487,
+                    "start": 515,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -902,10 +908,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 563,
-                    "end": 569,
+                    "commentStart": 591,
+                    "end": 597,
                     "moduleId": 0,
-                    "start": 563,
+                    "start": 591,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -920,6 +926,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -927,7 +935,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1213,10 +1220,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           ],
           "radius": 0.225,
           "tag": {
-            "commentStart": 4053,
-            "end": 4059,
+            "commentStart": 4081,
+            "end": 4087,
             "moduleId": 0,
-            "start": 4053,
+            "start": 4081,
             "type": "TagDeclarator",
             "value": "seg12"
           },
@@ -1232,6 +1239,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "start",
         "xAxis": {
           "x": 1.0,
@@ -1255,10 +1263,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2964,
-                "end": 2972,
+                "commentStart": 2992,
+                "end": 3000,
                 "moduleId": 0,
-                "start": 2964,
+                "start": 2992,
                 "type": "TagDeclarator",
                 "value": "p_seg03"
               },
@@ -1269,10 +1277,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3024,
-                "end": 3030,
+                "commentStart": 3052,
+                "end": 3058,
                 "moduleId": 0,
-                "start": 3024,
+                "start": 3052,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -1283,10 +1291,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3088,
-                "end": 3094,
+                "commentStart": 3116,
+                "end": 3122,
                 "moduleId": 0,
-                "start": 3088,
+                "start": 3116,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -1297,10 +1305,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3149,
-                "end": 3155,
+                "commentStart": 3177,
+                "end": 3183,
                 "moduleId": 0,
-                "start": 3149,
+                "start": 3177,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1311,10 +1319,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3174,
-                "end": 3180,
+                "commentStart": 3202,
+                "end": 3208,
                 "moduleId": 0,
-                "start": 3174,
+                "start": 3202,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -1325,10 +1333,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3442,
+                "commentStart": 3458,
+                "end": 3470,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3458,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -1339,10 +1347,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3460,
-                "end": 3470,
+                "commentStart": 3488,
+                "end": 3498,
                 "moduleId": 0,
-                "start": 3460,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -1350,6 +1358,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1363,10 +1372,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -1387,10 +1396,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -1411,10 +1420,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -1435,10 +1444,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1459,10 +1468,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.7999999999999998
                 ],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -1478,6 +1487,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -1501,10 +1511,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 413,
-                      "end": 419,
+                      "commentStart": 441,
+                      "end": 447,
                       "moduleId": 0,
-                      "start": 413,
+                      "start": 441,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1515,10 +1525,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 487,
-                      "end": 493,
+                      "commentStart": 515,
+                      "end": 521,
                       "moduleId": 0,
-                      "start": 487,
+                      "start": 515,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1529,10 +1539,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 563,
-                      "end": 569,
+                      "commentStart": 591,
+                      "end": 597,
                       "moduleId": 0,
-                      "start": 563,
+                      "start": 591,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1543,10 +1553,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 684,
-                      "end": 696,
+                      "commentStart": 712,
+                      "end": 724,
                       "moduleId": 0,
-                      "start": 684,
+                      "start": 712,
                       "type": "TagDeclarator",
                       "value": "capStart001"
                     },
@@ -1557,10 +1567,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 714,
-                      "end": 724,
+                      "commentStart": 742,
+                      "end": 752,
                       "moduleId": 0,
-                      "start": 714,
+                      "start": 742,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -1568,6 +1578,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1581,10 +1592,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1605,10 +1616,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         4.0
                       ],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1629,10 +1640,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1647,6 +1658,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1654,7 +1667,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1959,10 +1971,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           ],
           "radius": 0.225,
           "tag": {
-            "commentStart": 4277,
-            "end": 4283,
+            "commentStart": 4305,
+            "end": 4311,
             "moduleId": 0,
-            "start": 4277,
+            "start": 4305,
             "type": "TagDeclarator",
             "value": "seg11"
           },
@@ -1978,6 +1990,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 4,
         "value": "start",
         "xAxis": {
           "x": 1.0,
@@ -2001,10 +2014,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2964,
-                "end": 2972,
+                "commentStart": 2992,
+                "end": 3000,
                 "moduleId": 0,
-                "start": 2964,
+                "start": 2992,
                 "type": "TagDeclarator",
                 "value": "p_seg03"
               },
@@ -2015,10 +2028,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3024,
-                "end": 3030,
+                "commentStart": 3052,
+                "end": 3058,
                 "moduleId": 0,
-                "start": 3024,
+                "start": 3052,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -2029,10 +2042,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3088,
-                "end": 3094,
+                "commentStart": 3116,
+                "end": 3122,
                 "moduleId": 0,
-                "start": 3088,
+                "start": 3116,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -2043,10 +2056,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3149,
-                "end": 3155,
+                "commentStart": 3177,
+                "end": 3183,
                 "moduleId": 0,
-                "start": 3149,
+                "start": 3177,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2057,10 +2070,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3174,
-                "end": 3180,
+                "commentStart": 3202,
+                "end": 3208,
                 "moduleId": 0,
-                "start": 3174,
+                "start": 3202,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -2071,10 +2084,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3442,
+                "commentStart": 3458,
+                "end": 3470,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3458,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -2085,10 +2098,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3460,
-                "end": 3470,
+                "commentStart": 3488,
+                "end": 3498,
                 "moduleId": 0,
-                "start": 3460,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -2096,6 +2109,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2109,10 +2123,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -2133,10 +2147,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -2157,10 +2171,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -2181,10 +2195,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -2205,10 +2219,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.7999999999999998
                 ],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -2224,6 +2238,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -2247,10 +2262,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 413,
-                      "end": 419,
+                      "commentStart": 441,
+                      "end": 447,
                       "moduleId": 0,
-                      "start": 413,
+                      "start": 441,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2261,10 +2276,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 487,
-                      "end": 493,
+                      "commentStart": 515,
+                      "end": 521,
                       "moduleId": 0,
-                      "start": 487,
+                      "start": 515,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2275,10 +2290,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 563,
-                      "end": 569,
+                      "commentStart": 591,
+                      "end": 597,
                       "moduleId": 0,
-                      "start": 563,
+                      "start": 591,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2289,10 +2304,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 684,
-                      "end": 696,
+                      "commentStart": 712,
+                      "end": 724,
                       "moduleId": 0,
-                      "start": 684,
+                      "start": 712,
                       "type": "TagDeclarator",
                       "value": "capStart001"
                     },
@@ -2303,10 +2318,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 714,
-                      "end": 724,
+                      "commentStart": 742,
+                      "end": 752,
                       "moduleId": 0,
-                      "start": 714,
+                      "start": 742,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -2314,6 +2329,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2327,10 +2343,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2351,10 +2367,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         4.0
                       ],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2375,10 +2391,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2393,6 +2409,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2400,7 +2418,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2705,10 +2722,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           ],
           "radius": 0.225,
           "tag": {
-            "commentStart": 4491,
-            "end": 4497,
+            "commentStart": 4519,
+            "end": 4525,
             "moduleId": 0,
-            "start": 4491,
+            "start": 4519,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -2724,6 +2741,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "start",
         "xAxis": {
           "x": 1.0,
@@ -2747,10 +2765,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2964,
-                "end": 2972,
+                "commentStart": 2992,
+                "end": 3000,
                 "moduleId": 0,
-                "start": 2964,
+                "start": 2992,
                 "type": "TagDeclarator",
                 "value": "p_seg03"
               },
@@ -2761,10 +2779,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3024,
-                "end": 3030,
+                "commentStart": 3052,
+                "end": 3058,
                 "moduleId": 0,
-                "start": 3024,
+                "start": 3052,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -2775,10 +2793,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3088,
-                "end": 3094,
+                "commentStart": 3116,
+                "end": 3122,
                 "moduleId": 0,
-                "start": 3088,
+                "start": 3116,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -2789,10 +2807,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3149,
-                "end": 3155,
+                "commentStart": 3177,
+                "end": 3183,
                 "moduleId": 0,
-                "start": 3149,
+                "start": 3177,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2803,10 +2821,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3174,
-                "end": 3180,
+                "commentStart": 3202,
+                "end": 3208,
                 "moduleId": 0,
-                "start": 3174,
+                "start": 3202,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -2817,10 +2835,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3442,
+                "commentStart": 3458,
+                "end": 3470,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3458,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -2831,10 +2849,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3460,
-                "end": 3470,
+                "commentStart": 3488,
+                "end": 3498,
                 "moduleId": 0,
-                "start": 3460,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -2842,6 +2860,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2855,10 +2874,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -2879,10 +2898,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -2903,10 +2922,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -2927,10 +2946,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -2951,10 +2970,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.7999999999999998
                 ],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -2970,6 +2989,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -2993,10 +3013,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 413,
-                      "end": 419,
+                      "commentStart": 441,
+                      "end": 447,
                       "moduleId": 0,
-                      "start": 413,
+                      "start": 441,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3007,10 +3027,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 487,
-                      "end": 493,
+                      "commentStart": 515,
+                      "end": 521,
                       "moduleId": 0,
-                      "start": 487,
+                      "start": 515,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3021,10 +3041,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 563,
-                      "end": 569,
+                      "commentStart": 591,
+                      "end": 597,
                       "moduleId": 0,
-                      "start": 563,
+                      "start": 591,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3035,10 +3055,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 684,
-                      "end": 696,
+                      "commentStart": 712,
+                      "end": 724,
                       "moduleId": 0,
-                      "start": 684,
+                      "start": 712,
                       "type": "TagDeclarator",
                       "value": "capStart001"
                     },
@@ -3049,10 +3069,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 714,
-                      "end": 724,
+                      "commentStart": 742,
+                      "end": 752,
                       "moduleId": 0,
-                      "start": 714,
+                      "start": 742,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -3060,6 +3080,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3073,10 +3094,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3097,10 +3118,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         4.0
                       ],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3121,10 +3142,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3139,6 +3160,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3146,7 +3169,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3451,10 +3473,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           ],
           "radius": 0.225,
           "tag": {
-            "commentStart": 4729,
-            "end": 4735,
+            "commentStart": 4757,
+            "end": 4763,
             "moduleId": 0,
-            "start": 4729,
+            "start": 4757,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -3470,6 +3492,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 6,
         "value": "start",
         "xAxis": {
           "x": 1.0,
@@ -3493,10 +3516,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2964,
-                "end": 2972,
+                "commentStart": 2992,
+                "end": 3000,
                 "moduleId": 0,
-                "start": 2964,
+                "start": 2992,
                 "type": "TagDeclarator",
                 "value": "p_seg03"
               },
@@ -3507,10 +3530,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3024,
-                "end": 3030,
+                "commentStart": 3052,
+                "end": 3058,
                 "moduleId": 0,
-                "start": 3024,
+                "start": 3052,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -3521,10 +3544,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3088,
-                "end": 3094,
+                "commentStart": 3116,
+                "end": 3122,
                 "moduleId": 0,
-                "start": 3088,
+                "start": 3116,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -3535,10 +3558,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3149,
-                "end": 3155,
+                "commentStart": 3177,
+                "end": 3183,
                 "moduleId": 0,
-                "start": 3149,
+                "start": 3177,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -3549,10 +3572,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3174,
-                "end": 3180,
+                "commentStart": 3202,
+                "end": 3208,
                 "moduleId": 0,
-                "start": 3174,
+                "start": 3202,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -3563,10 +3586,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3442,
+                "commentStart": 3458,
+                "end": 3470,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3458,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -3577,10 +3600,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3460,
-                "end": 3470,
+                "commentStart": 3488,
+                "end": 3498,
                 "moduleId": 0,
-                "start": 3460,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -3588,6 +3611,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3601,10 +3625,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -3625,10 +3649,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.8
                 ],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -3649,10 +3673,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -3673,10 +3697,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.8
                 ],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3697,10 +3721,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   -0.7999999999999998
                 ],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -3716,6 +3740,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -3739,10 +3764,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 413,
-                      "end": 419,
+                      "commentStart": 441,
+                      "end": 447,
                       "moduleId": 0,
-                      "start": 413,
+                      "start": 441,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3753,10 +3778,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 487,
-                      "end": 493,
+                      "commentStart": 515,
+                      "end": 521,
                       "moduleId": 0,
-                      "start": 487,
+                      "start": 515,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3767,10 +3792,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 563,
-                      "end": 569,
+                      "commentStart": 591,
+                      "end": 597,
                       "moduleId": 0,
-                      "start": 563,
+                      "start": 591,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3781,10 +3806,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 684,
-                      "end": 696,
+                      "commentStart": 712,
+                      "end": 724,
                       "moduleId": 0,
-                      "start": 684,
+                      "start": 712,
                       "type": "TagDeclarator",
                       "value": "capStart001"
                     },
@@ -3795,10 +3820,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 714,
-                      "end": 724,
+                      "commentStart": 742,
+                      "end": 752,
                       "moduleId": 0,
-                      "start": 714,
+                      "start": 742,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -3806,6 +3831,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3819,10 +3845,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3843,10 +3869,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         4.0
                       ],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3867,10 +3893,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3885,6 +3911,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XY",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3892,7 +3920,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -4191,6 +4218,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4221,6 +4249,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4228,7 +4258,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -4307,6 +4336,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4314,7 +4345,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -4360,13 +4390,14 @@ description: Variables in memory after executing holder-rod-angle.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": -1.0,
@@ -4453,10 +4484,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4053,
-            "end": 4059,
+            "commentStart": 4081,
+            "end": 4087,
             "moduleId": 0,
-            "start": 4053,
+            "start": 4081,
             "type": "TagDeclarator",
             "value": "seg12"
           },
@@ -4464,6 +4495,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4483,10 +4515,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             ],
             "radius": 0.225,
             "tag": {
-              "commentStart": 4053,
-              "end": 4059,
+              "commentStart": 4081,
+              "end": 4087,
               "moduleId": 0,
-              "start": 4053,
+              "start": 4081,
               "type": "TagDeclarator",
               "value": "seg12"
             },
@@ -4502,6 +4534,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -4525,10 +4558,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -4539,10 +4572,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -4553,10 +4586,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -4567,10 +4600,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -4581,10 +4614,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -4595,10 +4628,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3442,
+                  "commentStart": 3458,
+                  "end": 3470,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3458,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -4609,10 +4642,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3460,
-                  "end": 3470,
+                  "commentStart": 3488,
+                  "end": 3498,
                   "moduleId": 0,
-                  "start": 3460,
+                  "start": 3488,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -4620,6 +4653,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -4633,10 +4667,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 2964,
-                    "end": 2972,
+                    "commentStart": 2992,
+                    "end": 3000,
                     "moduleId": 0,
-                    "start": 2964,
+                    "start": 2992,
                     "type": "TagDeclarator",
                     "value": "p_seg03"
                   },
@@ -4657,10 +4691,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 3024,
-                    "end": 3030,
+                    "commentStart": 3052,
+                    "end": 3058,
                     "moduleId": 0,
-                    "start": 3024,
+                    "start": 3052,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -4681,10 +4715,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3088,
-                    "end": 3094,
+                    "commentStart": 3116,
+                    "end": 3122,
                     "moduleId": 0,
-                    "start": 3088,
+                    "start": 3116,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -4705,10 +4739,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3149,
-                    "end": 3155,
+                    "commentStart": 3177,
+                    "end": 3183,
                     "moduleId": 0,
-                    "start": 3149,
+                    "start": 3177,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -4729,10 +4763,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.7999999999999998
                   ],
                   "tag": {
-                    "commentStart": 3174,
-                    "end": 3180,
+                    "commentStart": 3202,
+                    "end": 3208,
                     "moduleId": 0,
-                    "start": 3174,
+                    "start": 3202,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -4748,6 +4782,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -4771,10 +4806,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4785,10 +4820,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4799,10 +4834,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -4813,10 +4848,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 684,
-                        "end": 696,
+                        "commentStart": 712,
+                        "end": 724,
                         "moduleId": 0,
-                        "start": 684,
+                        "start": 712,
                         "type": "TagDeclarator",
                         "value": "capStart001"
                       },
@@ -4827,10 +4862,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 714,
-                        "end": 724,
+                        "commentStart": 742,
+                        "end": 752,
                         "moduleId": 0,
-                        "start": 714,
+                        "start": 742,
                         "type": "TagDeclarator",
                         "value": "capEnd001"
                       },
@@ -4838,6 +4873,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -4851,10 +4887,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 413,
-                          "end": 419,
+                          "commentStart": 441,
+                          "end": 447,
                           "moduleId": 0,
-                          "start": 413,
+                          "start": 441,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -4875,10 +4911,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           4.0
                         ],
                         "tag": {
-                          "commentStart": 487,
-                          "end": 493,
+                          "commentStart": 515,
+                          "end": 521,
                           "moduleId": 0,
-                          "start": 487,
+                          "start": 515,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4899,10 +4935,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 563,
-                          "end": 569,
+                          "commentStart": 591,
+                          "end": 597,
                           "moduleId": 0,
-                          "start": 563,
+                          "start": 591,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -4917,6 +4953,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XY",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4924,7 +4962,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XY",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -5240,10 +5277,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4277,
-            "end": 4283,
+            "commentStart": 4305,
+            "end": 4311,
             "moduleId": 0,
-            "start": 4277,
+            "start": 4305,
             "type": "TagDeclarator",
             "value": "seg11"
           },
@@ -5251,6 +5288,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -5270,10 +5308,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             ],
             "radius": 0.225,
             "tag": {
-              "commentStart": 4277,
-              "end": 4283,
+              "commentStart": 4305,
+              "end": 4311,
               "moduleId": 0,
-              "start": 4277,
+              "start": 4305,
               "type": "TagDeclarator",
               "value": "seg11"
             },
@@ -5289,6 +5327,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -5312,10 +5351,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -5326,10 +5365,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -5340,10 +5379,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -5354,10 +5393,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -5368,10 +5407,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -5382,10 +5421,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3442,
+                  "commentStart": 3458,
+                  "end": 3470,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3458,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -5396,10 +5435,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3460,
-                  "end": 3470,
+                  "commentStart": 3488,
+                  "end": 3498,
                   "moduleId": 0,
-                  "start": 3460,
+                  "start": 3488,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -5407,6 +5446,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -5420,10 +5460,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 2964,
-                    "end": 2972,
+                    "commentStart": 2992,
+                    "end": 3000,
                     "moduleId": 0,
-                    "start": 2964,
+                    "start": 2992,
                     "type": "TagDeclarator",
                     "value": "p_seg03"
                   },
@@ -5444,10 +5484,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 3024,
-                    "end": 3030,
+                    "commentStart": 3052,
+                    "end": 3058,
                     "moduleId": 0,
-                    "start": 3024,
+                    "start": 3052,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -5468,10 +5508,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3088,
-                    "end": 3094,
+                    "commentStart": 3116,
+                    "end": 3122,
                     "moduleId": 0,
-                    "start": 3088,
+                    "start": 3116,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -5492,10 +5532,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3149,
-                    "end": 3155,
+                    "commentStart": 3177,
+                    "end": 3183,
                     "moduleId": 0,
-                    "start": 3149,
+                    "start": 3177,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -5516,10 +5556,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.7999999999999998
                   ],
                   "tag": {
-                    "commentStart": 3174,
-                    "end": 3180,
+                    "commentStart": 3202,
+                    "end": 3208,
                     "moduleId": 0,
-                    "start": 3174,
+                    "start": 3202,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -5535,6 +5575,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -5558,10 +5599,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5572,10 +5613,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5586,10 +5627,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -5600,10 +5641,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 684,
-                        "end": 696,
+                        "commentStart": 712,
+                        "end": 724,
                         "moduleId": 0,
-                        "start": 684,
+                        "start": 712,
                         "type": "TagDeclarator",
                         "value": "capStart001"
                       },
@@ -5614,10 +5655,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 714,
-                        "end": 724,
+                        "commentStart": 742,
+                        "end": 752,
                         "moduleId": 0,
-                        "start": 714,
+                        "start": 742,
                         "type": "TagDeclarator",
                         "value": "capEnd001"
                       },
@@ -5625,6 +5666,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -5638,10 +5680,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 413,
-                          "end": 419,
+                          "commentStart": 441,
+                          "end": 447,
                           "moduleId": 0,
-                          "start": 413,
+                          "start": 441,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -5662,10 +5704,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           4.0
                         ],
                         "tag": {
-                          "commentStart": 487,
-                          "end": 493,
+                          "commentStart": 515,
+                          "end": 521,
                           "moduleId": 0,
-                          "start": 487,
+                          "start": 515,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -5686,10 +5728,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 563,
-                          "end": 569,
+                          "commentStart": 591,
+                          "end": 597,
                           "moduleId": 0,
-                          "start": 563,
+                          "start": 591,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -5704,6 +5746,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XY",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -5711,7 +5755,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XY",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6027,10 +6070,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4491,
-            "end": 4497,
+            "commentStart": 4519,
+            "end": 4525,
             "moduleId": 0,
-            "start": 4491,
+            "start": 4519,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -6038,6 +6081,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -6057,10 +6101,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             ],
             "radius": 0.225,
             "tag": {
-              "commentStart": 4491,
-              "end": 4497,
+              "commentStart": 4519,
+              "end": 4525,
               "moduleId": 0,
-              "start": 4491,
+              "start": 4519,
               "type": "TagDeclarator",
               "value": "seg10"
             },
@@ -6076,6 +6120,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -6099,10 +6144,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -6113,10 +6158,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -6127,10 +6172,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6141,10 +6186,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -6155,10 +6200,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6169,10 +6214,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3442,
+                  "commentStart": 3458,
+                  "end": 3470,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3458,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -6183,10 +6228,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3460,
-                  "end": 3470,
+                  "commentStart": 3488,
+                  "end": 3498,
                   "moduleId": 0,
-                  "start": 3460,
+                  "start": 3488,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -6194,6 +6239,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -6207,10 +6253,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 2964,
-                    "end": 2972,
+                    "commentStart": 2992,
+                    "end": 3000,
                     "moduleId": 0,
-                    "start": 2964,
+                    "start": 2992,
                     "type": "TagDeclarator",
                     "value": "p_seg03"
                   },
@@ -6231,10 +6277,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 3024,
-                    "end": 3030,
+                    "commentStart": 3052,
+                    "end": 3058,
                     "moduleId": 0,
-                    "start": 3024,
+                    "start": 3052,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -6255,10 +6301,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3088,
-                    "end": 3094,
+                    "commentStart": 3116,
+                    "end": 3122,
                     "moduleId": 0,
-                    "start": 3088,
+                    "start": 3116,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -6279,10 +6325,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3149,
-                    "end": 3155,
+                    "commentStart": 3177,
+                    "end": 3183,
                     "moduleId": 0,
-                    "start": 3149,
+                    "start": 3177,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -6303,10 +6349,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.7999999999999998
                   ],
                   "tag": {
-                    "commentStart": 3174,
-                    "end": 3180,
+                    "commentStart": 3202,
+                    "end": 3208,
                     "moduleId": 0,
-                    "start": 3174,
+                    "start": 3202,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -6322,6 +6368,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -6345,10 +6392,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6359,10 +6406,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -6373,10 +6420,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -6387,10 +6434,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 684,
-                        "end": 696,
+                        "commentStart": 712,
+                        "end": 724,
                         "moduleId": 0,
-                        "start": 684,
+                        "start": 712,
                         "type": "TagDeclarator",
                         "value": "capStart001"
                       },
@@ -6401,10 +6448,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 714,
-                        "end": 724,
+                        "commentStart": 742,
+                        "end": 752,
                         "moduleId": 0,
-                        "start": 714,
+                        "start": 742,
                         "type": "TagDeclarator",
                         "value": "capEnd001"
                       },
@@ -6412,6 +6459,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -6425,10 +6473,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 413,
-                          "end": 419,
+                          "commentStart": 441,
+                          "end": 447,
                           "moduleId": 0,
-                          "start": 413,
+                          "start": 441,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -6449,10 +6497,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           4.0
                         ],
                         "tag": {
-                          "commentStart": 487,
-                          "end": 493,
+                          "commentStart": 515,
+                          "end": 521,
                           "moduleId": 0,
-                          "start": 487,
+                          "start": 515,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -6473,10 +6521,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 563,
-                          "end": 569,
+                          "commentStart": 591,
+                          "end": 597,
                           "moduleId": 0,
-                          "start": 563,
+                          "start": 591,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -6491,6 +6539,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XY",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -6498,7 +6548,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XY",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -6814,10 +6863,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4729,
-            "end": 4735,
+            "commentStart": 4757,
+            "end": 4763,
             "moduleId": 0,
-            "start": 4729,
+            "start": 4757,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -6825,6 +6874,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -6844,10 +6894,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             ],
             "radius": 0.225,
             "tag": {
-              "commentStart": 4729,
-              "end": 4735,
+              "commentStart": 4757,
+              "end": 4763,
               "moduleId": 0,
-              "start": 4729,
+              "start": 4757,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -6863,6 +6913,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -6886,10 +6937,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2964,
-                  "end": 2972,
+                  "commentStart": 2992,
+                  "end": 3000,
                   "moduleId": 0,
-                  "start": 2964,
+                  "start": 2992,
                   "type": "TagDeclarator",
                   "value": "p_seg03"
                 },
@@ -6900,10 +6951,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3024,
-                  "end": 3030,
+                  "commentStart": 3052,
+                  "end": 3058,
                   "moduleId": 0,
-                  "start": 3024,
+                  "start": 3052,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -6914,10 +6965,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3088,
-                  "end": 3094,
+                  "commentStart": 3116,
+                  "end": 3122,
                   "moduleId": 0,
-                  "start": 3088,
+                  "start": 3116,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6928,10 +6979,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3149,
-                  "end": 3155,
+                  "commentStart": 3177,
+                  "end": 3183,
                   "moduleId": 0,
-                  "start": 3149,
+                  "start": 3177,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -6942,10 +6993,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3174,
-                  "end": 3180,
+                  "commentStart": 3202,
+                  "end": 3208,
                   "moduleId": 0,
-                  "start": 3174,
+                  "start": 3202,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6956,10 +7007,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3442,
+                  "commentStart": 3458,
+                  "end": 3470,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3458,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -6970,10 +7021,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3460,
-                  "end": 3470,
+                  "commentStart": 3488,
+                  "end": 3498,
                   "moduleId": 0,
-                  "start": 3460,
+                  "start": 3488,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -6981,6 +7032,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -6994,10 +7046,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 2964,
-                    "end": 2972,
+                    "commentStart": 2992,
+                    "end": 3000,
                     "moduleId": 0,
-                    "start": 2964,
+                    "start": 2992,
                     "type": "TagDeclarator",
                     "value": "p_seg03"
                   },
@@ -7018,10 +7070,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.8
                   ],
                   "tag": {
-                    "commentStart": 3024,
-                    "end": 3030,
+                    "commentStart": 3052,
+                    "end": 3058,
                     "moduleId": 0,
-                    "start": 3024,
+                    "start": 3052,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -7042,10 +7094,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3088,
-                    "end": 3094,
+                    "commentStart": 3116,
+                    "end": 3122,
                     "moduleId": 0,
-                    "start": 3088,
+                    "start": 3116,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -7066,10 +7118,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     4.8
                   ],
                   "tag": {
-                    "commentStart": 3149,
-                    "end": 3155,
+                    "commentStart": 3177,
+                    "end": 3183,
                     "moduleId": 0,
-                    "start": 3149,
+                    "start": 3177,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -7090,10 +7142,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     -0.7999999999999998
                   ],
                   "tag": {
-                    "commentStart": 3174,
-                    "end": 3180,
+                    "commentStart": 3202,
+                    "end": 3208,
                     "moduleId": 0,
-                    "start": 3174,
+                    "start": 3202,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -7109,6 +7161,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -7132,10 +7185,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 413,
-                        "end": 419,
+                        "commentStart": 441,
+                        "end": 447,
                         "moduleId": 0,
-                        "start": 413,
+                        "start": 441,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7146,10 +7199,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 487,
-                        "end": 493,
+                        "commentStart": 515,
+                        "end": 521,
                         "moduleId": 0,
-                        "start": 487,
+                        "start": 515,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7160,10 +7213,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 563,
-                        "end": 569,
+                        "commentStart": 591,
+                        "end": 597,
                         "moduleId": 0,
-                        "start": 563,
+                        "start": 591,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -7174,10 +7227,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 684,
-                        "end": 696,
+                        "commentStart": 712,
+                        "end": 724,
                         "moduleId": 0,
-                        "start": 684,
+                        "start": 712,
                         "type": "TagDeclarator",
                         "value": "capStart001"
                       },
@@ -7188,10 +7241,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 714,
-                        "end": 724,
+                        "commentStart": 742,
+                        "end": 752,
                         "moduleId": 0,
-                        "start": 714,
+                        "start": 742,
                         "type": "TagDeclarator",
                         "value": "capEnd001"
                       },
@@ -7199,6 +7252,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     }
                   ],
                   "sketch": {
+                    "creatorType": "sketch",
                     "type": "Sketch",
                     "id": "[uuid]",
                     "paths": [
@@ -7212,10 +7266,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 413,
-                          "end": 419,
+                          "commentStart": 441,
+                          "end": 447,
                           "moduleId": 0,
-                          "start": 413,
+                          "start": 441,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -7236,10 +7290,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           4.0
                         ],
                         "tag": {
-                          "commentStart": 487,
-                          "end": 493,
+                          "commentStart": 515,
+                          "end": 521,
                           "moduleId": 0,
-                          "start": 487,
+                          "start": 515,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -7260,10 +7314,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 563,
-                          "end": 569,
+                          "commentStart": 591,
+                          "end": 597,
                           "moduleId": 0,
-                          "start": 563,
+                          "start": 591,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -7278,6 +7332,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "XY",
+                      "objectId": 0,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -7285,7 +7341,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "XY",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -7628,10 +7683,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2964,
-            "end": 2972,
+            "commentStart": 2992,
+            "end": 3000,
             "moduleId": 0,
-            "start": 2964,
+            "start": 2992,
             "type": "TagDeclarator",
             "value": "p_seg03"
           },
@@ -7652,10 +7707,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 3024,
-            "end": 3030,
+            "commentStart": 3052,
+            "end": 3058,
             "moduleId": 0,
-            "start": 3024,
+            "start": 3052,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -7676,10 +7731,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             4.8
           ],
           "tag": {
-            "commentStart": 3088,
-            "end": 3094,
+            "commentStart": 3116,
+            "end": 3122,
             "moduleId": 0,
-            "start": 3088,
+            "start": 3116,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -7700,10 +7755,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             4.8
           ],
           "tag": {
-            "commentStart": 3149,
-            "end": 3155,
+            "commentStart": 3177,
+            "end": 3183,
             "moduleId": 0,
-            "start": 3149,
+            "start": 3177,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -7724,10 +7779,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             -0.7999999999999998
           ],
           "tag": {
-            "commentStart": 3174,
-            "end": 3180,
+            "commentStart": 3202,
+            "end": 3208,
             "moduleId": 0,
-            "start": 3174,
+            "start": 3202,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -7743,6 +7798,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "seg02",
         "xAxis": {
           "x": 1.0,
@@ -7766,10 +7822,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 413,
-                "end": 419,
+                "commentStart": 441,
+                "end": 447,
                 "moduleId": 0,
-                "start": 413,
+                "start": 441,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7780,10 +7836,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 487,
-                "end": 493,
+                "commentStart": 515,
+                "end": 521,
                 "moduleId": 0,
-                "start": 487,
+                "start": 515,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7794,10 +7850,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 563,
-                "end": 569,
+                "commentStart": 591,
+                "end": 597,
                 "moduleId": 0,
-                "start": 563,
+                "start": 591,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7808,10 +7864,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 684,
-                "end": 696,
+                "commentStart": 712,
+                "end": 724,
                 "moduleId": 0,
-                "start": 684,
+                "start": 712,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -7822,10 +7878,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 714,
-                "end": 724,
+                "commentStart": 742,
+                "end": 752,
                 "moduleId": 0,
-                "start": 714,
+                "start": 742,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -7833,6 +7889,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7846,10 +7903,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 413,
-                  "end": 419,
+                  "commentStart": 441,
+                  "end": 447,
                   "moduleId": 0,
-                  "start": 413,
+                  "start": 441,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7870,10 +7927,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   4.0
                 ],
                 "tag": {
-                  "commentStart": 487,
-                  "end": 493,
+                  "commentStart": 515,
+                  "end": 521,
                   "moduleId": 0,
-                  "start": 487,
+                  "start": 515,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7894,10 +7951,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 563,
-                  "end": 569,
+                  "commentStart": 591,
+                  "end": 597,
                   "moduleId": 0,
-                  "start": 563,
+                  "start": 591,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7912,6 +7969,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7919,7 +7978,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8116,6 +8174,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 2,
       "value": "seg02",
       "xAxis": {
         "x": 1.0,
@@ -8139,10 +8198,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 413,
-              "end": 419,
+              "commentStart": 441,
+              "end": 447,
               "moduleId": 0,
-              "start": 413,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -8153,10 +8212,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 487,
-              "end": 493,
+              "commentStart": 515,
+              "end": 521,
               "moduleId": 0,
-              "start": 487,
+              "start": 515,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -8167,10 +8226,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 563,
-              "end": 569,
+              "commentStart": 591,
+              "end": 597,
               "moduleId": 0,
-              "start": 563,
+              "start": 591,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -8181,10 +8240,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 684,
-              "end": 696,
+              "commentStart": 712,
+              "end": 724,
               "moduleId": 0,
-              "start": 684,
+              "start": 712,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -8195,10 +8254,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 714,
-              "end": 724,
+              "commentStart": 742,
+              "end": 752,
               "moduleId": 0,
-              "start": 714,
+              "start": 742,
               "type": "TagDeclarator",
               "value": "capEnd001"
             },
@@ -8206,6 +8265,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -8219,10 +8279,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 413,
-                "end": 419,
+                "commentStart": 441,
+                "end": 447,
                 "moduleId": 0,
-                "start": 413,
+                "start": 441,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -8243,10 +8303,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 4.0
               ],
               "tag": {
-                "commentStart": 487,
-                "end": 493,
+                "commentStart": 515,
+                "end": 521,
                 "moduleId": 0,
-                "start": 487,
+                "start": 515,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -8267,10 +8327,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 563,
-                "end": 569,
+                "commentStart": 591,
+                "end": 597,
                 "moduleId": 0,
-                "start": 563,
+                "start": 591,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -8285,6 +8345,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -8292,7 +8354,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -8537,10 +8598,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 413,
-            "end": 419,
+            "commentStart": 441,
+            "end": 447,
             "moduleId": 0,
-            "start": 413,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -8551,10 +8612,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 487,
-            "end": 493,
+            "commentStart": 515,
+            "end": 521,
             "moduleId": 0,
-            "start": 487,
+            "start": 515,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -8565,10 +8626,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 563,
-            "end": 569,
+            "commentStart": 591,
+            "end": 597,
             "moduleId": 0,
-            "start": 563,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -8579,10 +8640,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 684,
-            "end": 696,
+            "commentStart": 712,
+            "end": 724,
             "moduleId": 0,
-            "start": 684,
+            "start": 712,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -8593,10 +8654,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 714,
-            "end": 724,
+            "commentStart": 742,
+            "end": 752,
             "moduleId": 0,
-            "start": 714,
+            "start": 742,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -8604,6 +8665,7 @@ description: Variables in memory after executing holder-rod-angle.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -8617,10 +8679,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 413,
-              "end": 419,
+              "commentStart": 441,
+              "end": 447,
               "moduleId": 0,
-              "start": 413,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -8641,10 +8703,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               4.0
             ],
             "tag": {
-              "commentStart": 487,
-              "end": 493,
+              "commentStart": 515,
+              "end": 521,
               "moduleId": 0,
-              "start": 487,
+              "start": 515,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -8665,10 +8727,10 @@ description: Variables in memory after executing holder-rod-angle.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 563,
-              "end": 569,
+              "commentStart": 591,
+              "end": 597,
               "moduleId": 0,
-              "start": 563,
+              "start": 591,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -8683,6 +8745,8 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8690,7 +8754,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

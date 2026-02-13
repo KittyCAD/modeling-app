@@ -1,5 +1,6 @@
 // C-Shape Solid (Abstract Geometry Demo)
 // This is a simplified geometry study that demonstrates how to create a "C" shape by subtracting a rectangular wedge from a circular ring. This base logic is foundational to models like split washers and other circular parts with a gap.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 

@@ -410,3 +410,12 @@ export const CONTAINER_IS_SELECTED: number = -1
 export const STARTING_INDEX_TO_SELECT: number = 0
 export const FOLDER_PLACEHOLDER_NAME = '.zoo-placeholder-folder'
 export const FILE_PLACEHOLDER_NAME = '.zoo-placeholder-file.kcl'
+
+/**
+ * Check if a drag event contains external files (not internal drag)
+ * External files have 'Files' type but no 'json' type (which is used for internal drag)
+ */
+export const isExternalFileDrag = (e: React.DragEvent): boolean => {
+  const types = e.dataTransfer.types
+  return types.includes('Files') && !types.includes('json')
+}

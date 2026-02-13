@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  memo,
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -30,7 +31,7 @@ const DefaultContextMenuItems = [
   // add more default context menu items here
 ]
 
-export function ContextMenu({
+export const ContextMenu = memo(function ContextMenu({
   items = DefaultContextMenuItems,
   menuTargetElement,
   className,
@@ -166,7 +167,9 @@ export function ContextMenu({
       </div>
     </Dialog>
   )
-}
+  // ContextMenu's items prop always sets a static array, but it's a new ref each time.
+  // This prevents the unnecessary rerender.
+})
 
 export function ContextMenuDivider() {
   return <hr className="border-chalkboard-20 dark:border-chalkboard-80" />

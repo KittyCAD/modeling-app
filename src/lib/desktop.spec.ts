@@ -13,7 +13,7 @@ import {
 } from '@src/lib/desktop'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { buildTheWorldNode } from '@src/unitTestUtils'
 
 // Mock the electron window global
 const mockElectron = {
@@ -28,9 +28,11 @@ const mockElectron = {
   exists: vi.fn(),
   writeFile: vi.fn(),
   readFile: vi.fn(),
+  platform: 'linux',
   os: {
     isMac: false,
     isWindows: false,
+    isLinux: true,
   },
   process: {
     env: {},
@@ -133,15 +135,15 @@ describe('desktop utilities', () => {
 
   describe('listProjects', () => {
     it('does not list .git directories', async () => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const { instance } = await buildTheWorldNode()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const { instance } = await buildTheWorldNode()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
 
       // Verify only non-dot projects with .kcl files were included
       expect(projects.map((p) => p.name)).toEqual([
@@ -164,9 +166,9 @@ describe('desktop utilities', () => {
     })
 
     it('correctly counts directories and files', async () => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const { instance } = await buildTheWorldNode()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
       // Verify that directories and files are counted correctly
       expect(projects[0].directory_count).toEqual(1)
       expect(projects[0].kcl_file_count).toEqual(2)
@@ -175,12 +177,12 @@ describe('desktop utilities', () => {
     })
 
     it('handles empty project directory', async () => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const { instance } = await buildTheWorldNode()
       if (!window.electron) throw new Error('Electron not found')
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = TEST_PROJECTS_CLEARED
 
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
 
       // Restore for future tests!
       mockFileSystem['/test/projects'] = TEST_PROJECTS_DEFAULT
@@ -253,12 +255,11 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"","pool":"","domain":"dev.zoo.dev"}'
+        return '{"token":"","domain":"dev.zoo.dev"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
         domain: 'dev.zoo.dev',
-        pool: '',
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
@@ -274,12 +275,11 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"","pool":"","domain":"zoo.dev"}'
+        return '{"token":"","domain":"zoo.dev"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
         domain: 'zoo.dev',
-        pool: '',
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
@@ -345,7 +345,7 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"dog-dog-dog","pool":"","domain":"development"}'
+        return '{"token":"dog-dog-dog","domain":"development"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'dog-dog-dog'
@@ -361,7 +361,7 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"cat-cat-cat","pool":"","domain":"production"}'
+        return '{"token":"cat-cat-cat","domain":"production"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'cat-cat-cat'

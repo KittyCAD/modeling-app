@@ -1,57 +1,41 @@
 import type { Diagnostic } from '@codemirror/lint'
-import { useMachine, useSelector } from '@xstate/react'
-import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import type { Actor, Prop } from 'xstate'
-
+import type { ComponentProps, ReactNode } from 'react'
+import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
-  codeRefFromRange,
-  getArtifactFromRange,
-} from '@src/lang/std/artifactGraph'
+  findOperationArtifact,
+  findOperationPlaneArtifact,
+  isOffsetPlane,
+} from '@src/lang/queryAst'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
+  getHideOpByArtifactId,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  onHide,
   groupOperationTypeStreaks,
   stdLibMap,
+  onUnhide,
 } from '@src/lib/operations'
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import {
-  commandBarActor,
-  engineCommandManager,
-  getLayout,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-  setLayout,
-  useLayout,
-} from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
-import {
-  editorIsMountedSelector,
-  kclEditorActor,
-  selectionEventSelector,
-} from '@src/machines/kclEditorMachine'
+import { useSingletons } from '@src/lib/boot'
+import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode } from '@src/lang/wasm'
+import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -59,20 +43,30 @@ import {
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
+  type Layout,
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
+import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
+import {
+  prepareEditCommand,
+  sendDeleteCommand,
+  sendSelectionEvent,
+} from '@src/lib/featureTree'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 
-// Defined outside of React to prevent rerenders
-// TODO: get all system dependencies into React via global context
-const systemDeps = {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  rustContext,
-}
+type Singletons = ReturnType<typeof useSingletons>
+type SystemDeps = Pick<
+  Singletons,
+  | 'kclManager'
+  | 'sceneInfra'
+  | 'sceneEntitiesManager'
+  | 'rustContext'
+  | 'commandBarActor'
+>
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -86,127 +80,70 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
         Menu={FeatureTreeMenu}
-        onClose={props.onClose}
+        onClose={() => {
+          // Gotcha: because our layout system is a goofy first draft,
+          // it doesn't know how to handle Splits as children of Panes very well,
+          // so the onClose here needs to explicitly state the Split to close,
+          // since this layout will be used in a Simple layout now.
+          props.onClose?.('feature-tree')
+        }}
       />
       <FeatureTreePaneContents />
     </LayoutPanel>
   )
 }
 
-export const FeatureTreePaneContents = () => {
-  const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
-  const layout = useLayout()
-  const { send: modelingSend, state: modelingState } = useModelingContext()
+function isCodePaneOpen(layout: Layout) {
+  return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
+}
+function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
+  const rootLayout = structuredClone(layout)
+  setLayout(
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: DefaultLayoutPaneID.Code,
+      shouldExpand: true,
+    })
+  )
+}
+
+export const FeatureTreePaneContents = memo(() => {
+  const {
+    commandBarActor,
+    engineCommandManager,
+    getLayout,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+    setLayout,
+  } = useSingletons()
+  const {
+    send: modelingSend,
+    state: modelingState,
+    actor: modelingActor,
+  } = useModelingContext()
+  const systemDeps: SystemDeps = {
+    kclManager,
+    sceneInfra,
+    sceneEntitiesManager,
+    rustContext,
+    commandBarActor,
+  }
+
+  const selectOperation = useCallback(
+    (sourceRange: SourceRange) => {
+      sendSelectionEvent({
+        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        kclManager,
+        modelingSend,
+      })
+    },
+    [modelingSend, kclManager]
+  )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_featureTreeState, featureTreeSend] = useMachine(
-    featureTreeMachine.provide({
-      guards: {
-        codePaneIsOpen: () =>
-          getOpenPanes({ rootLayout: getLayout() }).includes(
-            DefaultLayoutPaneID.Code
-          ) && kclManager.getEditorView() !== null,
-      },
-      actions: {
-        openCodePane: () => {
-          const rootLayout = structuredClone(getLayout())
-          setLayout(
-            togglePaneLayoutNode({
-              rootLayout,
-              targetNodeId: DefaultLayoutPaneID.Code,
-              shouldExpand: true,
-            })
-          )
-        },
-        scrollToError: () => {
-          kclManager.scrollToFirstErrorDiagnosticIfExists()
-        },
-        sendTranslateCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Translate', groupId: 'modeling' },
-          })
-        },
-        sendRotateCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
-          })
-        },
-        sendScaleCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Scale', groupId: 'modeling' },
-          })
-        },
-        sendCloneCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
-        },
-        sendAppearanceCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
-          })
-        },
-        sendSelectionEvent: ({ context }) => {
-          if (!context.targetSourceRange) {
-            return
-          }
-          const artifact = context.targetSourceRange
-            ? getArtifactFromRange(
-                context.targetSourceRange,
-                kclManager.artifactGraph
-              )
-            : null
-
-          if (!artifact) {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          } else {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: artifact,
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          }
-        },
-      },
-    }),
-    {
-      input: {
-        rustContext,
-        kclManager,
-        sceneEntitiesManager,
-      },
-      // devTools: true,
-    }
-  )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -221,7 +158,7 @@ export const FeatureTreePaneContents = () => {
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
-      ? kclManager.execState.operations
+      ? kclManager.execState?.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
@@ -236,25 +173,12 @@ export const FeatureTreePaneContents = () => {
     ['VariableDeclaration']
   )
 
-  // Watch for changes in the open panes and send an event to the feature tree machine
-  useEffect(() => {
-    const codeOpen = getOpenPanes({ rootLayout: layout }).includes(
-      DefaultLayoutPaneID.Code
-    )
-    if (codeOpen && isEditorMounted) {
-      featureTreeSend({ type: 'codePaneOpened' })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [layout, isEditorMounted, featureTreeSend])
-
-  // Watch for changes in the selection and send an event to the feature tree machine
-  useEffect(() => {
-    featureTreeSend({ type: 'selected' })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [lastSelectionEvent])
-
   function goToError() {
-    featureTreeSend({ type: 'goToError' })
+    const l = getLayout()
+    if (!isCodePaneOpen(l)) {
+      openCodePane(l, setLayout)
+    }
+    kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
 
   return (
@@ -269,7 +193,9 @@ export const FeatureTreePaneContents = () => {
           </Loading>
         ) : (
           <>
-            {!modelingState.matches('Sketch') && <DefaultPlanes />}
+            {!modelingState.matches('Sketch') && (
+              <DefaultPlanes systemDeps={systemDeps} />
+            )}
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
@@ -304,16 +230,22 @@ export const FeatureTreePaneContents = () => {
                   key={key}
                   items={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  modelingActor={modelingActor}
+                  engineCommandManager={engineCommandManager}
+                  onSelect={selectOperation}
                 />
               ) : (
                 <OperationItem
                   key={key}
                   item={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  modelingActor={modelingActor}
+                  engineCommandManager={engineCommandManager}
+                  onSelect={selectOperation}
                 />
               )
             })}
@@ -322,37 +254,11 @@ export const FeatureTreePaneContents = () => {
       </section>
     </div>
   )
-}
+})
 
 interface VisibilityToggleProps {
   visible: boolean
   onVisibilityChange: () => unknown
-}
-
-/**
- * A button that toggles the visibility of an entity
- * tied to an artifact in the feature tree.
- * For now just used for default planes.
- */
-const VisibilityToggle = (props: VisibilityToggleProps) => {
-  const visible = props.visible
-  const handleToggleVisible = useCallback(() => {
-    props.onVisibilityChange()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.onVisibilityChange])
-
-  return (
-    <button
-      onClick={handleToggleVisible}
-      className="p-0 m-0 border-transparent dark:border-transparent"
-      data-testid="feature-tree-visibility-toggle"
-    >
-      <CustomIcon
-        name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className="w-6 h-6"
-      />
-    </button>
-  )
 }
 
 /**
@@ -361,8 +267,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 function OperationItemGroup({
   items,
   code,
-  send,
   sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
     <Disclosure>
@@ -387,8 +296,11 @@ function OperationItemGroup({
                 key={key}
                 item={op}
                 code={code}
-                send={send}
                 sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
               />
             )
           })}
@@ -410,88 +322,66 @@ type OpValueProps = {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationItemWrapper = ({
-  icon,
-  name,
-  type,
-  variableName,
-  visibilityToggle,
-  valueDetail,
-  menuItems,
-  errors,
-  customSuffix,
-  className,
-  selectable = true,
-  greyedOut = false,
-  ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  icon: CustomIconName
-  visibilityToggle?: VisibilityToggleProps
-  customSuffix?: React.JSX.Element
-  menuItems?: ComponentProps<typeof ContextMenu>['items']
-  errors?: Diagnostic[]
-  selectable?: boolean
-  greyedOut?: boolean
-} & OpValueProps) => {
-  const menuRef = useRef<HTMLDivElement>(null)
-
-  return (
-    <div
-      ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-      data-testid="feature-tree-operation-item"
-    >
-      <button
+const OperationItemWrapper = memo(
+  ({
+    icon,
+    name,
+    type,
+    variableName,
+    visibilityToggle,
+    valueDetail,
+    menuItems,
+    errors,
+    customSuffix,
+    className,
+    Tooltip,
+    ...props
+  }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
+    icon: CustomIconName
+    visibilityToggle?: VisibilityToggleProps
+    customSuffix?: React.JSX.Element
+    menuItems?: ComponentProps<typeof ContextMenu>['items']
+    errors?: Diagnostic[]
+    onContextMenu?: (e: MouseEvent) => void
+    Tooltip?: ReactNode
+    isSelected?: boolean
+  } & OpValueProps) => {
+    return (
+      <RowItemWithIconMenuAndToggle
         {...props}
-        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+        icon={icon}
+        LabelSecondary={
+          <>
+            {variableName && valueDetail ? (
+              <>
+                <span className="text-sm">{variableName}</span>
+                <code
+                  data-testid="value-detail"
+                  className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                >
+                  {getOperationCalculatedDisplay(valueDetail.calculated)}
+                </code>
+              </>
+            ) : null}
+            {customSuffix ?? null}
+          </>
+        }
+        Warning={
+          errors && errors.length > 0 ? (
+            <em className="text-destroy-80 text-xs">has error</em>
+          ) : null
+        }
+        Tooltip={Tooltip}
+        Toggle={
+          visibilityToggle ? <VisibilityToggle {...visibilityToggle} /> : null
+        }
+        menuItems={menuItems}
       >
-        <CustomIcon
-          name={icon}
-          className="w-6 h-6 block self-start"
-          aria-hidden
-        />
-        <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
-          {variableName && valueDetail ? (
-            <>
-              <span className="text-sm">{variableName}</span>
-              <code
-                data-testid="value-detail"
-                className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-              >
-                {getOperationCalculatedDisplay(valueDetail.calculated)}
-              </code>
-            </>
-          ) : (
-            <span className="text-sm">{variableName ?? name}</span>
-          )}
-          {customSuffix && customSuffix}
-        </div>
-        {errors && errors.length > 0 && (
-          <em className="text-destroy-80 text-xs">has error</em>
-        )}
-        {valueDetail || variableName ? (
-          <Tooltip
-            delay={500}
-            position="bottom-left"
-            wrapperClassName="left-0 right-0"
-            contentClassName="text-sm max-w-full"
-          >
-            <VariableTooltipContents
-              variableName={variableName}
-              valueDetail={valueDetail}
-              name={name}
-              type={type}
-            />
-          </Tooltip>
-        ) : null}
-      </button>
-      {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
-      {menuItems && (
-        <ContextMenu menuTargetElement={menuRef} items={menuItems} />
-      )}
-    </div>
-  )
-}
+        {variableName ?? name}
+      </RowItemWithIconMenuAndToggle>
+    )
+  }
+)
 
 function VariableTooltipContents({
   variableName,
@@ -522,160 +412,205 @@ function VariableTooltipContents({
 interface OperationProps {
   item: Operation
   code: string
-  send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
+  systemDeps: SystemDeps
+  engineCommandManager: Singletons['engineCommandManager']
+  modelingActor: ReturnType<typeof useModelingContext>['actor']
+  onSelect: (sourceRange: SourceRange) => void
 }
 /**
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
-const OperationItem = (props: OperationProps) => {
+const OperationItem = ({
+  item,
+  code,
+  sketchNoFace,
+  onSelect,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+}: OperationProps) => {
+  const { getLayout, setLayout } = useSingletons()
+  const { kclManager, sceneInfra, commandBarActor } = systemDeps
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
-  const name = getOperationLabel(props.item)
+  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const name = getOperationLabel(item)
+  const sourceRange =
+    'sourceRange' in item &&
+    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
+  const isSelected = useMemo(() => {
+    const selected =
+      sourceRange &&
+      kclManager.editorState.selection.main.from >= sourceRange[0] &&
+      kclManager.editorState.selection.main.to <= sourceRange[1]
+    return selected
+  }, [kclManager.editorState.selection, sourceRange])
   const valueDetail = useMemo(() => {
-    return getFeatureTreeValueDetail(props.item, props.code)
-  }, [props.item, props.code])
+    return getFeatureTreeValueDetail(item, code)
+  }, [item, code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast)
-  }, [props.item, ast])
+    return getOperationVariableName(item, ast, wasmInstance)
+  }, [item, ast, wasmInstance])
 
   const errors = useMemo(() => {
     return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
-        'sourceRange' in props.item &&
-        diag.from >= props.item.sourceRange[0] &&
-        diag.to <= props.item.sourceRange[1]
+        'sourceRange' in item &&
+        diag.from >= toUtf16(item.sourceRange[0], code) &&
+        diag.to <= toUtf16(item.sourceRange[1], code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [diagnostics.length])
 
-  async function selectOperation() {
-    if (props.sketchNoFace) {
-      if (isOffsetPlane(props.item)) {
-        const artifact = findOperationPlaneArtifact(
-          props.item,
-          kclManager.artifactGraph
-        )
-        const result = await selectOffsetSketchPlane(artifact, systemDeps)
-        if (err(result)) {
-          console.error(result)
+  const selectOperation = useCallback(
+    async (providedSourceRange?: SourceRange) => {
+      if (sketchNoFace) {
+        if (isOffsetPlane(item)) {
+          const artifact = findOperationPlaneArtifact(
+            item,
+            kclManager.artifactGraph
+          )
+          const result = await selectOffsetSketchPlane(artifact, systemDeps)
+          if (err(result)) {
+            console.error(result)
+          }
         }
+      } else if (providedSourceRange !== undefined) {
+        onSelect(sourceRangeFromRust(providedSourceRange))
+      } else {
+        if (item.type === 'GroupEnd') {
+          return
+        }
+        onSelect(sourceRangeFromRust(item.sourceRange))
       }
-    } else {
-      if (props.item.type === 'GroupEnd') {
-        return
-      }
-      props.send({
-        type: 'selectOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
-      })
-    }
-  }
+    },
+    [sketchNoFace, onSelect, item, kclManager.artifactGraph, systemDeps]
+  )
 
-  function enterEditFlow() {
+  const enterEditFlow = useCallback(() => {
     if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'enterEditFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
-      })
+      const artifact =
+        getArtifactFromRange(
+          item.sourceRange,
+          systemDeps.kclManager.artifactGraph
+        ) ?? undefined
+      prepareEditCommand({
+        artifactGraph: systemDeps.kclManager.artifactGraph,
+        code: systemDeps.kclManager.code,
+        commandBarActor,
+        operation: item,
+        rustContext: systemDeps.rustContext,
+        artifact,
+      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
-  }
+  }, [
+    item,
+    commandBarActor,
+    systemDeps.kclManager.artifactGraph,
+    systemDeps.kclManager.code,
+    systemDeps.rustContext,
+  ])
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
-    ) {
-      props.send({
-        type: 'enterAppearanceFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (
+          item.type === 'StdLibCall' ||
+          (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+        ) {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterTranslateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterTranslateFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterRotateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterRotateFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterScaleFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterScaleFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterCloneFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterCloneFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function deleteOperation() {
     if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
+      item.type === 'StdLibCall' ||
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'deleteOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
+      const maybeArtifact =
+        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
+        undefined
+      sendDeleteCommand({
+        artifact: maybeArtifact,
+        targetSourceRange: item.sourceRange,
+        systemDeps,
+      }).catch((e) => {
+        toast.error(e)
       })
     }
   }
 
   function startSketchOnOffsetPlane() {
-    if (isOffsetPlane(props.item)) {
+    if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
-        props.item,
+        item,
         kclManager.artifactGraph
       )
       if (artifact?.id) {
@@ -693,62 +628,58 @@ const OperationItem = (props: OperationProps) => {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'GroupEnd') {
+          if (item.type === 'GroupEnd') {
             return
           }
-          props.send({
-            type: 'goToKclSource',
-            data: {
-              targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-            },
-          })
+          const l = getLayout()
+          if (!isCodePaneOpen(l)) {
+            openCodePane(l, setLayout)
+          }
+          selectOperation().catch(reportRejection)
         }}
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'GroupBegin' &&
-      props.item.group.type === 'FunctionCall'
+      ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'GroupBegin') {
+                if (item.type !== 'GroupBegin') {
                   return
                 }
-                if (props.item.group.type !== 'FunctionCall') {
+                if (item.group.type !== 'FunctionCall') {
                   // TODO: Add module instance support.
                   return
                 }
-                const functionRange = props.item.group.functionSourceRange
+                const functionRange = item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
-                props.send({
-                  type: 'goToKclSource',
-                  data: {
-                    targetSourceRange: sourceRangeFromRust(functionRange),
-                  },
-                })
+                const l = getLayout()
+                if (!isCodePaneOpen(l)) {
+                  openCodePane(l, setLayout)
+                }
+                selectOperation(functionRange).catch(reportRejection)
               }}
             >
               View function definition
             </ContextMenuItem>,
           ]
         : []),
-      ...(isOffsetPlane(props.item)
+      ...(isOffsetPlane(item)
         ? [
             <ContextMenuItem onClick={startSketchOnOffsetPlane}>
               Start Sketch
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
+      ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
         ? [
             <ContextMenuItem
               onClick={() => {
                 const exportDxf = async () => {
-                  if (props.item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(props.item, {
+                  if (item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -773,15 +704,15 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
+      ...(item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               disabled={
-                !(
-                  stdLibMap[props.item.name]?.prepareToEdit ||
-                  props.item.type === 'VariableDeclaration'
-                )
+                item.type !== 'VariableDeclaration' &&
+                item.type !== 'SketchSolve' &&
+                stdLibMap[item.name]?.prepareToEdit === undefined
               }
               onClick={enterEditFlow}
               hotkey="Double click"
@@ -790,17 +721,16 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
+      ...(item.type === 'StdLibCall' ||
+      (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
         ? [
             <ContextMenuItem
               disabled={
                 !(
-                  (props.item.type === 'GroupBegin' &&
-                    props.item.group.type === 'FunctionCall') ||
-                  (props.item.type === 'StdLibCall' &&
-                    stdLibMap[props.item.name]?.supportsAppearance)
+                  (item.type === 'GroupBegin' &&
+                    item.group.type === 'FunctionCall') ||
+                  (item.type === 'StdLibCall' &&
+                    stdLibMap[item.name]?.supportsAppearance)
                 )
               }
               onClick={enterAppearanceFlow}
@@ -810,14 +740,14 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
+      ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={enterTranslateFlow}
               data-testid="context-menu-set-translate"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Translate
@@ -826,8 +756,8 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterRotateFlow}
               data-testid="context-menu-set-rotate"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Rotate
@@ -836,8 +766,8 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterScaleFlow}
               data-testid="context-menu-set-scale"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Scale
@@ -846,17 +776,18 @@ const OperationItem = (props: OperationProps) => {
               onClick={enterCloneFlow}
               data-testid="context-menu-clone"
               disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
+                item.type !== 'GroupBegin' &&
+                !stdLibMap[item.name]?.supportsTransform
               }
             >
               Clone
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
+      ...(item.type === 'StdLibCall' ||
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
         ? [
             <ContextMenuItem
               onClick={deleteOperation}
@@ -867,40 +798,99 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'SketchSolve'
-        ? [
-            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
-              Edit
-            </ContextMenuItem>,
-          ]
-        : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.item, props.send]
+    [item]
   )
 
-  const enabled = !props.sketchNoFace || isOffsetPlane(props.item)
+  const enabled = !sketchNoFace || isOffsetPlane(item)
+
+  const operationArtifact =
+    item.type === 'StdLibCall' && kclManager.execState?.artifactGraph
+      ? findOperationArtifact(item, kclManager.execState.artifactGraph)
+      : undefined
+  const hideOperation = operationArtifact
+    ? getHideOpByArtifactId(
+        kclManager.execState?.operations ?? [],
+        operationArtifact.id
+      )
+    : undefined
 
   return (
     <OperationItemWrapper
-      selectable={enabled}
-      icon={getOperationIcon(props.item)}
+      icon={getOperationIcon(item)}
       name={name}
-      type={props.item.type}
+      type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      Tooltip={
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          <VariableTooltipContents
+            variableName={variableName}
+            valueDetail={valueDetail}
+            name={name}
+            type={item.type}
+          />
+        </Tooltip>
+      }
       menuItems={menuItems}
       onClick={() => {
         void selectOperation()
       }}
-      onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      onContextMenu={() => {
+        void selectOperation()
+      }}
+      onDoubleClick={sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      isSelected={isSelected}
       errors={errors}
-      greyedOut={!enabled}
+      disabled={!enabled}
+      visibilityToggle={
+        item.type === 'StdLibCall' && item.name === 'helix'
+          ? {
+              visible: hideOperation === undefined,
+              onVisibilityChange: () => {
+                selectOperation()
+                  .then(() => {
+                    if (hideOperation === undefined) {
+                      onHide({
+                        ast: kclManager.ast,
+                        artifactGraph: kclManager.artifactGraph,
+                        modelingActor,
+                      })
+                    } else if (operationArtifact !== undefined) {
+                      onUnhide({
+                        hideOperation,
+                        targetArtifact: operationArtifact,
+                        systemDeps,
+                      })
+                        .then((result) => {
+                          if (err(result)) {
+                            toast.error(
+                              result.message || 'Error while unhiding'
+                            )
+                          }
+                        })
+                        .catch((e) => {
+                          toast.error(e.message || 'Error while unhiding')
+                        })
+                    }
+                  })
+                  .catch(reportRejection)
+              },
+            }
+          : undefined
+      }
     />
   )
 }
 
-const DefaultPlanes = () => {
+const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
+  const { rustContext, sceneInfra } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -949,7 +939,7 @@ const DefaultPlanes = () => {
         systemDeps
       )
     },
-    [modelingState.context.store.useNewSketchMode]
+    [modelingState.context.store.useNewSketchMode, sceneInfra, systemDeps]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
@@ -988,7 +978,6 @@ const DefaultPlanes = () => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={true}
           onClick={() => onClickPlane(plane.id)}
           menuItems={[
             <ContextMenuItem
@@ -1026,7 +1015,9 @@ export function getFeatureTreeValueDetail(
 ): { calculated: OpKclValue; display: string } | undefined {
   if (operation.type === 'VariableDeclaration') {
     return {
-      display: code.slice(operation.sourceRange[0], operation.sourceRange[1]),
+      display: code.slice(
+        ...operation.sourceRange.map((r) => toUtf16(r, code))
+      ),
       calculated: operation.value,
     }
   }
@@ -1035,7 +1026,9 @@ export function getFeatureTreeValueDetail(
   if (operation.type === 'StdLibCall' && operation.name === 'gdt::datum') {
     const nameArg = operation.labeledArgs?.name
     if (nameArg?.sourceRange) {
-      const nameRaw = code.slice(nameArg.sourceRange[0], nameArg.sourceRange[1])
+      const nameRaw = code.slice(
+        ...nameArg.sourceRange.map((r) => toUtf16(r, code))
+      )
       const datumName = stripQuotes(nameRaw)
       if (datumName) {
         const stringValue: OpKclValue = {

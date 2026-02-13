@@ -2,18 +2,21 @@ import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-} from '@src/lib/singletons'
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -26,6 +29,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   settingsEngine,
   timeToConnect,
+  engineCommandManager,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -34,6 +38,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
+  engineCommandManager: ConnectionManager
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
@@ -111,8 +116,19 @@ const attemptToConnectToEngine = async ({
 
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   sceneInfra,
-}: { sceneInfra: SceneInfra }) => {
-  const settings = await jsAppSettings()
+  settingsActor,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+}: {
+  sceneInfra: SceneInfra
+  settingsActor: SettingsActorType
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  rustContext: RustContext
+}) => {
+  const providedSettings = getSettingsFromActorContext(settingsActor)
+  const settings = await jsAppSettings(providedSettings)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'rustContext.clearSceneAndBustCache()',
@@ -139,7 +155,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (sceneInfra.camControls.oldCameraState) {
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
   } else {
-    await resetCameraPosition({ sceneInfra })
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -171,6 +191,9 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
   sceneInfra,
+  engineCommandManager,
+  kclManager,
+  rustContext,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -183,6 +206,9 @@ async function tryConnecting({
   settings: SettingsViaQueryString
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  rustContext: RustContext
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -208,12 +234,34 @@ async function tryConnecting({
             setIsSceneReady,
             settingsEngine: settings,
             timeToConnect,
+            engineCommandManager,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
+            settingsActor: rustContext.settingsActor,
+            engineCommandManager,
+            kclManager,
+            rustContext,
           })
+
+          /**
+           * Attempt is a longer lifecycle promise that cannot be interrupted directly from external code.
+           * It can break if a user disconnects their internet during this attempt process. We need to check by
+           * the time it gets to this line did someone disconnect the engine, if they did, throw an error to exit this attempt.
+           */
+          if (
+            engineCommandManager.started === false &&
+            engineCommandManager.connection === undefined
+          ) {
+            // This attempt needs to throw an error to use the internal logic for retry for the next attempt.
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw new Error(
+              'engine disconnected before it finished the attempt'
+            )
+          }
+
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -266,11 +314,22 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  type TryConnectingArgs = Omit<
+    Parameters<typeof tryConnecting>[0],
+    'engineCommandManager' | 'kclManager' | 'rustContext'
+  >
 
   return {
-    tryConnecting,
+    tryConnecting: (args: TryConnectingArgs) =>
+      tryConnecting({
+        ...args,
+        engineCommandManager,
+        kclManager,
+        rustContext,
+      }),
     isConnecting,
     numberOfConnectionAttempts,
   }

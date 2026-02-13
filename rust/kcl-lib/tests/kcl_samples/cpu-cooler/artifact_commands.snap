@@ -643,7 +643,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -901,7 +902,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -958,7 +960,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1015,7 +1018,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1072,7 +1076,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1300,7 +1305,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1429,7 +1435,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2051,7 +2058,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2180,7 +2188,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 16.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2309,7 +2318,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -16.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2355,7 +2365,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.64705884,
           "g": 0.36862746,
           "b": 0.17254902,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2602,7 +2612,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 25.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3248,7 +3259,8 @@ description: Artifact commands cpu-cooler.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -3308,7 +3320,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3325,7 +3337,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3342,7 +3354,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3359,7 +3371,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3376,7 +3388,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3393,7 +3405,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3410,7 +3422,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3427,7 +3439,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3444,7 +3456,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3461,7 +3473,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.06666667,
           "g": 0.03137255,
           "b": 0.011764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3897,6 +3909,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -4432,6 +4445,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -4892,7 +4906,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6116,7 +6131,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 30.000000000000004,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6450,7 +6466,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 22.500000000000004,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6787,7 +6804,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 16.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6988,7 +7006,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": -2.125,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -7096,7 +7115,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7163,7 +7181,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7190,7 +7207,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7297,7 +7313,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7324,7 +7339,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7351,7 +7365,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7378,7 +7391,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7405,7 +7417,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7432,7 +7443,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7459,7 +7469,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7486,7 +7495,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7513,7 +7521,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -7540,7 +7547,6 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -8355,7 +8361,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -8431,7 +8438,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.007843138,
           "g": 0.105882354,
           "b": 0.33333334,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -8587,7 +8594,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 3.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -8633,7 +8641,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.79607844,
           "g": 0.8,
           "b": 0.8039216,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9287,6 +9295,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -9419,6 +9428,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -9938,6 +9948,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -10070,6 +10081,7 @@ description: Artifact commands cpu-cooler.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -10118,7 +10130,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.050980393,
           "g": 0.050980393,
           "b": 0.050980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10135,7 +10147,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.050980393,
           "g": 0.050980393,
           "b": 0.050980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10152,7 +10164,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.050980393,
           "g": 0.050980393,
           "b": 0.050980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10169,7 +10181,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.050980393,
           "g": 0.050980393,
           "b": 0.050980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10347,7 +10359,8 @@ description: Artifact commands cpu-cooler.kcl
         "distance": 0.3,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10393,7 +10406,7 @@ description: Artifact commands cpu-cooler.kcl
           "r": 0.007843138,
           "g": 0.105882354,
           "b": 0.33333334,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

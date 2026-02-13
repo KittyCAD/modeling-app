@@ -1,5 +1,6 @@
 // Clock
 // A clock with roman numerals
+// Categories: Maker
 
 // Define parameters
 clockDiameter = 500

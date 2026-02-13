@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import {
   Outlet,
@@ -8,7 +8,7 @@ import {
   redirect,
 } from 'react-router-dom'
 
-import { App } from '@src/App'
+import { OpenedProject } from '@src/components/OpenedProject'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
@@ -27,12 +27,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import {
-  kclManager,
-  engineCommandManager,
-  rustContext,
-} from '@src/lib/singletons'
-import { useToken } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
@@ -41,128 +36,155 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import Loading from '@src/components/Loading'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
-const router = createRouter([
-  {
-    id: PATHS.INDEX,
-    element: <RootLayout />,
-    // Gotcha: declaring errorElement on the root will unmount the element causing our forever React components to unmount.
-    // Leave errorElement on the child components, this allows for the entire react context on error pages as well.
-    children: [
-      {
-        path: PATHS.INDEX,
-        errorElement: <ErrorPage />,
-        loader: async ({ request }) => {
-          const onDesktop = isDesktop()
-          const url = new URL(request.url)
-          if (onDesktop) {
-            return redirect(PATHS.HOME + (url.search || ''))
-          } else {
-            const searchParams = new URLSearchParams(url.search)
-            if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
-              return redirect(
-                PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-              )
-            }
-          }
-          return null
-        },
-      },
-      {
-        loader: fileLoader(kclManager),
-        id: PATHS.FILE,
-        path: PATHS.FILE + '/:id',
-        errorElement: <ErrorPage />,
-        element: (
-          <ModelingPageProvider>
-            <ModelingMachineProvider>
-              <CoreDump />
-              <Outlet />
-              <App />
-              <CommandBar />
-            </ModelingMachineProvider>
-          </ModelingPageProvider>
-        ),
-        children: [
-          {
-            id: PATHS.FILE + 'SETTINGS',
-            children: [
-              {
-                path: makeUrlPathRelative(PATHS.SETTINGS),
-                element: <Settings />,
-              },
-              {
-                path: makeUrlPathRelative(PATHS.ONBOARDING),
-                element: <OnboardingRootRoute />,
-                children: onboardingRoutes,
-              },
-            ],
-          },
-          {
-            id: PATHS.FILE + 'TELEMETRY',
-            children: [
-              {
-                path: makeUrlPathRelative(PATHS.TELEMETRY),
-                element: <Telemetry />,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        path: PATHS.HOME,
-        errorElement: <ErrorPage />,
-        element: (
-          <>
-            <Outlet />
-            <Home />
-            <CommandBar />
-          </>
-        ),
-        id: PATHS.HOME,
-        loader: homeLoader,
-        children: [
-          {
-            index: true,
-            element: <></>,
-            id: PATHS.HOME + 'SETTINGS',
-          },
-          {
-            path: makeUrlPathRelative(PATHS.SETTINGS),
-            element: <Settings />,
-          },
-          {
-            path: makeUrlPathRelative(PATHS.TELEMETRY),
-            element: <Telemetry />,
-          },
-        ],
-      },
-      {
-        path: PATHS.SIGN_IN,
-        errorElement: <ErrorPage />,
-        element: <SignIn />,
-      },
-      ...(IS_STAGING_OR_DEBUG
-        ? [
-            {
-              path: '/layout',
-              errorElement: <ErrorPage />,
-              element: <TestLayout />,
-            },
-          ]
-        : []),
-    ],
-  },
-])
-
 /**
- * All routes in the app, used in src/index.tsx
+ * All routes in the app, used in src/lib/index.tsx
  * @returns RouterProvider
  */
 export const Router = () => {
+  const {
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    settingsActor,
+    systemIOActor,
+  } = useSingletons()
   const networkStatus = useNetworkStatus(engineCommandManager)
+  const router = useMemo(
+    () =>
+      createRouter([
+        {
+          id: PATHS.INDEX,
+          element: <RootLayout />,
+          // Gotcha: declaring errorElement on the root will unmount the element causing our forever React components to unmount.
+          // Leave errorElement on the child components, this allows for the entire react context on error pages as well.
+          children: [
+            {
+              path: PATHS.INDEX,
+              errorElement: <ErrorPage />,
+              loader: async ({ request }) => {
+                const onDesktop = isDesktop()
+                const url = new URL(request.url)
+                if (onDesktop) {
+                  return redirect(PATHS.HOME + (url.search || ''))
+                } else {
+                  const searchParams = new URLSearchParams(url.search)
+                  if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
+                    return redirect(
+                      PATHS.FILE +
+                        '/%2F' +
+                        BROWSER_PROJECT_NAME +
+                        (url.search || '')
+                    )
+                  }
+                }
+                return null
+              },
+            },
+            {
+              loader: fileLoader({
+                kclManager,
+                rustContext,
+                systemIOActor,
+                settingsActor,
+              }),
+              id: PATHS.FILE,
+              path: PATHS.FILE + '/:id',
+              errorElement: <ErrorPage />,
+              element: (
+                <ModelingPageProvider>
+                  <Suspense
+                    fallback={
+                      <div className="absolute inset-0 grid place-content-center">
+                        <Loading>Loading Design Studio...</Loading>
+                      </div>
+                    }
+                  >
+                    <ModelingMachineProvider>
+                      <CoreDump />
+                      <Outlet />
+                      <OpenedProject />
+                      <CommandBar />
+                    </ModelingMachineProvider>
+                  </Suspense>
+                </ModelingPageProvider>
+              ),
+              children: [
+                {
+                  id: PATHS.FILE + 'SETTINGS',
+                  children: [
+                    {
+                      path: makeUrlPathRelative(PATHS.SETTINGS),
+                      element: <Settings />,
+                    },
+                    {
+                      path: makeUrlPathRelative(PATHS.ONBOARDING),
+                      element: <OnboardingRootRoute />,
+                      children: onboardingRoutes,
+                    },
+                  ],
+                },
+                {
+                  id: PATHS.FILE + 'TELEMETRY',
+                  children: [
+                    {
+                      path: makeUrlPathRelative(PATHS.TELEMETRY),
+                      element: <Telemetry />,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              path: PATHS.HOME,
+              errorElement: <ErrorPage />,
+              element: (
+                <>
+                  <Outlet />
+                  <Home />
+                  <CommandBar />
+                </>
+              ),
+              id: PATHS.HOME,
+              loader: homeLoader({ settingsActor }),
+              children: [
+                {
+                  index: true,
+                  element: <></>,
+                  id: PATHS.HOME + 'SETTINGS',
+                },
+                {
+                  path: makeUrlPathRelative(PATHS.SETTINGS),
+                  element: <Settings />,
+                },
+                {
+                  path: makeUrlPathRelative(PATHS.TELEMETRY),
+                  element: <Telemetry />,
+                },
+              ],
+            },
+            {
+              path: PATHS.SIGN_IN,
+              errorElement: <ErrorPage />,
+              element: <SignIn />,
+            },
+            ...(IS_STAGING_OR_DEBUG
+              ? [
+                  {
+                    path: '/layout',
+                    errorElement: <ErrorPage />,
+                    element: <TestLayout />,
+                  },
+                ]
+              : []),
+          ],
+        },
+      ]),
+    [kclManager, rustContext, settingsActor, systemIOActor]
+  )
 
   return (
     <NetworkContext.Provider value={networkStatus}>
@@ -172,7 +194,9 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const token = useToken()
+  const { auth } = useApp()
+  const { engineCommandManager, kclManager, rustContext } = useSingletons()
+  const token = auth.useToken()
   const coreDumpManager = useMemo(
     () =>
       new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
@@ -184,7 +208,7 @@ function CoreDump() {
     () => {
       toast
         .promise(
-          coreDump(coreDumpManager, true),
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
           {
             loading: 'Starting core dump...',
             success: 'Core dump completed successfully',

@@ -360,7 +360,8 @@ description: Artifact commands cold-plate.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -839,6 +840,7 @@ description: Artifact commands cold-plate.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -887,7 +889,7 @@ description: Artifact commands cold-plate.kcl
           "r": 0.72156864,
           "g": 0.105882354,
           "b": 0.039215688,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1073,7 +1075,8 @@ description: Artifact commands cold-plate.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1217,7 +1220,7 @@ description: Artifact commands cold-plate.kcl
           "r": 0.41960785,
           "g": 0.14901961,
           "b": 0.11764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1234,7 +1237,7 @@ description: Artifact commands cold-plate.kcl
           "r": 0.41960785,
           "g": 0.14901961,
           "b": 0.11764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1251,7 +1254,7 @@ description: Artifact commands cold-plate.kcl
           "r": 0.41960785,
           "g": 0.14901961,
           "b": 0.11764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1268,7 +1271,7 @@ description: Artifact commands cold-plate.kcl
           "r": 0.41960785,
           "g": 0.14901961,
           "b": 0.11764706,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,

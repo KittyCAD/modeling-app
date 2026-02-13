@@ -72,6 +72,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -102,6 +103,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -109,7 +112,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -188,6 +190,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -253,6 +256,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -280,6 +284,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -310,6 +315,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -317,7 +324,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -420,6 +426,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -485,6 +492,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -512,6 +520,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -542,6 +551,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -549,7 +560,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -652,6 +662,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -717,6 +728,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -744,6 +756,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -774,6 +787,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -781,7 +796,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -879,6 +893,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -934,6 +949,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -941,7 +958,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1006,6 +1022,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1037,6 +1054,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1071,6 +1089,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1126,6 +1145,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1133,7 +1154,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1222,6 +1242,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1253,6 +1274,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1287,6 +1309,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1342,6 +1365,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1349,7 +1374,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1438,6 +1462,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1469,6 +1494,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1503,6 +1529,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1558,6 +1585,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1565,7 +1594,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1654,6 +1682,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1685,6 +1714,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1719,6 +1749,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1774,6 +1805,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1781,7 +1814,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1870,6 +1902,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1901,6 +1934,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1935,6 +1969,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1990,6 +2025,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1997,7 +2034,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2086,6 +2122,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2117,6 +2154,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2151,6 +2189,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2206,6 +2245,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2213,7 +2254,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2302,6 +2342,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2333,6 +2374,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2367,6 +2409,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2422,6 +2465,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2429,7 +2474,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2518,6 +2562,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2549,6 +2594,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2583,6 +2629,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2638,6 +2685,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2645,7 +2694,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2739,6 +2787,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2770,6 +2819,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 8,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2804,6 +2854,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2859,6 +2910,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2866,7 +2919,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2955,6 +3007,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2986,6 +3039,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 8,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3020,6 +3074,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3075,6 +3130,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3082,7 +3139,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3171,6 +3227,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3202,6 +3259,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 8,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3236,6 +3294,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3291,6 +3350,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3298,7 +3359,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3387,6 +3447,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3418,6 +3479,7 @@ description: Variables in memory after executing french-press.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 8,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3452,6 +3514,7 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3507,6 +3570,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 6,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3514,7 +3579,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3605,6 +3669,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3635,6 +3700,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3642,7 +3709,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3781,6 +3847,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4022,6 +4089,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 11,
           "origin": {
             "x": 0.0,
             "y": -8.254999999999999,
@@ -4029,7 +4098,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4250,10 +4318,10 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 375,
-            "end": 396,
+            "commentStart": 396,
+            "end": 417,
             "moduleId": 0,
-            "start": 375,
+            "start": 396,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -4264,10 +4332,10 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 482,
-            "end": 503,
+            "commentStart": 503,
+            "end": 524,
             "moduleId": 0,
-            "start": 482,
+            "start": 503,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -4278,10 +4346,10 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 605,
-            "end": 626,
+            "commentStart": 626,
+            "end": 647,
             "moduleId": 0,
-            "start": 605,
+            "start": 626,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -4296,6 +4364,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4309,10 +4378,10 @@ description: Variables in memory after executing french-press.kcl
               5.7
             ],
             "tag": {
-              "commentStart": 375,
-              "end": 396,
+              "commentStart": 396,
+              "end": 417,
               "moduleId": 0,
-              "start": 375,
+              "start": 396,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -4333,10 +4402,10 @@ description: Variables in memory after executing french-press.kcl
               5.7
             ],
             "tag": {
-              "commentStart": 482,
-              "end": 503,
+              "commentStart": 503,
+              "end": 524,
               "moduleId": 0,
-              "start": 482,
+              "start": 503,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -4357,10 +4426,10 @@ description: Variables in memory after executing french-press.kcl
               6.45
             ],
             "tag": {
-              "commentStart": 605,
-              "end": 626,
+              "commentStart": 626,
+              "end": 647,
               "moduleId": 0,
-              "start": 605,
+              "start": 626,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -4392,6 +4461,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4399,7 +4470,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4481,10 +4551,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1097,
-                "end": 1103,
+                "commentStart": 1118,
+                "end": 1124,
                 "moduleId": 0,
-                "start": 1097,
+                "start": 1118,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4502,10 +4572,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
+                "commentStart": 1241,
+                "end": 1247,
                 "moduleId": 0,
-                "start": 1220,
+                "start": 1241,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4523,10 +4593,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1350,
-                "end": 1356,
+                "commentStart": 1371,
+                "end": 1377,
                 "moduleId": 0,
-                "start": 1350,
+                "start": 1371,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4544,10 +4614,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1455,
-                "end": 1463,
+                "commentStart": 1476,
+                "end": 1484,
                 "moduleId": 0,
-                "start": 1455,
+                "start": 1476,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -4565,10 +4635,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1541,
-                "end": 1547,
+                "commentStart": 1562,
+                "end": 1568,
                 "moduleId": 0,
-                "start": 1541,
+                "start": 1562,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4586,10 +4656,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1681,
-                "end": 1687,
+                "commentStart": 1702,
+                "end": 1708,
                 "moduleId": 0,
-                "start": 1681,
+                "start": 1702,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -4607,10 +4677,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1823,
-                "end": 1829,
+                "commentStart": 1844,
+                "end": 1850,
                 "moduleId": 0,
-                "start": 1823,
+                "start": 1844,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -4632,6 +4702,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4662,10 +4733,10 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1097,
-                  "end": 1103,
+                  "commentStart": 1118,
+                  "end": 1124,
                   "moduleId": 0,
-                  "start": 1097,
+                  "start": 1118,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4709,10 +4780,10 @@ description: Variables in memory after executing french-press.kcl
                   0.37321452147779016
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
+                  "commentStart": 1241,
+                  "end": 1247,
                   "moduleId": 0,
-                  "start": 1220,
+                  "start": 1241,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4756,10 +4827,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.9660159630635361
                 ],
                 "tag": {
-                  "commentStart": 1350,
-                  "end": 1356,
+                  "commentStart": 1371,
+                  "end": 1377,
                   "moduleId": 0,
-                  "start": 1350,
+                  "start": 1371,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4803,10 +4874,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.13301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1455,
-                  "end": 1463,
+                  "commentStart": 1476,
+                  "end": 1484,
                   "moduleId": 0,
-                  "start": 1455,
+                  "start": 1476,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -4844,10 +4915,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.03301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1541,
-                  "end": 1547,
+                  "commentStart": 1562,
+                  "end": 1568,
                   "moduleId": 0,
-                  "start": 1541,
+                  "start": 1562,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4891,10 +4962,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.11339745962155623
                 ],
                 "tag": {
-                  "commentStart": 1681,
-                  "end": 1687,
+                  "commentStart": 1702,
+                  "end": 1708,
                   "moduleId": 0,
-                  "start": 1681,
+                  "start": 1702,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -4938,10 +5009,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.17890072079287297
                 ],
                 "tag": {
-                  "commentStart": 1823,
-                  "end": 1829,
+                  "commentStart": 1844,
+                  "end": 1850,
                   "moduleId": 0,
-                  "start": 1823,
+                  "start": 1844,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -4996,6 +5067,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -5003,7 +5076,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -5098,10 +5170,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1097,
-                "end": 1103,
+                "commentStart": 1118,
+                "end": 1124,
                 "moduleId": 0,
-                "start": 1097,
+                "start": 1118,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5119,10 +5191,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
+                "commentStart": 1241,
+                "end": 1247,
                 "moduleId": 0,
-                "start": 1220,
+                "start": 1241,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5140,10 +5212,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1350,
-                "end": 1356,
+                "commentStart": 1371,
+                "end": 1377,
                 "moduleId": 0,
-                "start": 1350,
+                "start": 1371,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5161,10 +5233,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1455,
-                "end": 1463,
+                "commentStart": 1476,
+                "end": 1484,
                 "moduleId": 0,
-                "start": 1455,
+                "start": 1476,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5182,10 +5254,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1541,
-                "end": 1547,
+                "commentStart": 1562,
+                "end": 1568,
                 "moduleId": 0,
-                "start": 1541,
+                "start": 1562,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5203,10 +5275,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1681,
-                "end": 1687,
+                "commentStart": 1702,
+                "end": 1708,
                 "moduleId": 0,
-                "start": 1681,
+                "start": 1702,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5224,10 +5296,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1823,
-                "end": 1829,
+                "commentStart": 1844,
+                "end": 1850,
                 "moduleId": 0,
-                "start": 1823,
+                "start": 1844,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5249,6 +5321,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5279,10 +5352,10 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1097,
-                  "end": 1103,
+                  "commentStart": 1118,
+                  "end": 1124,
                   "moduleId": 0,
-                  "start": 1097,
+                  "start": 1118,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5326,10 +5399,10 @@ description: Variables in memory after executing french-press.kcl
                   0.37321452147779016
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
+                  "commentStart": 1241,
+                  "end": 1247,
                   "moduleId": 0,
-                  "start": 1220,
+                  "start": 1241,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5373,10 +5446,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.9660159630635361
                 ],
                 "tag": {
-                  "commentStart": 1350,
-                  "end": 1356,
+                  "commentStart": 1371,
+                  "end": 1377,
                   "moduleId": 0,
-                  "start": 1350,
+                  "start": 1371,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5420,10 +5493,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.13301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1455,
-                  "end": 1463,
+                  "commentStart": 1476,
+                  "end": 1484,
                   "moduleId": 0,
-                  "start": 1455,
+                  "start": 1476,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -5461,10 +5534,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.03301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1541,
-                  "end": 1547,
+                  "commentStart": 1562,
+                  "end": 1568,
                   "moduleId": 0,
-                  "start": 1541,
+                  "start": 1562,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5508,10 +5581,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.11339745962155623
                 ],
                 "tag": {
-                  "commentStart": 1681,
-                  "end": 1687,
+                  "commentStart": 1702,
+                  "end": 1708,
                   "moduleId": 0,
-                  "start": 1681,
+                  "start": 1702,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -5555,10 +5628,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.17890072079287297
                 ],
                 "tag": {
-                  "commentStart": 1823,
-                  "end": 1829,
+                  "commentStart": 1844,
+                  "end": 1850,
                   "moduleId": 0,
-                  "start": 1823,
+                  "start": 1844,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -5613,6 +5686,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -5620,7 +5695,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -5715,10 +5789,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1097,
-                "end": 1103,
+                "commentStart": 1118,
+                "end": 1124,
                 "moduleId": 0,
-                "start": 1097,
+                "start": 1118,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5736,10 +5810,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
+                "commentStart": 1241,
+                "end": 1247,
                 "moduleId": 0,
-                "start": 1220,
+                "start": 1241,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5757,10 +5831,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1350,
-                "end": 1356,
+                "commentStart": 1371,
+                "end": 1377,
                 "moduleId": 0,
-                "start": 1350,
+                "start": 1371,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5778,10 +5852,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1455,
-                "end": 1463,
+                "commentStart": 1476,
+                "end": 1484,
                 "moduleId": 0,
-                "start": 1455,
+                "start": 1476,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5799,10 +5873,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1541,
-                "end": 1547,
+                "commentStart": 1562,
+                "end": 1568,
                 "moduleId": 0,
-                "start": 1541,
+                "start": 1562,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5820,10 +5894,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1681,
-                "end": 1687,
+                "commentStart": 1702,
+                "end": 1708,
                 "moduleId": 0,
-                "start": 1681,
+                "start": 1702,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5841,10 +5915,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1823,
-                "end": 1829,
+                "commentStart": 1844,
+                "end": 1850,
                 "moduleId": 0,
-                "start": 1823,
+                "start": 1844,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5866,6 +5940,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5896,10 +5971,10 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1097,
-                  "end": 1103,
+                  "commentStart": 1118,
+                  "end": 1124,
                   "moduleId": 0,
-                  "start": 1097,
+                  "start": 1118,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5943,10 +6018,10 @@ description: Variables in memory after executing french-press.kcl
                   0.37321452147779016
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
+                  "commentStart": 1241,
+                  "end": 1247,
                   "moduleId": 0,
-                  "start": 1220,
+                  "start": 1241,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5990,10 +6065,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.9660159630635361
                 ],
                 "tag": {
-                  "commentStart": 1350,
-                  "end": 1356,
+                  "commentStart": 1371,
+                  "end": 1377,
                   "moduleId": 0,
-                  "start": 1350,
+                  "start": 1371,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6037,10 +6112,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.13301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1455,
-                  "end": 1463,
+                  "commentStart": 1476,
+                  "end": 1484,
                   "moduleId": 0,
-                  "start": 1455,
+                  "start": 1476,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6078,10 +6153,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.03301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1541,
-                  "end": 1547,
+                  "commentStart": 1562,
+                  "end": 1568,
                   "moduleId": 0,
-                  "start": 1541,
+                  "start": 1562,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6125,10 +6200,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.11339745962155623
                 ],
                 "tag": {
-                  "commentStart": 1681,
-                  "end": 1687,
+                  "commentStart": 1702,
+                  "end": 1708,
                   "moduleId": 0,
-                  "start": 1681,
+                  "start": 1702,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6172,10 +6247,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.17890072079287297
                 ],
                 "tag": {
-                  "commentStart": 1823,
-                  "end": 1829,
+                  "commentStart": 1844,
+                  "end": 1850,
                   "moduleId": 0,
-                  "start": 1823,
+                  "start": 1844,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6230,6 +6305,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6237,7 +6314,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -6332,10 +6408,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1097,
-                "end": 1103,
+                "commentStart": 1118,
+                "end": 1124,
                 "moduleId": 0,
-                "start": 1097,
+                "start": 1118,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6353,10 +6429,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
+                "commentStart": 1241,
+                "end": 1247,
                 "moduleId": 0,
-                "start": 1220,
+                "start": 1241,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6374,10 +6450,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1350,
-                "end": 1356,
+                "commentStart": 1371,
+                "end": 1377,
                 "moduleId": 0,
-                "start": 1350,
+                "start": 1371,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6395,10 +6471,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1455,
-                "end": 1463,
+                "commentStart": 1476,
+                "end": 1484,
                 "moduleId": 0,
-                "start": 1455,
+                "start": 1476,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -6416,10 +6492,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1541,
-                "end": 1547,
+                "commentStart": 1562,
+                "end": 1568,
                 "moduleId": 0,
-                "start": 1541,
+                "start": 1562,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6437,10 +6513,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1681,
-                "end": 1687,
+                "commentStart": 1702,
+                "end": 1708,
                 "moduleId": 0,
-                "start": 1681,
+                "start": 1702,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -6458,10 +6534,10 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1823,
-                "end": 1829,
+                "commentStart": 1844,
+                "end": 1850,
                 "moduleId": 0,
-                "start": 1823,
+                "start": 1844,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -6483,6 +6559,7 @@ description: Variables in memory after executing french-press.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6513,10 +6590,10 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1097,
-                  "end": 1103,
+                  "commentStart": 1118,
+                  "end": 1124,
                   "moduleId": 0,
-                  "start": 1097,
+                  "start": 1118,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6560,10 +6637,10 @@ description: Variables in memory after executing french-press.kcl
                   0.37321452147779016
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
+                  "commentStart": 1241,
+                  "end": 1247,
                   "moduleId": 0,
-                  "start": 1220,
+                  "start": 1241,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6607,10 +6684,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.9660159630635361
                 ],
                 "tag": {
-                  "commentStart": 1350,
-                  "end": 1356,
+                  "commentStart": 1371,
+                  "end": 1377,
                   "moduleId": 0,
-                  "start": 1350,
+                  "start": 1371,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6654,10 +6731,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.13301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1455,
-                  "end": 1463,
+                  "commentStart": 1476,
+                  "end": 1484,
                   "moduleId": 0,
-                  "start": 1455,
+                  "start": 1476,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6695,10 +6772,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.03301270189221936
                 ],
                 "tag": {
-                  "commentStart": 1541,
-                  "end": 1547,
+                  "commentStart": 1562,
+                  "end": 1568,
                   "moduleId": 0,
-                  "start": 1541,
+                  "start": 1562,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6742,10 +6819,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.11339745962155623
                 ],
                 "tag": {
-                  "commentStart": 1681,
-                  "end": 1687,
+                  "commentStart": 1702,
+                  "end": 1708,
                   "moduleId": 0,
-                  "start": 1681,
+                  "start": 1702,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6789,10 +6866,10 @@ description: Variables in memory after executing french-press.kcl
                   -0.17890072079287297
                 ],
                 "tag": {
-                  "commentStart": 1823,
-                  "end": 1829,
+                  "commentStart": 1844,
+                  "end": 1850,
                   "moduleId": 0,
-                  "start": 1823,
+                  "start": 1844,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6847,6 +6924,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6854,7 +6933,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -6965,6 +7043,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6972,7 +7052,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7084,6 +7163,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 3,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -7111,6 +7191,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -7141,6 +7222,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7148,7 +7231,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7284,6 +7366,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 3,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -7311,6 +7394,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -7341,6 +7425,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7348,7 +7434,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7484,6 +7569,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 3,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -7511,6 +7597,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -7541,6 +7628,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7548,7 +7637,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7637,10 +7725,10 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2995,
-            "end": 3000,
+            "commentStart": 3016,
+            "end": 3021,
             "moduleId": 0,
-            "start": 2995,
+            "start": 3016,
             "type": "TagDeclarator",
             "value": "seg1"
           },
@@ -7676,6 +7764,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -7706,10 +7795,10 @@ description: Variables in memory after executing french-press.kcl
               1.11
             ],
             "tag": {
-              "commentStart": 2995,
-              "end": 3000,
+              "commentStart": 3016,
+              "end": 3021,
               "moduleId": 0,
-              "start": 2995,
+              "start": 3016,
               "type": "TagDeclarator",
               "value": "seg1"
             },
@@ -7792,6 +7881,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -7799,7 +7890,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7909,6 +7999,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -8040,6 +8131,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8047,7 +8140,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8151,6 +8243,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -8158,7 +8252,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8236,6 +8329,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -8270,6 +8364,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -8325,6 +8420,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8332,7 +8429,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8434,6 +8530,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -8468,6 +8565,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -8523,6 +8621,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8530,7 +8630,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8632,6 +8731,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -8666,6 +8766,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -8721,6 +8822,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8728,7 +8831,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8830,6 +8932,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -8864,6 +8967,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -8919,6 +9023,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8926,7 +9032,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9028,6 +9133,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -9062,6 +9168,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -9117,6 +9224,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9124,7 +9233,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9226,6 +9334,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -9260,6 +9369,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -9315,6 +9425,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9322,7 +9434,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9424,6 +9535,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -9458,6 +9570,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -9513,6 +9626,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9520,7 +9635,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9622,6 +9736,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 7,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -9656,6 +9771,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -9711,6 +9827,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9718,7 +9836,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9825,6 +9942,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 8,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -9859,6 +9977,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -9914,6 +10033,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9921,7 +10042,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10023,6 +10143,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 8,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -10057,6 +10178,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -10112,6 +10234,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10119,7 +10243,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10221,6 +10344,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 8,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -10255,6 +10379,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -10310,6 +10435,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10317,7 +10444,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10419,6 +10545,7 @@ description: Variables in memory after executing french-press.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 8,
             "value": "end",
             "xAxis": {
               "x": 1.0,
@@ -10453,6 +10580,7 @@ description: Variables in memory after executing french-press.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -10508,6 +10636,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 6,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10515,7 +10645,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10618,6 +10747,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 9,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -10625,7 +10756,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10724,6 +10854,7 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -10817,6 +10948,14 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
+            "control1": [
+              2.085,
+              7.74
+            ],
+            "control2": [
+              2.8259999999999996,
+              8.74
+            ],
             "from": [
               2.385,
               7.74
@@ -10826,7 +10965,7 @@ description: Variables in memory after executing french-press.kcl
               0.07999999999999963,
               8.74
             ],
-            "type": "ToPoint",
+            "type": "Bezier",
             "units": "in"
           },
           {
@@ -10850,6 +10989,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -10857,7 +10998,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11147,6 +11287,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 11,
         "origin": {
           "x": 0.0,
           "y": -8.254999999999999,
@@ -11154,7 +11296,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

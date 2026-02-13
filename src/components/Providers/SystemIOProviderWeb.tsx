@@ -2,8 +2,8 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
   useProjectIdToConversationId,
@@ -14,8 +14,12 @@ import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
+  const { auth } = useApp()
+  const { billingActor, engineCommandManager, systemIOActor, useSettings } =
+    useSingletons()
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
+  const token = auth.useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
     // Clear the search parameters related to the "Import file from URL" command
@@ -38,10 +42,13 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useClearQueryParams()
 
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
-    mlEphantManagerActor2,
+    mlEphantManagerActor,
+    billingActor,
+    token,
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -60,7 +67,7 @@ export function SystemIOMachineLogicListenerWeb() {
     }
   )
 
-  useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   return null
 }

@@ -5,6 +5,7 @@ import {
 } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import type { BinaryPart } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const AvailableVars = ({
   onVarClick,
@@ -148,6 +149,7 @@ export const CreateNewVariable = ({
 export function removeDoubleNegatives(
   valueNode: BinaryPart,
   sign: number,
+  wasmInstance: ModuleType,
   variableName?: string
 ): BinaryPart {
   let finValue: BinaryPart = variableName
@@ -169,7 +171,7 @@ export function removeDoubleNegatives(
     typeof finValue.argument.value === 'number' &&
     finValue.argument.value < 0
   ) {
-    finValue = createLiteral(-finValue.argument.value)
+    finValue = createLiteral(-finValue.argument.value, wasmInstance)
   }
   return finValue
 }

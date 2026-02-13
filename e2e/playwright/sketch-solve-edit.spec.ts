@@ -66,7 +66,7 @@ sketch(on = XZ) {
 }
 `
 
-test.describe('Sketch solve edit tests', () => {
+test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test("can edit an existing sketch and edit it's segments", async ({
     page,
     context,
@@ -125,7 +125,7 @@ test.describe('Sketch solve edit tests', () => {
 
     await test.step('Drag point segment 13 down', async () => {
       const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="13"]'
+        '[data-segment_id="14"]'
       )
 
       const centerX = segmentBox.x + segmentBox.width / 2
@@ -145,7 +145,7 @@ test.describe('Sketch solve edit tests', () => {
     })
 
     await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
-      const midpoint = await getMidpointBetweenSegments(scene, '8', '9')
+      const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
       const lineToEdit = getCodeLine({ code: TEST_CODE, line: 8 })
       await editor.expectEditor.toContain(lineToEdit)
@@ -306,10 +306,10 @@ test.describe('Sketch solve edit tests', () => {
       await page.getByTestId('point').click()
     })
 
-    await test.step('Select segments 1 and 8, then apply coincident constraint', async () => {
-      await page.locator('[data-segment_id="1"]').click()
+    await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
+      await page.locator('[data-segment_id="2"]').click()
       // await page.waitForTimeout(100)
-      await page.locator('[data-segment_id="8"]').click()
+      await page.locator('[data-segment_id="9"]').click()
       // await page.waitForTimeout(100)
 
       // Click the coincident tool
@@ -323,10 +323,10 @@ test.describe('Sketch solve edit tests', () => {
     const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
       format: 'ratio',
     })
-    await test.step('Select lines between segments 1-2 and 4-5, then apply parallel constraint', async () => {
+    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
       await clearSelection()
       const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="1"]'
+        '[data-segment_id="2"]'
       )
       const centerX = segmentBox.x + segmentBox.width / 2
       const centerY = segmentBox.y + segmentBox.height / 2
@@ -336,10 +336,10 @@ test.describe('Sketch solve edit tests', () => {
       await page.mouse.up()
     })
 
-    await test.step('Select lines between segments 1-2 and 4-5, then apply parallel constraint', async () => {
+    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
       // Click in dead space to clear selections
-      const midpoint1_2 = await getMidpointBetweenSegments(scene, '1', '2')
-      const midpoint4_5 = await getMidpointBetweenSegments(scene, '4', '5')
+      const midpoint1_2 = await getMidpointBetweenSegments(scene, '2', '3')
+      const midpoint4_5 = await getMidpointBetweenSegments(scene, '5', '6')
 
       await clearSelection()
       // await page.waitForTimeout(100)
@@ -353,6 +353,83 @@ test.describe('Sketch solve edit tests', () => {
       await page.getByTestId('Parallel').click()
 
       await editor.expectEditor.toContain('sketch2::parallel([line1, line2])')
+    })
+  })
+
+  test('can delete individual constraints and the sketch block from the feature tree', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app with test code', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var -3.58mm, var 3.79mm], end = [var 6.18mm, var 5.34mm])
+  sketch2::horizontal(line1)
+  line2 = sketch2::line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
+  sketch2::coincident([line2.start, line1.end])
+}`
+      await context.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, code)
+      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch(on')
+      await toolbar.openFeatureTreePane()
+    })
+
+    // TODO: figure out why this is needed for frontend's deleteObjects to work
+    await test.step('Enter sketch edit mode and exit it', async () => {
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
+        'Solve Sketch',
+        0
+      )
+      await solveSketchOperation.dblclick()
+      await page.waitForTimeout(1000)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await toolbar.exitSketchBtn.click()
+      await page.waitForTimeout(1000)
+      await expect(toolbar.startSketchBtn).toBeEnabled()
+    })
+
+    await test.step('Delete first constraint from feature tree and verify code updates', async () => {
+      const op = await toolbar.getFeatureTreeOperation(
+        'Horizontal Constraint',
+        0
+      )
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await page.waitForTimeout(1000)
+      await editor.expectEditor.not.toContain('sketch2::horizontal(line1)')
+    })
+
+    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+      const op = await toolbar.getFeatureTreeOperation(
+        'Coincident Constraint',
+        0
+      )
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await page.waitForTimeout(1000)
+      await editor.expectEditor.not.toContain(
+        'sketch2::coincident([line2.start, line1.end])'
+      )
+    })
+
+    await test.step('Delete sketch block from feature tree and verify code updates', async () => {
+      const op = await toolbar.getFeatureTreeOperation('Solve Sketch', 0)
+      await op.click({ button: 'right' })
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await editor.expectEditor.not.toContain('sketch(on')
     })
   })
 })

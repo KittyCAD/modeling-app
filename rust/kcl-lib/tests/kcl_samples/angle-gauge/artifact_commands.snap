@@ -224,7 +224,8 @@ description: Artifact commands angle-gauge.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -480,7 +481,8 @@ description: Artifact commands angle-gauge.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -736,7 +738,8 @@ description: Artifact commands angle-gauge.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

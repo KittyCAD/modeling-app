@@ -190,7 +190,9 @@ export class ElectronZoo {
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs.
+      // to guarantee it runs. Intentionally changing `this`, so no need to
+      // bind.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
@@ -199,6 +201,8 @@ export class ElectronZoo {
         await that.page.reload()
       }
 
+      // Intentionally changing `this`, so no need to bind.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
@@ -360,10 +364,13 @@ const fixturesForWeb = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     page.setBodyDimensions = page.setViewportSize
 
     // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
     // at the correct time, so we reload the page and it fires appropriately.
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldPageAddInitScript = page.addInitScript
     page.addInitScript = async function (...args) {
       // @ts-expect-error
@@ -371,6 +378,8 @@ const fixturesForWeb = {
       await page.reload()
     }
 
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const oldContextAddInitScript = context.addInitScript
     context.addInitScript = async function (...args) {
       // @ts-expect-error

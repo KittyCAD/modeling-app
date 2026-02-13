@@ -334,7 +334,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
+            &ModelingCmd::from(mcmd::EdgeLinesVisible::builder().hidden(!visible).build()),
         )
         .await?;
 
@@ -617,14 +617,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             plane_id,
             source_range,
-            &ModelingCmd::from(mcmd::MakePlane {
-                clobber: false,
-                origin: info.origin.into(),
-                size: LengthUnit(default_size),
-                x_axis: info.x_axis.into(),
-                y_axis: info.y_axis.into(),
-                hide: Some(true),
-            }),
+            &ModelingCmd::from(
+                mcmd::MakePlane::builder()
+                    .clobber(false)
+                    .origin(info.origin.into())
+                    .size(LengthUnit(default_size))
+                    .x_axis(info.x_axis.into())
+                    .y_axis(info.y_axis.into())
+                    .hide(true)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -633,7 +635,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             self.batch_modeling_cmd(
                 id_generator.next_uuid(),
                 source_range,
-                &ModelingCmd::from(mcmd::PlaneSetColor { color, plane_id }),
+                &ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane_id).build()),
             )
             .await?;
         }
@@ -651,32 +653,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.7,
-                    g: 0.28,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.28,
-                    b: 0.7,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),
@@ -807,10 +794,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden,
-                object_id: *GRID_OBJECT_ID,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(hidden)
+                    .object_id(*GRID_OBJECT_ID)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -825,10 +814,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             id_generator.next_uuid(),
             source_range,
-            &ModelingCmd::from(mcmd::ObjectVisible {
-                hidden,
-                object_id: *GRID_SCALE_TEXT_OBJECT_ID,
-            }),
+            &ModelingCmd::from(
+                mcmd::ObjectVisible::builder()
+                    .hidden(hidden)
+                    .object_id(*GRID_SCALE_TEXT_OBJECT_ID)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -944,11 +935,13 @@ impl GridScaleBehavior {
     fn into_modeling_cmd(self) -> ModelingCmd {
         const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
         match self {
-            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale {}),
-            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(mcmd::SetGridScale {
-                value: NUMBER_OF_GRID_COLUMNS,
-                units: unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters),
-            }),
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale::builder().build()),
+            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(
+                mcmd::SetGridScale::builder()
+                    .value(NUMBER_OF_GRID_COLUMNS)
+                    .units(unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters))
+                    .build(),
+            ),
         }
     }
 }

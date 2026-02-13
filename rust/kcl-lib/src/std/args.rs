@@ -1,7 +1,11 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+use kcmc::{
+    shared::BodyType,
+    units::{UnitAngle, UnitLength},
+};
+use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
@@ -10,14 +14,15 @@ use crate::{
     CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
-        Solid, TagIdentifier, annotations,
+        BoundedEdge, ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane,
+        PlaneInfo, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
     front::Number,
     parsing::ast::types::TagNode,
     std::{
+        CircularDirection,
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
         sweep::SweepPath,
@@ -532,6 +537,18 @@ impl<'a> FromKclValue<'a> for Vec<KclValue> {
     }
 }
 
+impl<'a> FromKclValue<'a> for Vec<Extrudable> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let items = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(Extrudable::from_kcl_val)
+            .collect::<Option<Vec<_>>>()?;
+        Some(items)
+    }
+}
+
 impl<'a> FromKclValue<'a> for KclValue {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone())
@@ -563,7 +580,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Plane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
+impl<'a> FromKclValue<'a> for crate::execution::PlaneKind {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let plane_type = match arg.as_str()? {
             "XY" | "xy" => Self::XY,
@@ -573,6 +590,28 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
             _ => return None,
         };
         Some(plane_type)
+    }
+}
+
+impl<'a> FromKclValue<'a> for BodyType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let body_type = match arg.as_str()? {
+            "solid" => Self::Solid,
+            "surface" => Self::Surface,
+            _ => return None,
+        };
+        Some(body_type)
+    }
+}
+
+impl<'a> FromKclValue<'a> for CircularDirection {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let dir = match arg.as_str()? {
+            "ccw" => Self::Counterclockwise,
+            "cw" => Self::Clockwise,
+            _ => return None,
+        };
+        Some(dir)
     }
 }
 
@@ -666,6 +705,30 @@ impl<'a> FromKclValue<'a> for FaceTag {
             Some(Self::Tag(Box::new(tag)))
         };
         case1().or_else(case2)
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::faces::FaceSpecifier {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        FaceTag::from_kcl_val(arg)
+            .map(super::faces::FaceSpecifier::FaceTag)
+            .or_else(|| {
+                crate::execution::Segment::from_kcl_val(arg)
+                    .map(Box::new)
+                    .map(super::faces::FaceSpecifier::Segment)
+            })
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Segment {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Segment { value } => match &value.repr {
+                crate::execution::SegmentRepr::Unsolved { .. } => None,
+                crate::execution::SegmentRepr::Solved { segment, .. } => Some(segment.as_ref().to_owned()),
+            },
+            _ => None,
+        }
     }
 }
 
@@ -864,6 +927,8 @@ impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
+impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
+impl_from_kcl_for_vec!(crate::execution::BoundedEdge);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -873,12 +938,9 @@ impl<'a> FromKclValue<'a> for SourceRange {
                 return None;
             }
         };
-        if value.len() != 3 {
+        let [v0, v1, v2] = value.as_slice() else {
             return None;
-        }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
+        };
         Some(SourceRange::new(
             v0.as_usize()?,
             v1.as_usize()?,
@@ -918,6 +980,33 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                     Some(Self::SolidSet(solids))
                 } else {
                     Some(Self::SketchSet(sketches))
+                }
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut helices = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::HelixSet(helices))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
@@ -1049,6 +1138,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
+impl<'a> FromKclValue<'a> for Extrudable {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = FaceTag::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
@@ -1122,11 +1219,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 2 {
+                let [v0, v1] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
+                };
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?];
                 Some(array)
             }
@@ -1139,12 +1234,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 3 {
+                let [v0, v1, v2] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
-                let v2 = value.get(2)?;
+                };
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?, v2.as_ty_f64()?];
                 Some(array)
             }
@@ -1157,15 +1249,9 @@ impl<'a> FromKclValue<'a> for [TyF64; 6] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                if value.len() != 6 {
+                let [v0, v1, v2, v3, v4, v5] = value.as_slice() else {
                     return None;
-                }
-                let v0 = value.first()?;
-                let v1 = value.get(1)?;
-                let v2 = value.get(2)?;
-                let v3 = value.get(3)?;
-                let v4 = value.get(4)?;
-                let v5 = value.get(5)?;
+                };
                 let array = [
                     v0.as_ty_f64()?,
                     v1.as_ty_f64()?,
@@ -1244,6 +1330,15 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
+impl<'a> FromKclValue<'a> for BoundedEdge {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::BoundedEdge { value, .. } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
 impl<'a> FromKclValue<'a> for Box<Plane> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Plane { value } = arg else {
@@ -1256,6 +1351,15 @@ impl<'a> FromKclValue<'a> for Box<Plane> {
 impl<'a> FromKclValue<'a> for Box<Sketch> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::TagIdentifier(value) = arg else {
             return None;
         };
         Some(value.to_owned())

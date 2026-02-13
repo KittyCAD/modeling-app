@@ -1,5 +1,6 @@
 // Round Table
 // Simple round table with a base, single leg, and tabletop
+// Categories: Construction, Maker
 
 @settings(defaultLengthUnit = mm)
 

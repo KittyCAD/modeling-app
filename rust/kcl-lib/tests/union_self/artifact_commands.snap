@@ -156,7 +156,8 @@ description: Artifact commands union_self.kcl
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -222,7 +223,6 @@ description: Artifact commands union_self.kcl
                 "w": 45.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

@@ -347,6 +347,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_old_sketch_syntax,
         ];
 
         let mut findings = vec![];
@@ -1328,6 +1329,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1385,6 +1408,10 @@ impl AscribedExpression {
 pub struct SketchBlock {
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
+
+    /// Transient field to indicate whether the sketch block is being edited.
+    #[serde(skip)]
+    pub is_being_edited: bool,
 
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -1650,18 +1677,16 @@ impl NonCodeNode {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     fn is_comment(&self) -> bool {
-        matches!(
-            self.value,
-            NonCodeValue::InlineComment { .. }
-                | NonCodeValue::BlockComment { .. }
-                | NonCodeValue::NewLineBlockComment { .. }
-        )
+        match self.value {
+            NonCodeValue::InlineComment { .. } => true,
+            NonCodeValue::BlockComment { .. } => true,
+            NonCodeValue::NewLine => false,
+        }
     }
 }
 
@@ -1713,19 +1738,13 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesn't have a new line above it.
-    /// If it did it would be a `NewLineBlockComment`.
+    /// This is always the case.
     BlockComment {
         value: String,
         style: CommentStyle,
     },
-    /// A block comment that has a new line above it.
-    /// The user explicitly added a new line above the block comment.
-    NewLineBlockComment {
-        value: String,
-        style: CommentStyle,
-    },
     // A new line like `\n\n` NOT a new line like `\n`.
+    // i.e. an empty line, not just the ending of a non-empty line.
     // This is also not a comment.
     NewLine,
 }
@@ -1773,6 +1792,36 @@ impl NonCodeMeta {
                 .filter(|node| node.is_comment())
                 .any(|node| node.contains(pos))
         })
+    }
+
+    /// The source range of a comment node should start at a '/', because both
+    /// styles of comments (// line comments and /* block comments */) start
+    /// with a /.
+    /// If a comment does NOT start with a /, that likely indicates an off-by-one
+    /// error, or some other kindof inaccurate source range. This is bad, because the
+    /// LSP won't offer suggestions if it thinks the user is in a comment.
+    /// So inaccurate comment start/ends could cause disabling autocompletion.
+    pub fn comment_start_is_accurate(&self, str: &[u8]) -> bool {
+        for nodes in self.non_code_nodes.values() {
+            for node in nodes {
+                match node.inner.value {
+                    NonCodeValue::InlineComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::BlockComment { .. } => {
+                        if str[node.start] != b'/' {
+                            eprintln!("{:?}", node);
+                            return false;
+                        }
+                    }
+                    NonCodeValue::NewLine => {}
+                }
+            }
+        }
+        true
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
@@ -1857,6 +1906,14 @@ impl Annotation {
                 None => props.push(ObjectProperty::new(Identifier::new(label), value)),
             },
             None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
+        }
+    }
+
+    /// Get a property by name. This is O(n) in the number of properties.
+    pub(crate) fn property(&self, name: &str) -> Option<&Node<ObjectProperty>> {
+        match &self.properties {
+            Some(props) => props.iter().find(|p| p.key.name == name),
+            None => None,
         }
     }
 }
@@ -3661,6 +3718,9 @@ impl DefaultParamVal {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
+    /// Whether it's experimental.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub experimental: bool,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -3705,6 +3765,10 @@ impl From<&Parameter> for SourceRange {
         }
         sr
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 fn is_true(b: &bool) -> bool {
@@ -4385,6 +4449,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4405,6 +4470,7 @@ cylinder = startSketchOn(-XZ)
                 Node::no_src(FunctionExpression {
                     name: None,
                     params: vec![Parameter {
+                        experimental: Default::default(),
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4426,6 +4492,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4436,6 +4503,7 @@ cylinder = startSketchOn(-XZ)
                             digest: None,
                         },
                         Parameter {
+                            experimental: Default::default(),
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

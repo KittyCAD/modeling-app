@@ -1,12 +1,7 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import {
-  commandBarActor,
-  rustContext,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -88,6 +83,9 @@ function CommandBarVector3DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
+  const { commandBarActor, kclManager, rustContext, useCommandBarState } =
+    useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)
@@ -103,12 +101,12 @@ function CommandBarVector3DInput({
     // smart defaults
     if (arg.defaultValue) {
       return typeof arg.defaultValue === 'function'
-        ? arg.defaultValue(commandBarState.context, undefined)
+        ? arg.defaultValue(commandBarState.context, undefined, wasmInstance)
         : arg.defaultValue
     }
     // dumb defaults
     return '[0, 0, 0]'
-  }, [previouslySetValue, commandBarState.context, arg])
+  }, [previouslySetValue, commandBarState.context, arg, wasmInstance])
 
   // Extract individual x, y, z values from the vector string
   const defaultValues = useMemo(() => {

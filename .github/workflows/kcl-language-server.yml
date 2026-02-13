@@ -48,11 +48,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: |
           npm install
@@ -105,7 +105,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -117,11 +117,12 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: .nvmrc
       - name: Update apt repositories
         if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'arm-unknown-linux-gnueabihf' || matrix.os == 'namespace-profile-ubuntu-2-cores'
         run: sudo apt-get update
@@ -156,9 +157,11 @@ jobs:
         if: matrix.target == 'arm-unknown-linux-gnueabihf'
         run: sudo apt-get install gcc-arm-linux-gnueabihf
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
@@ -190,7 +193,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release-${{ matrix.target }}
           path: ./rust/build
@@ -219,7 +222,7 @@ jobs:
             npm \
             yarn
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -231,11 +234,14 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
@@ -252,7 +258,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release-x86_64-unknown-linux-musl
           path: ./rust/build
@@ -267,11 +273,11 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV

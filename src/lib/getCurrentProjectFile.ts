@@ -16,7 +16,7 @@ import { isExtensionAnImportExtension } from '@src/lib/paths'
 /// or the command line args, or deep linking.
 export default async function getCurrentProjectFile(
   pathString: string,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<string | Error> {
   // Extract the values into an array
   const allFileImportFormats: string[] = importFileExtensions(wasmInstance)

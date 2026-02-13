@@ -44,6 +44,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -119,6 +120,8 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -126,7 +129,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -209,6 +211,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -284,6 +287,8 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -291,7 +296,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -374,6 +378,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -450,6 +455,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -498,6 +504,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -573,6 +580,8 @@ description: Variables in memory after executing sketch_on_face_start.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -580,7 +589,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

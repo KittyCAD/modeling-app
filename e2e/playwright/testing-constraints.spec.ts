@@ -10,7 +10,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Testing constraints', () => {
+test.describe('Testing constraints', { tag: '@desktop' }, () => {
   test('Can constrain line length', async ({ page, homePage, cmdBar }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -983,16 +983,21 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
   })
 })
 test.describe('Electron constraint tests', () => {
-  test(
-    'Able to double click label to set constraint',
-    { tag: '@desktop' },
-    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, 'test-sample')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.writeFile(
-          path.join(bracketDir, 'main.kcl'),
-          `@settings(defaultLengthUnit = in)
+  test('Able to double click label to set constraint', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'test-sample')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `@settings(defaultLengthUnit = in)
           part001 = startSketchOn(XY)
             |> startProfile(at = [4.83, 8.56])
             |> line(end = [15.1, 2.48])
@@ -1002,56 +1007,55 @@ test.describe('Electron constraint tests', () => {
             |> line(end = [-13.02, 10.03])
             |> close()
             |> extrude(length = 4)`,
-          'utf-8'
-        )
+        'utf-8'
+      )
+    })
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
       })
+      await homePage.openProject('test-sample')
+      await scene.settled(cmdBar)
+    })
 
-      await test.step('setup test', async () => {
-        await homePage.expectState({
-          projectCards: [
-            {
-              title: 'test-sample',
-              fileCount: 1,
-            },
-          ],
-          sortBy: 'last-modified-desc',
-        })
-        await homePage.openProject('test-sample')
-        await scene.settled(cmdBar)
-      })
-
-      async function clickOnFirstSegmentLabel() {
-        const child = page
-          .locator('.segment-length-label-text')
-          .first()
-          .locator('xpath=..')
-        await child.dblclick()
-      }
-
-      await test.step('Double click to constrain', async () => {
-        // Enter sketch edit mode via feature tree
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
-        await op.dblclick()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        await clickOnFirstSegmentLabel()
-        await cmdBar.progressCmdBar()
-        await editor.expectEditor.toContain('length001 = 15.3')
-        await editor.expectEditor.toContain(
-          '|> angledLine(angle = 9deg, length = length001)'
-        )
-      })
-
-      await test.step('Double click again and expect failure', async () => {
-        await clickOnFirstSegmentLabel()
-
-        await expect(
-          page.getByText('Unable to constrain the length of this segment')
-        ).toBeVisible()
-
-        await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      })
+    async function clickOnFirstSegmentLabel() {
+      const child = page
+        .locator('.segment-length-label-text')
+        .first()
+        .locator('xpath=..')
+      await child.dblclick()
     }
-  )
+
+    await test.step('Double click to constrain', async () => {
+      // Enter sketch edit mode via feature tree
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      await op.dblclick()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+      await clickOnFirstSegmentLabel()
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain('length001 = 15.3')
+      await editor.expectEditor.toContain(
+        '|> angledLine(angle = 9deg, length = length001)'
+      )
+    })
+
+    await test.step('Double click again and expect failure', async () => {
+      await clickOnFirstSegmentLabel()
+
+      await expect(
+        page.getByText('Unable to constrain the length of this segment')
+      ).toBeVisible()
+
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    })
+  })
 })

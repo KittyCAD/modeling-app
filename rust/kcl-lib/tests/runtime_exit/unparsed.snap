@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing runtime_exit.kcl
+---
+@settings(experimentalFeatures = allow)
+
+x = 42
+
+fn foo() {
+  exit()
+
+  // We should never reach this.
+  assert(x, isEqualTo = 3)
+
+  return 0
+}
+foo()
+
+// We should never reach this.
+assert(x, isEqualTo = 7)

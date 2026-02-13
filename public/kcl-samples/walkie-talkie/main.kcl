@@ -1,5 +1,6 @@
 // Walkie Talkie
 // A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.
+// Categories: Manufacturing, Computer Hardware
 
 // set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

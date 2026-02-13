@@ -19,7 +19,6 @@ description: Artifact commands import_whole_transitive_import.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -159,7 +158,8 @@ description: Artifact commands import_whole_transitive_import.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

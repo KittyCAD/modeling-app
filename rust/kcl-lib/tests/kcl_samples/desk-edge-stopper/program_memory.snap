@@ -22,6 +22,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -53,6 +54,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "upperFaceOfTheUprofile",
               "xAxis": {
                 "x": 0.0,
@@ -76,10 +78,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -90,10 +92,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -104,10 +106,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -125,10 +127,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -139,10 +141,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -178,6 +180,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -191,10 +194,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3467,
-                        "end": 3498,
+                        "commentStart": 3488,
+                        "end": 3519,
                         "moduleId": 0,
-                        "start": 3467,
+                        "start": 3488,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUProfileLeftSide"
                       },
@@ -215,10 +218,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3547,
-                        "end": 3576,
+                        "commentStart": 3568,
+                        "end": 3597,
                         "moduleId": 0,
-                        "start": 3547,
+                        "start": 3568,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileBottom"
                       },
@@ -239,10 +242,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "tag": {
-                        "commentStart": 3700,
-                        "end": 3732,
+                        "commentStart": 3721,
+                        "end": 3753,
                         "moduleId": 0,
-                        "start": 3700,
+                        "start": 3721,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileRightSide"
                       },
@@ -280,10 +283,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 3939,
-                        "end": 3962,
+                        "commentStart": 3960,
+                        "end": 3983,
                         "moduleId": 0,
-                        "start": 3939,
+                        "start": 3960,
                         "type": "TagDeclarator",
                         "value": "upperFaceOfTheUprofile"
                       },
@@ -304,10 +307,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 4037,
-                        "end": 4056,
+                        "commentStart": 4058,
+                        "end": 4077,
                         "moduleId": 0,
-                        "start": 4037,
+                        "start": 4058,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheWall"
                       },
@@ -390,6 +393,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -397,7 +402,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -508,6 +512,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -539,6 +544,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "upperFaceOfTheUprofile",
               "xAxis": {
                 "x": 0.0,
@@ -562,10 +568,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -576,10 +582,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -590,10 +596,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -611,10 +617,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -625,10 +631,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -664,6 +670,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -677,10 +684,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3467,
-                        "end": 3498,
+                        "commentStart": 3488,
+                        "end": 3519,
                         "moduleId": 0,
-                        "start": 3467,
+                        "start": 3488,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUProfileLeftSide"
                       },
@@ -701,10 +708,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3547,
-                        "end": 3576,
+                        "commentStart": 3568,
+                        "end": 3597,
                         "moduleId": 0,
-                        "start": 3547,
+                        "start": 3568,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileBottom"
                       },
@@ -725,10 +732,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "tag": {
-                        "commentStart": 3700,
-                        "end": 3732,
+                        "commentStart": 3721,
+                        "end": 3753,
                         "moduleId": 0,
-                        "start": 3700,
+                        "start": 3721,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileRightSide"
                       },
@@ -766,10 +773,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 3939,
-                        "end": 3962,
+                        "commentStart": 3960,
+                        "end": 3983,
                         "moduleId": 0,
-                        "start": 3939,
+                        "start": 3960,
                         "type": "TagDeclarator",
                         "value": "upperFaceOfTheUprofile"
                       },
@@ -790,10 +797,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 4037,
-                        "end": 4056,
+                        "commentStart": 4058,
+                        "end": 4077,
                         "moduleId": 0,
-                        "start": 4037,
+                        "start": 4058,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheWall"
                       },
@@ -876,6 +883,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -883,7 +892,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -994,6 +1002,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1025,6 +1034,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "upperFaceOfTheUprofile",
               "xAxis": {
                 "x": 0.0,
@@ -1048,10 +1058,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -1062,10 +1072,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -1076,10 +1086,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -1097,10 +1107,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -1111,10 +1121,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -1150,6 +1160,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1163,10 +1174,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3467,
-                        "end": 3498,
+                        "commentStart": 3488,
+                        "end": 3519,
                         "moduleId": 0,
-                        "start": 3467,
+                        "start": 3488,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUProfileLeftSide"
                       },
@@ -1187,10 +1198,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "tag": {
-                        "commentStart": 3547,
-                        "end": 3576,
+                        "commentStart": 3568,
+                        "end": 3597,
                         "moduleId": 0,
-                        "start": 3547,
+                        "start": 3568,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileBottom"
                       },
@@ -1211,10 +1222,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "tag": {
-                        "commentStart": 3700,
-                        "end": 3732,
+                        "commentStart": 3721,
+                        "end": 3753,
                         "moduleId": 0,
-                        "start": 3700,
+                        "start": 3721,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheUprofileRightSide"
                       },
@@ -1252,10 +1263,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 3939,
-                        "end": 3962,
+                        "commentStart": 3960,
+                        "end": 3983,
                         "moduleId": 0,
-                        "start": 3939,
+                        "start": 3960,
                         "type": "TagDeclarator",
                         "value": "upperFaceOfTheUprofile"
                       },
@@ -1276,10 +1287,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "tag": {
-                        "commentStart": 4037,
-                        "end": 4056,
+                        "commentStart": 4058,
+                        "end": 4077,
                         "moduleId": 0,
-                        "start": 4037,
+                        "start": 4058,
                         "type": "TagDeclarator",
                         "value": "innerFaceOfTheWall"
                       },
@@ -1362,6 +1373,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1369,7 +1382,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -1478,10 +1490,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3467,
-            "end": 3498,
+            "commentStart": 3488,
+            "end": 3519,
             "moduleId": 0,
-            "start": 3467,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUProfileLeftSide"
           },
@@ -1492,10 +1504,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3547,
-            "end": 3576,
+            "commentStart": 3568,
+            "end": 3597,
             "moduleId": 0,
-            "start": 3547,
+            "start": 3568,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileBottom"
           },
@@ -1506,10 +1518,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3700,
-            "end": 3732,
+            "commentStart": 3721,
+            "end": 3753,
             "moduleId": 0,
-            "start": 3700,
+            "start": 3721,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileRightSide"
           },
@@ -1527,10 +1539,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3939,
-            "end": 3962,
+            "commentStart": 3960,
+            "end": 3983,
             "moduleId": 0,
-            "start": 3939,
+            "start": 3960,
             "type": "TagDeclarator",
             "value": "upperFaceOfTheUprofile"
           },
@@ -1541,10 +1553,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4056,
+            "commentStart": 4058,
+            "end": 4077,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4058,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheWall"
           },
@@ -1580,6 +1592,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1593,10 +1606,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3467,
-              "end": 3498,
+              "commentStart": 3488,
+              "end": 3519,
               "moduleId": 0,
-              "start": 3467,
+              "start": 3488,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUProfileLeftSide"
             },
@@ -1617,10 +1630,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3547,
-              "end": 3576,
+              "commentStart": 3568,
+              "end": 3597,
               "moduleId": 0,
-              "start": 3547,
+              "start": 3568,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileBottom"
             },
@@ -1641,10 +1654,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3700,
-              "end": 3732,
+              "commentStart": 3721,
+              "end": 3753,
               "moduleId": 0,
-              "start": 3700,
+              "start": 3721,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileRightSide"
             },
@@ -1682,10 +1695,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "tag": {
-              "commentStart": 3939,
-              "end": 3962,
+              "commentStart": 3960,
+              "end": 3983,
               "moduleId": 0,
-              "start": 3939,
+              "start": 3960,
               "type": "TagDeclarator",
               "value": "upperFaceOfTheUprofile"
             },
@@ -1706,10 +1719,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4056,
+              "commentStart": 4058,
+              "end": 4077,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4058,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheWall"
             },
@@ -1792,6 +1805,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1799,7 +1814,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1923,10 +1937,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3467,
-            "end": 3498,
+            "commentStart": 3488,
+            "end": 3519,
             "moduleId": 0,
-            "start": 3467,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUProfileLeftSide"
           },
@@ -1937,10 +1951,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3547,
-            "end": 3576,
+            "commentStart": 3568,
+            "end": 3597,
             "moduleId": 0,
-            "start": 3547,
+            "start": 3568,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileBottom"
           },
@@ -1951,10 +1965,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3700,
-            "end": 3732,
+            "commentStart": 3721,
+            "end": 3753,
             "moduleId": 0,
-            "start": 3700,
+            "start": 3721,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileRightSide"
           },
@@ -1972,10 +1986,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3939,
-            "end": 3962,
+            "commentStart": 3960,
+            "end": 3983,
             "moduleId": 0,
-            "start": 3939,
+            "start": 3960,
             "type": "TagDeclarator",
             "value": "upperFaceOfTheUprofile"
           },
@@ -1986,10 +2000,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4056,
+            "commentStart": 4058,
+            "end": 4077,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4058,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheWall"
           },
@@ -2025,6 +2039,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2038,10 +2053,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3467,
-              "end": 3498,
+              "commentStart": 3488,
+              "end": 3519,
               "moduleId": 0,
-              "start": 3467,
+              "start": 3488,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUProfileLeftSide"
             },
@@ -2062,10 +2077,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3547,
-              "end": 3576,
+              "commentStart": 3568,
+              "end": 3597,
               "moduleId": 0,
-              "start": 3547,
+              "start": 3568,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileBottom"
             },
@@ -2086,10 +2101,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3700,
-              "end": 3732,
+              "commentStart": 3721,
+              "end": 3753,
               "moduleId": 0,
-              "start": 3700,
+              "start": 3721,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileRightSide"
             },
@@ -2127,10 +2142,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "tag": {
-              "commentStart": 3939,
-              "end": 3962,
+              "commentStart": 3960,
+              "end": 3983,
               "moduleId": 0,
-              "start": 3939,
+              "start": 3960,
               "type": "TagDeclarator",
               "value": "upperFaceOfTheUprofile"
             },
@@ -2151,10 +2166,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4056,
+              "commentStart": 4058,
+              "end": 4077,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4058,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheWall"
             },
@@ -2237,6 +2252,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2244,7 +2261,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2337,10 +2353,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3467,
-            "end": 3498,
+            "commentStart": 3488,
+            "end": 3519,
             "moduleId": 0,
-            "start": 3467,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUProfileLeftSide"
           },
@@ -2361,10 +2377,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3547,
-            "end": 3576,
+            "commentStart": 3568,
+            "end": 3597,
             "moduleId": 0,
-            "start": 3547,
+            "start": 3568,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileBottom"
           },
@@ -2385,10 +2401,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "tag": {
-            "commentStart": 3700,
-            "end": 3732,
+            "commentStart": 3721,
+            "end": 3753,
             "moduleId": 0,
-            "start": 3700,
+            "start": 3721,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheUprofileRightSide"
           },
@@ -2426,10 +2442,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.5
           ],
           "tag": {
-            "commentStart": 3939,
-            "end": 3962,
+            "commentStart": 3960,
+            "end": 3983,
             "moduleId": 0,
-            "start": 3939,
+            "start": 3960,
             "type": "TagDeclarator",
             "value": "upperFaceOfTheUprofile"
           },
@@ -2450,10 +2466,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.5
           ],
           "tag": {
-            "commentStart": 4037,
-            "end": 4056,
+            "commentStart": 4058,
+            "end": 4077,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4058,
             "type": "TagDeclarator",
             "value": "innerFaceOfTheWall"
           },
@@ -2536,6 +2552,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2543,7 +2561,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2611,13 +2628,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2675,6 +2693,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "upperFaceOfTheUprofile",
             "xAxis": {
               "x": 0.0,
@@ -2698,10 +2717,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3467,
-                    "end": 3498,
+                    "commentStart": 3488,
+                    "end": 3519,
                     "moduleId": 0,
-                    "start": 3467,
+                    "start": 3488,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUProfileLeftSide"
                   },
@@ -2712,10 +2731,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3547,
-                    "end": 3576,
+                    "commentStart": 3568,
+                    "end": 3597,
                     "moduleId": 0,
-                    "start": 3547,
+                    "start": 3568,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileBottom"
                   },
@@ -2726,10 +2745,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3700,
-                    "end": 3732,
+                    "commentStart": 3721,
+                    "end": 3753,
                     "moduleId": 0,
-                    "start": 3700,
+                    "start": 3721,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileRightSide"
                   },
@@ -2747,10 +2766,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3939,
-                    "end": 3962,
+                    "commentStart": 3960,
+                    "end": 3983,
                     "moduleId": 0,
-                    "start": 3939,
+                    "start": 3960,
                     "type": "TagDeclarator",
                     "value": "upperFaceOfTheUprofile"
                   },
@@ -2761,10 +2780,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4037,
-                    "end": 4056,
+                    "commentStart": 4058,
+                    "end": 4077,
                     "moduleId": 0,
-                    "start": 4037,
+                    "start": 4058,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheWall"
                   },
@@ -2800,6 +2819,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -2813,10 +2833,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -2837,10 +2857,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -2861,10 +2881,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -2902,10 +2922,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -2926,10 +2946,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -3012,6 +3032,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "YZ",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -3019,7 +3041,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -3143,6 +3164,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "upperFaceOfTheUprofile",
             "xAxis": {
               "x": 0.0,
@@ -3166,10 +3188,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3467,
-                    "end": 3498,
+                    "commentStart": 3488,
+                    "end": 3519,
                     "moduleId": 0,
-                    "start": 3467,
+                    "start": 3488,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUProfileLeftSide"
                   },
@@ -3180,10 +3202,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3547,
-                    "end": 3576,
+                    "commentStart": 3568,
+                    "end": 3597,
                     "moduleId": 0,
-                    "start": 3547,
+                    "start": 3568,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileBottom"
                   },
@@ -3194,10 +3216,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3700,
-                    "end": 3732,
+                    "commentStart": 3721,
+                    "end": 3753,
                     "moduleId": 0,
-                    "start": 3700,
+                    "start": 3721,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileRightSide"
                   },
@@ -3215,10 +3237,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3939,
-                    "end": 3962,
+                    "commentStart": 3960,
+                    "end": 3983,
                     "moduleId": 0,
-                    "start": 3939,
+                    "start": 3960,
                     "type": "TagDeclarator",
                     "value": "upperFaceOfTheUprofile"
                   },
@@ -3229,10 +3251,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4037,
-                    "end": 4056,
+                    "commentStart": 4058,
+                    "end": 4077,
                     "moduleId": 0,
-                    "start": 4037,
+                    "start": 4058,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheWall"
                   },
@@ -3268,6 +3290,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -3281,10 +3304,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -3305,10 +3328,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -3329,10 +3352,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -3370,10 +3393,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -3394,10 +3417,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -3480,6 +3503,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "YZ",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -3487,7 +3512,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -3611,6 +3635,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "upperFaceOfTheUprofile",
             "xAxis": {
               "x": 0.0,
@@ -3634,10 +3659,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3467,
-                    "end": 3498,
+                    "commentStart": 3488,
+                    "end": 3519,
                     "moduleId": 0,
-                    "start": 3467,
+                    "start": 3488,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUProfileLeftSide"
                   },
@@ -3648,10 +3673,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3547,
-                    "end": 3576,
+                    "commentStart": 3568,
+                    "end": 3597,
                     "moduleId": 0,
-                    "start": 3547,
+                    "start": 3568,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileBottom"
                   },
@@ -3662,10 +3687,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3700,
-                    "end": 3732,
+                    "commentStart": 3721,
+                    "end": 3753,
                     "moduleId": 0,
-                    "start": 3700,
+                    "start": 3721,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheUprofileRightSide"
                   },
@@ -3683,10 +3708,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 3939,
-                    "end": 3962,
+                    "commentStart": 3960,
+                    "end": 3983,
                     "moduleId": 0,
-                    "start": 3939,
+                    "start": 3960,
                     "type": "TagDeclarator",
                     "value": "upperFaceOfTheUprofile"
                   },
@@ -3697,10 +3722,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4037,
-                    "end": 4056,
+                    "commentStart": 4058,
+                    "end": 4077,
                     "moduleId": 0,
-                    "start": 4037,
+                    "start": 4058,
                     "type": "TagDeclarator",
                     "value": "innerFaceOfTheWall"
                   },
@@ -3736,6 +3761,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 }
               ],
               "sketch": {
+                "creatorType": "sketch",
                 "type": "Sketch",
                 "id": "[uuid]",
                 "paths": [
@@ -3749,10 +3775,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3467,
-                      "end": 3498,
+                      "commentStart": 3488,
+                      "end": 3519,
                       "moduleId": 0,
-                      "start": 3467,
+                      "start": 3488,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUProfileLeftSide"
                     },
@@ -3773,10 +3799,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "tag": {
-                      "commentStart": 3547,
-                      "end": 3576,
+                      "commentStart": 3568,
+                      "end": 3597,
                       "moduleId": 0,
-                      "start": 3547,
+                      "start": 3568,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileBottom"
                     },
@@ -3797,10 +3823,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "tag": {
-                      "commentStart": 3700,
-                      "end": 3732,
+                      "commentStart": 3721,
+                      "end": 3753,
                       "moduleId": 0,
-                      "start": 3700,
+                      "start": 3721,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheUprofileRightSide"
                     },
@@ -3838,10 +3864,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 3939,
-                      "end": 3962,
+                      "commentStart": 3960,
+                      "end": 3983,
                       "moduleId": 0,
-                      "start": 3939,
+                      "start": 3960,
                       "type": "TagDeclarator",
                       "value": "upperFaceOfTheUprofile"
                     },
@@ -3862,10 +3888,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "tag": {
-                      "commentStart": 4037,
-                      "end": 4056,
+                      "commentStart": 4058,
+                      "end": 4077,
                       "moduleId": 0,
-                      "start": 4037,
+                      "start": 4058,
                       "type": "TagDeclarator",
                       "value": "innerFaceOfTheWall"
                     },
@@ -3948,6 +3974,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "YZ",
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -3955,7 +3983,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -4126,6 +4153,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "upperFaceOfTheUprofile",
         "xAxis": {
           "x": 0.0,
@@ -4149,10 +4177,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3467,
-                "end": 3498,
+                "commentStart": 3488,
+                "end": 3519,
                 "moduleId": 0,
-                "start": 3467,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUProfileLeftSide"
               },
@@ -4163,10 +4191,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3547,
-                "end": 3576,
+                "commentStart": 3568,
+                "end": 3597,
                 "moduleId": 0,
-                "start": 3547,
+                "start": 3568,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUprofileBottom"
               },
@@ -4177,10 +4205,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3700,
-                "end": 3732,
+                "commentStart": 3721,
+                "end": 3753,
                 "moduleId": 0,
-                "start": 3700,
+                "start": 3721,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUprofileRightSide"
               },
@@ -4198,10 +4226,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3939,
-                "end": 3962,
+                "commentStart": 3960,
+                "end": 3983,
                 "moduleId": 0,
-                "start": 3939,
+                "start": 3960,
                 "type": "TagDeclarator",
                 "value": "upperFaceOfTheUprofile"
               },
@@ -4212,10 +4240,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4037,
-                "end": 4056,
+                "commentStart": 4058,
+                "end": 4077,
                 "moduleId": 0,
-                "start": 4037,
+                "start": 4058,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheWall"
               },
@@ -4251,6 +4279,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4264,10 +4293,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 3467,
-                  "end": 3498,
+                  "commentStart": 3488,
+                  "end": 3519,
                   "moduleId": 0,
-                  "start": 3467,
+                  "start": 3488,
                   "type": "TagDeclarator",
                   "value": "innerFaceOfTheUProfileLeftSide"
                 },
@@ -4288,10 +4317,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 3547,
-                  "end": 3576,
+                  "commentStart": 3568,
+                  "end": 3597,
                   "moduleId": 0,
-                  "start": 3547,
+                  "start": 3568,
                   "type": "TagDeclarator",
                   "value": "innerFaceOfTheUprofileBottom"
                 },
@@ -4312,10 +4341,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   20.5
                 ],
                 "tag": {
-                  "commentStart": 3700,
-                  "end": 3732,
+                  "commentStart": 3721,
+                  "end": 3753,
                   "moduleId": 0,
-                  "start": 3700,
+                  "start": 3721,
                   "type": "TagDeclarator",
                   "value": "innerFaceOfTheUprofileRightSide"
                 },
@@ -4353,10 +4382,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   25.5
                 ],
                 "tag": {
-                  "commentStart": 3939,
-                  "end": 3962,
+                  "commentStart": 3960,
+                  "end": 3983,
                   "moduleId": 0,
-                  "start": 3939,
+                  "start": 3960,
                   "type": "TagDeclarator",
                   "value": "upperFaceOfTheUprofile"
                 },
@@ -4377,10 +4406,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   25.5
                 ],
                 "tag": {
-                  "commentStart": 4037,
-                  "end": 4056,
+                  "commentStart": 4058,
+                  "end": 4077,
                   "moduleId": 0,
-                  "start": 4037,
+                  "start": 4058,
                   "type": "TagDeclarator",
                   "value": "innerFaceOfTheWall"
                 },
@@ -4463,6 +4492,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4470,7 +4501,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4574,6 +4604,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "upperFaceOfTheUprofile",
       "xAxis": {
         "x": 0.0,
@@ -4597,10 +4628,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3467,
-              "end": 3498,
+              "commentStart": 3488,
+              "end": 3519,
               "moduleId": 0,
-              "start": 3467,
+              "start": 3488,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUProfileLeftSide"
             },
@@ -4611,10 +4642,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3547,
-              "end": 3576,
+              "commentStart": 3568,
+              "end": 3597,
               "moduleId": 0,
-              "start": 3547,
+              "start": 3568,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileBottom"
             },
@@ -4625,10 +4656,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3700,
-              "end": 3732,
+              "commentStart": 3721,
+              "end": 3753,
               "moduleId": 0,
-              "start": 3700,
+              "start": 3721,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheUprofileRightSide"
             },
@@ -4646,10 +4677,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3939,
-              "end": 3962,
+              "commentStart": 3960,
+              "end": 3983,
               "moduleId": 0,
-              "start": 3939,
+              "start": 3960,
               "type": "TagDeclarator",
               "value": "upperFaceOfTheUprofile"
             },
@@ -4660,10 +4691,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4037,
-              "end": 4056,
+              "commentStart": 4058,
+              "end": 4077,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4058,
               "type": "TagDeclarator",
               "value": "innerFaceOfTheWall"
             },
@@ -4699,6 +4730,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -4712,10 +4744,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 3467,
-                "end": 3498,
+                "commentStart": 3488,
+                "end": 3519,
                 "moduleId": 0,
-                "start": 3467,
+                "start": 3488,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUProfileLeftSide"
               },
@@ -4736,10 +4768,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 3547,
-                "end": 3576,
+                "commentStart": 3568,
+                "end": 3597,
                 "moduleId": 0,
-                "start": 3547,
+                "start": 3568,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUprofileBottom"
               },
@@ -4760,10 +4792,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 20.5
               ],
               "tag": {
-                "commentStart": 3700,
-                "end": 3732,
+                "commentStart": 3721,
+                "end": 3753,
                 "moduleId": 0,
-                "start": 3700,
+                "start": 3721,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheUprofileRightSide"
               },
@@ -4801,10 +4833,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 25.5
               ],
               "tag": {
-                "commentStart": 3939,
-                "end": 3962,
+                "commentStart": 3960,
+                "end": 3983,
                 "moduleId": 0,
-                "start": 3939,
+                "start": 3960,
                 "type": "TagDeclarator",
                 "value": "upperFaceOfTheUprofile"
               },
@@ -4825,10 +4857,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 25.5
               ],
               "tag": {
-                "commentStart": 4037,
-                "end": 4056,
+                "commentStart": 4058,
+                "end": 4077,
                 "moduleId": 0,
-                "start": 4037,
+                "start": 4058,
                 "type": "TagDeclarator",
                 "value": "innerFaceOfTheWall"
               },
@@ -4911,6 +4943,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "YZ",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -4918,7 +4952,6 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,

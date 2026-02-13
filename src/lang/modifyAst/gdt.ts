@@ -21,6 +21,7 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Adds flatness GD&T annotation(s) to the AST.
@@ -34,6 +35,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
  * @param precision - Number of decimal places to display (optional)
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -44,9 +46,11 @@ export function addFlatnessGdt({
   artifactGraph,
   faces,
   tolerance,
+  wasmInstance,
   precision,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -55,9 +59,11 @@ export function addFlatnessGdt({
   artifactGraph: ArtifactGraph
   faces: Selections
   tolerance: KclCommandValue
+  wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -84,7 +90,8 @@ export function addFlatnessGdt({
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       faceSelection,
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     if (err(tagResult)) {
       console.warn('Failed to add tag for face selection', tagResult)
@@ -123,8 +130,10 @@ export function addFlatnessGdt({
   const styleResult = processGdtStyleParameters({
     modifiedAst,
     nodeToEdit,
+    wasmInstance,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })
@@ -173,6 +182,7 @@ export function addFlatnessGdt({
       pathToEdit: nodeToEdit,
       pathIfNewPipe: undefined, // GDT annotations don't pipe
       variableIfNewDecl: undefined, // Creates expression statement at the end
+      wasmInstance,
     })
     if (err(pathToNode)) {
       return pathToNode
@@ -202,6 +212,7 @@ export function addFlatnessGdt({
  * @param name - The datum identifier (e.g., 'A', 'B', 'C')
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param leaderScale - Scale of the leader (optional)
  * @param fontPointSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
@@ -212,8 +223,10 @@ export function addDatumGdt({
   artifactGraph,
   faces,
   name,
+  wasmInstance,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
   nodeToEdit,
@@ -222,8 +235,10 @@ export function addDatumGdt({
   artifactGraph: ArtifactGraph
   faces: Selections
   name: string
+  wasmInstance: ModuleType
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -263,7 +278,8 @@ export function addDatumGdt({
   const tagResult = modifyAstWithTagsForSelection(
     modifiedAst,
     faceSelection,
-    artifactGraph
+    artifactGraph,
+    wasmInstance
   )
   if (err(tagResult)) {
     return tagResult
@@ -278,9 +294,11 @@ export function addDatumGdt({
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({
     modifiedAst,
+    wasmInstance,
     nodeToEdit: mNodeToEdit,
     framePosition,
     framePlane,
+    leaderScale,
     fontPointSize,
     fontScale,
   })
@@ -289,7 +307,7 @@ export function addDatumGdt({
   // Build labeled arguments starting with function-specific parameters
   const labeledArgs = [
     createLabeledArg('face', faceExpr),
-    createLabeledArg('name', createLiteral(name)),
+    createLabeledArg('name', createLiteral(name, wasmInstance)),
   ]
 
   // Add common style parameter labeled arguments
@@ -313,6 +331,7 @@ export function addDatumGdt({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined, // GDT annotations don't pipe
     variableIfNewDecl: undefined, // Creates expression statement at the end
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -328,7 +347,7 @@ export function addDatumGdt({
  * Deduplicates face expressions based on their string representation.
  * This prevents creating multiple annotations for the same face.
  */
-function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
+export function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
   const seen = new Set<string>()
   const unique: Expr[] = []
 
@@ -400,7 +419,13 @@ export function getUsedDatumNames(ast: Node<Program>): string[] {
  * @param ast - The AST program node to scan for existing datum names
  * @returns The next available datum character, or 'A' as fallback if all letters are used
  */
-export function getNextAvailableDatumName(ast: Node<Program>): string {
+export function getNextAvailableDatumName(ast?: Node<Program>): string {
+  // Fallback if all A-Z are used (unlikely but safe)
+  const fallback = 'A'
+  if (!ast) {
+    return fallback
+  }
+
   const usedNames = getUsedDatumNames(ast)
   const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
 
@@ -412,8 +437,7 @@ export function getNextAvailableDatumName(ast: Node<Program>): string {
     }
   }
 
-  // Fallback if all A-Z are used (unlikely but safe)
-  return 'A'
+  return fallback
 }
 
 /**
@@ -431,16 +455,20 @@ export function getNextAvailableDatumName(ast: Node<Program>): string {
  */
 function processGdtStyleParameters({
   modifiedAst,
+  wasmInstance,
   nodeToEdit,
   framePosition,
   framePlane,
+  leaderScale,
   fontPointSize,
   fontScale,
 }: {
   modifiedAst: Node<Program>
+  wasmInstance: ModuleType
   nodeToEdit?: PathToNode
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
   fontPointSize?: KclCommandValue
   fontScale?: KclCommandValue
 }): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
@@ -464,6 +492,13 @@ function processGdtStyleParameters({
     framePlane.variableName
   ) {
     insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+  }
+  if (
+    leaderScale &&
+    'variableName' in leaderScale &&
+    leaderScale.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(leaderScale, modifiedAst, nodeToEdit)
   }
   if (
     fontPointSize &&
@@ -491,12 +526,20 @@ function processGdtStyleParameters({
 
   // Handle framePosition parameter - should be Point2d [x, y]
   if (framePosition) {
-    const framePositionExpr = createPoint2dExpression(framePosition)
+    const framePositionExpr = createPoint2dExpression(
+      framePosition,
+      wasmInstance
+    )
     if (err(framePositionExpr)) return framePositionExpr
     labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
   }
 
-  // Add font-related optional labeled arguments if provided
+  // Add scale-related optional labeled arguments if provided
+  if (leaderScale !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('leaderScale', valueOrVariable(leaderScale))
+    )
+  }
   if (fontPointSize !== undefined) {
     labeledArgs.push(
       createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))

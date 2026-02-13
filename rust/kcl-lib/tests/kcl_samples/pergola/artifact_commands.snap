@@ -156,7 +156,8 @@ description: Artifact commands pergola.kcl
         "distance": 2150.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -202,7 +203,7 @@ description: Artifact commands pergola.kcl
           "r": 0.627451,
           "g": 0.50980395,
           "b": 0.36078432,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -224,7 +225,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -508,7 +508,8 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -559,7 +560,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -581,7 +581,7 @@ description: Artifact commands pergola.kcl
           "r": 0.627451,
           "g": 0.50980395,
           "b": 0.36078432,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -603,7 +603,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -807,7 +806,8 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -858,7 +858,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -880,7 +879,7 @@ description: Artifact commands pergola.kcl
           "r": 0.627451,
           "g": 0.50980395,
           "b": 0.36078432,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -902,7 +901,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1106,7 +1104,8 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1157,7 +1156,6 @@ description: Artifact commands pergola.kcl
                 "z": 2150.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1179,7 +1177,7 @@ description: Artifact commands pergola.kcl
           "r": 0.627451,
           "g": 0.50980395,
           "b": 0.36078432,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1201,7 +1199,6 @@ description: Artifact commands pergola.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

@@ -1,5 +1,6 @@
 // Torus
-// A torus is defined by it's diameter and height.
+// A torus is defined by its diameter and height.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 

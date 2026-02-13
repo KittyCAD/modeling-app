@@ -3,8 +3,7 @@
 use std::collections::HashMap;
 
 use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
+    ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -14,10 +13,13 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{PrimitiveType, RuntimeType},
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{Args, extrude::NamedCapTags},
+    std::{
+        Args,
+        extrude::{BeingExtruded, NamedCapTags},
+    },
 };
 
 type Result<T> = std::result::Result<T, KclError>;
@@ -26,80 +28,90 @@ type Result<T> = std::result::Result<T, KclError>;
 ///
 /// This works essentially like a copy-paste operation.
 pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue> {
-    let geometry = args.get_unlabeled_kw_arg(
+    let geometries = args.get_unlabeled_kw_arg(
         "geometry",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Sketch),
-            RuntimeType::Primitive(PrimitiveType::Solid),
-            RuntimeType::imported(),
-        ]),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Sketch),
+                RuntimeType::Primitive(PrimitiveType::Solid),
+                RuntimeType::imported(),
+            ])),
+            ArrayLen::Minimum(1),
+        ),
         exec_state,
     )?;
 
-    let cloned = inner_clone(geometry, exec_state, args).await?;
+    let cloned = inner_clone(geometries, exec_state, args).await?;
     Ok(cloned.into())
 }
 
 async fn inner_clone(
-    geometry: GeometryWithImportedGeometry,
+    geometries: Vec<GeometryWithImportedGeometry>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<GeometryWithImportedGeometry> {
-    let new_id = exec_state.next_uuid();
-    let mut geometry = geometry.clone();
-    let old_id = geometry.id(&args.ctx).await?;
+) -> Result<Vec<GeometryWithImportedGeometry>> {
+    let mut res = vec![];
 
-    let mut new_geometry = match &geometry {
-        GeometryWithImportedGeometry::ImportedGeometry(imported) => {
-            let mut new_imported = imported.clone();
-            new_imported.id = new_id;
-            GeometryWithImportedGeometry::ImportedGeometry(new_imported)
-        }
-        GeometryWithImportedGeometry::Sketch(sketch) => {
-            let mut new_sketch = sketch.clone();
-            new_sketch.id = new_id;
-            new_sketch.original_id = new_id;
-            new_sketch.artifact_id = new_id.into();
-            GeometryWithImportedGeometry::Sketch(new_sketch)
-        }
-        GeometryWithImportedGeometry::Solid(solid) => {
-            // We flush before the clone so all the shit exists.
+    for g in geometries {
+        let new_id = exec_state.next_uuid();
+        let mut geometry = g.clone();
+        let old_id = geometry.id(&args.ctx).await?;
+
+        let mut new_geometry = match &geometry {
+            GeometryWithImportedGeometry::ImportedGeometry(imported) => {
+                let mut new_imported = imported.clone();
+                new_imported.id = new_id;
+                GeometryWithImportedGeometry::ImportedGeometry(new_imported)
+            }
+            GeometryWithImportedGeometry::Sketch(sketch) => {
+                let mut new_sketch = sketch.clone();
+                new_sketch.id = new_id;
+                new_sketch.original_id = new_id;
+                new_sketch.artifact_id = new_id.into();
+                GeometryWithImportedGeometry::Sketch(new_sketch)
+            }
+            GeometryWithImportedGeometry::Solid(solid) => {
+                // We flush before the clone so all the shit exists.
+                exec_state
+                    .flush_batch_for_solids(
+                        ModelingCmdMeta::from_args(exec_state, &args),
+                        std::slice::from_ref(solid),
+                    )
+                    .await?;
+
+                let mut new_solid = solid.clone();
+                new_solid.id = new_id;
+                if let Some(sketch) = new_solid.sketch_mut() {
+                    sketch.original_id = new_id;
+                }
+                new_solid.artifact_id = new_id.into();
+                GeometryWithImportedGeometry::Solid(new_solid)
+            }
+        };
+
+        if args.ctx.no_engine_commands().await {
+            res.push(new_geometry);
+        } else {
             exec_state
-                .flush_batch_for_solids(
-                    ModelingCmdMeta::from_args(exec_state, &args),
-                    std::slice::from_ref(solid),
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
+                    ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
                 )
                 .await?;
 
-            let mut new_solid = solid.clone();
-            new_solid.id = new_id;
-            new_solid.sketch.original_id = new_id;
-            new_solid.artifact_id = new_id.into();
-            GeometryWithImportedGeometry::Solid(new_solid)
+            fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+                .await
+                .map_err(|e| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("failed to fix tags and references: {e:?}"),
+                        vec![args.source_range],
+                    ))
+                })?;
+            res.push(new_geometry)
         }
-    };
-
-    if args.ctx.no_engine_commands().await {
-        return Ok(new_geometry);
     }
 
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
-            ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
-        )
-        .await?;
-
-    fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
-        .await
-        .map_err(|e| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!("failed to fix tags and references: {e:?}"),
-                vec![args.source_range],
-            ))
-        })?;
-
-    Ok(new_geometry)
+    Ok(res)
 }
 /// Fix the tags and references of the cloned geometry.
 async fn fix_tags_and_references(
@@ -119,22 +131,23 @@ async fn fix_tags_and_references(
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-            // Make the sketch id the new geometry id.
-            solid.sketch.id = new_geometry_id;
-            solid.sketch.original_id = new_geometry_id;
-            solid.sketch.artifact_id = new_geometry_id.into();
-            solid.sketch.clone = Some(old_geometry_id);
-
-            fix_sketch_tags_and_references(
-                &mut solid.sketch,
-                &entity_id_map,
-                exec_state,
-                args,
-                Some(solid.value.clone()),
-            )
-            .await?;
-
             let (start_tag, end_tag) = get_named_cap_tags(solid);
+            let solid_value = solid.value.clone();
+
+            // Make the sketch id the new geometry id.
+            let sketch = solid.sketch_mut().ok_or_else(|| {
+                KclError::new_type(KclErrorDetails::new(
+                    "Cloning solids created without a sketch is not yet supported.".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?;
+            sketch.id = new_geometry_id;
+            sketch.original_id = new_geometry_id;
+            sketch.artifact_id = new_geometry_id.into();
+            sketch.clone = Some(old_geometry_id);
+
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
+            let sketch_for_post = sketch.clone();
 
             // Fix the edge cuts.
             for edge_cut in solid.edge_cuts.iter_mut() {
@@ -156,7 +169,7 @@ async fn fix_tags_and_references(
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
             let new_solid = do_post_extrude(
-                &solid.sketch,
+                &sketch_for_post,
                 new_geometry_id.into(),
                 solid.sectional,
                 &NamedCapTags {
@@ -168,6 +181,8 @@ async fn fix_tags_and_references(
                 args,
                 None,
                 Some(&entity_id_map.clone()),
+                BodyType::Solid, // TODO: Support surface clones.
+                BeingExtruded::Sketch,
             )
             .await?;
 
@@ -188,16 +203,15 @@ async fn get_old_new_child_map(
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: old_geometry_id,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityGetAllChildUuids::builder()
+                    .entity_id(old_geometry_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: old_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(old_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -205,21 +219,21 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let old_entity_ids = old_resp.entity_ids;
 
     // Get the new geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: new_geometry_id,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityGetAllChildUuids::builder()
+                    .entity_id(new_geometry_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(new_resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -227,6 +241,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
+    let new_entity_ids = new_resp.entity_ids;
 
     // Create a map of old entity ids to new entity ids.
     Ok(HashMap::from_iter(
@@ -417,16 +432,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -436,8 +453,8 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        assert_eq!(cube.sketch.tags.len(), 0);
-        assert_eq!(cloned_cube.sketch.tags.len(), 0);
+        assert_eq!(cube_sketch.tags.len(), 0);
+        assert_eq!(cloned_cube_sketch.tags.len(), 0);
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
@@ -491,7 +508,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_eq!(tag_info.surface, None);
             assert_eq!(cloned_tag_info.surface, None);
@@ -531,16 +548,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -550,14 +569,14 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        for (tag_name, tag) in &cube.sketch.tags {
-            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+        for (tag_name, tag) in &cube_sketch.tags {
+            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
 
             let tag_info = tag.get_cur_info().unwrap();
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
@@ -603,16 +622,18 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+        for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
             assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
@@ -622,14 +643,14 @@ clonedCube = clone(cube)
             assert_eq!(value.get_tag(), cloned_value.get_tag());
         }
 
-        for (tag_name, tag) in &cube.sketch.tags {
-            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+        for (tag_name, tag) in &cube_sketch.tags {
+            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
 
             let tag_info = tag.get_cur_info().unwrap();
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
@@ -703,12 +724,14 @@ clonedCube = clone(cube)
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
 
         assert_ne!(cube.id, cloned_cube.id);
-        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
-        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 

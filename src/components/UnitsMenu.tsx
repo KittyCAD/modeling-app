@@ -1,18 +1,20 @@
 import { Popover } from '@headlessui/react'
-import { useCallback, useEffect, useState } from 'react'
+import { use, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
+import { useSingletons } from '@src/lib/boot'
+import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
+  const { kclManager, sceneInfra } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   const { state: modelingState } = useModelingContext()
   const inSketchMode = modelingState.matches('Sketch')
@@ -48,7 +50,7 @@ export function UnitsMenu() {
     }
     setRulerWidth(rulerWidth)
     setRulerLabelValue(displayValue)
-  }, [inSketchMode])
+  }, [inSketchMode, sceneInfra])
 
   useEffect(() => {
     const unsubscribers = [
@@ -59,15 +61,23 @@ export function UnitsMenu() {
     return () => {
       unsubscribers.forEach((unsubscriber) => unsubscriber())
     }
-  }, [onCameraChange])
+  }, [
+    onCameraChange,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.fileSettings])
+  }, [
+    kclManager.fileSettings,
+    sceneInfra.baseUnitChange,
+    sceneInfra.camControls.cameraChange,
+  ])
 
   return (
     <Popover className="relative pointer-events-auto flex">
-      {({ close }) => (
+      {(popover) => (
         <>
           <Popover.Button
             data-testid="units-menu"
@@ -98,23 +108,23 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeDefaultUnits(kclManager.code, unit)
+                      const newCode = changeDefaultUnits(
+                        kclManager.code,
+                        unit,
+                        wasmInstance
+                      )
                       if (err(newCode)) {
                         toast.error(
                           `Failed to set per-file units: ${newCode.message}`
                         )
                       } else {
-                        kclManager.updateCodeStateEditor(newCode)
-                        Promise.all([
-                          kclManager.writeToFile(),
-                          kclManager.executeCode(),
-                        ])
-                          .then(() => {
-                            toast.success(`Updated per-file units to ${unit}`)
-                          })
-                          .catch(reportRejection)
+                        kclManager.updateCodeEditor(newCode, {
+                          shouldExecute: true,
+                          shouldResetCamera: true,
+                        })
+                        toast.success(`Updated per-file units to ${unit}`)
                       }
-                      close()
+                      popover.close()
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>

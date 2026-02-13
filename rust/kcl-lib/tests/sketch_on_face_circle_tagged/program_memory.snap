@@ -49,6 +49,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -124,6 +125,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -131,7 +134,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -200,6 +202,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -238,6 +241,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -286,6 +290,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -361,6 +366,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -368,7 +375,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

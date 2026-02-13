@@ -4,7 +4,7 @@ import {
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { type SnapshotFrom, waitFor } from 'xstate'
+import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
@@ -29,13 +29,6 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import {
-  commandBarActor,
-  getLayout,
-  setLayout,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
@@ -46,6 +39,11 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SystemIOActor } from '@src/lib/app'
+import { useSingletons } from '@src/lib/boot'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -69,6 +67,7 @@ export const OnboardingCard = ({
 )
 
 export function useNextClick(newStatus: OnboardingStatus) {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
@@ -83,11 +82,12 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
-  }, [filePath, newStatus, navigate])
+    void navigate(targetRoute)
+  }, [filePath, newStatus, navigate, settingsActor])
 }
 
 export function useDismiss() {
+  const { settingsActor } = useSingletons()
   const filePath = useAbsoluteFilePath()
   const send = settingsActor.send
   const navigate = useNavigate()
@@ -104,7 +104,7 @@ export function useDismiss() {
       })
       waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -114,7 +114,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [send, filePath, navigate]
+    [send, filePath, navigate, settingsActor]
   )
 
   return settingsCallback
@@ -212,7 +212,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -245,7 +245,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -262,6 +264,8 @@ export function OnboardingButtons({
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
+  systemIOActor: SystemIOActor
+  settingsActor: SettingsActorType
   navigate: NavigateFunction
 }
 
@@ -280,7 +284,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     /**
      * Bulk create the assembly and navigate to the project
      */
-    systemIOActor.send({
+    deps.systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
         files: fanParts.map((part) => ({
@@ -297,7 +301,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.kclManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -319,19 +326,17 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  kclManager.updateCodeStateEditor(browserAxialFan)
-  kclManager.writeToFile().catch(reportRejection)
-  kclManager.executeCode().catch(reportRejection)
-  navigate(
+  kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
+  void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
   )
 }
 
-function hasResetReadyCode(kclManager: KclManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
     kclManager.codeSignal.value === browserAxialFan
   )
 }
@@ -347,7 +352,7 @@ export function needsToOnboard(
   )
 }
 
-export function onDismissOnboardingInvite() {
+export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -380,6 +385,7 @@ function TutorialToastCard(props: TutorialToastCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
 ) {
+  const { settingsActor } = useSingletons()
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -414,7 +420,6 @@ export function TutorialRequestToast(
         >
           <strong>Zookeeper</strong> is in the right sidebar, where you can
           create or modify parts with prompts.{' '}
-          <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
           src={quickTipSrc(2)}
@@ -444,7 +449,7 @@ export function TutorialRequestToast(
           }}
           data-negative-button="dismiss"
           name="dismiss"
-          onClick={onDismissOnboardingInvite}
+          onClick={() => onDismissOnboardingInvite(settingsActor)}
         >
           Not right now
         </ActionButton>
@@ -466,7 +471,7 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
           }}
           name="accept"
           onClick={onAccept}
@@ -526,7 +531,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             }}
             data-negative-button="dismiss"
             name="dismiss"
-            onClick={onDismissOnboardingInvite}
+            onClick={() => onDismissOnboardingInvite(props.settingsActor)}
           >
             I'll save it
           </ActionButton>
@@ -576,6 +581,7 @@ export function useOnboardingPanes(
   onMount: DefaultLayoutPaneID[] | undefined = [],
   onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
+  const { getLayout, setLayout } = useSingletons()
   useEffect(() => {
     setLayout(
       setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
@@ -590,7 +596,7 @@ export function useOnboardingPanes(
 }
 
 export function isModelingCmdGroupReady(
-  state: SnapshotFrom<typeof commandBarActor>
+  state: SnapshotFrom<ActorRefFrom<typeof commandBarMachine>>
 ) {
   // Ensure that the modeling command group is available
   if (
@@ -609,6 +615,7 @@ export function useOnModelingCmdGroupReadyOnce(
   callback: () => void,
   deps: React.DependencyList
 ) {
+  const { commandBarActor } = useSingletons()
   const [isReadyOnce, setReadyOnce] = useState(false)
 
   // Set up a subscription to the command bar actor's
@@ -625,7 +632,7 @@ export function useOnModelingCmdGroupReadyOnce(
       })
       return () => subscription.unsubscribe()
     }
-  }, [])
+  }, [commandBarActor])
 
   // Fire the callback when the modeling command group is ready
   useEffect(() => {
@@ -633,7 +640,7 @@ export function useOnModelingCmdGroupReadyOnce(
       callback()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [isReadyOnce, ...deps])
+  }, [isReadyOnce, callback, ...deps])
 }
 
 /**

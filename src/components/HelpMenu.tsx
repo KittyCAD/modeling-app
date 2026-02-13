@@ -7,7 +7,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -23,6 +23,7 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
+  const { kclManager, systemIOActor, settingsActor } = useSingletons()
   const navigate = useNavigate()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -32,6 +33,8 @@ export function HelpMenu() {
       onboardingStatus: onboardingStartPath,
       navigate,
       kclManager,
+      systemIOActor,
+      settingsActor,
     }
     acceptOnboarding(props).catch((reason) =>
       catchOnboardingWarnError(reason, props)
@@ -131,7 +134,7 @@ export function HelpMenu() {
                 const targetPath = location.pathname.includes(PATHS.FILE)
                   ? filePath + PATHS.SETTINGS_KEYBINDINGS
                   : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-                navigate(targetPath)
+                void navigate(targetPath)
               }}
               data-testid="keybindings-button"
             >

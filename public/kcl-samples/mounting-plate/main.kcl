@@ -1,5 +1,6 @@
 // Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components.
+// Categories: Manufacturing, Construction
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

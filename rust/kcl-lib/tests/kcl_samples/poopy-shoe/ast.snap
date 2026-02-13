@@ -1477,8 +1477,6 @@ description: Result of parsing poopy-shoe.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Create the curved portion that catches the printer poop"
         ],
         "start": 0,
@@ -3850,25 +3848,6 @@ description: Result of parsing poopy-shoe.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "5": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Create the right side wall of the tub",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -5191,6 +5170,9 @@ description: Result of parsing poopy-shoe.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Create the right side wall of the tub"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8396,6 +8378,7 @@ description: Result of parsing poopy-shoe.kcl
         "preComments": [
           "// Poopy Shoe",
           "// poop shute for bambu labs printer - optimized for printing.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"
@@ -8470,6 +8453,18 @@ description: Result of parsing poopy-shoe.kcl
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "8": [
           {
             "commentStart": 0,
@@ -8483,6 +8478,18 @@ description: Result of parsing poopy-shoe.kcl
           }
         ],
         "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
           {
             "commentStart": 0,
             "end": 0,

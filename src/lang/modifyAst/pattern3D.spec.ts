@@ -61,11 +61,7 @@ async function getAstAndArtifactGraph(
   return { ast, artifactGraph, operations, variables }
 }
 
-async function getKclCommandValue(
-  value: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
+async function getKclCommandValue(value: string, rustContext: RustContext) {
   const allowArrays = value.trim().startsWith('[')
   const result = await stringToKclExpression(
     value,
@@ -135,24 +131,13 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '11',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('11', rustContextInThisFile),
         axis: 'X',
-        center: await getKclCommandValue(
-          '[10, -20, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        arcDegrees: await getKclCommandValue(
-          '360',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[10, -20, 0]', rustContextInThisFile),
+        arcDegrees: await getKclCommandValue('360', rustContextInThisFile),
         rotateDuplicates: true,
         useOriginal: false,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -189,27 +174,12 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '11',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[1, -1, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        center: await getKclCommandValue(
-          '[10, -20, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        arcDegrees: await getKclCommandValue(
-          '360',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('11', rustContextInThisFile),
+        axis: await getKclCommandValue('[1, -1, 0]', rustContextInThisFile),
+        center: await getKclCommandValue('[10, -20, 0]', rustContextInThisFile),
+        arcDegrees: await getKclCommandValue('360', rustContextInThisFile),
         rotateDuplicates: true,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -245,17 +215,10 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('5', rustContextInThisFile),
         axis: 'Z',
-        center: await getKclCommandValue(
-          '[0, 0, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[0, 0, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -292,24 +255,13 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '6',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('6', rustContextInThisFile),
         axis: 'Y',
-        center: await getKclCommandValue(
-          '[0, 0, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        arcDegrees: await getKclCommandValue(
-          '180',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[0, 0, 0]', rustContextInThisFile),
+        arcDegrees: await getKclCommandValue('180', rustContextInThisFile),
         rotateDuplicates: true,
         useOriginal: false,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -352,19 +304,11 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myInstances',
-          instanceInThisFile,
           rustContextInThisFile
         ),
-        axis: await getKclCommandValue(
-          'myAxis',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        center: await getKclCommandValue(
-          'myCenter',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        axis: await getKclCommandValue('myAxis', rustContextInThisFile),
+        center: await getKclCommandValue('myCenter', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -398,26 +342,14 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '2.5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[1, -1, 0.5]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('2.5', rustContextInThisFile),
+        axis: await getKclCommandValue('[1, -1, 0.5]', rustContextInThisFile),
         center: await getKclCommandValue(
           '[7.5, 3.2, 0]',
-          instanceInThisFile,
           rustContextInThisFile
         ),
-        arcDegrees: await getKclCommandValue(
-          '180.5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        arcDegrees: await getKclCommandValue('180.5', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -459,24 +391,21 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myCount - myOffset',
-          instanceInThisFile,
           rustContextInThisFile
         ),
         axis: await getKclCommandValue(
           '[mySpacing * 2, 0, 1]',
-          instanceInThisFile,
           rustContextInThisFile
         ),
         center: await getKclCommandValue(
           '[mySpacing + myOffset, 0, 0]',
-          instanceInThisFile,
           rustContextInThisFile
         ),
         arcDegrees: await getKclCommandValue(
           'myAngle * 2',
-          instanceInThisFile,
           rustContextInThisFile
         ),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -510,7 +439,6 @@ example = extrude(exampleSketch, length = -5)
       // Test the precedence by creating a mock axis that simulates the edge case
       const baseExpression = await getKclCommandValue(
         '[1, 0, 0]',
-        instanceInThisFile,
         rustContextInThisFile
       )
       const mockAxisWithBothProperties = {
@@ -529,17 +457,10 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('5', rustContextInThisFile),
         axis: mockAxisWithBothProperties,
-        center: await getKclCommandValue(
-          '[0, 0, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[0, 0, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -574,17 +495,10 @@ exampleSketch = startSketchOn(XZ)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '6',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('6', rustContextInThisFile),
         axis: 'Y',
-        center: await getKclCommandValue(
-          '[0, 0, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[0, 0, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -624,17 +538,10 @@ startSketchOn(XY)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '8',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('8', rustContextInThisFile),
         axis: 'Z',
-        center: await getKclCommandValue(
-          '[2, 2, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        center: await getKclCommandValue('[2, 2, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -672,21 +579,10 @@ extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '4',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[0, 1, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        center: await getKclCommandValue(
-          '[5, 0, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('4', rustContextInThisFile),
+        axis: await getKclCommandValue('[0, 1, 0]', rustContextInThisFile),
+        center: await getKclCommandValue('[5, 0, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -725,18 +621,11 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '7',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '6',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('7', rustContextInThisFile),
+        distance: await getKclCommandValue('6', rustContextInThisFile),
         axis: 'X',
         useOriginal: false,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -771,22 +660,11 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '10',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[1, 0, 1]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('5', rustContextInThisFile),
+        distance: await getKclCommandValue('10', rustContextInThisFile),
+        axis: await getKclCommandValue('[1, 0, 1]', rustContextInThisFile),
         useOriginal: true,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -821,17 +699,10 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '3',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '4',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('3', rustContextInThisFile),
+        distance: await getKclCommandValue('4', rustContextInThisFile),
         axis: 'Y',
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -866,18 +737,11 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '6',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '8',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('6', rustContextInThisFile),
+        distance: await getKclCommandValue('8', rustContextInThisFile),
         axis: 'Y',
         useOriginal: true,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -918,19 +782,11 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myInstances',
-          instanceInThisFile,
           rustContextInThisFile
         ),
-        distance: await getKclCommandValue(
-          'myDistance',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          'myAxis',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        distance: await getKclCommandValue('myDistance', rustContextInThisFile),
+        axis: await getKclCommandValue('myAxis', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -964,21 +820,10 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '2.5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '7.5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[1, -1, 0.5]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('2.5', rustContextInThisFile),
+        distance: await getKclCommandValue('7.5', rustContextInThisFile),
+        axis: await getKclCommandValue('[1, -1, 0.5]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -1018,19 +863,17 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myCount - myOffset',
-          instanceInThisFile,
           rustContextInThisFile
         ),
         distance: await getKclCommandValue(
           'mySpacing + myOffset',
-          instanceInThisFile,
           rustContextInThisFile
         ),
         axis: await getKclCommandValue(
           '[mySpacing * 2, 0, 1]',
-          instanceInThisFile,
           rustContextInThisFile
         ),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -1063,7 +906,6 @@ example = extrude(exampleSketch, length = -5)
       // Test the precedence by creating a mock axis that simulates the edge case
       const baseExpression = await getKclCommandValue(
         '[1, 0, 0]',
-        instanceInThisFile,
         rustContextInThisFile
       )
       const mockAxisWithBothProperties = {
@@ -1082,17 +924,10 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '8',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('5', rustContextInThisFile),
+        distance: await getKclCommandValue('8', rustContextInThisFile),
         axis: mockAxisWithBothProperties,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -1127,17 +962,10 @@ exampleSketch = startSketchOn(XZ)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '6',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '3',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('6', rustContextInThisFile),
+        distance: await getKclCommandValue('3', rustContextInThisFile),
         axis: 'Y',
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -1177,17 +1005,10 @@ startSketchOn(XY)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '4',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '2',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('4', rustContextInThisFile),
+        distance: await getKclCommandValue('2', rustContextInThisFile),
         axis: 'Z',
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -1225,21 +1046,10 @@ extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue(
-          '3',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        distance: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        axis: await getKclCommandValue(
-          '[0, 1, 0]',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
+        instances: await getKclCommandValue('3', rustContextInThisFile),
+        distance: await getKclCommandValue('5', rustContextInThisFile),
+        axis: await getKclCommandValue('[0, 1, 0]', rustContextInThisFile),
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {

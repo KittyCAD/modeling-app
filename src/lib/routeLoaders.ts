@@ -24,18 +24,29 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { rustContext, systemIOActor } from '@src/lib/singletons'
 import type { KclManager } from '@src/lang/KclManager'
-import { settingsActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/app'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type RustContext from '@src/lib/rustContext'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export const fileLoader =
-  (kclManager: KclManager): LoaderFunction =>
+  ({
+    kclManager,
+    rustContext,
+    systemIOActor,
+    settingsActor,
+  }: {
+    kclManager: KclManager
+    rustContext: RustContext
+    systemIOActor: SystemIOActor
+    settingsActor: SettingsActorType
+  }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
     const { params } = routerData
 
@@ -49,11 +60,17 @@ export const fileLoader =
             .join(window.electron.sep)
         : undefined
 
-    let settings = await loadAndValidateSettings(heuristicProjectFilePath)
+    const wasmInstance = await kclManager.wasmInstancePromise
+
+    let settings = await loadAndValidateSettings(
+      wasmInstance,
+      heuristicProjectFilePath
+    )
 
     const projectPathData = await getProjectMetaByRouteId(
       readAppSettingsFile,
       readLocalStorageAppSettingsFile,
+      wasmInstance,
       params.id,
       settings.configuration
     )
@@ -67,7 +84,8 @@ export const fileLoader =
 
       if (!urlObj.pathname.endsWith('/settings')) {
         const fallbackFile = window.electron
-          ? (await getProjectInfo(window.electron, projectPath)).default_file
+          ? (await getProjectInfo(window.electron, projectPath, wasmInstance))
+              .default_file
           : ''
         let fileExists = isDesktop()
         if (currentFilePath && fileExists && window.electron) {
@@ -117,12 +135,16 @@ export const fileLoader =
         }
 
         // Update both the state and the editor's code.
-        // We explicitly do not write to the file here since we are loading from
-        // the file system and not the editor.
         kclManager.updateCurrentFilePath(currentFilePath)
-        // We pass true on the end here to clear the code editor history.
-        // This way undo and redo are not super weird when opening new files.
-        kclManager.updateCodeStateEditor(code, true)
+        kclManager.updateCodeEditor(code, {
+          shouldExecute: true,
+          // This way undo and redo are not super weird when opening new files.
+          shouldClearHistory: true,
+          shouldResetCamera: true,
+          // We explicitly do not write to the file here since we are loading from
+          // the file system and not the editor.
+          shouldWriteToDisk: false,
+        })
       }
 
       // Set the file system manager to the project path
@@ -141,7 +163,7 @@ export const fileLoader =
       }
 
       const maybeProjectInfo = window.electron
-        ? await getProjectInfo(window.electron, projectPath)
+        ? await getProjectInfo(window.electron, projectPath, wasmInstance)
         : null
 
       const project = maybeProjectInfo ?? defaultProjectData
@@ -219,17 +241,21 @@ export const fileLoader =
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async ({
-  request,
-}): Promise<HomeLoaderData | Response> => {
-  const url = new URL(request.url)
-  if (!isDesktop()) {
-    return redirect(
-      PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-    )
+export const homeLoader =
+  ({
+    settingsActor,
+  }: {
+    settingsActor: SettingsActorType
+  }): LoaderFunction =>
+  async ({ request }): Promise<HomeLoaderData | Response> => {
+    const url = new URL(request.url)
+    if (!isDesktop()) {
+      return redirect(
+        PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+      )
+    }
+    settingsActor.send({
+      type: 'clear.project',
+    })
+    return {}
   }
-  settingsActor.send({
-    type: 'clear.project',
-  })
-  return {}
-}

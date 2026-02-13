@@ -233,7 +233,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "distance": 88.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -597,7 +598,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -977,7 +979,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1237,7 +1240,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "distance": 104.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1434,7 +1438,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "distance": 104.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

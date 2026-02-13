@@ -14,7 +14,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -34,6 +33,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { useSingletons } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -64,6 +64,7 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function Welcome() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
@@ -85,7 +86,7 @@ function Welcome() {
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [loaderData?.project?.name, systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -105,6 +106,7 @@ function Welcome() {
 }
 
 function Scene() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -125,7 +127,7 @@ function Scene() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -182,8 +184,8 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional credits. Pro and Org
-          plans come with unlimited Zookeeper generations.
+          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
           Let’s walk through an example of how to use Zookeeper.
@@ -222,9 +224,9 @@ function TextToCadPrompt() {
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Zookeeper prompt</h1>
         <p className="my-4">
-          To save you a Zookeeper generation credit, we are going to use a
-          pre-rolled Zookeeper prompt for this example. Click next to see an
-          example of what Zookeeper can generate.
+          To save you money, we are going to use a pre-rolled Zookeeper prompt
+          for this example. Click next to see an example of what Zookeeper can
+          generate.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -236,6 +238,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'fan-housing.kcl'
@@ -259,7 +262,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -369,6 +372,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the text-to-cad button if it's present
@@ -388,7 +392,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -398,10 +402,7 @@ function PromptToEdit() {
           Zookeeper not only can <strong>create</strong> a part, but also{' '}
           <strong>modify</strong> an existing part. Still in the right sidebar,
           under the “Zookeeper” pane, you’ll be able to describe the change you
-          want for your part, and our AI will generate the change. Once again,
-          this will cost <strong>one credit per second</strong> it took to
-          generate, but as mentioned before, most calls are typically under one
-          minute.
+          want for your part, and our AI will generate the change. minute.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -413,6 +414,7 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
+  const { commandBarActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
@@ -469,10 +471,10 @@ function PromptToEditPrompt() {
           update the housing and fan together.
         </p>
         <p className="my-4">
-          To save you a credit, we are using a pre-rolled Zookeeper prompt to
-          edit your existing fan housing. You can see the prompt in the window
-          above. Click next to see an example of what modifying with Zookeeper
-          would look like.
+          To save you money, we are using a pre-rolled Zookeeper prompt to edit
+          your existing fan housing. You can see the prompt in the window above.
+          Click next to see an example of what modifying with Zookeeper would
+          look like.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -484,6 +486,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
+  const { systemIOActor } = useSingletons()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -515,7 +518,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">

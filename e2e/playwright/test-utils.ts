@@ -163,10 +163,10 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // kclManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    kclManager.getEditorView().dispatch({
+    kclManager.editorView.dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: kclManager.getEditorView().docView.length,
+        anchor: kclManager.editorView.docView.length,
       },
       scrollIntoView: true,
     })
@@ -539,7 +539,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return toNormalizedCode(text)
     },
 
-    async editorTextMatches(code: string) {
+    async editorTextMatches(this: void, code: string) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {

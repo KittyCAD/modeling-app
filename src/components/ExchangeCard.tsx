@@ -4,11 +4,10 @@ import { Thinking } from '@src/components/Thinking'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/machines/mlEphantManagerMachine2'
+} from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
   useEffect,
-  useRef,
   useState,
   type ReactNode,
   type ComponentProps,
@@ -17,8 +16,7 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape } from '@ts-stack/markdown'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -213,6 +211,7 @@ export const ChatBubble = (props: {
   dataTestId?: string
   placeholderTestId?: string
   className?: string
+  showCancelledInsteadOfPlaceholder?: boolean
 }) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
@@ -227,6 +226,8 @@ export const ChatBubble = (props: {
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
           {hasVisibleChildren(props.children) ? (
             props.children
+          ) : props.showCancelledInsteadOfPlaceholder ? (
+            <span>Message canceled.</span>
           ) : (
             <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
@@ -255,16 +256,9 @@ export const RequestCard = (props: RequestCardProps) => {
 }
 
 export const Delta = (props: { children: ReactNode }) => {
-  const ref = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    if (ref.current === null) return
-    ref.current.scrollIntoView()
-  }, [])
-
   return (
     <span className="animate-delta-in" style={{ opacity: 0 }}>
       {props.children}
-      <span ref={ref}></span>
     </span>
   )
 }
@@ -272,13 +266,7 @@ export const Delta = (props: { children: ReactNode }) => {
 type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
-}
-
-const MarkedOptions = {
-  gfm: true,
-  breaks: true,
-  sanitize: true,
-  escape,
+  isLastResponse: boolean
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -288,15 +276,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
       />
-      <span
-        className="parsed-markdown"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.maybeError?.error.detail, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+      <MarkdownText text={props.maybeError?.error.detail} />
     </div>
   ) : null
 
@@ -325,15 +305,10 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
-      <span
-        className="parsed-markdown whitespace-normal"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.deltasAggregated, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+      <MarkdownText
+        text={props.deltasAggregated}
+        className="whitespace-normal"
+      />
     ) : null
   }, [props.deltasAggregated])
 
@@ -345,6 +320,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
       className="py-4"
+      showCancelledInsteadOfPlaceholder={!props.isLastResponse}
     >
       {[
         itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
@@ -444,18 +420,21 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               )}
             </button>
           </div>
-          <ExchangeCardStatus
-            maybeError={maybeError}
-            responses={props.responses}
-            onlyShowImmediateThought={true}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
+          {props.isLastResponse && (
+            <ExchangeCardStatus
+              maybeError={maybeError}
+              responses={props.responses}
+              onlyShowImmediateThought={true}
+              startedAt={startedAt}
+              updatedAt={updatedAt}
+            />
+          )}
         </div>
       )}
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
+        isLastResponse={props.isLastResponse}
       />
       <ResponseCardToolBar
         responses={props.responses}

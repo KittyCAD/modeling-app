@@ -25,10 +25,12 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addHelix({
   ast,
   artifactGraph,
+  wasmInstance,
   axis,
   edge,
   cylinder,
@@ -41,6 +43,7 @@ export function addHelix({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
   axis?: string
   cylinder?: Selections
   edge?: Selections
@@ -70,6 +73,7 @@ export function addHelix({
     const vars = getVariableExprsFromSelection(
       cylinder,
       modifiedAst,
+      wasmInstance,
       mNodeToEdit,
       lastChildLookup,
       artifactGraph
@@ -80,7 +84,12 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const result = getAxisExpressionAndIndex(axis, edge, modifiedAst)
+    const result = getAxisExpressionAndIndex(
+      axis,
+      edge,
+      modifiedAst,
+      wasmInstance
+    )
     if (err(result)) {
       return result
     }
@@ -90,7 +99,9 @@ export function addHelix({
   }
 
   // Optional args
-  const ccwExpr = ccw ? [createLabeledArg('ccw', createLiteral(ccw))] : []
+  const ccwExpr = ccw
+    ? [createLabeledArg('ccw', createLiteral(ccw, wasmInstance))]
+    : []
   const radiusExpr = radius
     ? [createLabeledArg('radius', valueOrVariable(radius))]
     : []
@@ -134,6 +145,7 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

@@ -12,13 +12,8 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import {
-  engineCommandManager,
-  kclManager,
-  systemIOActor,
-  useSettings,
-} from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -37,12 +32,21 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
+  const { auth } = useApp()
+  const {
+    billingActor,
+    engineCommandManager,
+    kclManager,
+    systemIOActor,
+    useSettings,
+  } = useSingletons()
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
+  const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -100,7 +104,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     }
 
     kclManager.isExecuting = false
-    navigate(requestedPath)
+    void navigate(requestedPath)
   }
 
   /**
@@ -232,10 +236,13 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
-    mlEphantManagerActor2,
+    mlEphantManagerActor,
+    billingActor,
+    token,
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -269,8 +276,9 @@ export function SystemIOMachineLogicListenerDesktop() {
         projectNameCurrentlyOpened
       )
 
+      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
       systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,
@@ -285,7 +293,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

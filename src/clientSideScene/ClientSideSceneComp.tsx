@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -30,14 +30,8 @@ import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import type { useSettings } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import type { CameraSystem } from '@src/lib/cameraControls'
+import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
@@ -45,19 +39,26 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
   const [isTween, setIsTween] = useState(false)
 
   const { state } = useModelingContext()
+  const { sceneInfra } = useSingletons()
 
   useEffect(() => {
-    sceneInfra.camControls.setIsCamMovingCallback((isMoving, isTween) => {
-      setIsCamMoving(isMoving)
-      setIsTween(isTween)
-    })
-  }, [])
+    sceneInfra.camControls.setIsCamMovingCallback(
+      (isMoving: boolean, isTweenValue: boolean) => {
+        setIsCamMoving(isMoving)
+        setIsTween(isTweenValue)
+      }
+    )
+  }, [sceneInfra.camControls])
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
@@ -73,13 +74,11 @@ export const ClientSideScene = ({
   cameraControls,
   enableTouchControls,
 }: {
-  cameraControls: ReturnType<
-    typeof useSettings
-  >['modeling']['mouseControls']['current']
-  enableTouchControls: ReturnType<
-    typeof useSettings
-  >['modeling']['enableTouchControls']['current']
+  cameraControls: CameraSystem
+  enableTouchControls: boolean
 }) => {
+  const { engineCommandManager, sceneEntitiesManager, sceneInfra } =
+    useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -88,15 +87,15 @@ export const ClientSideScene = ({
   useEffect(() => {
     sceneInfra.camControls.interactionGuards =
       cameraMouseDragGuards[cameraControls]
-  }, [cameraControls])
+  }, [cameraControls, sceneInfra.camControls])
   useEffect(() => {
     sceneInfra.camControls.initTouchControls(enableTouchControls)
-  }, [enableTouchControls])
+  }, [enableTouchControls, sceneInfra.camControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
     )
-  }, [state?.context?.selectionRanges?.otherSelections])
+  }, [state?.context?.selectionRanges?.otherSelections, sceneInfra])
 
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -119,7 +118,7 @@ export const ClientSideScene = ({
       // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
-      sceneEntitiesManager.onCamChange()
+      sceneEntitiesManager.onCamChange().catch(reportRejection)
     })
     observer.observe(container)
 
@@ -146,6 +145,7 @@ export const ClientSideScene = ({
       container.removeEventListener('mousedown', sceneInfra.onMouseDown)
       container.removeEventListener('mouseup', onMouseUp)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+      cleanupSketchSolveGroup(sceneInfra)
 
       observer.disconnect()
       media.removeEventListener('change', handleChange)
@@ -178,6 +178,11 @@ export const ClientSideScene = ({
     } else {
       cursor = 'default'
     }
+  } else if (
+    state.matches('sketchSolveMode') &&
+    context.sketchSolveToolName !== null
+  ) {
+    cursor = 'crosshair'
   }
 
   return (
@@ -195,7 +200,66 @@ export const ClientSideScene = ({
         }`}
       ></div>
       <Overlays />
+      <SketchSolveToolIconOverlay />
+      <EditingConstraintInput />
     </>
+  )
+}
+
+const SketchSolveToolIconOverlay = () => {
+  const { state, context } = useModelingContext()
+  const toolbarConfig = useToolbarConfig()
+  const toolIconMap = useMemo(
+    () => getSketchSolveToolIconMap(toolbarConfig),
+    [toolbarConfig]
+  )
+  const [mousePosition, setMousePosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
+  // Only show overlay when in sketchSolveMode with a tool equipped
+  const isToolEquipped =
+    state.matches('sketchSolveMode') && context.sketchSolveToolName !== null
+  const iconName = isToolEquipped
+    ? (toolIconMap[context.sketchSolveToolName ?? ''] ?? null)
+    : null
+
+  useEffect(() => {
+    if (!isToolEquipped) {
+      setMousePosition(null)
+      return
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [isToolEquipped])
+
+  if (!isToolEquipped || !iconName || !mousePosition) {
+    return null
+  }
+
+  // Position icon below and to the right of cursor
+  // Offset: 16px right, 16px down (typical cursor size is ~16px)
+  const offsetX = 8
+  const offsetY = 8
+
+  return (
+    <div
+      className="fixed pointer-events-none z-[9999] w-5 h-5 left-0 top-0"
+      style={{
+        opacity: 0.2,
+        transform: `translate(${mousePosition.x + offsetX}px, ${mousePosition.y + offsetY}px)`,
+      }}
+    >
+      <CustomIcon name={iconName} className="w-6 h-6" />
+    </div>
   )
 }
 
@@ -243,6 +307,8 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
+  const { kclManager } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context, send, state } = useModelingContext()
 
   // Simple check directly from localStorage
@@ -257,6 +323,7 @@ const Overlay = ({
   const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
+    wasmInstance,
     ['CallExpressionKw']
   )
 
@@ -377,8 +444,14 @@ const SegmentMenu = ({
   pathToNode: PathToNode
   stdLibFnName: string
 }) => {
+  const { kclManager } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { send } = useModelingContext()
-  const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
+  const dependentSourceRanges = findUsesOfTagInPipe(
+    kclManager.ast,
+    pathToNode,
+    wasmInstance
+  )
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -436,6 +509,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
+  const { kclManager, commandBarActor } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -519,7 +594,7 @@ const ConstraintSymbol = ({
   const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
@@ -571,14 +646,19 @@ const ConstraintSymbol = ({
               },
             })
           } else if (isConstrained) {
+            const wasmInstance = await kclManager.wasmInstancePromise
             try {
-              const pResult = parse(recast(kclManager.ast))
+              const pResult = parse(
+                recast(kclManager.ast, wasmInstance),
+                wasmInstance
+              )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
               const _node1 = getNodeFromPath<CallExpressionKw>(
                 pResult.program,
                 pathToNode,
+                wasmInstance,
                 ['CallExpressionKw'],
                 true
               )
@@ -592,7 +672,8 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.variables,
                 removeSingleConstraint,
-                transformAstSketchLines
+                transformAstSketchLines,
+                wasmInstance
               )
 
               if (!transform) return
@@ -601,7 +682,7 @@ const ConstraintSymbol = ({
               await kclManager.updateAst(modifiedAst, true)
 
               // Code editor will be updated in the modelingMachine.
-              const newCode = recast(modifiedAst)
+              const newCode = recast(modifiedAst, wasmInstance)
               if (err(newCode)) return
               kclManager.updateCodeEditor(newCode)
             } catch (e) {
@@ -673,13 +754,15 @@ const ConstraintSymbol = ({
   )
 }
 
-const throttled = throttle((a: ReactCameraProperties) => {
-  if (a.type === 'perspective' && a.fov) {
-    sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
-  }
-}, 1000 / 15)
+const throttled = (sceneInfra: SceneInfra) =>
+  throttle((a: ReactCameraProperties) => {
+    if (a.type === 'perspective' && a.fov) {
+      sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
+    }
+  }, 1000 / 15)
 
 export const CamDebugSettings = () => {
+  const { sceneInfra, commandBarActor } = useSingletons()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties
   )
@@ -732,7 +815,7 @@ export const CamDebugSettings = () => {
           onChange={(e) => {
             setFov(parseFloat(e.target.value))
 
-            throttled({
+            throttled(sceneInfra)({
               ...camSettings,
               fov: parseFloat(e.target.value),
             })

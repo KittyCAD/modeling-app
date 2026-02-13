@@ -11,16 +11,23 @@ interface Domain {
 function SupportedDomainsRadioGroup({
   selected,
   setSelected,
+  onCommit,
   domains,
 }: {
   selected: string
   setSelected: (environment: string) => void
+  onCommit: (environment: string) => void
   domains: Domain[]
 }) {
+  const handleChange = (value: string) => {
+    setSelected(value)
+    onCommit(value)
+  }
+
   return (
     <div className="w-full py-4">
       <div className="mx-auto w-full max-w-md">
-        <RadioGroup value={selected} onChange={setSelected}>
+        <RadioGroup value={selected} onChange={handleChange}>
           <div className="space-y-2">
             {domains.map((domain) => (
               <RadioGroup.Option
@@ -69,15 +76,13 @@ function SupportedDomainsRadioGroup({
 }
 
 export const AdvancedSignInOptions = ({
-  pool,
-  setPool,
   selectedEnvironment,
   setSelectedEnvironment,
+  onEnvironmentCommit,
 }: {
-  pool: string
-  setPool: React.Dispatch<React.SetStateAction<string>>
   selectedEnvironment: string
   setSelectedEnvironment: (environment: string) => void
+  onEnvironmentCommit: (environment: string) => void
 }) => {
   const domains: Domain[] = [
     {
@@ -97,11 +102,6 @@ export const AdvancedSignInOptions = ({
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
         Signing into <span className="font-bold">{selectedEnvironment}</span>{' '}
         environment
-        {pool !== '' && (
-          <span>
-            , to the <span className="font-bold">{pool}</span> pool
-          </span>
-        )}
       </span>
       <Popover className="relative ml-8">
         <Popover.Button
@@ -141,6 +141,7 @@ export const AdvancedSignInOptions = ({
                 <SupportedDomainsRadioGroup
                   selected={selectedEnvironment}
                   setSelected={setSelectedEnvironment}
+                  onCommit={onEnvironmentCommit}
                   domains={domains}
                 />
                 <ActionButton
@@ -175,22 +176,14 @@ export const AdvancedSignInOptions = ({
                       onChange={(event) =>
                         setSelectedEnvironment(event.target.value)
                       }
-                    />
-                  )}
-                </Combobox>
-                {showCustomInput && (
-                  <div className="flex flex-col items-start py-1">
-                    <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
-                      Connection pool
-                    </span>
-                  </div>
-                )}
-                <Combobox value={pool} onChange={setPool}>
-                  {showCustomInput && (
-                    <Combobox.Input
-                      className="gap-1 rounded h-6 border px-2 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
-                      placeholder="auto"
-                      onChange={(event) => setPool(event.target.value)}
+                      onBlur={(event) =>
+                        onEnvironmentCommit(event.currentTarget.value)
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          onEnvironmentCommit(event.currentTarget.value)
+                        }
+                      }}
                     />
                   )}
                 </Combobox>

@@ -19,6 +19,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -49,6 +50,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -56,7 +59,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -175,6 +177,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -250,6 +253,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -257,7 +262,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -361,6 +365,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -436,6 +441,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -443,7 +450,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -526,6 +532,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -601,6 +608,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -608,7 +617,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -691,6 +699,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -766,6 +775,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -773,7 +784,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -856,6 +866,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -931,6 +942,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -938,7 +951,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1021,6 +1033,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1096,6 +1109,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1103,7 +1118,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1186,6 +1200,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1261,6 +1276,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1268,7 +1285,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1351,6 +1367,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1426,6 +1443,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1433,7 +1452,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1516,6 +1534,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1591,6 +1610,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1598,7 +1619,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1681,6 +1701,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1756,6 +1777,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1763,7 +1786,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1846,6 +1868,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1921,6 +1944,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1928,7 +1953,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2011,6 +2035,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2086,6 +2111,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2093,7 +2120,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2176,6 +2202,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2251,6 +2278,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2258,7 +2287,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2322,6 +2350,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2352,6 +2381,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2359,7 +2390,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2438,6 +2468,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2445,7 +2477,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2500,13 +2531,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": -12.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2560,6 +2592,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2567,7 +2601,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2613,13 +2646,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2656,6 +2690,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2687,6 +2722,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2714,6 +2750,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -2744,6 +2781,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 2,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2751,7 +2790,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2858,6 +2896,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -2885,6 +2924,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2915,6 +2955,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2922,7 +2964,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3013,6 +3054,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 3,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -3040,6 +3082,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           }
         ],
         "sketch": {
+          "creatorType": "sketch",
           "type": "Sketch",
           "id": "[uuid]",
           "paths": [
@@ -3070,6 +3113,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "XY",
+            "objectId": 2,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -3077,7 +3122,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "units": "mm"
             },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -3141,6 +3185,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3172,6 +3217,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3199,6 +3245,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               }
             ],
             "sketch": {
+              "creatorType": "sketch",
               "type": "Sketch",
               "id": "[uuid]",
               "paths": [
@@ -3229,6 +3276,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "XY",
+                "objectId": 2,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3236,7 +3285,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3387,6 +3435,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3394,7 +3444,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3440,13 +3489,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3513,6 +3563,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3588,6 +3639,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3595,7 +3648,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3664,13 +3716,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 40.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3769,6 +3822,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3776,7 +3831,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3822,13 +3876,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 40.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

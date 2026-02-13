@@ -24,6 +24,8 @@ This module contains functions for creating and manipulating sketches, and makin
 * [`elliptic`](/docs/kcl-std/functions/std-sketch-elliptic)
 * [`ellipticPoint`](/docs/kcl-std/functions/std-sketch-ellipticPoint)
 * [`extrude`](/docs/kcl-std/functions/std-sketch-extrude)
+* [`faceOf`](/docs/kcl-std/functions/std-sketch-faceOf)
+* [`getBoundedEdge`](/docs/kcl-std/functions/std-sketch-getBoundedEdge)
 * [`getCommonEdge`](/docs/kcl-std/functions/std-sketch-getCommonEdge)
 * [`getNextAdjacentEdge`](/docs/kcl-std/functions/std-sketch-getNextAdjacentEdge)
 * [`getOppositeEdge`](/docs/kcl-std/functions/std-sketch-getOppositeEdge)

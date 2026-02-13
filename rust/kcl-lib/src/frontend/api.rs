@@ -3,6 +3,7 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::units::UnitLength;
 use serde::{Deserialize, Serialize};
 
 pub use crate::ExecutorSettings as Settings;
@@ -78,6 +79,12 @@ pub struct SourceDelta {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
+impl ObjectId {
+    pub fn predecessor(self) -> Option<Self> {
+        self.0.checked_sub(1).map(ObjectId)
+    }
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
@@ -130,6 +137,7 @@ pub enum ObjectKind {
     /// A placeholder for an object that will be solved and replaced later.
     Nil,
     Plane(Plane),
+    Face(Face),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -147,6 +155,13 @@ pub enum ObjectKind {
 pub enum Plane {
     Object(ObjectId),
     Default(PlaneName),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    pub id: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -185,9 +200,23 @@ impl Number {
     pub fn round(&self, digits: u8) -> Self {
         let factor = 10f64.powi(digits as i32);
         let rounded_value = (self.value * factor).round() / factor;
+        // Don't return negative zero.
+        let value = if rounded_value == -0.0 { 0.0 } else { rounded_value };
         Number {
-            value: rounded_value,
+            value,
             units: self.units,
+        }
+    }
+}
+
+impl From<(f64, UnitLength)> for Number {
+    fn from((value, units): (f64, UnitLength)) -> Self {
+        // Direct conversion from UnitLength to NumericSuffix (never panics)
+        // The From<UnitLength> for NumericSuffix impl is in execution::types
+        let units_suffix = NumericSuffix::from(units);
+        Number {
+            value,
+            units: units_suffix,
         }
     }
 }

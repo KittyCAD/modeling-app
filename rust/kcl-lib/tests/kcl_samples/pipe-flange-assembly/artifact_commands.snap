@@ -130,7 +130,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 0.7874,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -259,7 +260,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -0.7874,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -305,7 +307,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.8156863,
           "g": 0.79607844,
           "b": 0.24313726,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -634,7 +636,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -763,7 +766,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 1.5239999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -892,7 +896,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1021,7 +1026,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1067,7 +1073,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.7294118,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1394,7 +1400,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1523,7 +1530,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 1.5239999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1652,7 +1660,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1781,7 +1790,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1827,7 +1837,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.7294118,
           "g": 0.6901961,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -1852,7 +1862,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "w": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1877,7 +1886,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 3.8353999999999995
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1904,7 +1912,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -2.3114
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2042,7 +2049,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 0.8128,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2171,7 +2179,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -0.8128,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2217,7 +2226,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.93333334,
           "g": 0.30980393,
           "b": 0.30980393,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -2239,7 +2248,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 17.525999999999996
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2558,7 +2566,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -15.875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2777,7 +2786,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -11.90625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2906,7 +2916,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 63.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2952,7 +2963,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.3019608,
           "g": 0.8156863,
           "b": 0.2627451,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,
@@ -2974,7 +2985,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 18.3388
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3002,7 +3012,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3220,7 +3229,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 13.890625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3349,7 +3359,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -13.890625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3395,7 +3406,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.30588236,
           "g": 0.8745098,
           "b": 0.8352941,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3417,7 +3428,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -36.064825
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3576,7 +3586,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3705,7 +3716,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3751,7 +3763,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.63529414,
           "g": 0.30588236,
           "b": 0.8156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -3774,7 +3786,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3800,7 +3811,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 11.175999999999998
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -3938,7 +3948,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4067,7 +4078,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4113,7 +4125,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "r": 0.63529414,
           "g": 0.30588236,
           "b": 0.8156863,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -4136,7 +4148,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -4162,7 +4173,6 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -15.011399999999998
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

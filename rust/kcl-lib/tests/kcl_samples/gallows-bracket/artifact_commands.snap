@@ -207,7 +207,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 2402.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -259,7 +260,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -285,7 +285,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1250.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -500,7 +499,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 1252.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -688,7 +688,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -739,7 +740,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -781,7 +781,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 180.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1010,7 +1009,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1071,7 +1071,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1132,7 +1133,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1413,7 +1415,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 452.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1601,7 +1604,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1652,7 +1656,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1694,7 +1697,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": -90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1720,7 +1722,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1251.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -1881,7 +1882,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2134,7 +2136,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 629.9108216936542,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2322,7 +2325,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2373,7 +2377,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2551,7 +2554,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2602,7 +2606,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2644,7 +2647,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": -90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2670,7 +2672,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 69.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2698,7 +2699,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2724,7 +2724,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1244.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -2905,7 +2904,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2956,7 +2956,6 @@ description: Artifact commands gallows-bracket.kcl
                 "z": 1175.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

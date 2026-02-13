@@ -202,7 +202,8 @@ description: Artifact commands revolve_about_edge.kcl
           "value": 90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

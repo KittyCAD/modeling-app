@@ -196,7 +196,8 @@ description: Artifact commands modular-shelf-grid.kcl
         "distance": 500.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -257,7 +258,8 @@ description: Artifact commands modular-shelf-grid.kcl
         "distance": 500.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -420,7 +422,8 @@ description: Artifact commands modular-shelf-grid.kcl
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

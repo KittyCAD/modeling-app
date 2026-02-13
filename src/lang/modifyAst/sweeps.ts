@@ -13,6 +13,7 @@ import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
+  createPoint2dExpression,
 } from '@src/lang/modifyAst'
 import {
   modifyAstWithTagsForSelection,
@@ -30,21 +31,32 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  type KclPreludeExtrudeMethod,
+  type KclPreludeBodyType,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { toUtf16 } from '@src/lang/errors'
 
 export function addExtrude({
   ast,
   artifactGraph,
   sketches,
+  wasmInstance,
   length,
   to,
   symmetric,
@@ -61,6 +73,7 @@ export function addExtrude({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   sketches: Selections
+  wasmInstance: ModuleType
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
@@ -70,8 +83,8 @@ export function addExtrude({
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
-  method?: string
-  bodyType?: string
+  method?: KclPreludeExtrudeMethod
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -84,10 +97,47 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
-  if (err(vars)) {
-    return vars
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const faceSelections = sketches.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+  for (const faceSelection of faceSelections) {
+    const res = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(res)) {
+      return res
+    }
+    modifiedAst = res.modifiedAst
+    const expr = createLocalName(res.tags[0])
+    vars.exprs.push(expr)
+  }
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   // Extra labeled args expressions
@@ -103,14 +153,15 @@ export function addExtrude({
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       to.graphSelections[0],
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
@@ -132,9 +183,15 @@ export function addExtrude({
   const twistAngleStepExpr = twistAngleStep
     ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
     : []
-  const twistCenterExpr = twistCenter
-    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
-    : []
+  let twistCenterExpr: LabeledArg[] = []
+  if (twistCenter) {
+    const twistCenterExpression = createPoint2dExpression(
+      twistCenter,
+      wasmInstance
+    )
+    if (err(twistCenterExpression)) return twistCenterExpression
+    twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
+  }
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
@@ -198,6 +255,7 @@ export function addExtrude({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -221,19 +279,23 @@ export function addSweep({
   ast,
   sketches,
   path,
+  wasmInstance,
   sectional,
   relativeTo,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   path: Selections
+  wasmInstance: ModuleType
   sectional?: boolean
   relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -247,7 +309,12 @@ export function addSweep({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
@@ -257,6 +324,7 @@ export function addSweep({
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
     path.graphSelections[0].codeRef.pathToNode,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(pathDeclaration)) {
@@ -266,7 +334,7 @@ export function addSweep({
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
   const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional))]
+    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
     : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
@@ -277,6 +345,9 @@ export function addSweep({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
@@ -285,6 +356,7 @@ export function addSweep({
     ...relativeToExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -295,6 +367,7 @@ export function addSweep({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -309,20 +382,24 @@ export function addSweep({
 export function addLoft({
   ast,
   sketches,
+  wasmInstance,
   vDegree,
   bezApproximateRational,
   baseCurveIndex,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
+  wasmInstance: ModuleType
   vDegree?: KclCommandValue
   bezApproximateRational?: boolean
   baseCurveIndex?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -336,7 +413,12 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
@@ -349,7 +431,7 @@ export function addLoft({
     ? [
         createLabeledArg(
           'bezApproximateRational',
-          createLiteral(bezApproximateRational)
+          createLiteral(bezApproximateRational, wasmInstance)
         ),
       ]
     : []
@@ -362,6 +444,9 @@ export function addLoft({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
@@ -370,6 +455,7 @@ export function addLoft({
     ...baseCurveIndexExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // Insert variables for labeled arguments if provided
@@ -392,6 +478,7 @@ export function addLoft({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -407,23 +494,27 @@ export function addRevolve({
   ast,
   sketches,
   angle,
+  wasmInstance,
   axis,
   edge,
   symmetric,
   bidirectionalAngle,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   angle: KclCommandValue
+  wasmInstance: ModuleType
   axis?: string
   edge?: Selections
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -437,20 +528,30 @@ export function addRevolve({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(axis, edge, modifiedAst)
+  const getAxisResult = getAxisExpressionAndIndex(
+    axis,
+    edge,
+    modifiedAst,
+    wasmInstance
+  )
   if (err(getAxisResult) || !getAxisResult.generatedAxis) {
     return new Error('Generated axis selection is missing.')
   }
 
   // Extra labeled args expressions
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
@@ -466,6 +567,9 @@ export function addRevolve({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
@@ -475,6 +579,7 @@ export function addRevolve({
     ...bidirectionalAngleExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // Insert variables for labeled arguments if provided
@@ -502,6 +607,7 @@ export function addRevolve({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -518,14 +624,19 @@ export function addRevolve({
 export function getAxisExpressionAndIndex(
   axis: string | undefined,
   edge: Selections | undefined,
-  ast: Node<Program>
+  ast: Node<Program>,
+  wasmInstance: ModuleType
 ) {
   if (edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range
     )
-    const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
+    const tagResult = mutateAstWithTagForSketchSegment(
+      ast,
+      pathToAxisSelection,
+      wasmInstance
+    )
 
     // Have the tag whether it is already created or a new one is generated
     if (err(tagResult)) {
@@ -671,7 +782,25 @@ export function retrieveTagDeclaratorFromOpArg(
 ): string {
   const dollarSignOffset = 1
   return code.slice(
-    opArg.sourceRange[0] + dollarSignOffset,
-    opArg.sourceRange[1]
+    toUtf16(opArg.sourceRange[0], code) + dollarSignOffset,
+    toUtf16(opArg.sourceRange[1], code)
   )
+}
+
+export function retrieveBodyTypeFromOpArg(
+  opArg: OpArg,
+  code: string
+): KclPreludeBodyType | Error {
+  /** Version of `toUtf16` bound to our code, for mapping source range values. */
+  const boundToUtf16 = (n: number) => toUtf16(n, code)
+  const result = code.slice(...opArg.sourceRange.map(boundToUtf16))
+  if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
+    return KCL_PRELUDE_BODY_TYPE_SOLID
+  }
+
+  if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
+    return KCL_PRELUDE_BODY_TYPE_SURFACE
+  }
+
+  return new Error("Couldn't retrieve bodyType argument")
 }

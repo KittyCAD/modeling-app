@@ -156,7 +156,8 @@ description: Artifact commands plane_of_chamfer.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

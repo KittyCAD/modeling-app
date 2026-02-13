@@ -35,19 +35,16 @@ node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
 	npm install
 
-$(CARGO):
+$(CARGO): rust/rust-toolchain.toml
 ifdef WINDOWS
 	npm run install:rust:windows
+	@ powershell -Command "if (Test-Path '$(CARGO)') { (Get-Item '$(CARGO)').LastWriteTime = Get-Date }"
 else
 	npm run install:rust
 endif
 
 $(WASM_PACK):
-ifdef WINDOWS
 	npm run install:wasm-pack:cargo
-else
-	npm run install:wasm-pack:sh
-endif
 
 ###############################################################################
 # BUILD
@@ -87,7 +84,7 @@ endif
 check: format lint
 
 .PHONY: format
-format: install public/kcl_wasm_lib_bg.wasm ## Format the code
+format: install ## Format the code
 	npm run fmt
 
 .PHONY: lint
@@ -130,8 +127,7 @@ endif
 test: test-unit test-integration test-e2e-web
 
 .PHONY: test-unit
-test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
-	# TODO: Remove unit test dependency on Wasm binary
+test-unit: install ## Run the unit tests
 	npm run test:unit
 
 .PHONY: test-integration

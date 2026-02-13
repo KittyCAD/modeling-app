@@ -39,6 +39,7 @@ export interface ModifyAstBase {
 export interface AddTagInfo {
   node: Node<Program>
   pathToNode: PathToNode
+  wasmInstance: ModuleType
 }
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a
@@ -106,11 +107,12 @@ export interface addCall extends ModifyAstBase {
     xAxis?: boolean
     yAxis?: boolean
   }
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }
 
 interface updateArgs extends ModifyAstBase {
   input: SegmentInputs
+  wasmInstance: ModuleType
 }
 
 export type InputArgKeys =
@@ -265,7 +267,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   tag?: Node<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {

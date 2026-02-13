@@ -502,7 +502,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -536,7 +535,8 @@ description: Artifact commands t-slot-rectangle.kcl
         "distance": 457.2,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -588,7 +588,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1137,7 +1136,6 @@ description: Artifact commands t-slot-rectangle.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1171,7 +1169,8 @@ description: Artifact commands t-slot-rectangle.kcl
         "distance": 558.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

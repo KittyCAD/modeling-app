@@ -196,7 +196,8 @@ description: Artifact commands gridfinity-baseplate.kcl
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -442,7 +443,8 @@ description: Artifact commands gridfinity-baseplate.kcl
           "value": -90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

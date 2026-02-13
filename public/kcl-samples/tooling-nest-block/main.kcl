@@ -1,5 +1,6 @@
 // Tooling Nest Block
 // A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry
+// Categories: Manufacturing, Construction
 
 // Set units
 @settings(defaultLengthUnit = mm)

@@ -173,6 +173,7 @@ export function buildCommandArgument<
     displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
+    prepopulate: arg.prepopulate,
     hidden: arg.hidden,
     skip: arg.skip,
     machineActor,

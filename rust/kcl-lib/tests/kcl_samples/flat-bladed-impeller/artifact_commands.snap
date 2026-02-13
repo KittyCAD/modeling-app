@@ -179,7 +179,8 @@ description: Artifact commands flat-bladed-impeller.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -385,7 +386,8 @@ description: Artifact commands flat-bladed-impeller.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -514,7 +516,8 @@ description: Artifact commands flat-bladed-impeller.kcl
         "distance": 35.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -643,7 +646,8 @@ description: Artifact commands flat-bladed-impeller.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

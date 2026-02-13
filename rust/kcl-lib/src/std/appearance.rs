@@ -102,24 +102,20 @@ async fn inner_appearance(
             ))
         })?;
 
-        let color = Color {
-            r: rgb.red,
-            g: rgb.green,
-            b: rgb.blue,
-            a: 100.0,
-        };
+        let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, 1.0);
 
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
-                ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                    object_id: solid_id,
-                    color,
-                    backface_color: None,
-                    metalness: metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0,
-                    roughness: roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0,
-                    ambient_occlusion: 0.0,
-                }),
+                ModelingCmd::from(
+                    mcmd::ObjectSetMaterialParamsPbr::builder()
+                        .object_id(solid_id)
+                        .color(color)
+                        .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
+                        .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
+                        .ambient_occlusion(0.0)
+                        .build(),
+                ),
             )
             .await?;
 

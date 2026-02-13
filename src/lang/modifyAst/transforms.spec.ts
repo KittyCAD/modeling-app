@@ -68,6 +68,7 @@ describe('transforms.test.ts', () => {
         y: await getKclCommandValue('2', instance, rustContext),
         z: await getKclCommandValue('3', instance, rustContext),
         global: true,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -134,6 +135,7 @@ extrude001 = extrude(profile001, length = 1)`
         z: await getKclCommandValue('6', instance, rustContext),
         global: false,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -228,6 +230,7 @@ translate(
         y: await getKclCommandValue('2', instance, rustContext),
         z: await getKclCommandValue('3', instance, rustContext),
         global: true,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -298,6 +301,7 @@ scale(extrude001, factor = 2)`
           instanceInThisFile,
           rustContextInThisFile
         ),
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -331,6 +335,7 @@ scale(extrude001, factor = 2)`
         objects,
         factor,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -361,6 +366,7 @@ scale(extrude001, factor = 2)`
         z: await getKclCommandValue('6', instance, rustContext),
         global: false,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -457,6 +463,7 @@ scale(
         pitch: await getKclCommandValue('20', instance, rustContext),
         yaw: await getKclCommandValue('30', instance, rustContext),
         global: true,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -523,6 +530,7 @@ extrude001 = extrude(profile001, length = 1)`
         yaw: await getKclCommandValue('60', instance, rustContext),
         global: false,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -616,6 +624,7 @@ rotate(
         artifactGraph,
         objects,
         variableName: 'yoyoyo',
+        wasmInstance: instance,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -654,6 +663,7 @@ extrude001 = extrude(profile001, length = 1)`
         artifactGraph,
         objects,
         color: '#FF0000',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
@@ -713,6 +723,7 @@ extrude001 = extrude(profile001, length = 1)`
           instanceInThisFile,
           rustContextInThisFile
         ),
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -744,6 +755,7 @@ appearance(
         objects,
         color: '#00FF00',
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)

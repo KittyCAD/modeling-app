@@ -5,7 +5,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
@@ -16,6 +16,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
+  const { kclManager, rustContext } = useSingletons()
   const currentLevel: WarningLevel =
     kclManager.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
@@ -23,7 +24,7 @@ export function ExperimentalFeaturesMenu() {
   return (
     currentLevel.type !== 'Deny' && (
       <Popover className="relative pointer-events-auto flex">
-        {({ close }) => (
+        {(popover) => (
           <>
             <Popover.Button
               data-testid="experimental-features-menu"
@@ -45,34 +46,39 @@ export function ExperimentalFeaturesMenu() {
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
-                        const newAst = setExperimentalFeatures(
-                          kclManager.code,
-                          level
-                        )
-                        if (err(newAst)) {
-                          toast.error(
-                            `Failed to set file experimental features level: ${newAst.message}`
-                          )
-                        } else {
-                          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-                            kclManager,
-                            rustContext,
-                          })
-                            .then((result) => {
-                              if (err(result)) {
-                                toast.error(
-                                  `Failed to set file experimental features level: ${result.message}`
-                                )
-                                return
-                              }
+                        awaitWasmAndSetFlag().catch(reportRejection)
 
-                              toast.success(
-                                `Updated file experimental features level to ${level.type}`
-                              )
+                        async function awaitWasmAndSetFlag() {
+                          const newAst = setExperimentalFeatures(
+                            kclManager.code,
+                            level,
+                            await kclManager.wasmInstancePromise
+                          )
+                          if (err(newAst)) {
+                            toast.error(
+                              `Failed to set file experimental features level: ${newAst.message}`
+                            )
+                          } else {
+                            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+                              kclManager,
+                              rustContext,
                             })
-                            .catch(reportRejection)
+                              .then((result) => {
+                                if (err(result)) {
+                                  toast.error(
+                                    `Failed to set file experimental features level: ${result.message}`
+                                  )
+                                  return
+                                }
+
+                                toast.success(
+                                  `Updated file experimental features level to ${level.type}`
+                                )
+                              })
+                              .catch(reportRejection)
+                          }
+                          popover.close()
                         }
-                        close()
                       }}
                     >
                       <span className="flex-1">{level.type}</span>

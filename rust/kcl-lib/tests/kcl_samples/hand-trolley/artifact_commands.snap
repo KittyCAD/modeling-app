@@ -239,7 +239,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -671,6 +672,7 @@ description: Artifact commands hand-trolley.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -1036,6 +1038,7 @@ description: Artifact commands hand-trolley.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -1276,7 +1279,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1835,7 +1839,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2123,7 +2128,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2365,7 +2371,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 609.5999999999999,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2940,7 +2947,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3256,7 +3264,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3295,7 +3304,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.003921569,
           "g": 0.003921569,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.1,
         "roughness": 0.7,
@@ -3354,7 +3363,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3371,7 +3380,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3388,7 +3397,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3405,7 +3414,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3422,7 +3431,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3439,7 +3448,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3456,7 +3465,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3473,7 +3482,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3490,7 +3499,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -3778,7 +3787,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4210,6 +4220,7 @@ description: Artifact commands hand-trolley.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -4575,6 +4586,7 @@ description: Artifact commands hand-trolley.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -4815,7 +4827,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5374,7 +5387,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5662,7 +5676,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5788,7 +5803,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5805,7 +5820,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5822,7 +5837,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5839,7 +5854,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5856,7 +5871,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5873,7 +5888,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5890,7 +5905,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5907,7 +5922,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5924,7 +5939,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5941,7 +5956,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5958,7 +5973,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -5975,7 +5990,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -6523,7 +6538,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -6562,7 +6578,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.7529412,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -6856,7 +6872,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -6895,7 +6912,7 @@ description: Artifact commands hand-trolley.kcl
           "r": 0.003921569,
           "g": 0.003921569,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.1,
         "roughness": 0.7,

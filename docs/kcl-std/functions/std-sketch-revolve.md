@@ -17,6 +17,7 @@ revolve(
   bidirectionalAngle?: number(Angle),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): [Solid; 1+]
 ```
 
@@ -43,6 +44,7 @@ revolved around the same axis.
 | `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
@@ -431,6 +433,31 @@ sketch001 = startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve12.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+halfTorus = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
+closedTorus = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(axis = Y, bodyType = SURFACE)
+  |> translate(z = 30)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the revolve function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve13_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve13.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

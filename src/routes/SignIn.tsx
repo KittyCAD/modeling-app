@@ -7,24 +7,19 @@ import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import { updateEnvironment } from '@src/env'
 import env from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
-import {
-  readEnvironmentConfigurationPool,
-  readEnvironmentFile,
-  writeEnvironmentConfigurationPool,
-  writeEnvironmentFile,
-} from '@src/lib/desktop'
+import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { authActor, useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -33,6 +28,8 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
+  const { auth } = useApp()
+  const { useSettings } = useSingletons()
   // Only create the native file menus on desktop
   if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
@@ -50,13 +47,31 @@ const SignIn = () => {
   const [selectedEnvironment, setSelectedEnvironment] = useState(
     lastSelectedEnvironmentName
   )
-  const [pool, setPool] = useState(env().POOL || '')
 
   // See if the user added a real URL if they did, auto take the hostname!
   const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
+  const commitEnvironmentChange = (requestedEnvironment: string) => {
+    const electron = window.electron
+    if (!electron) return
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    void (async () => {
+      const persistedEnvironment = await readEnvironmentFile(electron).catch(
+        () => ''
+      )
+      if (requestedEnvironmentFormatted === persistedEnvironment) {
+        return
+      }
+      await writeEnvironmentFile(electron, requestedEnvironmentFormatted).catch(
+        reportRejection
+      )
+      window.location.reload()
+    })()
   }
 
   useEffect(() => {
@@ -70,19 +85,11 @@ const SignIn = () => {
             return environment
           }
         })
-        .then((environment) => {
-          const defaultOrDiskEnvironment = environment || selectedEnvironment
-          if (defaultOrDiskEnvironment) {
-            readEnvironmentConfigurationPool(electron, defaultOrDiskEnvironment)
-              .then((pool) => {
-                setPool(pool)
-              })
-              .catch(reportRejection)
-          }
+        .then(() => {
+          // Environment loaded from disk
         })
         .catch(reportRejection)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const {
@@ -106,8 +113,8 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
-    updateEnvironment(selectedEnvironment)
-    updateEnvironmentPool(selectedEnvironment, pool)
+    const requestedEnvironment = selectedEnvironment.trim()
+    updateEnvironment(requestedEnvironment)
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -125,21 +132,14 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile(electron, '')
       return
     }
 
-    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
-    writeEnvironmentConfigurationPool(
-      electron,
-      selectedEnvironment,
-      pool
-    ).catch(reportRejection)
-    authActor.send({ type: 'Log in', token })
+    auth.send({ type: 'Log in', token })
   }
 
   const cancelSignIn = async () => {
-    authActor.send({ type: 'Log out' })
+    auth.send({ type: 'Log out' })
     setUserCode('')
   }
 
@@ -200,14 +200,13 @@ const SignIn = () => {
                       data-testid="sign-in-button"
                     >
                       Sign in to get started
-                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                      <CustomIcon name="arrowShortRight" className="w-6 h-6" />
                     </button>
                     {isDesktop() && (
                       <AdvancedSignInOptions
-                        pool={pool}
-                        setPool={setPool}
                         selectedEnvironment={selectedEnvironment}
                         setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                        onEnvironmentCommit={commitEnvironmentChange}
                       />
                     )}
                   </>
@@ -240,7 +239,7 @@ const SignIn = () => {
                       }
                       data-testid="cancel-sign-in-button"
                     >
-                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      <CustomIcon name="arrowShortLeft" className="w-6 h-6" />
                       Cancel
                     </button>
                   </>
@@ -265,7 +264,7 @@ const SignIn = () => {
                   data-testid="sign-in-button"
                 >
                   Sign in to get started
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                  <CustomIcon name="arrowShortRight" className="w-6 h-6" />
                 </Link>
               </>
             )}
@@ -301,7 +300,7 @@ const SignIn = () => {
               data-testid="view-sample-button"
             >
               View this sample
-              <CustomIcon name="arrowRight" className="w-6 h-6" />
+              <CustomIcon name="arrowShortRight" className="w-6 h-6" />
             </div>
           </Link>
           <div className="self-end h-min md:col-span-3 xl:row-span-2 flex flex-col md:grid grid-cols-2 gap-5">

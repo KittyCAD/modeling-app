@@ -22,12 +22,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import {
-  appActor,
-  kclManager,
-  settingsActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import {
@@ -47,6 +42,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
+    const { appActor, kclManager, settingsActor, useSettings, systemIOActor } =
+      useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = useSettings()
@@ -73,11 +70,13 @@ export const AllSettingsFields = forwardRef(
         onboardingStatus: onboardingStartPath,
         navigate,
         kclManager,
+        systemIOActor,
+        settingsActor,
       }
       // We need to navigate out of settings before accepting onboarding
       // in the web
       if (!isDesktop()) {
-        navigate('..')
+        void navigate('..')
       }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)
@@ -103,11 +102,8 @@ export const AllSettingsFields = forwardRef(
                   {decamelize(category, { separator: ' ' })}
                 </h2>
                 {Object.entries(categorySettings)
-                  .filter(
-                    // Filter out settings that don't have a Component or inputType
-                    // or are hidden on the current level or the current platform
-                    (item: [string, Setting<unknown>]) =>
-                      shouldShowSettingInput(item[1], searchParamTab)
+                  .filter((item: [string, Setting<unknown>]) =>
+                    shouldShowSettingInput(item[1], searchParamTab)
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting

@@ -62,7 +62,7 @@ function tomlStringMakeTestDataNotAsFragile(toml: string): string {
   return perProjectSettingsToToml(settings)
 }
 
-test.describe('Named view tests', () => {
+test.describe('Named view tests', { tag: '@desktop' }, () => {
   test.fail(runningOnWindows(), 'Windows line endings break snapshot matching')
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it

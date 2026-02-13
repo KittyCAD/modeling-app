@@ -7,16 +7,13 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type {
+  CommandArgument,
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -30,13 +27,18 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
+  const { commandBarActor, kclManager, useCommandBarState } = useSingletons()
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
-  const nonHiddenArgs = useMemo(() => {
+  const nonHiddenArgs = useMemo<
+    Record<string, CommandArgument<unknown>> | undefined
+  >(() => {
     if (!selectedCommand?.args) return undefined
-    const s = { ...selectedCommand.args }
+    const s = {
+      ...selectedCommand.args,
+    } as Record<string, CommandArgument<unknown>>
     for (const [name, arg] of Object.entries(s)) {
       const { isHidden } = evaluateCommandBarArg(
         name,
@@ -188,7 +190,8 @@ function CommandBarHeaderFooter({
                             kclManager.astSignal.value,
                             argValue as Selections
                           )
-                        ) : arg.inputType === 'kcl' ? (
+                        ) : arg.inputType === 'kcl' &&
+                          (argValue as KclCommandValue).valueCalculated ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,
                             4
@@ -334,7 +337,7 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       tabIndex={0}
       data-testid="command-bar-continue"
       iconEnd={{
-        icon: 'arrowRight',
+        icon: 'arrowShortRight',
         bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
@@ -358,7 +361,7 @@ function StepBackButton({
       tabIndex={0}
       data-testid="command-bar-step-back"
       iconStart={{
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}

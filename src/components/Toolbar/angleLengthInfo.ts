@@ -6,15 +6,18 @@ import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
   kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
   kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -22,7 +25,7 @@ export function angleLengthInfo({
     }
   | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, wasmInstance, [
       'CallExpressionKw',
     ])
   )
@@ -40,7 +43,8 @@ export function angleLengthInfo({
   const transforms = getTransformInfos(
     selectionRanges,
     kclManager.ast,
-    angleOrLength
+    angleOrLength,
+    wasmInstance
   )
   const enabled =
     selectionRanges.graphSelections.length <= 1 &&

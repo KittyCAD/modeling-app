@@ -1,5 +1,6 @@
 // Mug
 // A cup with straight sides and a handle, typically used for hot drinks
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = mm)

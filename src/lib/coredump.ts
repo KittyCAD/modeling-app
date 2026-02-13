@@ -52,7 +52,7 @@ export class CoreDumpManager {
     this.token = token
   }
 
-  // Get the token.
+  // Get the token
   authToken(): string {
     if (!this.token) {
       throw new Error('Token not set')
@@ -60,26 +60,22 @@ export class CoreDumpManager {
     return this.token
   }
 
-  // Get the base url.
+  // Get the base URL
   baseApiUrl(): string {
     return this.baseUrl
   }
 
-  // Get the version of the app from the package.json.
+  // Get the version of the app from the package.json
   version(): string {
     return APP_VERSION
   }
 
+  // Get the KCL code related this session
   kclCode(): string {
     return this.kclManager.code
   }
 
-  // Get the backend pool we've requested.
-  pool(): string {
-    return this.engineCommandManager.settings.pool || ''
-  }
-
-  // Get the os information.
+  // Get the OS information
   getOsInfo(): string {
     if (window.electron) {
       const osinfo: OsInfo = {
@@ -316,7 +312,12 @@ export class CoreDumpManager {
             kclManager.wasmInitFailed
         }
 
-        const kclManagerSkipKeys = ['camControls']
+        const kclManagerSkipKeys = [
+          'camControls',
+          'engineCommandManager',
+          'wasmInstancePromise',
+          'singletons',
+        ]
         const kclManagerKeys = Object.keys(kclManager)
           .sort()
           .filter((entry) => {
@@ -348,7 +349,7 @@ export class CoreDumpManager {
       debugLog('CoreDump: Scene Infra', sceneInfra)
 
       if (sceneInfra) {
-        const sceneInfraSkipKeys = ['camControls']
+        const sceneInfraSkipKeys = ['camControls', 'wasmInstancePromise']
         const sceneInfraKeys = Object.keys(sceneInfra)
           .sort()
           .filter((entry) => {
@@ -371,7 +372,6 @@ export class CoreDumpManager {
           }
         })
       }
-
       // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
       const sceneEntitiesManager = (globalThis?.window as any)
         ?.sceneEntitiesManager

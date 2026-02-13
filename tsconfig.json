@@ -42,6 +42,7 @@
     "node_modules",
     "./*.grammar",
     "vite.config.ts",
+    "forge.config.ts",
     ".vscode-test",
     "rust/kcl-wasm-lib/pkg/**"
   ],

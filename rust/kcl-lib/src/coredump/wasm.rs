@@ -82,12 +82,6 @@ impl CoreDump for CoreDumper {
             .map_err(|e| anyhow::anyhow!("Failed to get response from kcl code: {:?}", e))
     }
 
-    fn pool(&self) -> Result<String> {
-        self.manager
-            .pool()
-            .map_err(|e| anyhow::anyhow!("Failed to get response from pool: {:?}", e))
-    }
-
     fn os(&self) -> Result<crate::coredump::OsInfo> {
         let value = self
             .manager

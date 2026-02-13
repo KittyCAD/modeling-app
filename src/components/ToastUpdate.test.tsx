@@ -176,6 +176,6 @@ describe('ToastUpdate tests', () => {
 
     expect(zooDev).toHaveAttribute('href', 'https://zoo.dev/')
     expect(zooDev).toHaveAttribute('target', '_blank')
-    expect(zooDev).toHaveAttribute('onClick')
+    expect(zooDev).toHaveAttribute('data-safe-link')
   })
 })

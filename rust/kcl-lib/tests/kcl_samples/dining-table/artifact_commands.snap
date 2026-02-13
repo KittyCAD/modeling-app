@@ -196,7 +196,8 @@ description: Artifact commands dining-table.kcl
         "distance": -20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -401,7 +402,8 @@ description: Artifact commands dining-table.kcl
         "distance": 730.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -452,7 +454,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -529,7 +530,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -606,7 +606,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -683,7 +682,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -877,7 +875,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -914,7 +911,8 @@ description: Artifact commands dining-table.kcl
         "distance": -120.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1015,7 +1013,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1170,7 +1167,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1207,7 +1203,8 @@ description: Artifact commands dining-table.kcl
         "distance": -120.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1308,7 +1305,6 @@ description: Artifact commands dining-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

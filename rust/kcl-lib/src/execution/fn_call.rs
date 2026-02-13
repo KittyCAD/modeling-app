@@ -5,10 +5,11 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
-        annotations,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, Solid, StatementKind,
+        TagEngineInfo, TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
-        kcl_value::{FunctionBody, FunctionSource},
+        control_continue,
+        kcl_value::{FunctionBody, FunctionSource, NamedParam},
         memory,
         types::RuntimeType,
     },
@@ -128,7 +129,11 @@ impl Arg {
 
 impl Node<CallExpressionKw> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
@@ -151,9 +156,10 @@ impl Node<CallExpressionKw> {
         if let Some(ref arg_expr) = self.unlabeled {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
 
             let label = arg_expr.ident_name().map(str::to_owned);
 
@@ -163,9 +169,10 @@ impl Node<CallExpressionKw> {
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
             let arg = Arg::new(value, source_range);
             match &arg_expr.label {
                 Some(l) => {
@@ -217,14 +224,30 @@ impl Node<CallExpressionKw> {
 }
 
 impl FunctionSource {
-    pub async fn call_kw(
+    pub(crate) async fn call_kw(
         &self,
         fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
         args: Args<Sugary>,
         callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        exec_state.inc_call_stack_size(callsite)?;
+
+        let result = self.inner_call_kw(fn_name, exec_state, ctx, args, callsite).await;
+
+        exec_state.dec_call_stack_size(callsite)?;
+        result
+    }
+
+    async fn inner_call_kw(
+        &self,
+        fn_name: Option<String>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
                 CompilationError::err(
@@ -251,6 +274,21 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
+
+        // Warn if experimental arguments are used after desugaring.
+        for (label, arg) in &args.labeled {
+            if let Some(param) = self.named_args.get(label.as_str())
+                && param.experimental
+            {
+                exec_state.warn_experimental(
+                    &match &fn_name {
+                        Some(f) => format!("`{f}({label})`"),
+                        None => label.to_owned(),
+                    },
+                    arg.source_range,
+                );
+            }
+        }
 
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
@@ -340,7 +378,7 @@ impl FunctionSource {
         // Do not early return via ? or something until we've
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
-        let mut result = match &self.body {
+        let result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
@@ -351,12 +389,20 @@ impl FunctionSource {
 
                 ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
                     .await
-                    .map(|_| {
+                    .map(|cf| {
+                        if let Some(cf) = cf
+                            && cf.is_some_return()
+                        {
+                            return Some(cf);
+                        }
+                        // Ignore the block's value and extract the return value
+                        // from memory.
                         exec_state
                             .stack()
                             .get(memory::RETURN_NAME, self.ast.as_source_range())
                             .ok()
                             .cloned()
+                            .map(KclValue::continue_)
                     })
             }
         };
@@ -378,13 +424,25 @@ impl FunctionSource {
             }
         }
 
+        let mut result = match result {
+            Ok(Some(value)) => {
+                if value.is_some_return() {
+                    return Ok(Some(value));
+                } else {
+                    Ok(Some(value.into_value()))
+                }
+            }
+            Ok(None) => Ok(None),
+            Err(e) => Err(e),
+        };
+
         if self.is_std
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
         }
 
-        coerce_result_type(result, self, exec_state)
+        coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
     }
 }
 
@@ -422,10 +480,27 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            for v in &value.value {
+            let surfaces = value.value.clone();
+            if value.sketch_mut().is_none() {
+                // If the solid isn't based on a sketch, then it doesn't have a tag container,
+                // so there's nothing to do here.
+                return Ok(());
+            };
+            // Now that we know there's work to do (because there's a tag container),
+            // run some clones.
+            let solid_copies: Vec<Box<Solid>> = surfaces.iter().map(|_| value.clone()).collect();
+            // Get the tag container. We expect it to always succeed because we already checked
+            // for a tag container above.
+            let Some(sketch) = value.sketch_mut() else {
+                return Ok(());
+            };
+            for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
+                if let Some(sketch) = solid_copy.sketch_mut() {
+                    sketch.tags.clear(); // Avoid recursive tags.
+                }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
+                    let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -436,7 +511,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                         let mut info = info.clone();
                         info.surface = Some(v.clone());
-                        info.sketch = value.id;
+                        info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -450,7 +525,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    sketch: value.id,
+                                    geometry: Geometry::Solid(*solid_copy),
                                 },
                             )],
                             meta: vec![Metadata {
@@ -460,7 +535,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     // update the sketch tags.
-                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+                    sketch.merge_tags(Some(&tag_id).into_iter());
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
@@ -480,11 +555,15 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            if !value.sketch.tags.is_empty() {
+            if let Some(sketch) = value.sketch() {
+                if sketch.tags.is_empty() {
+                    return Ok(());
+                }
+                let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -493,7 +572,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 for k in sketches_to_update {
                     exec_state.mut_stack().update(&k, |v, _| {
                         let sketch = v.as_mut_sketch().unwrap();
-                        sketch.merge_tags(value.sketch.tags.values());
+                        sketch.merge_tags(sketch_tags.iter());
                     });
                 }
             }
@@ -628,7 +707,9 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                // Suppress warnings about types because they should only be
+                // warned about once for the function definition.
+                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
                 arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
@@ -715,11 +796,18 @@ fn type_check_params_kw(
 
     for (label, mut arg) in args.labeled {
         match fn_def.named_args.get(&label) {
-            Some((def, ty)) => {
+            Some(NamedParam {
+                experimental: _,
+                default_value: def,
+                ty,
+            }) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                        // Suppress warnings about types because they should
+                        // only be warned about once for the function
+                        // definition.
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                                 .value
@@ -772,7 +860,7 @@ fn assign_args_to_params_kw(
     // been created.
     let source_ranges = fn_def.ast.as_source_ranges();
 
-    for (name, (default, _)) in fn_def.named_args.iter() {
+    for (name, param) in fn_def.named_args.iter() {
         let arg = args.labeled.get(name);
         match arg {
             Some(arg) => {
@@ -782,7 +870,7 @@ fn assign_args_to_params_kw(
                     arg.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
                 )?;
             }
-            None => match default {
+            None => match &param.default_value {
                 Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
@@ -824,7 +912,9 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
+            // Suppress warnings about types because they should only be warned
+            // about once for the function definition.
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_type(KclErrorDetails::new(
@@ -872,6 +962,7 @@ mod test {
         }
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -881,6 +972,7 @@ mod test {
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,

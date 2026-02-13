@@ -156,7 +156,8 @@ description: Artifact commands plane_of.kcl
         "distance": 1828.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

@@ -22,6 +22,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addPatternCircular3D({
   ast,
@@ -30,6 +31,7 @@ export function addPatternCircular3D({
   instances,
   axis,
   center,
+  wasmInstance,
   arcDegrees,
   rotateDuplicates,
   useOriginal,
@@ -41,6 +43,7 @@ export function addPatternCircular3D({
   instances: KclCommandValue
   axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
   center: KclCommandValue // Point3d [x, y, z]
+  wasmInstance: ModuleType
   arcDegrees?: KclCommandValue
   rotateDuplicates?: boolean
   useOriginal?: boolean
@@ -55,6 +58,7 @@ export function addPatternCircular3D({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -77,7 +81,7 @@ export function addPatternCircular3D({
         typeof val === 'string' ||
         typeof val === 'boolean'
       ) {
-        arrayElements.push(createLiteral(val))
+        arrayElements.push(createLiteral(val, wasmInstance))
       } else {
         return new Error('Invalid axis value type')
       }
@@ -102,7 +106,7 @@ export function addPatternCircular3D({
         typeof val === 'string' ||
         typeof val === 'boolean'
       ) {
-        arrayElements.push(createLiteral(val))
+        arrayElements.push(createLiteral(val, wasmInstance))
       } else {
         return new Error('Invalid center value type')
       }
@@ -119,11 +123,21 @@ export function addPatternCircular3D({
     : []
   const rotateDuplicatesExpr =
     rotateDuplicates !== undefined
-      ? [createLabeledArg('rotateDuplicates', createLiteral(rotateDuplicates))]
+      ? [
+          createLabeledArg(
+            'rotateDuplicates',
+            createLiteral(rotateDuplicates, wasmInstance)
+          ),
+        ]
       : []
   const useOriginalExpr =
     useOriginal !== undefined
-      ? [createLabeledArg('useOriginal', createLiteral(useOriginal))]
+      ? [
+          createLabeledArg(
+            'useOriginal',
+            createLiteral(useOriginal, wasmInstance)
+          ),
+        ]
       : []
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
@@ -168,6 +182,7 @@ export function addPatternCircular3D({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -186,6 +201,7 @@ export function addPatternLinear3D({
   instances,
   distance,
   axis,
+  wasmInstance,
   useOriginal,
   nodeToEdit,
 }: {
@@ -195,6 +211,7 @@ export function addPatternLinear3D({
   instances: KclCommandValue
   distance: KclCommandValue // number(Length)
   axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
+  wasmInstance: ModuleType
   useOriginal?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -207,6 +224,7 @@ export function addPatternLinear3D({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -229,7 +247,7 @@ export function addPatternLinear3D({
         typeof val === 'string' ||
         typeof val === 'boolean'
       ) {
-        arrayElements.push(createLiteral(val))
+        arrayElements.push(createLiteral(val, wasmInstance))
       } else {
         return new Error('Invalid axis value type')
       }
@@ -246,7 +264,12 @@ export function addPatternLinear3D({
   // Optional labeled arguments
   const useOriginalExpr =
     useOriginal !== undefined
-      ? [createLabeledArg('useOriginal', createLiteral(useOriginal))]
+      ? [
+          createLabeledArg(
+            'useOriginal',
+            createLiteral(useOriginal, wasmInstance)
+          ),
+        ]
       : []
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
@@ -281,6 +304,7 @@ export function addPatternLinear3D({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

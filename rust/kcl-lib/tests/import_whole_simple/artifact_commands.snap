@@ -130,7 +130,8 @@ description: Artifact commands import_whole_simple.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -183,7 +184,6 @@ description: Artifact commands import_whole_simple.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

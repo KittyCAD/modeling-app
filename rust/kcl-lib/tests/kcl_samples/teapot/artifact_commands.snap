@@ -374,6 +374,7 @@ description: Artifact commands teapot.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -612,7 +613,8 @@ description: Artifact commands teapot.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -969,6 +971,7 @@ description: Artifact commands teapot.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -1147,7 +1150,8 @@ description: Artifact commands teapot.kcl
         "distance": -80.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1450,7 +1454,8 @@ description: Artifact commands teapot.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1503,7 +1508,7 @@ description: Artifact commands teapot.kcl
           "r": 0.12156863,
           "g": 0.59607846,
           "b": 0.5882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -1520,7 +1525,7 @@ description: Artifact commands teapot.kcl
           "r": 0.12156863,
           "g": 0.59607846,
           "b": 0.5882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,
@@ -1537,7 +1542,7 @@ description: Artifact commands teapot.kcl
           "r": 0.12156863,
           "g": 0.59607846,
           "b": 0.5882353,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.4,
         "roughness": 0.3,

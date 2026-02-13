@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
@@ -24,11 +24,12 @@ import { reportRejection } from '@src/lib/trap'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 
 export default function AxisGizmo() {
+  const { sceneInfra, useSettings } = useSingletons()
   const { state: modelingState } = useModelingContext()
   const settings = useSettings()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
+  const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
 
@@ -122,7 +123,7 @@ export default function AxisGizmo() {
       disposeMouseEvents()
       sceneInfra.camControls.cameraChange.remove(animate)
     }
-  }, [])
+  }, [sceneInfra])
 
   return (
     <div
@@ -246,7 +247,7 @@ const quaternionsEqual = (
 
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
+  raycasterIntersect: MutableRefObject<Intersection | null>,
   sceneInfra: SceneInfra,
   disableOrbitRef: MutableRefObject<boolean>,
   doRayCast: (mouse: Vector2) => void,
@@ -287,7 +288,7 @@ const updateRayCaster = (
   raycaster: Raycaster,
   mouse: Vector2,
   camera: Camera,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
+  raycasterIntersect: MutableRefObject<Intersection | null>,
   renderer: WebGLRenderer,
   scene: Scene
 ) => {

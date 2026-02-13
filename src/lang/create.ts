@@ -35,8 +35,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  */
 export function createLiteral(
   value: number | string | boolean,
-  suffix?: NumericSuffix,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType,
+  suffix?: NumericSuffix
 ): Node<Literal> {
   return {
     type: 'Literal',
@@ -47,7 +47,7 @@ export function createLiteral(
       typeof value === 'number'
         ? { value, suffix: suffix ? suffix : 'None' }
         : value,
-    raw: createRawStr(value, suffix, wasmInstance),
+    raw: createRawStr(value, wasmInstance, suffix),
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
@@ -56,8 +56,8 @@ export function createLiteral(
 
 function createRawStr(
   value: number | string | boolean,
-  suffix?: NumericSuffix,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType,
+  suffix?: NumericSuffix
 ): string {
   // For strings, include double quotes in raw so they're preserved during unparse
   // Escape backslashes and double quotes to create valid KCL string literals

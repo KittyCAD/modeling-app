@@ -156,7 +156,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -404,7 +405,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": -9.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -590,7 +592,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": 2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1051,7 +1054,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": -2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1142,7 +1146,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": -2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1233,7 +1238,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": -2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1324,7 +1330,8 @@ description: Artifact commands holder-rod-angle.kcl
         "distance": -2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

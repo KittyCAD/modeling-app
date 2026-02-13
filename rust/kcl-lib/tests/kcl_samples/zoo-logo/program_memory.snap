@@ -134,6 +134,7 @@ description: Variables in memory after executing zoo-logo.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -430,6 +431,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -437,7 +440,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -495,10 +497,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 620,
-                "end": 626,
+                "commentStart": 641,
+                "end": 647,
                 "moduleId": 0,
-                "start": 620,
+                "start": 641,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -516,10 +518,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 850,
-                "end": 856,
+                "commentStart": 871,
+                "end": 877,
                 "moduleId": 0,
-                "start": 850,
+                "start": 871,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -534,6 +536,7 @@ description: Variables in memory after executing zoo-logo.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -547,10 +550,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.7456745560472378
                 ],
                 "tag": {
-                  "commentStart": 620,
-                  "end": 626,
+                  "commentStart": 641,
+                  "end": 647,
                   "moduleId": 0,
-                  "start": 620,
+                  "start": 641,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -594,10 +597,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.15551816551656528
                 ],
                 "tag": {
-                  "commentStart": 850,
-                  "end": 856,
+                  "commentStart": 871,
+                  "end": 877,
                   "moduleId": 0,
-                  "start": 850,
+                  "start": 871,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -635,6 +638,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -642,7 +647,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -710,10 +714,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 620,
-                "end": 626,
+                "commentStart": 641,
+                "end": 647,
                 "moduleId": 0,
-                "start": 620,
+                "start": 641,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -731,10 +735,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 850,
-                "end": 856,
+                "commentStart": 871,
+                "end": 877,
                 "moduleId": 0,
-                "start": 850,
+                "start": 871,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -749,6 +753,7 @@ description: Variables in memory after executing zoo-logo.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -762,10 +767,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.2543394387746779
                 ],
                 "tag": {
-                  "commentStart": 620,
-                  "end": 626,
+                  "commentStart": 641,
+                  "end": 647,
                   "moduleId": 0,
-                  "start": 620,
+                  "start": 641,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -809,10 +814,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.8444958293053504
                 ],
                 "tag": {
-                  "commentStart": 850,
-                  "end": 856,
+                  "commentStart": 871,
+                  "end": 877,
                   "moduleId": 0,
-                  "start": 850,
+                  "start": 871,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -850,6 +855,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -857,7 +864,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -925,10 +931,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 620,
-                "end": 626,
+                "commentStart": 641,
+                "end": 647,
                 "moduleId": 0,
-                "start": 620,
+                "start": 641,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -946,10 +952,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 850,
-                "end": 856,
+                "commentStart": 871,
+                "end": 877,
                 "moduleId": 0,
-                "start": 850,
+                "start": 871,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -964,6 +970,7 @@ description: Variables in memory after executing zoo-logo.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -977,10 +984,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.7456745560472378
                 ],
                 "tag": {
-                  "commentStart": 620,
-                  "end": 626,
+                  "commentStart": 641,
+                  "end": 647,
                   "moduleId": 0,
-                  "start": 620,
+                  "start": 641,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -1024,10 +1031,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.15551816551656528
                 ],
                 "tag": {
-                  "commentStart": 850,
-                  "end": 856,
+                  "commentStart": 871,
+                  "end": 877,
                   "moduleId": 0,
-                  "start": 850,
+                  "start": 871,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -1065,6 +1072,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1072,7 +1081,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1140,10 +1148,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 620,
-                "end": 626,
+                "commentStart": 641,
+                "end": 647,
                 "moduleId": 0,
-                "start": 620,
+                "start": 641,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -1161,10 +1169,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 850,
-                "end": 856,
+                "commentStart": 871,
+                "end": 877,
                 "moduleId": 0,
-                "start": 850,
+                "start": 871,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -1179,6 +1187,7 @@ description: Variables in memory after executing zoo-logo.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1192,10 +1201,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.2543394387746779
                 ],
                 "tag": {
-                  "commentStart": 620,
-                  "end": 626,
+                  "commentStart": 641,
+                  "end": 647,
                   "moduleId": 0,
-                  "start": 620,
+                  "start": 641,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -1239,10 +1248,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.8444958293053504
                 ],
                 "tag": {
-                  "commentStart": 850,
-                  "end": 856,
+                  "commentStart": 871,
+                  "end": 877,
                   "moduleId": 0,
-                  "start": 850,
+                  "start": 871,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -1280,6 +1289,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1287,7 +1298,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1358,13 +1368,14 @@ description: Variables in memory after executing zoo-logo.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

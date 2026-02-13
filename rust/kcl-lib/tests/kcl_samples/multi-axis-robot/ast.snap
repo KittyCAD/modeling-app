@@ -223,6 +223,7 @@ description: Result of parsing multi-axis-robot.kcl
         "preComments": [
           "// Robot Arm",
           "// A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+          "// Categories: Manufacturing, Automotive",
           "",
           "",
           "// Set Units"

@@ -2,7 +2,8 @@ import type { User } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
-  updateEnvironmentPool,
+  updateEnvironmentKittycadWebSocketUrl,
+  updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
@@ -12,8 +13,11 @@ import {
   COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
 import {
+  readEnvironmentConfigurationKittycadWebSocketUrl,
+  readEnvironmentConfigurationMlephantWebSocketUrl,
+} from '@src/lib/desktop'
+import {
   listAllEnvironments,
-  readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -23,7 +27,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {
   user?: User
@@ -47,13 +50,11 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie()
-const persistedDevToken = env().VITE_ZOO_API_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie || ''
+export const persistedToken = getTokenFromEnvOrCookie()
 console.log('Initial persisted token')
 console.table([
-  ['cookie', !!persistedCookie],
-  ['api token', !!persistedDevToken],
+  ['cookie', !!getCookie()],
+  ['api token', !!env().VITE_ZOO_API_TOKEN],
 ])
 
 export const authMachine = setup({
@@ -78,7 +79,7 @@ export const authMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
-  id: ACTOR_IDS.AUTH,
+  id: 'auth',
   initial: 'checkIfLoggedIn',
   context: {
     token: persistedToken,
@@ -178,12 +179,31 @@ async function getUser(input: { token?: string }) {
       ''
     updateEnvironment(environment)
 
-    // Update the pool
-    const cachedPool = await readEnvironmentConfigurationPool(
-      window.electron,
-      environment
-    )
-    updateEnvironmentPool(environment, cachedPool)
+    // Update the Engine WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
+
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
+      )
+    }
   }
 
   let token = ''
@@ -233,6 +253,28 @@ export function getCookie(): string | null {
   } else {
     return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
   }
+}
+
+function getTokenFromEnvOrCookie(): string {
+  const envToken = env().VITE_ZOO_API_TOKEN
+  const cookieToken = getCookie()
+  return envToken || cookieToken || ''
+}
+
+async function getTokenFromFile(): Promise<string> {
+  const environmentName = env().VITE_ZOO_BASE_DOMAIN
+  if (!window.electron || !environmentName) return ''
+  return readEnvironmentConfigurationToken(window.electron, environmentName)
+}
+
+/**
+ * Get token from environment variable, cookie (web), or file (desktop).
+ * @returns The token string, or empty string if no source has a token
+ */
+export async function getToken(): Promise<string> {
+  const token = getTokenFromEnvOrCookie()
+  if (token) return token
+  return getTokenFromFile()
 }
 
 function getCookieByName(cname: string): string | null {

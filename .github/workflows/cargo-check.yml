@@ -18,7 +18,7 @@ jobs:
     name: cargo check
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -27,6 +27,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-workspaces: rust
+          rustflags: '' # Use .cargo/config.toml
 
       - name: Run check
         run: |

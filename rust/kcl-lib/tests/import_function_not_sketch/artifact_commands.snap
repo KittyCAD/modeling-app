@@ -221,7 +221,8 @@ description: Artifact commands import_function_not_sketch.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

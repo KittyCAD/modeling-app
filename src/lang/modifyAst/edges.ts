@@ -41,6 +41,7 @@ import {
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addFillet({
   ast,
@@ -49,6 +50,7 @@ export function addFillet({
   radius,
   tag,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -56,6 +58,7 @@ export function addFillet({
   radius: KclCommandValue
   tag?: string
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -73,6 +76,7 @@ export function addFillet({
     selection,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit
   )
   if (err(bodyData)) return bodyData
@@ -101,6 +105,7 @@ export function addFillet({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+      wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
     pathToNodes.push(pathToNode)
@@ -118,6 +123,7 @@ export function addChamfer({
   angle,
   tag,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -127,6 +133,7 @@ export function addChamfer({
   angle?: KclCommandValue
   tag?: string
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -144,6 +151,7 @@ export function addChamfer({
     selection,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit
   )
   if (err(bodyData)) return bodyData
@@ -191,6 +199,7 @@ export function addChamfer({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+      wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
     pathToNodes.push(pathToNode)
@@ -215,6 +224,7 @@ function groupSelectionsByBodyAndAddTags(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
+  wasmInstance: ModuleType,
   nodeToEdit?: PathToNode
 ):
   | {
@@ -247,7 +257,8 @@ function groupSelectionsByBodyAndAddTags(
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
       bodySelections,
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     modifiedAst = taggedAst
 
@@ -278,6 +289,7 @@ function groupSelectionsByBodyAndAddTags(
     const vars = getVariableExprsFromSelection(
       solids,
       modifiedAst,
+      wasmInstance,
       nodeToEdit,
       true,
       artifactGraph
@@ -345,6 +357,7 @@ export function buildSolidsAndTagsExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
+  wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   solidsCount = 1
 ) {
@@ -365,6 +378,7 @@ export function buildSolidsAndTagsExprs(
   const vars = getVariableExprsFromSelection(
     solids,
     ast,
+    wasmInstance,
     nodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -384,7 +398,8 @@ export function buildSolidsAndTagsExprs(
   const { tagsExprs, modifiedAst } = getTagsExprsFromSelection(
     ast,
     faces,
-    artifactGraph
+    artifactGraph,
+    wasmInstance
   )
   const tagsExpr = createVariableExpressionsArray(tagsExprs)
   if (!tagsExpr) {
@@ -397,7 +412,8 @@ export function buildSolidsAndTagsExprs(
 function getTagsExprsFromSelection(
   ast: Node<Program>,
   edges: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
@@ -405,7 +421,8 @@ function getTagsExprsFromSelection(
     const result = modifyAstWithTagsForSelection(
       modifiedAst,
       edge,
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     if (err(result)) {
       console.warn('Failed to add tag for edge selection', result)
@@ -484,7 +501,8 @@ function isEdgeTreatmentType(name: string): name is EdgeTreatmentType {
 }
 export async function deleteEdgeTreatment(
   ast: Node<Program>,
-  selection: Selection
+  selection: Selection,
+  wasmInstance: ModuleType
 ): Promise<Node<Program> | Error> {
   /**
    * Deletes an edge treatment (fillet or chamfer) from the AST
@@ -511,7 +529,7 @@ export async function deleteEdgeTreatment(
   const astClone = structuredClone(ast)
   const edgeTreatmentNode = getNodeFromPath<
     VariableDeclarator | ExpressionStatement
-  >(astClone, selection?.codeRef?.pathToNode, [
+  >(astClone, selection?.codeRef?.pathToNode, wasmInstance, [
     'VariableDeclarator',
     'ExpressionStatement',
   ])
@@ -540,7 +558,8 @@ export async function deleteEdgeTreatment(
   } else {
     const deleteResult = deleteNodeInExtrudePipe(
       astClone,
-      selection.codeRef.pathToNode
+      selection.codeRef.pathToNode,
+      wasmInstance
     )
     if (err(deleteResult)) return deleteResult
     return astClone

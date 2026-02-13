@@ -714,15 +714,24 @@ export function getArtifactFromRange(
   range: SourceRange,
   artifactGraph: ArtifactGraph
 ): Artifact | null {
+  let firstCandidate: Artifact | null = null
   for (const artifact of artifactGraph.values()) {
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
         codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
-      if (match) return artifact
+      if (match) {
+        // Favor the first sketch block artifact since multiple artifacts may be
+        // created here.
+        if (artifact.type === 'sketchBlock') {
+          return artifact
+        }
+        firstCandidate = firstCandidate ?? artifact
+      }
     }
   }
-  return null
+  // Fallback to the first candidate or null if it wasn't found.
+  return firstCandidate
 }
 
 export function getFaceCodeRef(
@@ -821,4 +830,21 @@ export function coerceSelectionsToBody(
     graphSelections: bodySelections,
     otherSelections: selections.otherSelections,
   }
+}
+
+/**
+ * Utility to filter down the artifact graph to artifacts that we
+ * on the frontend deem "bodies". There is no fixed definition of a "body"
+ * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
+ */
+export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
+  const artifacts = filterArtifacts(
+    {
+      types: ['compositeSolid', 'sweep'],
+      predicate: (a) => !a.consumed,
+    },
+    artifactGraph
+  )
+
+  return artifacts
 }

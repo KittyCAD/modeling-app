@@ -397,6 +397,20 @@ code,
     @apply border rounded border-chalkboard-30/50 dark:border-chalkboard-80/30;
     @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
   }
+
+  .toolbar {
+    box-sizing: border-box;
+    :has(> &) {
+      container-type: inline-size;
+    }
+
+    /** relate the values of cqi units (% container's inline size)
+    and percentage (which uses child's inline-size) to get a percentage */
+    --container-percentage-width: calc(100cqi - 100%);
+    --br: min(var(--container-percentage-width), 4px);
+    border-bottom-right-radius: var(--br);
+    border-bottom-left-radius: var(--br);
+  }
 }
 
 @layer utilities {
@@ -487,6 +501,26 @@ code,
 
   .bg-6 {
     @apply bg-chalkboard-100 dark:bg-chalkboard-10;
+  }
+
+  .border-bg-2 {
+    @apply border-chalkboard-20 dark:border-chalkboard-90;
+  }
+
+  .border-bg-3 {
+    @apply border-chalkboard-30 dark:border-chalkboard-70;
+  }
+
+  .border-bg-4 {
+    @apply border-chalkboard-70 dark:border-chalkboard-30;
+  }
+
+  .border-bg-5 {
+    @apply border-chalkboard-90 dark:border-chalkboard-20;
+  }
+
+  .border-bg-6 {
+    @apply border-chalkboard-100 dark:border-chalkboard-10;
   }
 
   /*

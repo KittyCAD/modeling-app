@@ -33,6 +33,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -108,6 +109,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -115,7 +118,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -191,6 +193,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -266,6 +269,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -273,7 +278,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -397,6 +401,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -404,7 +410,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -450,13 +455,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 6,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -540,6 +546,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -683,6 +690,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -690,7 +699,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -794,6 +802,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -937,6 +946,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -944,7 +955,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1136,6 +1146,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1143,7 +1155,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1189,13 +1200,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1228,10 +1240,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1697,
+            "end": 1723,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1242,10 +1254,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1807,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1807,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1253,6 +1265,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1272,10 +1285,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1697,
+              "end": 1723,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1290,6 +1303,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1297,7 +1312,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1365,10 +1379,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1697,
+            "end": 1723,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1379,10 +1393,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1807,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1807,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1390,6 +1404,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1409,10 +1424,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1697,
+              "end": 1723,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1427,6 +1442,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1434,7 +1451,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1523,10 +1539,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1697,
+            "end": 1723,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1537,10 +1553,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1807,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1807,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1548,6 +1564,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1567,10 +1584,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1697,
+              "end": 1723,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1585,6 +1602,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1592,7 +1611,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1653,13 +1671,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 2900.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1702,10 +1721,10 @@ description: Variables in memory after executing sls.kcl
           ],
           "radius": 4.2,
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1697,
+            "end": 1723,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1720,6 +1739,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 1,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1727,7 +1748,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1783,13 +1803,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 2900.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1826,6 +1847,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1856,6 +1878,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1863,7 +1887,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1925,6 +1948,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1955,6 +1979,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1962,7 +1988,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2013,13 +2038,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2073,6 +2099,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 4,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2080,7 +2108,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2126,13 +2153,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 4,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2169,6 +2197,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2199,6 +2228,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2206,7 +2237,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2268,6 +2298,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2298,6 +2329,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2305,7 +2338,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2356,13 +2388,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 65000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2416,6 +2449,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2423,7 +2458,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2469,13 +2503,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 65000.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2526,6 +2561,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2601,6 +2637,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2608,7 +2646,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2684,6 +2721,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2759,6 +2797,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2766,7 +2806,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2890,6 +2929,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2897,7 +2938,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2943,13 +2983,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 5,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3077,6 +3118,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3084,7 +3127,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3162,6 +3204,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3266,6 +3309,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3273,7 +3318,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3349,6 +3393,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3436,6 +3481,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3443,7 +3490,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3519,6 +3565,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3606,6 +3653,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3613,7 +3662,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3689,6 +3737,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3776,6 +3825,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3783,7 +3834,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3859,6 +3909,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3946,6 +3997,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3953,7 +4006,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4029,6 +4081,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4116,6 +4169,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4123,7 +4178,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4259,6 +4313,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4266,7 +4322,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4312,13 +4367,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4369,6 +4425,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4456,6 +4513,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4463,7 +4522,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4539,6 +4597,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4626,6 +4685,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4633,7 +4694,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4709,6 +4769,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4796,6 +4857,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4803,7 +4866,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4879,6 +4941,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -4966,6 +5029,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4973,7 +5038,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5024,13 +5088,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 8,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5200,6 +5265,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -5564,6 +5630,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5571,7 +5639,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5766,6 +5833,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -6130,6 +6198,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6137,7 +6207,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6332,6 +6401,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -6696,6 +6766,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -6703,7 +6775,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6898,6 +6969,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -7262,6 +7334,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -7269,7 +7343,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7682,6 +7755,8 @@ description: Variables in memory after executing sls.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XZ",
+        "objectId": 7,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -7689,7 +7764,6 @@ description: Variables in memory after executing sls.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7879,6 +7953,7 @@ description: Variables in memory after executing sls.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -8243,6 +8318,8 @@ description: Variables in memory after executing sls.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8250,7 +8327,6 @@ description: Variables in memory after executing sls.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8301,13 +8377,14 @@ description: Variables in memory after executing sls.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 7,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

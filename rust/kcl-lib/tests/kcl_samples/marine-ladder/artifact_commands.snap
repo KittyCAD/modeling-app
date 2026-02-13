@@ -233,6 +233,7 @@ description: Artifact commands marine-ladder.kcl
         "trajectory": "[uuid]",
         "sectional": false,
         "tolerance": 0.0000001,
+        "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
     },
@@ -286,7 +287,6 @@ description: Artifact commands marine-ladder.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -487,7 +487,8 @@ description: Artifact commands marine-ladder.kcl
         "distance": 450.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -538,7 +539,6 @@ description: Artifact commands marine-ladder.kcl
                 "z": 355.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

@@ -1,5 +1,6 @@
 // T-Slotted Rectangle Frame
 // A box frame made up of T-slotted rails
+// Categories: Construction, Manufacturing
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

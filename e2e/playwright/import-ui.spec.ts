@@ -3,11 +3,19 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import * as fsp from 'fs/promises'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Import UI tests', () => {
-  test(
-    'shows toast when trying to sketch on imported face, and hovering over imported geometry should NOT highlight any code',
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({ context, page, homePage, toolbar, scene, editor, cmdBar }) => {
+test.describe(
+  'Import UI tests',
+  { tag: ['@desktop', '@macos', '@windows'] },
+  () => {
+    test('shows toast when trying to sketch on imported face, and hovering over imported geometry should NOT highlight any code', async ({
+      context,
+      page,
+      homePage,
+      toolbar,
+      scene,
+      editor,
+      cmdBar,
+    }) => {
       await context.folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, 'import-test')
         await fsp.mkdir(projectDir, { recursive: true })
@@ -104,6 +112,6 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
           page.getByText('Please select this from the files pane to edit')
         ).toBeVisible()
       })
-    }
-  )
-})
+    })
+  }
+)

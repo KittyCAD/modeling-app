@@ -2,7 +2,7 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { Object3D, Object3DEventMap } from 'three'
+import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -33,11 +33,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
-import {
-  isCursorInSketchCommandRange,
-  isTopLevelModule,
-  topLevelRange,
-} from '@src/lang/util'
+import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -55,7 +51,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
-  getModuleId,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -70,9 +65,10 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -152,9 +148,10 @@ export async function getEventForSelectWithPoint(
 }
 
 export function getEventForSegmentSelection(
-  obj: Object3D<Object3DEventMap>,
+  obj: Object3D,
   ast: Node<Program>,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): ModelingMachineEvent | null {
   const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
@@ -182,7 +179,11 @@ export function getEventForSegmentSelection(
   const id = segWithMatchingPathToNode__Id
 
   if (!id && group) {
-    const node = getNodeFromPath<Expr>(ast, group.userData.pathToNode)
+    const node = getNodeFromPath<Expr>(
+      ast,
+      group.userData.pathToNode,
+      wasmInstance
+    )
     if (err(node)) return null
     return {
       type: 'Set selection',
@@ -200,7 +201,11 @@ export function getEventForSegmentSelection(
   if (!id || !group) return null
   const artifact = artifactGraph.get(id)
   if (!artifact) return null
-  const node = getNodeFromPath<Expr>(ast, group.userData.pathToNode)
+  const node = getNodeFromPath<Expr>(
+    ast,
+    group.userData.pathToNode,
+    wasmInstance
+  )
   if (err(node)) return null
   return {
     type: 'Set selection',
@@ -231,6 +236,7 @@ export function handleSelectionBatch({
   systemDeps: {
     sceneEntitiesManager: SceneEntities
     engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
   }
 }): {
   engineEvents: WebSocketRequest[]
@@ -304,6 +310,7 @@ export function processCodeMirrorRanges({
   systemDeps: {
     sceneEntitiesManager: SceneEntities
     engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
   }
 }): null | {
   modelingEvent: ModelingMachineEvent
@@ -391,8 +398,10 @@ function updateSceneObjectColors(
   ast: Node<Program>,
   {
     sceneEntitiesManager,
+    wasmInstance,
   }: {
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ) {
   const updated = ast
@@ -402,6 +411,7 @@ function updateSceneObjectColors(
     const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
+      wasmInstance,
       ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
@@ -680,6 +690,12 @@ function getBestCandidate(
   if (!entries.length) {
     return undefined
   }
+  const sketchBlock = entries.find(
+    (entry) => entry.artifact.type === 'sketchBlock'
+  )
+  if (sketchBlock) {
+    return sketchBlock
+  }
 
   for (const entry of entries) {
     // Segments take precedence
@@ -801,7 +817,8 @@ export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
   ast: Program | Error,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): Selections | Error {
   if (err(ast)) return ast
 
@@ -809,7 +826,7 @@ export function updateSelections(
     .map(([index, pathToNode]): Selection | undefined => {
       const previousSelection =
         prevSelectionRanges.graphSelections[Number(index)]
-      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       let artifact: Artifact | null = null
@@ -840,7 +857,7 @@ export function updateSelections(
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
   for (const pathToNode of Object.values(pathToNodeMap)) {
-    const node = getNodeFromPath<Expr>(ast, pathToNode)
+    const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
@@ -978,11 +995,11 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   // Try to get the artifact from the graph
-  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const _artifact = artifactGraph.get(sketchBlock.planeId)
 
-  // If artifact doesn't exist in the graph, fallback to default XY plane
+  // Use the default XY plane.
   // This is a temporary solution while we determine the proper approach for default planes
-  if (!artifact) {
+  if (true) {
     const defaultPlanes = systemDeps.rustContext.defaultPlanes
     if (defaultPlanes?.xy) {
       const defaultResult = getDefaultSketchPlaneData(
@@ -1124,6 +1141,7 @@ export async function selectionBodyFace(
     sceneInfra: SceneInfra
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ): Promise<ExtrudeFacePlane | undefined> {
   const { sceneInfra } = systemDeps
@@ -1148,27 +1166,26 @@ export async function selectionBodyFace(
   const faceId = planeOrFaceId
   const extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
   if (!err(extrusion)) {
-    if (!isTopLevelModule(extrusion.codeRef.range)) {
-      const moduleId = getModuleId(extrusion.codeRef.range)
-      const importDetails = execState.filenames[moduleId]
-      if (!importDetails) {
-        toast.error("can't sketch on this face")
-        return
-      }
-      if (importDetails?.type === 'Local') {
-        // importDetails has OS specific separators from the rust side!
-        const fileNameWithExtension = getStringAfterLastSeparator(
-          importDetails.value
-        )
-        showSketchOnImportToast(fileNameWithExtension)
-      } else if (
-        importDetails?.type === 'Main' ||
-        importDetails?.type === 'Std'
-      ) {
+    const maybeImportNode = getNodeFromPath<ImportStatement>(
+      ast,
+      extrusion.codeRef.pathToNode,
+      systemDeps.wasmInstance,
+      ['ImportStatement']
+    )
+    if (
+      !err(maybeImportNode) &&
+      maybeImportNode.node &&
+      maybeImportNode.node.type === 'ImportStatement'
+    ) {
+      if (maybeImportNode.node.path.type === 'Kcl') {
+        showSketchOnImportToast(maybeImportNode.node.path.filename)
+      } else if (maybeImportNode.node.path.type === 'Foreign') {
+        showSketchOnImportToast(maybeImportNode.node.path.path)
+      } else if (maybeImportNode.node.path.type === 'Std') {
         toast.error("can't sketch on this face")
       } else {
         // force tsc error if more cases are added
-        const _exhaustiveCheck: never = importDetails
+        const _exhaustiveCheck: never = maybeImportNode.node.path
       }
     }
   }
@@ -1192,7 +1209,12 @@ export async function selectionBodyFace(
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
-  const edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
+  const edgeCutMeta = getEdgeCutMeta(
+    artifact,
+    ast,
+    artifactGraph,
+    systemDeps.wasmInstance
+  )
   const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
     ? edgeCutMeta
     : artifact.type === 'cap'
@@ -1212,10 +1234,12 @@ export async function selectionBodyFace(
     { type: 'sweep', ...extrusion },
     artifactGraph
   )
-  const lastChildVariable = getLastVariable(children, ast, [
-    'sweep',
-    'compositeSolid',
-  ])
+  const lastChildVariable = getLastVariable(
+    children,
+    ast,
+    systemDeps.wasmInstance,
+    ['sweep', 'compositeSolid']
+  )
   const extrudePathToNode =
     lastChildVariable && !err(lastChildVariable)
       ? lastChildVariable.pathToNode

@@ -196,7 +196,8 @@ description: Artifact commands rectangle-table.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -401,7 +402,8 @@ description: Artifact commands rectangle-table.kcl
         "distance": 710.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -502,7 +504,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -579,7 +580,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -656,7 +656,6 @@ description: Artifact commands rectangle-table.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

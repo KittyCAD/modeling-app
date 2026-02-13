@@ -175,7 +175,8 @@ description: Artifact commands subtract_regression00.kcl
         "opposite": {
           "Other": 0.0
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -360,7 +361,8 @@ description: Artifact commands subtract_regression00.kcl
         "distance": -60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

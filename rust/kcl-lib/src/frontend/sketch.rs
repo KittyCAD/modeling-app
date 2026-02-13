@@ -3,11 +3,20 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ExecOutcome, ExecutorContext,
+    ExecutorContext,
     frontend::api::{
-        Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
+        Expr, FileId, Number, ObjectId, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
 };
+
+/// Information about a newly created segment for batch operations
+#[derive(Debug, Clone)]
+pub struct NewSegmentInfo {
+    pub segment_id: ObjectId,
+    pub start_point_id: ObjectId,
+    pub end_point_id: ObjectId,
+    pub center_point_id: Option<ObjectId>,
+}
 
 pub trait SketchApi {
     /// Execute the sketch in mock mode, without changing anything. This is
@@ -17,7 +26,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SceneGraph, ExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,
@@ -25,7 +34,7 @@ pub trait SketchApi {
         project: ProjectId,
         file: FileId,
         version: Version,
-        args: SketchArgs,
+        args: SketchCtor,
     ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
 
     // Enters sketch mode
@@ -39,6 +48,13 @@ pub trait SketchApi {
     ) -> Result<SceneGraphDelta>;
 
     async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
+
+    async fn delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_segment(
         &mut self,
@@ -74,29 +90,73 @@ pub trait SketchApi {
         constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        label: Option<String>,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
     async fn edit_constraint(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        constraint: Constraint,
+        value_expression: String,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
+    /// Batch operations for split segment: edit segments, add constraints, delete objects.
+    /// All operations are applied to a single AST and execute_after_edit is called once at the end.
+    /// new_segment_info contains the IDs from the segment(s) added in a previous step.
+    #[allow(clippy::too_many_arguments)]
+    async fn batch_split_segment_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
+        new_segment_info: NewSegmentInfo,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
+    /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
+    /// delete constraints, and execute once.
+    async fn batch_tail_cut_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSketch")]
 pub struct Sketch {
-    pub args: SketchArgs,
+    pub args: SketchCtor,
+    pub plane: ObjectId,
     pub segments: Vec<ObjectId>,
     pub constraints: Vec<ObjectId>,
-    pub is_underconstrained: Option<bool>,
 }
 
+/// Arguments for creating a new sketch. This is similar to the constructor of
+/// other kinds of objects in that it is the inputs to the sketch, not the
+/// outputs.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct SketchArgs {
-    pub on: Plane,
+pub struct SketchCtor {
+    /// Identifier representing the plane or face to sketch on. This could be a
+    /// built-in plane like `XY`, a variable referencing a plane, or a variable
+    /// referencing a face. But currently, it may not be an arbitrary
+    /// expression. Notably, negative planes are not supported.
+    pub on: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -186,6 +246,7 @@ pub struct Line {
     // The frontend should only display handles for the constructor inputs if the ctor is applicable.
     // (Or because they are the (locked) start/end of the segment).
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -193,6 +254,9 @@ pub struct Line {
 pub struct LineCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -212,6 +276,7 @@ pub struct Arc {
     // Invariant: Arc or TangentArc
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
+    pub construction: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -220,6 +285,9 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -253,16 +321,21 @@ pub struct CircleCtor {
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
+    Diameter(Diameter),
+    HorizontalDistance(Distance),
+    VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),
+    Perpendicular(Perpendicular),
+    Radius(Radius),
     Vertical(Vertical),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub points: Vec<ObjectId>,
+    pub segments: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -270,6 +343,28 @@ pub struct Coincident {
 pub struct Distance {
     pub points: Vec<ObjectId>,
     pub distance: Number,
+    pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ConstraintSource {
+    pub expr: String,
+    pub is_literal: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Radius {
+    pub arc: ObjectId,
+    pub radius: Number,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Diameter {
+    pub arc: ObjectId,
+    pub diameter: Number,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -293,5 +388,11 @@ pub struct Vertical {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
+    pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
 }

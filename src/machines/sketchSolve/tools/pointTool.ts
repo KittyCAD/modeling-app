@@ -4,6 +4,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
+  SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -11,6 +12,10 @@ import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -34,12 +39,7 @@ export const machine = setup({
       sketchId: number
     },
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
   },
   actions: {
     'add point listener': ({ self, context }) => {
@@ -70,10 +70,18 @@ export const machine = setup({
       if (event.type !== CONFIRMING_DIMENSIONS_DONE) {
         return
       }
-      self._parent?.send({
+      const output = event.output as {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+      }
+      const sendData: SketchSolveMachineEvent = {
         type: 'update sketch outcome',
-        data: event.output,
-      })
+        data: {
+          sourceDelta: output.kclSource,
+          sceneGraphDelta: output.sceneGraphDelta,
+        },
+      }
+      self._parent?.send(sendData)
     },
   },
   actors: {
@@ -112,7 +120,7 @@ export const machine = setup({
             sketchId, // sketchId from context
             segmentCtor,
             'point-tool-point', // label
-            await jsAppSettings()
+            await jsAppSettings(rustContext.settingsActor)
           )
 
           console.log('Point segment added successfully:', result)

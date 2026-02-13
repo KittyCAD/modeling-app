@@ -156,7 +156,8 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

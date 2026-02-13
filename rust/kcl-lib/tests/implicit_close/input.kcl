@@ -1,0 +1,10 @@
+// Square made entirely from relative lines,
+// showing that it will be implicitly closed
+// in its program memory.
+ squareSketch = startSketchOn(YZ)
+     |> startProfile(at = [-100, 200])
+     |> line(end = [200, 0])
+     |> line(end = [0, -200])
+     |> line(end = [-200, 0])
+     |> line(end = [0, 200])
+

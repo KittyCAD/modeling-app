@@ -16,10 +16,11 @@ loft(
   tolerance?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): Solid
 ```
 
-The sketches need to be closed and on different planes that are parallel.
+
 
 ### Arguments
 
@@ -32,6 +33,7 @@ The sketches need to be closed and on different planes that are parallel.
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the loft, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the loft. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
@@ -92,10 +94,11 @@ circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft([
-  squareSketch,
-  circleSketch0,
-  circleSketch1
-])
+       squareSketch,
+       circleSketch0,
+       circleSketch1
+     ])
+  |> appearance(color = "#da7333", roughness = 50, metalness = 90)
 
 ```
 
@@ -151,6 +154,89 @@ loft(
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-3, 0])
+  |> xLine(length = 6)
+plane001 = offsetPlane(XZ, offset = -5)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfile(sketch002, at = [-2, -2])
+  |> line(endAbsolute = [-1.25, -0.5])
+  |> tangentialArc(endAbsolute = [-0.5, 0])
+  |> xLine(length = 1)
+  |> tangentialArc(end = [0.75, -0.5])
+  |> line(end = [0.75, -1.5])
+
+plane002 = offsetPlane(XZ, offset = -10)
+sketch003 = startSketchOn(plane002)
+profile003 = startProfile(sketch003, at = [-2, -6])
+  |> line(end = [0.75, 1.5])
+  |> tangentialArc(end = [0.75, 0.5])
+  |> line(end = [1, 0])
+  |> tangentialArc(end = [0.75, -0.5])
+  |> line(end = [0.75, -1.5])
+plane003 = offsetPlane(XZ, offset = -15)
+sketch004 = startSketchOn(plane003)
+profile004 = startProfile(sketch004, at = [-3, -4])
+  |> xLine(length = 6)
+
+loft(
+  [
+    profile001,
+    profile002,
+    profile003,
+    profile004
+  ],
+  bodyType = SURFACE,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the loft function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+sketch001 = startSketchOn(-XY)
+profile001 = startProfile(sketch001, at = [-2, 3])
+  |> arc(interiorAbsolute = [0, 5], endAbsolute = [2, 3])
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [2, 0])
+  |> arc(interiorAbsolute = [0, -2], endAbsolute = [-2, 0])
+
+sketch003 = startSketchOn(XY)
+profile003 = startProfile(sketch003, at = [2, -3])
+  |> arc(interiorAbsolute = [0, -5], endAbsolute = [-2, -3])
+
+loft([profile001, profile002, profile003], bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the loft function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft4.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

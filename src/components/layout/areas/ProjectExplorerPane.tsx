@@ -13,25 +13,34 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { systemIOActor, commandBarActor } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import {
   useFolders,
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, use } from 'react'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
+  const { commandBarActor, kclManager, systemIOActor } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const projectRef = useRef(loaderData.project)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const { project, file } = loaderData
+  const {
+    state: modelingMachineState,
+    send: modelingSend,
+    actor: modelingActor,
+  } = useModelingContext()
   useEffect(() => {
     projectRef.current = loaderData?.project
 
@@ -68,7 +77,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       projectDirectoryPath
     )
 
-    const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+    const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
     const isRelevantFile = (filename: string): boolean => {
       const extension = getEXTNoPeriod(filename)
       if (!extension) {
@@ -83,13 +92,35 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToFile,
-        data: {
-          requestedProjectName: projectRef.current.name,
-          requestedFileName: requestedFileName,
-        },
-      })
+      const name = projectRef.current.name.slice()
+
+      const navigateHelper = () => {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.navigateToFile,
+          data: {
+            requestedProjectName: name,
+            requestedFileName: requestedFileName,
+          },
+        })
+      }
+
+      if (modelingMachineState.matches('Sketch')) {
+        modelingSend({ type: 'Cancel' })
+        const waitForIdlePromise = new Promise((resolve) => {
+          const subscription = modelingActor.subscribe((state) => {
+            if (state.matches('idle')) {
+              subscription.unsubscribe()
+              resolve(undefined)
+            }
+          })
+        })
+        waitForIdlePromise.catch(reportRejection).finally(() => {
+          navigateHelper()
+        })
+      } else {
+        // immediately navigate
+        navigateHelper()
+      }
     } else if (
       window.electron &&
       isRelevantFile(entry.path) &&
@@ -152,6 +183,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       {theProject && file ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer
+            wasmInstance={wasmInstance}
             project={theProject}
             file={file}
             createFilePressed={createFilePressed}

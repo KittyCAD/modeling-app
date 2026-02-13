@@ -32,7 +32,7 @@ export function ActionButtonDropdown({
       className={`${baseClassNames} ${className}`}
       data-onboarding-id={`${props.name}-group`}
     >
-      {({ close }) => (
+      {(popover) => (
         <>
           {children}
           <Popover.Button
@@ -73,7 +73,7 @@ export function ActionButtonDropdown({
                 onClick={() => {
                   item.onClick()
                   // Close the popover
-                  close()
+                  popover.close()
                 }}
                 key={item.label}
               />

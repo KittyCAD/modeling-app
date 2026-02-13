@@ -481,7 +481,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 25
+            "index": 23
           }
         ]
       },
@@ -553,7 +553,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 26
+            "index": 24
           }
         ]
       },
@@ -773,7 +773,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "seg05",
+            "value": "holeFace",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
@@ -884,7 +884,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "seg05",
+            "value": "holeFace",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
@@ -1055,7 +1055,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1079,7 +1079,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1103,7 +1103,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1127,7 +1127,103 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SOLID",
+      "value": {
+        "type": "String",
+        "value": "solid"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 25
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SURFACE",
+      "value": {
+        "type": "String",
+        "value": "surface"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

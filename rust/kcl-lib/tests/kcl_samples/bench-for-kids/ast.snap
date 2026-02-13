@@ -180,8 +180,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// SEATING BLOCK (half-cylinder, rounded side up so it feels like an animal back)",
           "",
           "",
@@ -460,8 +458,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Flat face of the cylinder sits one radius below the seat."
         ],
         "start": 0,
@@ -1053,8 +1049,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// LEGS (four chunky, rounded cylinders)"
         ],
         "start": 0,
@@ -1358,8 +1352,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Make the leg a bit longer because it will be tilted later."
         ],
         "start": 0,
@@ -1545,8 +1537,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Round the foot: use a slightly smaller radius to avoid fillet errors."
         ],
         "start": 0,
@@ -1818,8 +1808,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Position and array the legs."
         ],
         "start": 0,
@@ -2421,25 +2409,6 @@ description: Result of parsing bench-for-kids.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "1": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "EARS (two small cylinders, tilted sideways slightly)",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2452,8 +2421,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Pattern in X, then Y, to create all four legs."
         ],
         "start": 0,
@@ -2851,8 +2818,6 @@ description: Result of parsing bench-for-kids.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "",
-          "",
           "// Ears sit roughly above the front legs."
         ],
         "start": 0,
@@ -3664,25 +3629,6 @@ description: Result of parsing bench-for-kids.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "3": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Copy the first ear over to the other side with a circular array.",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -3967,6 +3913,9 @@ description: Result of parsing bench-for-kids.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Copy the first ear over to the other side with a circular array."
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5237,6 +5186,30 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "6": [
           {
             "commentStart": 0,
@@ -5250,6 +5223,18 @@ description: Result of parsing bench-for-kids.kcl
           }
         ],
         "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
           {
             "commentStart": 0,
             "end": 0,
@@ -5285,6 +5270,42 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "17": [
           {
             "commentStart": 0,
@@ -5297,7 +5318,41 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
+        "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "EARS (two small cylinders, tilted sideways slightly)",
+              "style": "line"
+            }
+          },
           {
             "commentStart": 0,
             "end": 0,
@@ -5320,6 +5375,18 @@ description: Result of parsing bench-for-kids.kcl
               "type": "inlineComment",
               "value": "defined for completeness, currently unused",
               "style": "line"
+            }
+          }
+        ],
+        "25": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
             }
           }
         ],
@@ -5347,6 +5414,18 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
+        "29": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "30": [
           {
             "commentStart": 0,
@@ -5355,7 +5434,17 @@ description: Result of parsing bench-for-kids.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLineBlockComment",
+              "type": "newLine"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
               "value": "TAIL (single cylinder at the rear, slightly rotated downward)",
               "style": "line"
             }
@@ -5418,6 +5507,18 @@ description: Result of parsing bench-for-kids.kcl
           "value": {
             "type": "blockComment",
             "value": "Shaped like a friendly animal and sturdy enough for climbing.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

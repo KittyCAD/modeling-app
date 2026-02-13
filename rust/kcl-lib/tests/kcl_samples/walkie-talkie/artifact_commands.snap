@@ -293,7 +293,8 @@ description: Artifact commands walkie-talkie.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -332,7 +333,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -493,7 +494,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -844,7 +846,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": -1.5875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1016,7 +1019,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": -1.5875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1171,7 +1175,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1217,7 +1222,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.15294118,
           "g": 0.48235294,
           "b": 0.6901961,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9574,7 +9579,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": -1.5875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -9620,7 +9626,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.8156863,
           "g": 1.0,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.5,
@@ -9755,7 +9761,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -9828,7 +9835,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.6862745,
           "g": 0.7490196,
           "b": 0.21176471,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -9852,7 +9859,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9879,7 +9885,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9906,7 +9911,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 12.7
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -9933,7 +9937,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10097,7 +10100,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 1.016,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10207,7 +10211,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10229,7 +10233,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 31.75
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10393,7 +10396,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 1.016,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10503,7 +10507,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10525,7 +10529,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 18.541999999999998
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10689,7 +10692,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 1.016,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10799,7 +10803,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -10822,7 +10826,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -10848,7 +10851,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 19.558
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -11012,7 +11014,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 1.016,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -11122,7 +11125,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.0,
         "roughness": 0.01,
@@ -11145,7 +11148,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -11171,7 +11173,6 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 6.350000000000001
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }
@@ -11337,7 +11338,8 @@ description: Artifact commands walkie-talkie.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -11447,7 +11449,7 @@ description: Artifact commands walkie-talkie.kcl
           "r": 0.8156863,
           "g": 1.0,
           "b": 0.003921569,
-          "a": 100.0
+          "a": 1.0
         },
         "metalness": 0.9,
         "roughness": 0.9,

@@ -35,7 +35,11 @@ export const artifactGraphField = StateField.define<ArtifactGraph>({
   },
 })
 
-/** Decorations field that stores ranges annotated with artifact metadata */
+/**
+ * Decorations field that stores ranges annotated with artifact metadata
+ *
+ * Removed for now as a fix to https://github.com/KittyCAD/modeling-app/issues/9366
+ */
 export const artifactDecorationsField = StateField.define<
   ReturnType<typeof Decoration.set>
 >({
@@ -96,5 +100,5 @@ function buildArtifactDecorations(
 }
 
 export function artifactAnnotationsExtension(): Extension {
-  return [artifactGraphField, artifactDecorationsField]
+  return [artifactGraphField]
 }

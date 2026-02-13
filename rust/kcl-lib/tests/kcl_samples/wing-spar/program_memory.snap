@@ -45,10 +45,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4227,
-                "end": 4233,
+                "commentStart": 4252,
+                "end": 4258,
                 "moduleId": 0,
-                "start": 4227,
+                "start": 4252,
                 "type": "TagDeclarator",
                 "value": "seg11"
               },
@@ -66,10 +66,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4370,
-                "end": 4376,
+                "commentStart": 4395,
+                "end": 4401,
                 "moduleId": 0,
-                "start": 4370,
+                "start": 4395,
                 "type": "TagDeclarator",
                 "value": "seg12"
               },
@@ -112,6 +112,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -125,10 +126,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4227,
-                  "end": 4233,
+                  "commentStart": 4252,
+                  "end": 4258,
                   "moduleId": 0,
-                  "start": 4227,
+                  "start": 4252,
                   "type": "TagDeclarator",
                   "value": "seg11"
                 },
@@ -171,10 +172,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -29.0
                 ],
                 "tag": {
-                  "commentStart": 4370,
-                  "end": 4376,
+                  "commentStart": 4395,
+                  "end": 4401,
                   "moduleId": 0,
-                  "start": 4370,
+                  "start": 4395,
                   "type": "TagDeclarator",
                   "value": "seg12"
                 },
@@ -290,6 +291,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg10",
               "xAxis": {
                 "x": -1.0,
@@ -313,10 +315,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2105,
-                      "end": 2111,
+                      "commentStart": 2130,
+                      "end": 2136,
                       "moduleId": 0,
-                      "start": 2105,
+                      "start": 2130,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -334,10 +336,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2222,
-                      "end": 2228,
+                      "commentStart": 2247,
+                      "end": 2253,
                       "moduleId": 0,
-                      "start": 2222,
+                      "start": 2247,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -355,10 +357,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2340,
-                      "end": 2346,
+                      "commentStart": 2365,
+                      "end": 2371,
                       "moduleId": 0,
-                      "start": 2340,
+                      "start": 2365,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -376,10 +378,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2458,
-                      "end": 2464,
+                      "commentStart": 2483,
+                      "end": 2489,
                       "moduleId": 0,
-                      "start": 2458,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -439,10 +441,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2830,
-                      "end": 2836,
+                      "commentStart": 2855,
+                      "end": 2861,
                       "moduleId": 0,
-                      "start": 2830,
+                      "start": 2855,
                       "type": "TagDeclarator",
                       "value": "seg10"
                     },
@@ -457,6 +459,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -470,10 +473,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -15.299999999999999
                       ],
                       "tag": {
-                        "commentStart": 2105,
-                        "end": 2111,
+                        "commentStart": 2130,
+                        "end": 2136,
                         "moduleId": 0,
-                        "start": 2105,
+                        "start": 2130,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -516,10 +519,10 @@ description: Variables in memory after executing wing-spar.kcl
                         34.204
                       ],
                       "tag": {
-                        "commentStart": 2222,
-                        "end": 2228,
+                        "commentStart": 2247,
+                        "end": 2253,
                         "moduleId": 0,
-                        "start": 2222,
+                        "start": 2247,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -562,10 +565,10 @@ description: Variables in memory after executing wing-spar.kcl
                         30.0
                       ],
                       "tag": {
-                        "commentStart": 2340,
-                        "end": 2346,
+                        "commentStart": 2365,
+                        "end": 2371,
                         "moduleId": 0,
-                        "start": 2340,
+                        "start": 2365,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -608,10 +611,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.796
                       ],
                       "tag": {
-                        "commentStart": 2458,
-                        "end": 2464,
+                        "commentStart": 2483,
+                        "end": 2489,
                         "moduleId": 0,
-                        "start": 2458,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -766,10 +769,10 @@ description: Variables in memory after executing wing-spar.kcl
                         29.999999999999996
                       ],
                       "tag": {
-                        "commentStart": 2830,
-                        "end": 2836,
+                        "commentStart": 2855,
+                        "end": 2861,
                         "moduleId": 0,
-                        "start": 2830,
+                        "start": 2855,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -801,6 +804,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -808,7 +813,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -925,10 +929,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4227,
-                "end": 4233,
+                "commentStart": 4252,
+                "end": 4258,
                 "moduleId": 0,
-                "start": 4227,
+                "start": 4252,
                 "type": "TagDeclarator",
                 "value": "seg11"
               },
@@ -946,10 +950,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4370,
-                "end": 4376,
+                "commentStart": 4395,
+                "end": 4401,
                 "moduleId": 0,
-                "start": 4370,
+                "start": 4395,
                 "type": "TagDeclarator",
                 "value": "seg12"
               },
@@ -992,6 +996,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1005,10 +1010,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4227,
-                  "end": 4233,
+                  "commentStart": 4252,
+                  "end": 4258,
                   "moduleId": 0,
-                  "start": 4227,
+                  "start": 4252,
                   "type": "TagDeclarator",
                   "value": "seg11"
                 },
@@ -1051,10 +1056,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -29.0
                 ],
                 "tag": {
-                  "commentStart": 4370,
-                  "end": 4376,
+                  "commentStart": 4395,
+                  "end": 4401,
                   "moduleId": 0,
-                  "start": 4370,
+                  "start": 4395,
                   "type": "TagDeclarator",
                   "value": "seg12"
                 },
@@ -1170,6 +1175,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg10",
               "xAxis": {
                 "x": -1.0,
@@ -1193,10 +1199,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2105,
-                      "end": 2111,
+                      "commentStart": 2130,
+                      "end": 2136,
                       "moduleId": 0,
-                      "start": 2105,
+                      "start": 2130,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1214,10 +1220,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2222,
-                      "end": 2228,
+                      "commentStart": 2247,
+                      "end": 2253,
                       "moduleId": 0,
-                      "start": 2222,
+                      "start": 2247,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1235,10 +1241,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2340,
-                      "end": 2346,
+                      "commentStart": 2365,
+                      "end": 2371,
                       "moduleId": 0,
-                      "start": 2340,
+                      "start": 2365,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1256,10 +1262,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2458,
-                      "end": 2464,
+                      "commentStart": 2483,
+                      "end": 2489,
                       "moduleId": 0,
-                      "start": 2458,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1319,10 +1325,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2830,
-                      "end": 2836,
+                      "commentStart": 2855,
+                      "end": 2861,
                       "moduleId": 0,
-                      "start": 2830,
+                      "start": 2855,
                       "type": "TagDeclarator",
                       "value": "seg10"
                     },
@@ -1337,6 +1343,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -1350,10 +1357,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -15.299999999999999
                       ],
                       "tag": {
-                        "commentStart": 2105,
-                        "end": 2111,
+                        "commentStart": 2130,
+                        "end": 2136,
                         "moduleId": 0,
-                        "start": 2105,
+                        "start": 2130,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1396,10 +1403,10 @@ description: Variables in memory after executing wing-spar.kcl
                         34.204
                       ],
                       "tag": {
-                        "commentStart": 2222,
-                        "end": 2228,
+                        "commentStart": 2247,
+                        "end": 2253,
                         "moduleId": 0,
-                        "start": 2222,
+                        "start": 2247,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1442,10 +1449,10 @@ description: Variables in memory after executing wing-spar.kcl
                         30.0
                       ],
                       "tag": {
-                        "commentStart": 2340,
-                        "end": 2346,
+                        "commentStart": 2365,
+                        "end": 2371,
                         "moduleId": 0,
-                        "start": 2340,
+                        "start": 2365,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1488,10 +1495,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.796
                       ],
                       "tag": {
-                        "commentStart": 2458,
-                        "end": 2464,
+                        "commentStart": 2483,
+                        "end": 2489,
                         "moduleId": 0,
-                        "start": 2458,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1646,10 +1653,10 @@ description: Variables in memory after executing wing-spar.kcl
                         29.999999999999996
                       ],
                       "tag": {
-                        "commentStart": 2830,
-                        "end": 2836,
+                        "commentStart": 2855,
+                        "end": 2861,
                         "moduleId": 0,
-                        "start": 2830,
+                        "start": 2855,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -1681,6 +1688,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1688,7 +1697,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -1805,10 +1813,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4227,
-                "end": 4233,
+                "commentStart": 4252,
+                "end": 4258,
                 "moduleId": 0,
-                "start": 4227,
+                "start": 4252,
                 "type": "TagDeclarator",
                 "value": "seg11"
               },
@@ -1826,10 +1834,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4370,
-                "end": 4376,
+                "commentStart": 4395,
+                "end": 4401,
                 "moduleId": 0,
-                "start": 4370,
+                "start": 4395,
                 "type": "TagDeclarator",
                 "value": "seg12"
               },
@@ -1872,6 +1880,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1885,10 +1894,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4227,
-                  "end": 4233,
+                  "commentStart": 4252,
+                  "end": 4258,
                   "moduleId": 0,
-                  "start": 4227,
+                  "start": 4252,
                   "type": "TagDeclarator",
                   "value": "seg11"
                 },
@@ -1931,10 +1940,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -29.0
                 ],
                 "tag": {
-                  "commentStart": 4370,
-                  "end": 4376,
+                  "commentStart": 4395,
+                  "end": 4401,
                   "moduleId": 0,
-                  "start": 4370,
+                  "start": 4395,
                   "type": "TagDeclarator",
                   "value": "seg12"
                 },
@@ -2050,6 +2059,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg10",
               "xAxis": {
                 "x": -1.0,
@@ -2073,10 +2083,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2105,
-                      "end": 2111,
+                      "commentStart": 2130,
+                      "end": 2136,
                       "moduleId": 0,
-                      "start": 2105,
+                      "start": 2130,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2094,10 +2104,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2222,
-                      "end": 2228,
+                      "commentStart": 2247,
+                      "end": 2253,
                       "moduleId": 0,
-                      "start": 2222,
+                      "start": 2247,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2115,10 +2125,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2340,
-                      "end": 2346,
+                      "commentStart": 2365,
+                      "end": 2371,
                       "moduleId": 0,
-                      "start": 2340,
+                      "start": 2365,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2136,10 +2146,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2458,
-                      "end": 2464,
+                      "commentStart": 2483,
+                      "end": 2489,
                       "moduleId": 0,
-                      "start": 2458,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2199,10 +2209,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2830,
-                      "end": 2836,
+                      "commentStart": 2855,
+                      "end": 2861,
                       "moduleId": 0,
-                      "start": 2830,
+                      "start": 2855,
                       "type": "TagDeclarator",
                       "value": "seg10"
                     },
@@ -2217,6 +2227,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -2230,10 +2241,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -15.299999999999999
                       ],
                       "tag": {
-                        "commentStart": 2105,
-                        "end": 2111,
+                        "commentStart": 2130,
+                        "end": 2136,
                         "moduleId": 0,
-                        "start": 2105,
+                        "start": 2130,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2276,10 +2287,10 @@ description: Variables in memory after executing wing-spar.kcl
                         34.204
                       ],
                       "tag": {
-                        "commentStart": 2222,
-                        "end": 2228,
+                        "commentStart": 2247,
+                        "end": 2253,
                         "moduleId": 0,
-                        "start": 2222,
+                        "start": 2247,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2322,10 +2333,10 @@ description: Variables in memory after executing wing-spar.kcl
                         30.0
                       ],
                       "tag": {
-                        "commentStart": 2340,
-                        "end": 2346,
+                        "commentStart": 2365,
+                        "end": 2371,
                         "moduleId": 0,
-                        "start": 2340,
+                        "start": 2365,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2368,10 +2379,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.796
                       ],
                       "tag": {
-                        "commentStart": 2458,
-                        "end": 2464,
+                        "commentStart": 2483,
+                        "end": 2489,
                         "moduleId": 0,
-                        "start": 2458,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2526,10 +2537,10 @@ description: Variables in memory after executing wing-spar.kcl
                         29.999999999999996
                       ],
                       "tag": {
-                        "commentStart": 2830,
-                        "end": 2836,
+                        "commentStart": 2855,
+                        "end": 2861,
                         "moduleId": 0,
-                        "start": 2830,
+                        "start": 2855,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -2561,6 +2572,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2568,7 +2581,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -2685,10 +2697,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4227,
-                "end": 4233,
+                "commentStart": 4252,
+                "end": 4258,
                 "moduleId": 0,
-                "start": 4227,
+                "start": 4252,
                 "type": "TagDeclarator",
                 "value": "seg11"
               },
@@ -2706,10 +2718,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4370,
-                "end": 4376,
+                "commentStart": 4395,
+                "end": 4401,
                 "moduleId": 0,
-                "start": 4370,
+                "start": 4395,
                 "type": "TagDeclarator",
                 "value": "seg12"
               },
@@ -2752,6 +2764,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2765,10 +2778,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4227,
-                  "end": 4233,
+                  "commentStart": 4252,
+                  "end": 4258,
                   "moduleId": 0,
-                  "start": 4227,
+                  "start": 4252,
                   "type": "TagDeclarator",
                   "value": "seg11"
                 },
@@ -2811,10 +2824,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -29.0
                 ],
                 "tag": {
-                  "commentStart": 4370,
-                  "end": 4376,
+                  "commentStart": 4395,
+                  "end": 4401,
                   "moduleId": 0,
-                  "start": 4370,
+                  "start": 4395,
                   "type": "TagDeclarator",
                   "value": "seg12"
                 },
@@ -2930,6 +2943,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg10",
               "xAxis": {
                 "x": -1.0,
@@ -2953,10 +2967,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2105,
-                      "end": 2111,
+                      "commentStart": 2130,
+                      "end": 2136,
                       "moduleId": 0,
-                      "start": 2105,
+                      "start": 2130,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2974,10 +2988,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2222,
-                      "end": 2228,
+                      "commentStart": 2247,
+                      "end": 2253,
                       "moduleId": 0,
-                      "start": 2222,
+                      "start": 2247,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2995,10 +3009,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2340,
-                      "end": 2346,
+                      "commentStart": 2365,
+                      "end": 2371,
                       "moduleId": 0,
-                      "start": 2340,
+                      "start": 2365,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3016,10 +3030,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2458,
-                      "end": 2464,
+                      "commentStart": 2483,
+                      "end": 2489,
                       "moduleId": 0,
-                      "start": 2458,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3079,10 +3093,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2830,
-                      "end": 2836,
+                      "commentStart": 2855,
+                      "end": 2861,
                       "moduleId": 0,
-                      "start": 2830,
+                      "start": 2855,
                       "type": "TagDeclarator",
                       "value": "seg10"
                     },
@@ -3097,6 +3111,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -3110,10 +3125,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -15.299999999999999
                       ],
                       "tag": {
-                        "commentStart": 2105,
-                        "end": 2111,
+                        "commentStart": 2130,
+                        "end": 2136,
                         "moduleId": 0,
-                        "start": 2105,
+                        "start": 2130,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3156,10 +3171,10 @@ description: Variables in memory after executing wing-spar.kcl
                         34.204
                       ],
                       "tag": {
-                        "commentStart": 2222,
-                        "end": 2228,
+                        "commentStart": 2247,
+                        "end": 2253,
                         "moduleId": 0,
-                        "start": 2222,
+                        "start": 2247,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3202,10 +3217,10 @@ description: Variables in memory after executing wing-spar.kcl
                         30.0
                       ],
                       "tag": {
-                        "commentStart": 2340,
-                        "end": 2346,
+                        "commentStart": 2365,
+                        "end": 2371,
                         "moduleId": 0,
-                        "start": 2340,
+                        "start": 2365,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3248,10 +3263,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.796
                       ],
                       "tag": {
-                        "commentStart": 2458,
-                        "end": 2464,
+                        "commentStart": 2483,
+                        "end": 2489,
                         "moduleId": 0,
-                        "start": 2458,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3406,10 +3421,10 @@ description: Variables in memory after executing wing-spar.kcl
                         29.999999999999996
                       ],
                       "tag": {
-                        "commentStart": 2830,
-                        "end": 2836,
+                        "commentStart": 2855,
+                        "end": 2861,
                         "moduleId": 0,
-                        "start": 2830,
+                        "start": 2855,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -3441,6 +3456,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3448,7 +3465,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -3567,10 +3583,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2105,
-            "end": 2111,
+            "commentStart": 2130,
+            "end": 2136,
             "moduleId": 0,
-            "start": 2105,
+            "start": 2130,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3588,10 +3604,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2222,
-            "end": 2228,
+            "commentStart": 2247,
+            "end": 2253,
             "moduleId": 0,
-            "start": 2222,
+            "start": 2247,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -3609,10 +3625,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2340,
-            "end": 2346,
+            "commentStart": 2365,
+            "end": 2371,
             "moduleId": 0,
-            "start": 2340,
+            "start": 2365,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -3630,10 +3646,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2458,
-            "end": 2464,
+            "commentStart": 2483,
+            "end": 2489,
             "moduleId": 0,
-            "start": 2458,
+            "start": 2483,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -3693,10 +3709,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2830,
-            "end": 2836,
+            "commentStart": 2855,
+            "end": 2861,
             "moduleId": 0,
-            "start": 2830,
+            "start": 2855,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -3711,6 +3727,7 @@ description: Variables in memory after executing wing-spar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3724,10 +3741,10 @@ description: Variables in memory after executing wing-spar.kcl
               -15.299999999999999
             ],
             "tag": {
-              "commentStart": 2105,
-              "end": 2111,
+              "commentStart": 2130,
+              "end": 2136,
               "moduleId": 0,
-              "start": 2105,
+              "start": 2130,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3770,10 +3787,10 @@ description: Variables in memory after executing wing-spar.kcl
               34.204
             ],
             "tag": {
-              "commentStart": 2222,
-              "end": 2228,
+              "commentStart": 2247,
+              "end": 2253,
               "moduleId": 0,
-              "start": 2222,
+              "start": 2247,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3816,10 +3833,10 @@ description: Variables in memory after executing wing-spar.kcl
               30.0
             ],
             "tag": {
-              "commentStart": 2340,
-              "end": 2346,
+              "commentStart": 2365,
+              "end": 2371,
               "moduleId": 0,
-              "start": 2340,
+              "start": 2365,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3862,10 +3879,10 @@ description: Variables in memory after executing wing-spar.kcl
               21.796
             ],
             "tag": {
-              "commentStart": 2458,
-              "end": 2464,
+              "commentStart": 2483,
+              "end": 2489,
               "moduleId": 0,
-              "start": 2458,
+              "start": 2483,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -4020,10 +4037,10 @@ description: Variables in memory after executing wing-spar.kcl
               29.999999999999996
             ],
             "tag": {
-              "commentStart": 2830,
-              "end": 2836,
+              "commentStart": 2855,
+              "end": 2861,
               "moduleId": 0,
-              "start": 2830,
+              "start": 2855,
               "type": "TagDeclarator",
               "value": "seg10"
             },
@@ -4055,6 +4072,8 @@ description: Variables in memory after executing wing-spar.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4062,7 +4081,6 @@ description: Variables in memory after executing wing-spar.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
@@ -4172,10 +4190,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4959,
-                "end": 4965,
+                "commentStart": 4984,
+                "end": 4990,
                 "moduleId": 0,
-                "start": 4959,
+                "start": 4984,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -4232,6 +4250,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4245,10 +4264,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4959,
-                  "end": 4965,
+                  "commentStart": 4984,
+                  "end": 4990,
                   "moduleId": 0,
-                  "start": 4959,
+                  "start": 4984,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -4403,6 +4422,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg09",
               "xAxis": {
                 "x": -1.0,
@@ -4426,10 +4446,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3143,
-                      "end": 3149,
+                      "commentStart": 3168,
+                      "end": 3174,
                       "moduleId": 0,
-                      "start": 3143,
+                      "start": 3168,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -4447,10 +4467,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3260,
-                      "end": 3266,
+                      "commentStart": 3285,
+                      "end": 3291,
                       "moduleId": 0,
-                      "start": 3260,
+                      "start": 3285,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -4468,10 +4488,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3377,
-                      "end": 3383,
+                      "commentStart": 3402,
+                      "end": 3408,
                       "moduleId": 0,
-                      "start": 3377,
+                      "start": 3402,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -4489,10 +4509,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3493,
-                      "end": 3499,
+                      "commentStart": 3518,
+                      "end": 3524,
                       "moduleId": 0,
-                      "start": 3493,
+                      "start": 3518,
                       "type": "TagDeclarator",
                       "value": "seg08"
                     },
@@ -4552,10 +4572,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3868,
-                      "end": 3874,
+                      "commentStart": 3893,
+                      "end": 3899,
                       "moduleId": 0,
-                      "start": 3868,
+                      "start": 3893,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -4570,6 +4590,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -4583,10 +4604,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -12.6
                       ],
                       "tag": {
-                        "commentStart": 3143,
-                        "end": 3149,
+                        "commentStart": 3168,
+                        "end": 3174,
                         "moduleId": 0,
-                        "start": 3143,
+                        "start": 3168,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -4629,10 +4650,10 @@ description: Variables in memory after executing wing-spar.kcl
                         25.204
                       ],
                       "tag": {
-                        "commentStart": 3260,
-                        "end": 3266,
+                        "commentStart": 3285,
+                        "end": 3291,
                         "moduleId": 0,
-                        "start": 3260,
+                        "start": 3285,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -4675,10 +4696,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3377,
-                        "end": 3383,
+                        "commentStart": 3402,
+                        "end": 3408,
                         "moduleId": 0,
-                        "start": 3377,
+                        "start": 3402,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -4721,10 +4742,10 @@ description: Variables in memory after executing wing-spar.kcl
                         12.796
                       ],
                       "tag": {
-                        "commentStart": 3493,
-                        "end": 3499,
+                        "commentStart": 3518,
+                        "end": 3524,
                         "moduleId": 0,
-                        "start": 3493,
+                        "start": 3518,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -4879,10 +4900,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3868,
-                        "end": 3874,
+                        "commentStart": 3893,
+                        "end": 3899,
                         "moduleId": 0,
-                        "start": 3868,
+                        "start": 3893,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -4914,6 +4935,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4921,7 +4944,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -5034,10 +5056,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4959,
-                "end": 4965,
+                "commentStart": 4984,
+                "end": 4990,
                 "moduleId": 0,
-                "start": 4959,
+                "start": 4984,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -5094,6 +5116,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5107,10 +5130,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4959,
-                  "end": 4965,
+                  "commentStart": 4984,
+                  "end": 4990,
                   "moduleId": 0,
-                  "start": 4959,
+                  "start": 4984,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -5265,6 +5288,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg09",
               "xAxis": {
                 "x": -1.0,
@@ -5288,10 +5312,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3143,
-                      "end": 3149,
+                      "commentStart": 3168,
+                      "end": 3174,
                       "moduleId": 0,
-                      "start": 3143,
+                      "start": 3168,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -5309,10 +5333,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3260,
-                      "end": 3266,
+                      "commentStart": 3285,
+                      "end": 3291,
                       "moduleId": 0,
-                      "start": 3260,
+                      "start": 3285,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -5330,10 +5354,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3377,
-                      "end": 3383,
+                      "commentStart": 3402,
+                      "end": 3408,
                       "moduleId": 0,
-                      "start": 3377,
+                      "start": 3402,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -5351,10 +5375,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3493,
-                      "end": 3499,
+                      "commentStart": 3518,
+                      "end": 3524,
                       "moduleId": 0,
-                      "start": 3493,
+                      "start": 3518,
                       "type": "TagDeclarator",
                       "value": "seg08"
                     },
@@ -5414,10 +5438,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3868,
-                      "end": 3874,
+                      "commentStart": 3893,
+                      "end": 3899,
                       "moduleId": 0,
-                      "start": 3868,
+                      "start": 3893,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -5432,6 +5456,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -5445,10 +5470,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -12.6
                       ],
                       "tag": {
-                        "commentStart": 3143,
-                        "end": 3149,
+                        "commentStart": 3168,
+                        "end": 3174,
                         "moduleId": 0,
-                        "start": 3143,
+                        "start": 3168,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -5491,10 +5516,10 @@ description: Variables in memory after executing wing-spar.kcl
                         25.204
                       ],
                       "tag": {
-                        "commentStart": 3260,
-                        "end": 3266,
+                        "commentStart": 3285,
+                        "end": 3291,
                         "moduleId": 0,
-                        "start": 3260,
+                        "start": 3285,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -5537,10 +5562,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3377,
-                        "end": 3383,
+                        "commentStart": 3402,
+                        "end": 3408,
                         "moduleId": 0,
-                        "start": 3377,
+                        "start": 3402,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -5583,10 +5608,10 @@ description: Variables in memory after executing wing-spar.kcl
                         12.796
                       ],
                       "tag": {
-                        "commentStart": 3493,
-                        "end": 3499,
+                        "commentStart": 3518,
+                        "end": 3524,
                         "moduleId": 0,
-                        "start": 3493,
+                        "start": 3518,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -5741,10 +5766,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3868,
-                        "end": 3874,
+                        "commentStart": 3893,
+                        "end": 3899,
                         "moduleId": 0,
-                        "start": 3868,
+                        "start": 3893,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -5776,6 +5801,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5783,7 +5810,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -5896,10 +5922,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4959,
-                "end": 4965,
+                "commentStart": 4984,
+                "end": 4990,
                 "moduleId": 0,
-                "start": 4959,
+                "start": 4984,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -5956,6 +5982,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5969,10 +5996,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4959,
-                  "end": 4965,
+                  "commentStart": 4984,
+                  "end": 4990,
                   "moduleId": 0,
-                  "start": 4959,
+                  "start": 4984,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -6127,6 +6154,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg09",
               "xAxis": {
                 "x": -1.0,
@@ -6150,10 +6178,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3143,
-                      "end": 3149,
+                      "commentStart": 3168,
+                      "end": 3174,
                       "moduleId": 0,
-                      "start": 3143,
+                      "start": 3168,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -6171,10 +6199,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3260,
-                      "end": 3266,
+                      "commentStart": 3285,
+                      "end": 3291,
                       "moduleId": 0,
-                      "start": 3260,
+                      "start": 3285,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -6192,10 +6220,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3377,
-                      "end": 3383,
+                      "commentStart": 3402,
+                      "end": 3408,
                       "moduleId": 0,
-                      "start": 3377,
+                      "start": 3402,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -6213,10 +6241,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3493,
-                      "end": 3499,
+                      "commentStart": 3518,
+                      "end": 3524,
                       "moduleId": 0,
-                      "start": 3493,
+                      "start": 3518,
                       "type": "TagDeclarator",
                       "value": "seg08"
                     },
@@ -6276,10 +6304,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3868,
-                      "end": 3874,
+                      "commentStart": 3893,
+                      "end": 3899,
                       "moduleId": 0,
-                      "start": 3868,
+                      "start": 3893,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -6294,6 +6322,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -6307,10 +6336,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -12.6
                       ],
                       "tag": {
-                        "commentStart": 3143,
-                        "end": 3149,
+                        "commentStart": 3168,
+                        "end": 3174,
                         "moduleId": 0,
-                        "start": 3143,
+                        "start": 3168,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -6353,10 +6382,10 @@ description: Variables in memory after executing wing-spar.kcl
                         25.204
                       ],
                       "tag": {
-                        "commentStart": 3260,
-                        "end": 3266,
+                        "commentStart": 3285,
+                        "end": 3291,
                         "moduleId": 0,
-                        "start": 3260,
+                        "start": 3285,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -6399,10 +6428,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3377,
-                        "end": 3383,
+                        "commentStart": 3402,
+                        "end": 3408,
                         "moduleId": 0,
-                        "start": 3377,
+                        "start": 3402,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -6445,10 +6474,10 @@ description: Variables in memory after executing wing-spar.kcl
                         12.796
                       ],
                       "tag": {
-                        "commentStart": 3493,
-                        "end": 3499,
+                        "commentStart": 3518,
+                        "end": 3524,
                         "moduleId": 0,
-                        "start": 3493,
+                        "start": 3518,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -6603,10 +6632,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3868,
-                        "end": 3874,
+                        "commentStart": 3893,
+                        "end": 3899,
                         "moduleId": 0,
-                        "start": 3868,
+                        "start": 3893,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -6638,6 +6667,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6645,7 +6676,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -6758,10 +6788,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4959,
-                "end": 4965,
+                "commentStart": 4984,
+                "end": 4990,
                 "moduleId": 0,
-                "start": 4959,
+                "start": 4984,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -6818,6 +6848,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6831,10 +6862,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4959,
-                  "end": 4965,
+                  "commentStart": 4984,
+                  "end": 4990,
                   "moduleId": 0,
-                  "start": 4959,
+                  "start": 4984,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -6989,6 +7020,7 @@ description: Variables in memory after executing wing-spar.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "seg09",
               "xAxis": {
                 "x": -1.0,
@@ -7012,10 +7044,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3143,
-                      "end": 3149,
+                      "commentStart": 3168,
+                      "end": 3174,
                       "moduleId": 0,
-                      "start": 3143,
+                      "start": 3168,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -7033,10 +7065,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3260,
-                      "end": 3266,
+                      "commentStart": 3285,
+                      "end": 3291,
                       "moduleId": 0,
-                      "start": 3260,
+                      "start": 3285,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -7054,10 +7086,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3377,
-                      "end": 3383,
+                      "commentStart": 3402,
+                      "end": 3408,
                       "moduleId": 0,
-                      "start": 3377,
+                      "start": 3402,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -7075,10 +7107,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3493,
-                      "end": 3499,
+                      "commentStart": 3518,
+                      "end": 3524,
                       "moduleId": 0,
-                      "start": 3493,
+                      "start": 3518,
                       "type": "TagDeclarator",
                       "value": "seg08"
                     },
@@ -7138,10 +7170,10 @@ description: Variables in memory after executing wing-spar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 3868,
-                      "end": 3874,
+                      "commentStart": 3893,
+                      "end": 3899,
                       "moduleId": 0,
-                      "start": 3868,
+                      "start": 3893,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -7156,6 +7188,7 @@ description: Variables in memory after executing wing-spar.kcl
                   }
                 ],
                 "sketch": {
+                  "creatorType": "sketch",
                   "type": "Sketch",
                   "id": "[uuid]",
                   "paths": [
@@ -7169,10 +7202,10 @@ description: Variables in memory after executing wing-spar.kcl
                         -12.6
                       ],
                       "tag": {
-                        "commentStart": 3143,
-                        "end": 3149,
+                        "commentStart": 3168,
+                        "end": 3174,
                         "moduleId": 0,
-                        "start": 3143,
+                        "start": 3168,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -7215,10 +7248,10 @@ description: Variables in memory after executing wing-spar.kcl
                         25.204
                       ],
                       "tag": {
-                        "commentStart": 3260,
-                        "end": 3266,
+                        "commentStart": 3285,
+                        "end": 3291,
                         "moduleId": 0,
-                        "start": 3260,
+                        "start": 3285,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -7261,10 +7294,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3377,
-                        "end": 3383,
+                        "commentStart": 3402,
+                        "end": 3408,
                         "moduleId": 0,
-                        "start": 3377,
+                        "start": 3402,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -7307,10 +7340,10 @@ description: Variables in memory after executing wing-spar.kcl
                         12.796
                       ],
                       "tag": {
-                        "commentStart": 3493,
-                        "end": 3499,
+                        "commentStart": 3518,
+                        "end": 3524,
                         "moduleId": 0,
-                        "start": 3493,
+                        "start": 3518,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -7465,10 +7498,10 @@ description: Variables in memory after executing wing-spar.kcl
                         21.0
                       ],
                       "tag": {
-                        "commentStart": 3868,
-                        "end": 3874,
+                        "commentStart": 3893,
+                        "end": 3899,
                         "moduleId": 0,
-                        "start": 3868,
+                        "start": 3893,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -7500,6 +7533,8 @@ description: Variables in memory after executing wing-spar.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "XZ",
+                    "objectId": 1,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7507,7 +7542,6 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "XZ",
                     "xAxis": {
                       "x": -1.0,
                       "y": 0.0,
@@ -7622,10 +7656,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3143,
-            "end": 3149,
+            "commentStart": 3168,
+            "end": 3174,
             "moduleId": 0,
-            "start": 3143,
+            "start": 3168,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -7643,10 +7677,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3260,
-            "end": 3266,
+            "commentStart": 3285,
+            "end": 3291,
             "moduleId": 0,
-            "start": 3260,
+            "start": 3285,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -7664,10 +7698,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3377,
-            "end": 3383,
+            "commentStart": 3402,
+            "end": 3408,
             "moduleId": 0,
-            "start": 3377,
+            "start": 3402,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -7685,10 +7719,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3493,
-            "end": 3499,
+            "commentStart": 3518,
+            "end": 3524,
             "moduleId": 0,
-            "start": 3493,
+            "start": 3518,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -7748,10 +7782,10 @@ description: Variables in memory after executing wing-spar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3868,
-            "end": 3874,
+            "commentStart": 3893,
+            "end": 3899,
             "moduleId": 0,
-            "start": 3868,
+            "start": 3893,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -7766,6 +7800,7 @@ description: Variables in memory after executing wing-spar.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -7779,10 +7814,10 @@ description: Variables in memory after executing wing-spar.kcl
               -12.6
             ],
             "tag": {
-              "commentStart": 3143,
-              "end": 3149,
+              "commentStart": 3168,
+              "end": 3174,
               "moduleId": 0,
-              "start": 3143,
+              "start": 3168,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -7825,10 +7860,10 @@ description: Variables in memory after executing wing-spar.kcl
               25.204
             ],
             "tag": {
-              "commentStart": 3260,
-              "end": 3266,
+              "commentStart": 3285,
+              "end": 3291,
               "moduleId": 0,
-              "start": 3260,
+              "start": 3285,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -7871,10 +7906,10 @@ description: Variables in memory after executing wing-spar.kcl
               21.0
             ],
             "tag": {
-              "commentStart": 3377,
-              "end": 3383,
+              "commentStart": 3402,
+              "end": 3408,
               "moduleId": 0,
-              "start": 3377,
+              "start": 3402,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -7917,10 +7952,10 @@ description: Variables in memory after executing wing-spar.kcl
               12.796
             ],
             "tag": {
-              "commentStart": 3493,
-              "end": 3499,
+              "commentStart": 3518,
+              "end": 3524,
               "moduleId": 0,
-              "start": 3493,
+              "start": 3518,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -8075,10 +8110,10 @@ description: Variables in memory after executing wing-spar.kcl
               21.0
             ],
             "tag": {
-              "commentStart": 3868,
-              "end": 3874,
+              "commentStart": 3893,
+              "end": 3899,
               "moduleId": 0,
-              "start": 3868,
+              "start": 3893,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -8110,6 +8145,8 @@ description: Variables in memory after executing wing-spar.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8117,7 +8154,6 @@ description: Variables in memory after executing wing-spar.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
@@ -8274,6 +8310,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8525,6 +8562,8 @@ description: Variables in memory after executing wing-spar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -8.0,
@@ -8532,7 +8571,6 @@ description: Variables in memory after executing wing-spar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -1.0,
                 "y": 0.0,
@@ -8664,6 +8702,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8915,6 +8954,8 @@ description: Variables in memory after executing wing-spar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -8.0,
@@ -8922,7 +8963,6 @@ description: Variables in memory after executing wing-spar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -1.0,
                 "y": 0.0,
@@ -9054,6 +9094,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9305,6 +9346,8 @@ description: Variables in memory after executing wing-spar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -8.0,
@@ -9312,7 +9355,6 @@ description: Variables in memory after executing wing-spar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -1.0,
                 "y": 0.0,
@@ -9444,6 +9486,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9695,6 +9738,8 @@ description: Variables in memory after executing wing-spar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -8.0,
@@ -9702,7 +9747,6 @@ description: Variables in memory after executing wing-spar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -1.0,
                 "y": 0.0,
@@ -9834,6 +9878,7 @@ description: Variables in memory after executing wing-spar.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -10085,6 +10130,8 @@ description: Variables in memory after executing wing-spar.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": -8.0,
@@ -10092,7 +10139,6 @@ description: Variables in memory after executing wing-spar.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -1.0,
                 "y": 0.0,
@@ -10219,13 +10265,14 @@ description: Variables in memory after executing wing-spar.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "XZ",
+      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,

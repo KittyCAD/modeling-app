@@ -34,7 +34,10 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+import {
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -42,8 +45,10 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 
 let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -58,9 +63,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, engineCommandManager, rustContext } =
+  const { instance, kclManager, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -90,17 +96,13 @@ variableBelowShouldNotBeIncluded = 3
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
       execState.variables,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     const defaultTy = {
       type: 'Default',
@@ -154,7 +156,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -171,7 +174,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -184,7 +188,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -200,7 +205,7 @@ yo2 = hmm([identifierGuy + 5])`
     const rangeStart = code.indexOf('ghi')
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const range = topLevelRange(rangeStart, rangeStart)
-    const result = isNodeSafeToReplace(ast, range)
+    const result = isNodeSafeToReplace(ast, range, instanceInThisFile)
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpressionKw')
@@ -217,7 +222,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
@@ -232,7 +238,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -249,7 +256,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -269,7 +277,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
 
@@ -365,7 +374,7 @@ describe('testing getNodePathFromSourceRange', () => {
       ['cond', 'IfExpression'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Name>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Name')
     expect(_node.node.name.name).toEqual('x')
@@ -397,7 +406,7 @@ describe('testing getNodePathFromSourceRange', () => {
       ['expression', 'ExpressionStatement'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Name>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Name')
     expect(_node.node.name.name).toEqual('x')
@@ -421,7 +430,7 @@ describe('testing getNodePathFromSourceRange', () => {
       [1, 'index'],
       ['name', 'ImportItem'],
     ])
-    const _node = getNodeFromPath<Identifier>(ast, result)
+    const _node = getNodeFromPath<Identifier>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Identifier')
     expect(_node.node.name).toEqual('bar')
@@ -447,7 +456,7 @@ describe('Testing findUsesOfTagInPipe', () => {
       ast,
       topLevelRange(characterIndex, characterIndex)
     )
-    const result = findUsesOfTagInPipe(ast, pathToNode)
+    const result = findUsesOfTagInPipe(ast, pathToNode, instanceInThisFile)
     expect(result).toHaveLength(2)
     result.forEach((range) => {
       expect(exampleCode.slice(range[0], range[1])).toContain('segLen')
@@ -463,7 +472,7 @@ describe('Testing findUsesOfTagInPipe', () => {
       ast,
       topLevelRange(characterIndex, characterIndex)
     )
-    const result = findUsesOfTagInPipe(ast, pathToNode)
+    const result = findUsesOfTagInPipe(ast, pathToNode, instanceInThisFile)
     expect(result).toHaveLength(0)
   })
 })
@@ -513,7 +522,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeTruthy()
   })
@@ -529,7 +539,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeFalsy()
   })
@@ -545,7 +556,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeTruthy()
   })
@@ -734,6 +746,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
           ),
         ]),
       ],
+      wasmInstance: instanceInThisFile,
     })
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst, instanceInThisFile)
@@ -773,6 +786,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
       node: ast,
       variables: {},
       pathToNode: sketchPathToNode,
+      wasmInstance: instanceInThisFile,
     })
 
     if (err(modifiedAst)) throw modifiedAst
@@ -809,7 +823,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
         ],
       },
     }
-    const result = isCursorInFunctionDefinition(ast, selectionRange)
+    const result = isCursorInFunctionDefinition(
+      ast,
+      selectionRange,
+      instanceInThisFile
+    )
     expect(result).toEqual(false)
   })
 })
@@ -832,12 +850,7 @@ part001 = startSketchOn(plane001)
 `
 
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      false,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
@@ -1011,12 +1024,7 @@ plane001 = offsetPlane(YZ, offset = 10)
 `
 
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      false,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const { variables } = execState
 
     const selections: Selections = {
@@ -1029,7 +1037,11 @@ plane001 = offsetPlane(YZ, offset = 10)
       graphSelections: [],
     }
 
-    const result = getSelectedPlaneAsNode(selections, variables)
+    const result = getSelectedPlaneAsNode(
+      selections,
+      variables,
+      instanceInThisFile
+    )
     expect(result).toBeTruthy()
     expect(result?.type).toBe('Literal')
     if (result?.type !== 'Literal') {
@@ -1049,8 +1061,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1066,7 +1076,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(1)
@@ -1086,8 +1100,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1107,7 +1119,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
     expect(vars.exprs).toHaveLength(1)
   })
@@ -1119,8 +1135,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1136,7 +1150,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(1)
@@ -1160,8 +1178,6 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifacts = [...artifactGraph.values()].filter(
@@ -1179,7 +1195,11 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(2)
@@ -1204,8 +1224,6 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifacts = [...artifactGraph.values()].filter(
@@ -1223,7 +1241,11 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(2)
@@ -1255,8 +1277,6 @@ extrude001 = extrude(profile001, length = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1277,6 +1297,7 @@ extrude001 = extrude(profile001, length = 1)
     const vars = getVariableExprsFromSelection(
       selections,
       ast,
+      instanceInThisFile,
       nodeToEdit,
       lastChildLookup,
       artifactGraph
@@ -1302,8 +1323,6 @@ extrude001 = extrude(profile001, length = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(
@@ -1326,6 +1345,37 @@ extrude001 = extrude(profile001, length = 1)
     expect(selection.artifact.type).toEqual('path')
   })
 
+  it('should find the cap selection from simple extrude on face', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude(capEnd001, length = 5)
+`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      circleProfileInVar,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('cap')
+  })
+
   it('should find two profile selections from multi-profile revolve op', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [3, 0], radius = 1)
@@ -1335,8 +1385,6 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(
@@ -1374,8 +1422,6 @@ appearance(extrude001, color = '#FF0000')`
     const ast = assertParse(redExtrusion, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(

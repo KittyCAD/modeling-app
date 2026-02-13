@@ -33,15 +33,6 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import {
-  authActor,
-  billingActor,
-  commandBarActor,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
-import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
@@ -65,6 +56,10 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
+import { useApp, useSingletons } from '@src/lib/boot'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -74,14 +69,23 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const { auth } = useApp()
+  const {
+    billingActor,
+    commandBarActor,
+    kclManager,
+    useSettings,
+    systemIOActor,
+    settingsActor,
+  } = useSingletons()
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const apiToken = useToken()
+  const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -123,19 +127,28 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Rename project',
+          argDefaultValues: {
+            oldName: currentProject?.name,
+            newName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'projects',
           name: 'Delete project',
+          argDefaultValues: {
+            name: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
@@ -147,15 +160,15 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
-      authActor.send({ type: 'Log out' })
+      auth.send({ type: 'Log out' })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
@@ -185,14 +198,16 @@ const Home = () => {
   useEffect(() => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
-  }, [])
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
   useHotkeys(
     isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(PATHS.HOME + PATHS.SETTINGS),
+    () => {
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
+    },
     {
       splitKey: '|',
     }
@@ -231,6 +246,8 @@ const Home = () => {
                       onboardingStatus,
                       navigate,
                       kclManager,
+                      systemIOActor,
+                      settingsActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
@@ -245,7 +262,7 @@ const Home = () => {
                 </ActionButton>
                 <ActionButton
                   Element="button"
-                  onClick={onDismissOnboardingInvite}
+                  onClick={() => onDismissOnboardingInvite(settingsActor)}
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
@@ -313,7 +330,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>
@@ -358,6 +375,7 @@ const Home = () => {
           projects={projects}
           query={query}
           sort={sort}
+          handleRenameProject={handleRenameProject(systemIOActor)}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -376,7 +394,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
 }
 
@@ -479,6 +497,10 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: Project[]
   query: string
   sort: string
+  handleRenameProject: (
+    e: FormEvent<HTMLFormElement>,
+    project: Project
+  ) => Promise<void>
 }
 
 function ProjectGrid({
@@ -486,8 +508,10 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  handleRenameProject,
   ...rest
 }: ProjectGridProps) {
+  const { systemIOActor } = useSingletons()
   const state = useSystemIOState()
 
   return (
@@ -503,7 +527,7 @@ function ProjectGrid({
                   key={project.name}
                   project={project}
                   handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
               ))}
             </ul>
@@ -535,35 +559,43 @@ function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-async function handleRenameProject(
-  e: FormEvent<HTMLFormElement>,
-  project: Project
+function handleRenameProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  const { newProjectName } = Object.fromEntries(
-    new FormData(e.target as HTMLFormElement)
-  )
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+    const { newProjectName } = Object.fromEntries(
+      new FormData(e.target as HTMLFormElement)
+    )
 
-  if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-    toast.error('Project names cannot start with a dot (.)')
-    return
-  }
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
 
-  if (newProjectName !== project.name) {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        requestedProjectName: String(newProjectName),
-        projectName: project.name,
-      },
-    })
+    if (newProjectName !== project.name) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+          redirect: false,
+        },
+      })
+    }
   }
 }
 
-async function handleDeleteProject(project: Project) {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.deleteProject,
-    data: { requestedProjectName: project.name },
-  })
+function handleDeleteProject(
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+) {
+  return async function (project: Project) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.deleteProject,
+      data: {
+        requestedProjectName: String(project.name),
+      },
+    })
+  }
 }
 
 export default Home

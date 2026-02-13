@@ -1,6 +1,6 @@
 # Contributing Guide
 
-## Quick start: Build the desktop app locally
+## Building the app
 
 This section applies to all potential contributors, internal and external to the Zoo team.
 
@@ -28,7 +28,7 @@ This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) wit
 ```
 # macOS/Linux
 npm run install:rust
-npm run install:wasm-pack:sh
+npm run install:wasm-pack:cargo
 
 # Windows
 npm run install:rust:windows
@@ -67,7 +67,7 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
-## Environment variables and hot reload
+## Developing locally
 
 This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
 
@@ -94,6 +94,32 @@ This will start the application and hot-reload on changes.
 Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesn't work for you.
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
+
+## Adding KCL samples
+
+Follow the instructions [here](public/kcl-samples/README.md).
+
+## Writing tests
+
+How to identify the types of tests and where to put your test.
+
+Unit tests should be fast, minimal dependencies, and minimal async code.
+Integration tests will be slower, require more dependencies, and could be flaky.
+
+- Vitest [config](./vitest.config.ts)
+  - Code written under `/src/**/*`
+  - Projects
+    - `unit` -- `npm run test:unit`
+      - ends with `*.test.*`
+      - Any raw typescript/javascript code. Think `function add(a,b) {return a+b}`
+      - Component mounting and rendering
+    - `integration` -- `npm run test:integration`
+      - ends with `*.spec.*`
+      - Any code that requires the WASM blob loaded into memory
+      - Any code that requires engine connection lite (websocket)
+- Playwright [config](./playwright.config.ts)
+  - Code written under `/e2e/*/*`
+  - ends with `*.spec.*`
 
 ## Running tests
 
@@ -256,7 +282,6 @@ These baselines are to hold us to higher standards and help implement automated 
 
 #### Output result to stdout
 - `npm run circular-deps`
-- `npm run url-checker`
 
 - create a `<name>.sh` file that will run the static checker then output the result to `stdout`
 
@@ -265,24 +290,22 @@ These baselines are to hold us to higher standards and help implement automated 
 If the application needs to overwrite the known file on disk use this pattern. This known .txt file will be source controlled as the baseline
 
 - `npm run circular-deps:overwrite`
-- `npm run url-checker:overwrite`
 
 #### Diff baseline and current
 
 These commands will write a /tmp/ file on disk and compare it to the known file in the repository. This command will also be used in the CI CD pipeline for automated checks
 
 - create a `diff-<name>.sh` file that is the script to diff your tmp file to the baseline
-e.g. `diff-url-checker.sh`
+e.g. `diff-circular-deps.sh`
 ```bash
 #!/bin/bash
 set -euo pipefail
 
-npm run url-checker > /tmp/urls.txt
+npm run circular-deps > /tmp/urls.txt
 diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
 ```
 
 - `npm run circular-deps:diff`
-- `npm run url-checker:diff`
 
 ## Proposing changes
 

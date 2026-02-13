@@ -52,10 +52,13 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PLANE: 'plane',
   HELIX: 'helix',
   CLONE: 'clone',
+  HIDDEN: 'hidden',
   SOLID: 'solid',
+  SPLIT: 'split',
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  SURFACE: 'surface',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -71,6 +74,9 @@ export const KCL_DEFAULT_INSTANCES = `3`
 
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
+
+/** The default KCL scale arg value that means no scale */
+export const KCL_DEFAULT_SCALE = `1`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
@@ -98,6 +104,12 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+
+/** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
+export const SKETCH_FILE_VERSION = 0
+
+/** The default KCL leader scale expression */
+export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
@@ -268,8 +280,9 @@ export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
  */
 export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
   token: string // authentication token from signing in. Can be empty string
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
+  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
 }
 
 /**
@@ -278,7 +291,8 @@ export type EnvironmentConfiguration = {
  */
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
+  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -309,4 +323,34 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 
 // Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
+
+// Default backface color
+export const DEFAULT_BACKFACE_COLOR = {
+  a: 1.0,
+  b: 0.05,
+  g: 0.05,
+  r: 0.95,
+}
+
+/**
+ * KCL constants defined in rust/kcl-lib/std/prelude.kcl
+ * TODO: figure if how we could keep this in sync automatically
+ */
+export type KclPreludeBodyType = 'SURFACE' | 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType = 'SURFACE'
+export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType = 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_VALUES: KclPreludeBodyType[] = [
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+]
+
+export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
+export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+]
+
+export const ARCHIVE_DIR = 'archive'
