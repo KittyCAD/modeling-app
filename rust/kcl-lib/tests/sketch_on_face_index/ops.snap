@@ -196,7 +196,7 @@ description: Operations executed sketch_on_face_index.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "face_id_20b30aa4_67cc_51f8_a59d_6551fddaae57",
+            "value": "face_id_521b4313_d864_5cbb_be92_09c7ee3e680c",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
