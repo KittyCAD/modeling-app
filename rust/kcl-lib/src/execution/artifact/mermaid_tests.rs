@@ -585,3 +585,101 @@ impl ArtifactGraph {
         Ok(())
     }
 }
+
+#[test]
+fn surface_blend_creates_blend_sweep_artifact() {
+    let path_one_id = ArtifactId::new(Uuid::new_v4());
+    let path_two_id = ArtifactId::new(Uuid::new_v4());
+    let source_surface_one_id = ArtifactId::new(Uuid::new_v4());
+    let source_surface_two_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_surface_one_id,
+        Artifact::Sweep(Sweep {
+            id: source_surface_one_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: path_one_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: source_code_ref.clone(),
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            consumed: false,
+        }),
+    );
+    artifacts.insert(
+        source_surface_two_id,
+        Artifact::Sweep(Sweep {
+            id: source_surface_two_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: path_two_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: source_code_ref,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            consumed: false,
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::SurfaceBlend::builder()
+            .surfaces(vec![
+                kcmc::shared::SurfaceEdgeReference::builder()
+                    .object_id(Uuid::from(source_surface_one_id))
+                    .edges(vec![
+                        kcmc::shared::FractionOfEdge::builder()
+                            .edge_id(Uuid::new_v4())
+                            .lower_bound(0.0)
+                            .upper_bound(1.0)
+                            .build(),
+                    ])
+                    .build(),
+                kcmc::shared::SurfaceEdgeReference::builder()
+                    .object_id(Uuid::from(source_surface_two_id))
+                    .edges(vec![
+                        kcmc::shared::FractionOfEdge::builder()
+                            .edge_id(Uuid::new_v4())
+                            .lower_bound(0.0)
+                            .upper_bound(1.0)
+                            .build(),
+                    ])
+                    .build(),
+            ])
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Sweep(blend_sweep) = &updated[0] else {
+        panic!("Expected SurfaceBlend to create a sweep artifact, got: {updated:?}");
+    };
+
+    assert_eq!(blend_sweep.id, ArtifactId::new(cmd_id));
+    assert_eq!(blend_sweep.sub_type, SweepSubType::Blend);
+    assert_eq!(blend_sweep.path_id, path_one_id);
+    assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
+    assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert!(!blend_sweep.consumed);
+}

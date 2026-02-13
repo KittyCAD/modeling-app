@@ -1773,6 +1773,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'text',
     prepareToEdit: prepareToEditAppearance,
   },
+  blend: {
+    label: 'Blend',
+    icon: 'fillet', // TODO: update
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
