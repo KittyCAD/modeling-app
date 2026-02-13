@@ -2,7 +2,7 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 
 import type { ReactNode } from 'react'
@@ -26,8 +26,8 @@ export const AppHeader = ({
   nativeFileMenuCreated,
   projectMenuChildren,
 }: AppHeaderProps) => {
-  const { useUser } = useSingletons()
-  const user = useUser()
+  const { auth } = useApp()
+  const user = auth.useUser()
 
   return (
     <header
