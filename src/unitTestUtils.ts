@@ -100,7 +100,7 @@ export async function buildTheWorldAndConnectToEngine() {
   sceneInfra.camControls.getSettings = getSettings
   sceneEntitiesManager.getSettings = getSettings
 
-  await new Promise((resolve) => {
+  await new Promise((resolve, reject) => {
     engineCommandManager
       .start({
         token: env().VITE_ZOO_API_TOKEN || '',
@@ -109,9 +109,17 @@ export async function buildTheWorldAndConnectToEngine() {
         setStreamIsReady: () => {
           console.log('no op for a unit test')
         },
-        callbackOnUnitTestingConnection: () => {
-          resolve(true)
-          console.log('unit test connected!')
+        callbackOnUnitTestingConnection: (message: string) => {
+          if (message === 'auth_token_invalid') {
+            const reason =
+              'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
+            reject(reason)
+          }
+
+          if (message === 'auth success') {
+            resolve(true)
+            console.log('unit test connected!')
+          }
         },
       })
       .catch(reportRejection)

@@ -1,5 +1,27 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { expect, vi, describe, test } from 'vitest'
+import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+
+// Mock modules that access localStorage at import time
+vi.mock('@src/routes/utils', () => ({
+  getAppVersion: () => 'test',
+  isPlaywrightTestEnv: false,
+}))
+
+vi.mock('@src/lib/desktop', () => ({
+  getDesktopAppInfo: () => null,
+  isDesktop: () => false,
+  openExternalBrowserIfDesktop: vi.fn(),
+  DESKTOP_OS_INFO: null,
+}))
+
+// Mock useSingletons which requires heavy initialization
+vi.mock('@src/lib/boot', () => ({
+  useSingletons: () => ({
+    kclManager: {
+      astSignal: { value: null },
+    },
+  }),
+}))
 
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine'
@@ -14,20 +36,22 @@ describe('MlEphantConversation', () => {
 
     let latestConversation: Conversation | undefined = { exchanges: [] }
 
-    const handleProcess = vi.fn((prompt: string) => {
-      latestConversation = {
-        exchanges: [
-          {
-            request: {
-              type: 'user',
-              content: prompt,
+    const handleProcess = vi.fn(
+      (prompt: string, _mode: MlCopilotMode, _files: File[]) => {
+        latestConversation = {
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: prompt,
+              },
+              responses: [],
+              deltasAggregated: '',
             },
-            responses: [],
-            deltasAggregated: '',
-          },
-        ],
+          ],
+        }
       }
-    })
+    )
 
     const renderConversation = (
       conversation?: Conversation,
@@ -64,7 +88,7 @@ describe('MlEphantConversation', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, mode)
+      expect(handleProcess).toHaveBeenCalledWith(promptText, mode, [])
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -167,5 +191,264 @@ describe('MlEphantConversation', () => {
     expect(
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
+  })
+
+  describe('file attachments', () => {
+    const createMockFile = (
+      name: string,
+      type: string,
+      size: number = 1024
+    ): File => {
+      const content = new Array(size).fill('a').join('')
+      return new File([content], name, { type })
+    }
+
+    const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
+      return render(
+        <MlEphantConversation
+          isLoading={false}
+          conversation={{ exchanges: [] }}
+          onProcess={handleProcess}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={disabled}
+          hasPromptCompleted={true}
+          contexts={[]}
+        />
+      )
+    }
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+
+    test('displays attachment button', () => {
+      renderConversation()
+      expect(
+        screen.getByTestId('ml-ephant-attachments-button')
+      ).toBeInTheDocument()
+    })
+
+    test('shows attached files when files are added via drag and drop', async () => {
+      renderConversation()
+
+      // The drop container is the div that wraps the textarea
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('test-image.png', 'image/png')
+
+      fireEvent.dragEnter(dropContainer, {
+        dataTransfer: { types: ['Files'] },
+      })
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('test-image.png')).toBeInTheDocument()
+    })
+
+    test('shows attached files when files are pasted', async () => {
+      renderConversation()
+
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const pdfFile = createMockFile('document.pdf', 'application/pdf')
+
+      const pasteEvent = {
+        preventDefault: vi.fn(),
+        clipboardData: {
+          files: [pdfFile],
+        },
+      }
+
+      fireEvent.paste(textarea, pasteEvent)
+
+      expect(await screen.findByText('document.pdf')).toBeInTheDocument()
+    })
+
+    test('allows removing attached files', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('removable.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('removable.png')).toBeInTheDocument()
+
+      const removeButton = screen.getByRole('button', {
+        name: /Remove removable.png/i,
+      })
+      fireEvent.click(removeButton)
+
+      expect(screen.queryByText('removable.png')).not.toBeInTheDocument()
+    })
+
+    test('sends attachments with prompt on submit', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+
+      const imageFile = createMockFile('attachment.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [imageFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('attachment.png')).toBeInTheDocument()
+
+      fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(handleProcess).toHaveBeenCalledWith(
+        'Test prompt',
+        DEFAULT_ML_COPILOT_MODE,
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'attachment.png' }),
+        ])
+      )
+    })
+
+    test('clears attachments after submit', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+
+      const imageFile = createMockFile('will-clear.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [imageFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('will-clear.png')).toBeInTheDocument()
+
+      fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(screen.queryByText('will-clear.png')).not.toBeInTheDocument()
+    })
+
+    test('does not accept files when disabled', () => {
+      renderConversation(vi.fn(), true)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('disabled-test.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(screen.queryByText('disabled-test.png')).not.toBeInTheDocument()
+    })
+
+    test('does not accept paste when disabled', () => {
+      renderConversation(vi.fn(), true)
+
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const pngFile = createMockFile('disabled-paste.png', 'image/png')
+
+      fireEvent.paste(textarea, {
+        preventDefault: vi.fn(),
+        clipboardData: {
+          files: [pngFile],
+        },
+      })
+
+      expect(screen.queryByText('disabled-paste.png')).not.toBeInTheDocument()
+    })
+
+    test('deduplicates files with same name and size', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const file1 = createMockFile('duplicate.png', 'image/png', 100)
+      const file2 = createMockFile('duplicate.png', 'image/png', 100)
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [file1],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('duplicate.png')).toBeInTheDocument()
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [file2],
+          types: ['Files'],
+        },
+      })
+
+      // Should still only have one instance
+      const attachments = screen.getAllByText('duplicate.png')
+      expect(attachments).toHaveLength(1)
+    })
+
+    test('accepts multiple files at once', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('image.png', 'image/png')
+      const pdfFile = createMockFile('doc.pdf', 'application/pdf')
+      const dxfFile = createMockFile('drawing.dxf', 'application/dxf')
+      const jsFile = createMockFile('script.js', 'text/javascript')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile, pdfFile, dxfFile, jsFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('image.png')).toBeInTheDocument()
+      expect(screen.getByText('doc.pdf')).toBeInTheDocument()
+      expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
+      expect(screen.getByText('script.js')).toBeInTheDocument()
+    })
   })
 })

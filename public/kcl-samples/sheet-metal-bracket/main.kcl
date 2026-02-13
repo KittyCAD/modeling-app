@@ -1,35 +1,3 @@
-// @settings(defaultLengthUnit = mm)
-
-// fudge = 1.5
-// thickness = 2
-// length = 20
-// angle = 75deg
-
-// fn tubeProfile(@sketch) {
-// return rectangle(
-// sketch,
-// width = 10,
-// height = 10,
-// center = [0, 0],
-// )
-// }
-
-// lowerSection = startSketchOn(XY)
-// |> tubeProfile()
-// |> extrude(length = length)
-
-// You can even extrude faces that result from sweeps and other objects!
-
-// trajectory = startSketchOn(XZ)
-// |> startProfile(at = [0, length])
-// |> yLine(length = thickness)
-// |> tangentialArc(angle = angle, radius = (7 + 2 * thickness) / 2 * fudge, tag = $arc)
-// |> angledLine(angle = tangentToEnd(arc), length = thickness)
-
-// bentSection = startSketchOn(offsetPlane(XY, offset = 20))
-// |> tubeProfile()
-// |> sweep(path = trajectory, tagEnd = $bentEnd)
-
 // Sheet Metal Bracket
 // A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.
 // Categories: Construction, Manufacturing

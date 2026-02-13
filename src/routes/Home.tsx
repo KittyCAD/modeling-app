@@ -161,7 +161,7 @@ const Home = () => {
     } else if (data.menuLabel === 'Edit.Change project directory') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
-      auth.actor.send({ type: 'Log out' })
+      auth.send({ type: 'Log out' })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
@@ -240,6 +240,7 @@ const Home = () => {
                       navigate,
                       kclManager,
                       systemIOActor,
+                      settingsActor,
                     }).catch(reportRejection)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}

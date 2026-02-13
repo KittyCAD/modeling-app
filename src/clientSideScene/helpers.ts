@@ -11,7 +11,7 @@ export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>
 export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
   (group.position.distanceTo(cam.position) * cam.fov * fudgeFactor) /
   4000 /
-  window.innerHeight
+  window.innerHeight // TODO at least this should be using canvas.clientHeight
 
 export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)

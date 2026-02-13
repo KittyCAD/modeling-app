@@ -15,7 +15,7 @@ import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
 import { toUtf16 } from '@src/lang/errors'
 
-const DUMMY_VARIABLE_NAME = '__result__'
+export const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
 type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never

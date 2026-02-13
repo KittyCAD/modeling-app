@@ -134,11 +134,11 @@ const SignIn = () => {
       return
     }
 
-    auth.actor.send({ type: 'Log in', token })
+    auth.send({ type: 'Log in', token })
   }
 
   const cancelSignIn = async () => {
-    auth.actor.send({ type: 'Log out' })
+    auth.send({ type: 'Log out' })
     setUserCode('')
   }
 

@@ -253,6 +253,32 @@ async def test_kcl_execute_and_snapshot_dir():
 
 
 @pytest.mark.asyncio
+async def test_kcl_execute_and_measure():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+
+        # Send the request
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicCentimeters)
+        request.set_center_of_mass(kcl.UnitLength.Centimeters)
+        response = await kcl.execute_code_and_measure(code, request)
+        assert response is not None
+
+        # Check the response is as expected.
+        assert response.get_volume() == 8.295468715405207
+        assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
+        com = response.get_center_of_mass()
+        print(com.x, com.y, com.z)
+        assert com == kcl.Point3d(
+            0.010031603276729584, 0.2714017629623413, 0.02681257389485836
+        )
+        assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
     files = await kcl.execute_and_export(lego_file, kcl.FileExportFormat.Step)

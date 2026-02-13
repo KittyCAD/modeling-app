@@ -40,6 +40,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -360,6 +361,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -731,6 +733,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1093,6 +1096,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1273,6 +1277,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1487,6 +1492,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -1678,6 +1684,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1770,6 +1777,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2155,6 +2163,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2530,6 +2539,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -2837,6 +2847,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3051,6 +3062,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3251,6 +3263,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -3565,6 +3578,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3702,6 +3716,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4260,6 +4275,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4385,6 +4401,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4497,6 +4514,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4622,6 +4640,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4734,6 +4753,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4859,6 +4879,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4971,6 +4992,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5096,6 +5118,7 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

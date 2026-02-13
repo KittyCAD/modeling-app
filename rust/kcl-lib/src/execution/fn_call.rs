@@ -5,7 +5,7 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, StatementKind,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, KclValueControlFlow, Metadata, Solid, StatementKind,
         TagEngineInfo, TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         control_continue,
@@ -480,12 +480,27 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            for v in &value.value {
-                let mut solid_copy = value.clone();
-                solid_copy.sketch.tags.clear(); // Avoid recursive tags.
+            let surfaces = value.value.clone();
+            if value.sketch_mut().is_none() {
+                // If the solid isn't based on a sketch, then it doesn't have a tag container,
+                // so there's nothing to do here.
+                return Ok(());
+            };
+            // Now that we know there's work to do (because there's a tag container),
+            // run some clones.
+            let solid_copies: Vec<Box<Solid>> = surfaces.iter().map(|_| value.clone()).collect();
+            // Get the tag container. We expect it to always succeed because we already checked
+            // for a tag container above.
+            let Some(sketch) = value.sketch_mut() else {
+                return Ok(());
+            };
+            for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
+                if let Some(sketch) = solid_copy.sketch_mut() {
+                    sketch.tags.clear(); // Avoid recursive tags.
+                }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
+                    let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -520,7 +535,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     // update the sketch tags.
-                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+                    sketch.merge_tags(Some(&tag_id).into_iter());
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
@@ -540,11 +555,15 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            if !value.sketch.tags.is_empty() {
+            if let Some(sketch) = value.sketch() {
+                if sketch.tags.is_empty() {
+                    return Ok(());
+                }
+                let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -553,7 +572,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 for k in sketches_to_update {
                     exec_state.mut_stack().update(&k, |v, _| {
                         let sketch = v.as_mut_sketch().unwrap();
-                        sketch.merge_tags(value.sketch.tags.values());
+                        sketch.merge_tags(sketch_tags.iter());
                     });
                 }
             }
@@ -688,7 +707,9 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                // Suppress warnings about types because they should only be
+                // warned about once for the function definition.
+                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
                 arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
@@ -783,7 +804,10 @@ fn type_check_params_kw(
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                        // Suppress warnings about types because they should
+                        // only be warned about once for the function
+                        // definition.
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                                 .value
@@ -888,7 +912,9 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
+            // Suppress warnings about types because they should only be warned
+            // about once for the function definition.
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_type(KclErrorDetails::new(
