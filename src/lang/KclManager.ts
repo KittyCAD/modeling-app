@@ -100,6 +100,10 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import {
+  operationsAnnotation,
+  setOperationsEffect,
+} from '@src/editor/plugins/operations'
 import { setKclVersion } from '@src/lib/kclVersion'
 import {
   baseEditorExtensions,
@@ -742,16 +746,13 @@ export class KclManager extends EventTarget {
   /**
    */
   private dispatchUpdateOperations(newOperations: Operation[]) {
-    const editorView = this.getEditorView()
-    if (editorView) {
-      editorView.dispatch({
-        effects: [setOperationsEffect.of(newOperations)],
-        annotations: [
-          operationsAnnotation.of(true),
-          Transaction.addToHistory.of(false),
-        ],
-      })
-    }
+    this.editorView.dispatch({
+      effects: [setOperationsEffect.of(newOperations)],
+      annotations: [
+        operationsAnnotation.of(true),
+        Transaction.addToHistory.of(false),
+      ],
+    })
   }
 
   /**

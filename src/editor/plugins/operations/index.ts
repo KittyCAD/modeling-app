@@ -24,7 +24,11 @@ export const operationsStateField = StateField.define<Operation[]>({
   },
 })
 
-/** Decorations field that stores ranges annotated with operations metadata */
+/**
+ * Decorations field that stores ranges annotated with operations metadata
+ * TODO: Unused until we can find a more responsible way to turn on decoration fields. It's easy to absolutely
+ * tank the editor with nested decorations.
+ */
 export const operationDecorationsField = StateField.define<
   ReturnType<typeof Decoration.set>
 >({
@@ -81,5 +85,5 @@ function buildOperationDecorations(
 }
 
 export function operationsExtension(): Extension {
-  return [operationsStateField, operationDecorationsField]
+  return [operationsStateField]
 }

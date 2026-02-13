@@ -41,6 +41,7 @@ import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { localHistoryTarget } from '@src/editor/HistoryView'
+import { operationsExtension } from './plugins/operations'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -64,6 +65,7 @@ export function baseEditorExtensions() {
     historyCompartment.of(history()),
     localHistoryTarget.of([]),
     kclAstExtension(),
+    operationsExtension(),
     closeBrackets(),
     codeFolding(),
     keymap.of([
