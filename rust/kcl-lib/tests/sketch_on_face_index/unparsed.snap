@@ -2,9 +2,19 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_on_face_index.kcl
 ---
+@settings(experimentalFeatures = allow)
+
 mySolid = startSketchOn(XY)
   |> circle(radius = 1)
   |> extrude(length = 1)
-someFace = faceId(mySolid, index = 1)
+  |> shell(thickness = 0.4, faces = [END])
 
-sketchOnFace = startSketchOn(mySolid, face = someFace)
+// Tag faces, by their index
+top = faceId(mySolid, index = 2)
+startSketchOn(mySolid, face = top)
+  |> circle(radius = 0.3)
+  |> extrude(length = 0.4)
+
+// Tag edges (by index)
+chosenEdge = edgeId(mySolid, index = 0)
+fillet(mySolid, radius = 0.4, tags = [chosenEdge])
