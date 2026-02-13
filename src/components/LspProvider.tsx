@@ -30,7 +30,7 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
@@ -73,11 +73,12 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
-  const { kclManager, useToken } = useSingletons()
+  const { auth } = useApp()
+  const { kclManager } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const token = useToken()
+  const token = auth.useToken()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.

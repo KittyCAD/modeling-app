@@ -9,7 +9,7 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
@@ -25,6 +25,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { auth } = useApp()
   const {
     commandBarActor,
     engineCommandManager,
@@ -33,14 +34,12 @@ export const ModelingPageProvider = ({
     sceneInfra,
     systemIOActor,
     useSettings,
-    useToken,
-    authActor,
     settingsActor,
   } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
-  const token = useToken()
+  const token = auth.useToken()
   const settings = useSettings()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
@@ -138,7 +137,7 @@ export const ModelingPageProvider = ({
   }, [location])
 
   const cb = modelingMenuCallbackMostActions({
-    authActor,
+    authActor: auth.actor,
     commandBarActor,
     engineCommandManager,
     filePath,

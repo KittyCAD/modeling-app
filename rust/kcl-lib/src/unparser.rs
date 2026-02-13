@@ -383,7 +383,13 @@ impl AscribedExpression {
 }
 
 impl BinaryPart {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+    pub(crate) fn recast(
+        &self,
+        buf: &mut String,
+        options: &FormatOptions,
+        indentation_level: usize,
+        ctxt: ExprContext,
+    ) {
         match &self {
             BinaryPart::Literal(literal) => {
                 literal.recast(buf);

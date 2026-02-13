@@ -1958,6 +1958,7 @@ description: Variables in memory after executing kittycad_svg.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

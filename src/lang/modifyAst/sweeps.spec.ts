@@ -767,6 +767,28 @@ profile002 = startProfile(sketch002, at = [0, 0])
       )
     })
 
+    it('should add a sweep call with surface bodyType', async () => {
+      const { ast, sketches, path } = await getAstAndSketchesForSweep(
+        circleAndLineCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addSweep({
+        ast,
+        sketches,
+        path,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleAndLineCode)
+      expect(newCode).toContain(
+        `sweep001 = sweep(profile001, path = profile002, bodyType = SURFACE)`
+      )
+    })
+
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCode,
