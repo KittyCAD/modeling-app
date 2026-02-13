@@ -30,31 +30,36 @@ async fn inner_face_id(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
-    // TODO: Check for mock execution here and return some ID.
-    let face_uuid_response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(
-                mcmd::Solid3dGetFaceUuid::builder()
-                    .object_id(body.id)
-                    .face_index(face_index)
-                    .build(),
-            ),
-        )
-        .await?;
-
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(inner_resp),
-    } = face_uuid_response
-    else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Engine returned invalid response, it should have returned Solid3dGetFaceUuid but it returned {face_uuid_response:?}"
-            ),
-            vec![args.source_range],
-        )));
+    let no_engine_commands = args.ctx.no_engine_commands().await;
+    // Handle mock execution
+    let face_id = if no_engine_commands {
+        exec_state.next_uuid()
+    } else {
+        // Query engine, unpack response.
+        let face_uuid_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::Solid3dGetFaceUuid::builder()
+                        .object_id(body.id)
+                        .face_index(face_index)
+                        .build(),
+                ),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(inner_resp),
+        } = face_uuid_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned Solid3dGetFaceUuid but it returned {face_uuid_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+        inner_resp.face_id
     };
-    let face_id = inner_resp.face_id;
 
     let new_tag_name = format!("face_id_{}", face_id.to_string().replace('-', "_"));
     let new_tag_node = TagDeclarator::new(&new_tag_name);
@@ -122,31 +127,36 @@ async fn inner_edge_id(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
-    // TODO: Check for mock execution here and return some ID.
-    let edge_uuid_response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(
-                mcmd::Solid3dGetEdgeUuid::builder()
-                    .object_id(body.id)
-                    .edge_index(edge_index)
-                    .build(),
-            ),
-        )
-        .await?;
+    // Handle mock execution
+    let no_engine_commands = args.ctx.no_engine_commands().await;
+    let edge_id = if no_engine_commands {
+        exec_state.next_uuid()
+    } else {
+        let edge_uuid_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::Solid3dGetEdgeUuid::builder()
+                        .object_id(body.id)
+                        .edge_index(edge_index)
+                        .build(),
+                ),
+            )
+            .await?;
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetEdgeUuid(inner_resp),
-    } = edge_uuid_response
-    else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Engine returned invalid response, it should have returned Solid3dGetEdgeUuid but it returned {edge_uuid_response:?}"
-            ),
-            vec![args.source_range],
-        )));
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetEdgeUuid(inner_resp),
+        } = edge_uuid_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned Solid3dGetEdgeUuid but it returned {edge_uuid_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+        inner_resp.edge_id
     };
-    let edge_id = inner_resp.edge_id;
     Ok(KclValue::Uuid {
         value: edge_id,
         meta: vec![Metadata {
