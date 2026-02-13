@@ -1526,6 +1526,45 @@ export const modelingMachine = setup({
           }
         }
 
+        if (setSelections.selectionType === 'enginePrimitiveSelection') {
+          const isSamePrimitiveSelection = (
+            selection: Selections['otherSelections'][number]
+          ) => {
+            return (
+              typeof selection === 'object' &&
+              'type' in selection &&
+              selection.type === 'enginePrimitive' &&
+              selection.entityId === setSelections.selection.entityId &&
+              selection.parentEntityId ===
+                setSelections.selection.parentEntityId &&
+              selection.primitiveIndex ===
+                setSelections.selection.primitiveIndex &&
+              selection.primitiveType === setSelections.selection.primitiveType
+            )
+          }
+
+          const shouldDeselect = selectionRanges.otherSelections.some(
+            isSamePrimitiveSelection
+          )
+
+          const otherSelections = kclManager.isShiftDown
+            ? shouldDeselect
+              ? selectionRanges.otherSelections.filter(
+                  (selection) => !isSamePrimitiveSelection(selection)
+                )
+              : [...selectionRanges.otherSelections, setSelections.selection]
+            : [setSelections.selection]
+
+          return {
+            selectionRanges: {
+              graphSelections: kclManager.isShiftDown
+                ? selectionRanges.graphSelections
+                : [],
+              otherSelections,
+            },
+          }
+        }
+
         if (
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'

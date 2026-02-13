@@ -60,6 +60,7 @@ export function useEngineConnectionSubscriptions() {
           const event = await getEventForSelectWithPoint(engineEvent, {
             rustContext,
             artifactGraph: kclManager.artifactGraph,
+            engineCommandManager,
           })
           event && send(event)
         })().catch(reportRejection)

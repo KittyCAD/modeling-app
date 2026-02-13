@@ -2275,7 +2275,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
       },
