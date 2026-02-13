@@ -9,6 +9,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
     execution::{ExecState, Metadata, ModelingCmdMeta, Solid, types::RuntimeType},
+    parsing::ast::types::TagNode,
     std::Args,
 };
 
@@ -16,16 +17,19 @@ use crate::{
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
     let face_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
+    let tag = args.get_kw_arg("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    let meta = vec![Metadata {
-        source_range: args.source_range,
-    }];
-    let id = inner_face_id(body, face_index, exec_state, args).await?;
-    Ok(KclValue::Uuid { value: id, meta })
+    inner_face_id(body, face_index, tag, exec_state, args).await
 }
 
 /// Translates face indices to face IDs.
-async fn inner_face_id(body: Solid, face_index: u32, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
+async fn inner_face_id(
+    body: Solid,
+    face_index: u32,
+    tag: TagNode,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
     // TODO: Check for mock execution here and return some ID.
     let face_uuid_response = exec_state
         .send_modeling_cmd(
@@ -50,23 +54,30 @@ async fn inner_face_id(body: Solid, face_index: u32, exec_state: &mut ExecState,
             vec![args.source_range],
         )));
     };
-    Ok(inner_resp.face_id)
+    let new_tagged_face = todo!();
+    Ok(new_tagged_face)
 }
 
 /// Translates edge indices to edge IDs.
 pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
     let edge_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
+    let tag = args.get_kw_arg("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let meta = vec![Metadata {
         source_range: args.source_range,
     }];
-    let id = inner_edge_id(body, edge_index, exec_state, args).await?;
-    Ok(KclValue::Uuid { value: id, meta })
+    inner_edge_id(body, edge_index, tag, exec_state, args).await
 }
 
 /// Translates edge indices to edge IDs.
-async fn inner_edge_id(body: Solid, edge_index: u32, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
+async fn inner_edge_id(
+    body: Solid,
+    edge_index: u32,
+    tag: TagNode,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
     // TODO: Check for mock execution here and return some ID.
     let edge_uuid_response = exec_state
         .send_modeling_cmd(
@@ -91,5 +102,6 @@ async fn inner_edge_id(body: Solid, edge_index: u32, exec_state: &mut ExecState,
             vec![args.source_range],
         )));
     };
-    Ok(inner_resp.edge_id)
+    let new_tagged_edge = todo!();
+    Ok(new_tagged_edge)
 }

@@ -636,6 +636,8 @@ export fn faceId(
   /// The index is a stable ordering of faces, used when you can't get the
   /// usual ID (UUID) of a face.
   index: number(Count),
+  /// Create a new tag which refers to this face.
+  tag: TagDecl,
 ) {}
 
 /// Given a edge index, find its ID.
@@ -647,4 +649,6 @@ export fn edgeId(
   /// The index is a stable ordering of edges, used when you can't get the
   /// usual ID (UUID) of a edge.
   index: number(Count),
+  /// Create a new tag which refers to this edge.
+  tag: TagDecl,
 ) {}

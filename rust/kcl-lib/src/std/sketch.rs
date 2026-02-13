@@ -52,13 +52,6 @@ pub enum FaceTag {
     Tag(Box<TagIdentifier>),
 }
 
-/// An ID of a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-pub struct FaceId {
-    pub face_id: Uuid,
-}
-
 impl std::fmt::Display for FaceTag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {

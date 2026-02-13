@@ -6,7 +6,7 @@ use super::sketch::FaceTag;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, Face, KclValue, Segment, Solid, types::RuntimeType},
-    std::{Args, sketch::FaceId},
+    std::Args,
 };
 
 const SEGMENT_MUST_HAVE_TAG_ERROR: &str =
@@ -16,7 +16,6 @@ const SEGMENT_MUST_HAVE_TAG_ERROR: &str =
 pub(crate) enum FaceSpecifier {
     FaceTag(FaceTag),
     Segment(Box<Segment>),
-    FaceId(FaceId),
 }
 
 impl FaceSpecifier {
