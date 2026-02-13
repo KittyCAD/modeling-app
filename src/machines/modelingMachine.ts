@@ -192,7 +192,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
-import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
 import { addFlipSurface } from '@src/lang/modifyAst/surfaces'
@@ -287,6 +287,7 @@ export type ModelingMachineEvent =
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
+  | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD' }
@@ -4397,6 +4398,49 @@ export const modelingMachine = setup({
         )
       }
     ),
+    blendAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Blend'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph } = input.kclManager
+        const astResult = addBlend({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: input.kclManager,
+            rustContext: input.rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     deleteSelectionAstMod: fromPromise(
       ({
         input: { selectionRanges, systemDeps },
@@ -5417,6 +5461,10 @@ export const modelingMachine = setup({
 
         Chamfer: {
           target: 'Applying chamfer',
+        },
+
+        Blend: {
+          target: 'Applying blend',
         },
 
         Appearance: {
@@ -7325,6 +7373,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying blend': {
+      invoke: {
+        src: 'blendAstMod',
+        id: 'blendAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Blend') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }

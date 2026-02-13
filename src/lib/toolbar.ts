@@ -413,6 +413,26 @@ export const useToolbarConfig = () => {
             id: 'surface',
             array: [
               {
+                id: 'blend-surface',
+                onClick: () =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: { name: 'Blend', groupId: 'modeling' },
+                  }),
+                icon: 'fillet', // TODO: update
+                status: 'available',
+                title: 'Blend',
+                description: 'Blend two selected surface edges.',
+                links: [
+                  {
+                    label: 'API docs',
+                    url: withSiteBaseURL(
+                      '/docs/kcl-std/functions/std-solid-blend'
+                    ),
+                  },
+                ],
+              },
+              {
                 id: 'flip-surface',
                 onClick: () =>
                   commandBarActor.send({

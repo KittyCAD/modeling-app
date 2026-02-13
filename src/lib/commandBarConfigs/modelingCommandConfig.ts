@@ -71,7 +71,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import {
   addFlatnessGdt,
   addDatumGdt,
@@ -379,6 +379,9 @@ export type ModelingCommandSchema = {
   'Boolean Split': {
     targets: Selections
     merge: boolean
+  }
+  Blend: {
+    edges: Selections
   }
 }
 
@@ -2232,6 +2235,42 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       surface: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+    },
+  },
+  Blend: {
+    description: 'Blend two selected surface edges into a new surface.',
+    icon: 'fillet', // TODO: update
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addBlend({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Blend']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      edges: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
       },

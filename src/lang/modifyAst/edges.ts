@@ -1,10 +1,10 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
-  createArrayExpression,
   createTagDeclarator,
 } from '@src/lang/create'
 import {
@@ -206,6 +206,123 @@ export function addChamfer({
   }
 
   return { modifiedAst, pathToNode: pathToNodes }
+}
+
+export function addBlend({
+  ast,
+  artifactGraph,
+  edges,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  edges: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can freely edit it
+  let modifiedAst = structuredClone(ast)
+
+  // 2. Validate the edge selection
+  if (edges.graphSelections.length !== 2) {
+    return new Error('Blend requires exactly two selected sweep edges.')
+  }
+
+  const selectedSweepEdges = edges.graphSelections
+  for (const edgeSelection of selectedSweepEdges) {
+    if (
+      !edgeSelection.artifact ||
+      edgeSelection.artifact.type !== 'sweepEdge'
+    ) {
+      return new Error('Blend only supports sweep edge selections.')
+    }
+  }
+
+  // 3. Build two bounded edges and use them in blend([edge1, edge2])
+  const boundedEdgeExprs: Expr[] = []
+  for (const edgeSelection of selectedSweepEdges) {
+    const edgeArtifact = edgeSelection.artifact
+    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
+      return new Error('Blend only supports sweep edge selections.')
+    }
+
+    const sweepArtifact = getSweepArtifactFromSelection(
+      edgeSelection,
+      artifactGraph
+    )
+    if (err(sweepArtifact)) return sweepArtifact
+
+    const sweepCodeRefs = getCodeRefsByArtifactId(
+      sweepArtifact.id,
+      artifactGraph
+    )
+    if (!sweepCodeRefs || sweepCodeRefs.length === 0) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+
+    const sweepSelection: Selections = {
+      graphSelections: [
+        {
+          codeRef: sweepCodeRefs[0],
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const sourceSurfaceExpr = getVariableExprsFromSelection(
+      sweepSelection,
+      modifiedAst,
+      wasmInstance
+    )
+    if (err(sourceSurfaceExpr)) return sourceSurfaceExpr
+    if (sourceSurfaceExpr.exprs.length !== 1) {
+      return new Error(
+        'Expected exactly one source surface for each blend edge.'
+      )
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      edgeSelection,
+      artifactGraph,
+      wasmInstance,
+      ['oppositeAndAdjacentEdges']
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+    if (tagResult.tags.length !== 1) {
+      return new Error('Expected exactly one tag for each blend edge.')
+    }
+
+    const edgeExpr = getEdgeTagCall(tagResult.tags[0], edgeArtifact)
+    boundedEdgeExprs.push(
+      createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        sourceSurfaceExpr.exprs[0],
+        [createLabeledArg('edge', edgeExpr)]
+      )
+    )
+  }
+
+  const call = createCallExpressionStdLibKw(
+    'blend',
+    createArrayExpression(boundedEdgeExprs),
+    []
+  )
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.BLEND,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
 }
 
 // Utility functions
