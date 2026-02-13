@@ -1,9 +1,4 @@
-import {
-  assertParse,
-  type Artifact,
-  type PathToNode,
-  recast,
-} from '@src/lang/wasm'
+import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
