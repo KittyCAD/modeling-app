@@ -1428,6 +1428,26 @@ export const useToolbarConfig = () => {
               state.context.sketchSolveToolName === 'centerArcTool',
           },
           {
+            id: 'trim',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({ type: 'unequip tool' })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'trimTool' },
+                  }),
+            icon: 'trimTool',
+            status: 'experimental',
+            title: 'Trim',
+            hotkey: 'T',
+            description:
+              'Draw a trimming line through parts of segments to be removed',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'trimTool',
+          },
+          {
             id: 'rectangles',
             array: [
               {
@@ -1471,6 +1491,26 @@ export const useToolbarConfig = () => {
                 isActive: (state) =>
                   state.matches('sketchSolveMode') &&
                   state.context.sketchSolveToolName === 'centerRectTool',
+              },
+              {
+                id: 'angled-rectangle',
+                onClick: ({ modelingSend, isActive }) =>
+                  isActive
+                    ? modelingSend({
+                        type: 'unequip tool',
+                      })
+                    : modelingSend({
+                        type: 'equip tool',
+                        data: { tool: 'angledRectTool' },
+                      }),
+                icon: 'rectangleAngled',
+                status: 'available',
+                title: 'Angled Rectangle',
+                description: 'Draw a rotated rectangle with three clicks',
+                links: [],
+                isActive: (state) =>
+                  state.matches('sketchSolveMode') &&
+                  state.context.sketchSolveToolName === 'angledRectTool',
               },
             ],
           },

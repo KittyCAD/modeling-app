@@ -14,7 +14,7 @@ import type { App } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
-import { app } from '@src/lib/boot'
+import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
 launchApp(app)
@@ -117,7 +117,7 @@ function mountAppToReact(app: App) {
   )
 
   root.render(
-    <app.ReactContext.Provider value={app.singletons}>
+    <AppContext.Provider value={app}>
       <HotkeysProvider>
         <AppStreamProvider>
           <Router />
@@ -144,7 +144,7 @@ function mountAppToReact(app: App) {
           <ModalContainer />
         </AppStreamProvider>
       </HotkeysProvider>
-    </app.ReactContext.Provider>
+    </AppContext.Provider>
   )
 
   // If you want to start measuring performance in your app, pass a function

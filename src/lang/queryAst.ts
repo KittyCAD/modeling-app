@@ -1222,6 +1222,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = opArg.value.value
       .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
       .map((v) => v.value.artifactId)
+  } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
+    artifactIds = [opArg.value.artifact_id]
   } else {
     return error
   }
@@ -1260,6 +1262,23 @@ export function retrieveSelectionsFromOpArg(
   }
 
   return { graphSelections, otherSelections: [] } as Selections
+}
+
+export function findOperationArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(operation.nodePath)
+  const artifact = artifactGraph
+    .values()
+    .toArray()
+    .find(
+      (a) =>
+        'codeRef' in a &&
+        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
+        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+    )
+  return artifact
 }
 
 export function findOperationPlaneArtifact(

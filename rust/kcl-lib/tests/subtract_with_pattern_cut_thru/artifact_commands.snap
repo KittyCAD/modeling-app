@@ -388,7 +388,6 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -563,7 +562,6 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

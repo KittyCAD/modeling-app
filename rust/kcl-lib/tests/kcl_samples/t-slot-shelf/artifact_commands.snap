@@ -502,7 +502,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -589,7 +588,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1218,7 +1216,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1907,7 +1904,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1994,7 +1990,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2623,7 +2618,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -2709,7 +2703,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 609.5999999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3259,7 +3252,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3346,7 +3338,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -3372,7 +3363,6 @@ description: Artifact commands t-slot-shelf.kcl
                 "z": 609.5999999999999
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }

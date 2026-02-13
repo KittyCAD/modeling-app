@@ -170,6 +170,19 @@
     "categories": [
       "Automotive"
     ],
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -193,6 +206,19 @@
     "multipleFiles": false,
     "title": "Sprocket Cassette",
     "description": "A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
+    "multipleFiles": false,
+    "title": "Ceiling Propeller",
+    "description": "A twisted ceiling fan geometry made using boolean cutouts",
     "files": [
       "main.kcl"
     ]
@@ -266,6 +292,25 @@
     "description": "A cone is defined by it's diameter and height.",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
+    "multipleFiles": true,
+    "title": "Contra-Rotor Assembly",
+    "description": "A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
+    "files": [
+      "contra.kcl",
+      "helical.kcl",
+      "main.kcl",
+      "primary.kcl",
+      "propeller.kcl",
+      "secondary.kcl",
+      "tertiary.kcl"
     ]
   },
   {
@@ -410,11 +455,16 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
     "multipleFiles": true,
-    "title": "A Dog House for a Great Dane",
+    "title": "Dog House for a Great Dane",
     "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
     "files": [
+      "1528A31_strap-hinge.stp",
+      "1614A11_swinging-bar-latch.stp",
       "2x4.kcl",
       "back-frame.kcl",
       "dimensions.kcl",
@@ -529,7 +579,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
+    "title": "Mounting bracket for the Focusrite Scarlett Solo audio interface",
     "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
     "files": [
       "main.kcl"
@@ -572,6 +622,20 @@
     "description": "A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.",
     "files": [
       "lib.kcl",
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "gas-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Gas Impeller",
+    "description": "The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed",
+    "files": [
       "main.kcl"
     ]
   },
@@ -901,6 +965,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "liquid-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Liquid Impeller",
+    "description": "An open-style impeller for a centrifugal liquid pump",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Construction",
       "Maker"
     ],
@@ -936,6 +1014,21 @@
     "description": "A parametric vertical or steep-access ladder commonly used on ships, in engine rooms, or in industrial environments. It features two bent side rails and evenly spaced cylindrical rungs for compact, reinforced access.",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "1120t74-pipe.step",
+    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/mcmaster-parts/1120t74-pipe.step",
+    "multipleFiles": true,
+    "title": "ISO-10303-21;",
+    "description": "HEADER;",
+    "files": [
+      "1120t74-pipe.step",
+      "68095k348-flange.step",
+      "91251a404-bolt.step",
+      "9472k188-gasket.step",
+      "95479a127-hex-nut.step",
+      "98017a257-washer.step"
     ]
   },
   {
@@ -1151,8 +1244,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
     "multipleFiles": false,
-    "title": "Ceiling Propeller",
-    "description": "A twisted 3-blade ceiling fan geometry made using boolean cutouts",
+    "title": "Propeller",
+    "description": "A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward",
     "files": [
       "main.kcl"
     ]
@@ -1166,6 +1259,19 @@
     "multipleFiles": false,
     "title": "Prosthetic Hip",
     "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "racing-seat-brackets/main.kcl",
+    "multipleFiles": false,
+    "title": "Race Car Seat Brackets",
+    "description": "Two of these modular brackets are used to mount a race car seat",
     "files": [
       "main.kcl"
     ]
@@ -1306,10 +1412,14 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Construction",
+      "Manufacturing"
+    ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "@settings(defaultLengthUnit = mm)",
-    "description": "",
+    "title": "Sheet Metal Bracket",
+    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
     "files": [
       "main.kcl"
     ]
@@ -1871,6 +1981,19 @@
     "multipleFiles": false,
     "title": "Wing Spar",
     "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wood-screw/main.kcl",
+    "multipleFiles": false,
+    "title": "Wood Screw",
+    "description": "An Oval Head Phillips Wood Screw flange is a threaded fastener with a slightly domed head, a cross‑shaped (Phillips) drive, and a sharp point for entering wood. This kind of wood screw is often used for furniture assembly and household construction projects, like attaching hinges and trims.",
     "files": [
       "main.kcl"
     ]

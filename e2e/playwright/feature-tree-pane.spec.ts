@@ -2,6 +2,7 @@ import { join } from 'path'
 import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
@@ -62,6 +63,24 @@ const FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE = `export fn cylinder(d, l) {
 }
 
 test = cylinder(d = 2, l = 10)
+`
+
+const FEATURE_TREE_VISIBILITY_CODE = `myParameter001 = 12
+// Hide a helix, leave its cylinder
+cylinder = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 2mm)
+
+helix001 = helix(revolutions = 16, angleStart = 0, cylinder)
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [2.96, 1.99])
+  |> line(end = [0.92, -3.09])
+  |> line(end = [-2.36, -0.96])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch002 = startSketchOn(YZ)
+extrude001 = extrude(profile001, length = 5)
+hidden001 = hide([cylinder, extrude001])
 `
 
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
@@ -246,6 +265,92 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     await cmdBar.submit()
     await scene.settled(cmdBar)
     await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
+  })
+
+  test('User can hide and unhide bodies and helix from panes', async ({
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const sampleDir = join(dir, 'test-sample')
+      await fsp.mkdir(sampleDir, { recursive: true })
+      await fsp.writeFile(
+        join(sampleDir, 'main.kcl'),
+        FEATURE_TREE_VISIBILITY_CODE,
+        'utf-8'
+      )
+    })
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.Debug)
+      await toolbar.openFeatureTreePane()
+    })
+
+    const bodiesPane = page.locator('#bodies-list-pane')
+
+    await test.step('Verify both bodies are hidden', async () => {
+      const bodyToggles = bodiesPane.getByTestId(
+        'feature-tree-visibility-toggle'
+      )
+      await expect(bodyToggles).toHaveCount(2)
+      for (let i = 0; i < 2; i++) {
+        await expect(
+          bodyToggles.nth(i).locator('svg[aria-label="eye crossed out"]')
+        ).toBeVisible()
+      }
+    })
+
+    await test.step('Unhide cylinder from the bodies pane', async () => {
+      const bodyToggles = bodiesPane.getByTestId(
+        'feature-tree-visibility-toggle'
+      )
+      await bodyToggles.first().click()
+    })
+
+    await test.step('Verify extrude001 is still hidden via KCL', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*\[\s*extrude001\s*\]\s*\)/)
+    })
+
+    await test.step('Hide helix001 from the Feature Tree', async () => {
+      const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
+      const helixRow = helixButton.locator('..')
+      await helixRow.hover()
+      await helixRow.getByTestId('feature-tree-visibility-toggle').click()
+    })
+
+    await test.step('Verify helix001 is hidden via KCL', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*(?:\[\s*)?helix001/)
+    })
+
+    await test.step('Hide cylinder again from the bodies pane', async () => {
+      const bodyRow = bodiesPane.getByRole('button', { name: 'Body 1' })
+      const bodyToggle = bodyRow
+        .locator('..')
+        .getByTestId('feature-tree-visibility-toggle')
+      await bodyRow.hover()
+      await bodyToggle.click()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Verify cylinder is hidden via standalone hide(cylinder)', async () => {
+      await editor.expectEditor.toContain(/hide\(\s*cylinder\s*\)/)
+    })
   })
 
   test(`User can edit sketch (but not on offset plane yet) from the feature tree`, async ({

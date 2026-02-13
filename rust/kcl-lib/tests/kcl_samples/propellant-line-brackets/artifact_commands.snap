@@ -1765,7 +1765,6 @@ description: Artifact commands propellant-line-brackets.kcl
                 "z": 90.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -1791,7 +1790,6 @@ description: Artifact commands propellant-line-brackets.kcl
                 "z": 6.35
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "global"
               }

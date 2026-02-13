@@ -100,6 +100,13 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Solid)
     }
 
+    /// `[Helix; 1+]`
+    pub fn helices() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Helix)),
+            ArrayLen::Minimum(1),
+        )
+    }
     pub fn helix() -> Self {
         RuntimeType::Primitive(PrimitiveType::Helix)
     }
@@ -118,6 +125,13 @@ impl RuntimeType {
 
     pub fn tagged_face() -> Self {
         RuntimeType::Primitive(PrimitiveType::TaggedFace)
+    }
+
+    pub fn tagged_face_or_segment() -> Self {
+        RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::TaggedFace),
+            RuntimeType::Primitive(PrimitiveType::Segment),
+        ])
     }
 
     pub fn tagged_edge() -> Self {
@@ -183,20 +197,23 @@ impl RuntimeType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         constrainable: bool,
+        suppress_warnings: bool,
     ) -> Result<Self, CompilationError> {
         match value {
-            Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
-            Type::Array { ty, len } => Self::from_parsed(*ty, exec_state, source_range, constrainable)
-                .map(|t| RuntimeType::Array(Box::new(t), len)),
+            Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range, suppress_warnings),
+            Type::Array { ty, len } => {
+                Self::from_parsed(*ty, exec_state, source_range, constrainable, suppress_warnings)
+                    .map(|t| RuntimeType::Array(Box::new(t), len))
+            }
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable, suppress_warnings))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
                 .map(|(id, ty)| {
-                    RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable)
+                    RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable, suppress_warnings)
                         .map(|ty| (id.name.clone(), ty))
                 })
                 .collect::<Result<Vec<_>, CompilationError>>()
@@ -208,6 +225,7 @@ impl RuntimeType {
         value: AstPrimitiveType,
         exec_state: &mut ExecState,
         source_range: SourceRange,
+        suppress_warnings: bool,
     ) -> Result<Self, CompilationError> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
@@ -221,7 +239,7 @@ impl RuntimeType {
                 };
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
-            AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range)?,
+            AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range, suppress_warnings)?,
             AstPrimitiveType::TagDecl => RuntimeType::Primitive(PrimitiveType::TagDecl),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
@@ -232,6 +250,7 @@ impl RuntimeType {
         alias: &str,
         exec_state: &mut ExecState,
         source_range: SourceRange,
+        suppress_warnings: bool,
     ) -> Result<Self, CompilationError> {
         let ty_val = exec_state
             .stack()
@@ -246,7 +265,7 @@ impl RuntimeType {
                     TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
                     TypeDef::Alias(ty) => ty.clone(),
                 };
-                if *experimental {
+                if *experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
                 }
                 result
@@ -441,6 +460,7 @@ pub enum PrimitiveType {
     Helix,
     Face,
     Edge,
+    BoundedEdge,
     Axis2d,
     Axis3d,
     ImportedGeometry,
@@ -465,6 +485,7 @@ impl PrimitiveType {
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
             PrimitiveType::Edge => "Edges".to_owned(),
+            PrimitiveType::BoundedEdge => "BoundedEdges".to_owned(),
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
@@ -508,6 +529,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
             PrimitiveType::Edge => write!(f, "Edge"),
+            PrimitiveType::BoundedEdge => write!(f, "BoundedEdge"),
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
@@ -1398,6 +1420,10 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::BoundedEdge => match self {
+                KclValue::BoundedEdge { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::TaggedEdge => match self {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1716,6 +1742,7 @@ impl KclValue {
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
             KclValue::Module { .. } | KclValue::Type { .. } => None,
+            KclValue::BoundedEdge { .. } => Some(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
         }
     }
 

@@ -653,32 +653,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.7,
-                    g: 0.28,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.28,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
             ),
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Some(Color {
-                    r: 0.28,
-                    g: 0.28,
-                    b: 0.7,
-                    a: plane_opacity,
-                }),
+                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),

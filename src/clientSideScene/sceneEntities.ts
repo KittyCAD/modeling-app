@@ -36,7 +36,6 @@ import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 import {
   isQuaternionVertical,
   orthoScale,
-  perspScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import {
@@ -264,11 +263,7 @@ export class SceneEntities {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
-      const factor =
-        (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, segment)) /
-        this.sceneInfra.baseUnitMultiplier
+      const factor = this.sceneInfra.getClientSceneScaleFactor(segment)
       let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
@@ -382,14 +377,11 @@ export class SceneEntities {
       }
     })
     if (this.axisGroup) {
-      const factor =
-        this.sceneInfra.camControls.camera instanceof OrthographicCamera
-          ? orthoFactor
-          : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
+      const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
+      x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+      y?.scale.set(factor, 1, 1)
       this.updateInfiniteGrid()
     }
     const draftPoint = this.getDraftPoint()
@@ -430,7 +422,6 @@ export class SceneEntities {
     up: [number, number, number],
     sketchPosition?: [number, number, number]
   ) {
-    const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const axisPixelWidth = 1.6
@@ -465,12 +456,9 @@ export class SceneEntities {
     this.axisGroup = new Group()
     const gridRenderer = new InfiniteGridRenderer()
 
-    const factor =
-      this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
-    xAxisMesh?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
-    yAxisMesh?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+    const factor = this.sceneInfra.getClientSceneScaleFactor(this.axisGroup)
+    xAxisMesh?.scale.set(1, factor, 1)
+    yAxisMesh?.scale.set(factor, 1, 1)
 
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
     this.currentSketchQuaternion &&
@@ -3638,11 +3626,7 @@ export class SceneEntities {
       this.activeSegments[pathToNodeStr] ||
       this.activeSegments[originalPathToNodeStr]
     const type = group?.userData?.type
-    const factor =
-      (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(this.sceneInfra.camControls.camera, group)) /
-      this.sceneInfra.baseUnitMultiplier
+    const factor = this.sceneInfra.getClientSceneScaleFactor(group)
     let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
@@ -3817,18 +3801,14 @@ export class SceneEntities {
           const hoveringArrow = selected?.parent?.name === ARROWHEAD
           updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
           updateExtraSegments(parent, 'selected', isSelected)
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3895,18 +3875,12 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent) {
-          const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
-
           let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
           }
-          const factor =
-            (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-              ? orthoFactor
-              : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra.baseUnitMultiplier
+          const factor = this.sceneInfra.getClientSceneScaleFactor(parent)
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -4131,11 +4105,7 @@ export class SceneEntities {
     return {
       group: segmentGroup,
       updater: (group: Group, to: Coords2d, orthoFactor: number) => {
-        const scale =
-          (this.sceneInfra.camControls.camera instanceof OrthographicCamera
-            ? orthoFactor
-            : perspScale(this.sceneInfra.camControls.camera, group)) /
-          this.sceneInfra.baseUnitMultiplier
+        const scale = this.sceneInfra.getClientSceneScaleFactor(group)
         const from = group.userData.from
 
         const straightSegmentBodyDashed = group.children.find(
@@ -4280,7 +4250,7 @@ function sketchFromPathToNode({
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
   const result = variables[varDec?.id?.name || '']
-  if (result?.type === 'Solid') {
+  if (result?.type === 'Solid' && result.value.sketch.creatorType == 'sketch') {
     return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)

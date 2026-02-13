@@ -103,6 +103,7 @@ import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
+  addHide,
   addRotate,
   addScale,
   addTranslate,
@@ -268,6 +269,12 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | {
+      type: 'Hide'
+      data: {
+        objects: Selections
+      }
+    }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
@@ -2453,6 +2460,7 @@ export const modelingMachine = setup({
           if (
             // if the variable is an sweep, check if the underlying sketch matches the artifact
             variable?.type === 'Solid' &&
+            variable.value.sketch.creatorType === 'sketch' &&
             variable.value.sketch.artifactId === mainPath
           ) {
             sketch = {
@@ -3450,6 +3458,43 @@ export const modelingMachine = setup({
         )
       }
     ),
+    hideAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data:
+                | {
+                    objects: Selections
+                  }
+                | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addHide({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(result.modifiedAst, EXECUTION_TYPE_REAL, {
+          kclManager: input.kclManager,
+          rustContext: input.rustContext,
+        })
+      }
+    ),
     gdtFlatnessAstMod: fromPromise(
       async ({
         input,
@@ -4060,6 +4105,10 @@ export const modelingMachine = setup({
 
         Clone: {
           target: 'Applying clone',
+        },
+
+        Hide: {
+          target: 'Applying hide',
         },
 
         'GDT Flatness': {
@@ -6012,6 +6061,27 @@ export const modelingMachine = setup({
         id: 'cloneAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Clone') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying hide': {
+      invoke: {
+        src: 'hideAstMod',
+        id: 'hideAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Hide') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

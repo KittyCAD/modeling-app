@@ -5,6 +5,7 @@ import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
   MlCopilotMode,
+  MlCopilotFile,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
@@ -95,6 +96,7 @@ export type MlEphantManagerEvents =
       selections: Selections
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
+      additionalFiles?: File[]
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -198,6 +200,14 @@ function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
 }
 
+async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+  return {
+    name: file.name,
+    mimetype: file.type || 'application/octet-stream',
+    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+  }
+}
+
 export const MlEphantConversationToMarkdown = (
   conversation?: Conversation
 ): string => {
@@ -231,35 +241,40 @@ export const MlEphantConversationToMarkdown = (
             )
             reason += `${contentWithoutCode}\n\n`
           }
-        }
-        if ('error' in response.reasoning) {
+        } else if ('error' in response.reasoning) {
           reason += `**${response.reasoning.error}**\n\n`
-        }
 
-        // We will ignore code. It adds a lot of noise. We can look at honeycomb
-        // with the api call id if we really want it.
-        if ('code' in response.reasoning) {
+          // We will ignore code. It adds a lot of noise. We can look at honeycomb
+          // with the api call id if we really want it.
+        } else if ('code' in response.reasoning) {
           reason += '~~Code redacted~~\n\n'
-        }
-
-        if ('steps' in response.reasoning) {
+        } else if ('steps' in response.reasoning) {
           for (const step of response.reasoning.steps) {
             reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
           }
         }
       }
-      if ('end_of_stream' in response) {
-        const time = ms(
-          new Date(response.end_of_stream.completed_at ?? 0).getTime() -
-            new Date(response.end_of_stream.started_at ?? 0).getTime(),
-          { long: true }
-        )
-        entry += `## Zookeeper (${time}):\n\n`
+      if ('error' in response) {
+        reason += `**${response.error.detail}**\n\n`
+      }
+
+      // An error signals end of stream as well.
+      if ('error' in response || 'end_of_stream' in response) {
+        let time = 0
+        if ('end_of_stream' in response) {
+          time =
+            new Date(response.end_of_stream.completed_at ?? 0).getTime() -
+            new Date(response.end_of_stream.started_at ?? 0).getTime()
+        }
+
+        entry += `## Zookeeper (${time === 0 ? 'unknown' : ms(time, { long: true })}):\n\n`
         entry += reason + '\n'
         entry += new Array(80).fill('-').join('') + '\n\n'
-        entry += response.end_of_stream.whole_response ?? '' + '\n'
 
-        meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+        if ('end_of_stream' in response) {
+          entry += response.end_of_stream.whole_response ?? '' + '\n'
+          meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+        }
       }
     }
     agg += entry + '\n\n'
@@ -613,6 +628,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
+      const additionalFiles =
+        event.additionalFiles && event.additionalFiles.length > 0
+          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+          : undefined
+
       const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
         type: 'user',
         content: requestData.body.prompt ?? '',
@@ -620,6 +640,7 @@ export const mlEphantManagerMachine = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
+        ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
       context.ws.send(JSON.stringify(request))

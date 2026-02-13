@@ -30,6 +30,8 @@ import { AppMachineEventType, type AppMachineEvent } from '@src/lib/types'
 import type { Layout } from '@src/lib/layout'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -586,4 +588,23 @@ export function createApplicationCommands({
         overrideZookeeperCommand,
       ]
     : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
+}
+
+export function sendAddFileToProjectCommandForCurrentProject(
+  settingsActor: SettingsActorType,
+  commandBarActor: CommandBarActorType
+) {
+  const currentProject = settingsActor.getSnapshot().context.currentProject
+  commandBarActor.send({
+    type: 'Find and select command',
+    data: {
+      name: 'add-kcl-file-to-project',
+      groupId: 'application',
+      argDefaultValues: {
+        method: 'existingProject',
+        projectName: currentProject?.name,
+        ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
+      },
+    },
+  })
 }

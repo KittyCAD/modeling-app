@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use std::{
+    f64::consts::TAU,
+    ops::{Add, AddAssign, Mul, Sub, SubAssign},
+};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -64,7 +67,7 @@ impl Geometry {
     pub fn original_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.sketch.original_id,
+            Geometry::Solid(e) => e.original_id(),
         }
     }
 }
@@ -158,6 +161,73 @@ impl ImportedGeometry {
         }
 
         Ok(self.id)
+    }
+}
+
+/// Data for a solid, sketch, or an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
+pub enum HideableGeometry {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    HelixSet(Vec<Helix>),
+    // TODO: Sketches should be groups of profiles that relate to a plane,
+    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
+    // are not hideable.
+    // SketchSet(Vec<Sketch>),
+}
+
+impl From<HideableGeometry> for crate::execution::KclValue {
+    fn from(value: HideableGeometry) -> Self {
+        match value {
+            HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HideableGeometry {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            HideableGeometry::ImportedGeometry(s) => {
+                let id = s.id(ctx).await?;
+
+                Ok(vec![id])
+            }
+            HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
+        }
     }
 }
 
@@ -646,6 +716,23 @@ pub struct Face {
     pub meta: Vec<Metadata>,
 }
 
+/// A bounded edge.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct BoundedEdge {
+    /// The id of the face this edge belongs to.
+    pub face_id: uuid::Uuid,
+    /// The id of the edge.
+    pub edge_id: uuid::Uuid,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub lower_bound: f32,
+    /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
+    /// Range (0, 1)
+    pub upper_bound: f32,
+}
+
 /// Kind of plane.
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
@@ -844,7 +931,7 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
-                Some(Geometry::Solid(solid)) => Some(solid.sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
         }
@@ -855,7 +942,10 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => sketch.is_closed,
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
-                Some(Geometry::Solid(solid)) => solid.sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
         }
@@ -983,8 +1073,9 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch.
-    pub sketch: Sketch,
+    /// How this solid was created.
+    #[serde(rename = "sketch")]
+    pub creator: SolidCreator,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -1001,7 +1092,55 @@ pub struct Solid {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorFace {
+    /// The face id that served as the base.
+    pub face_id: uuid::Uuid,
+    /// The solid id that owned the face.
+    pub solid_id: uuid::Uuid,
+    /// The sketch used for the operation.
+    pub sketch: Sketch,
+}
+
+/// How a solid was created.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "creatorType", rename_all = "camelCase")]
+pub enum SolidCreator {
+    /// Created from a sketch.
+    Sketch(Sketch),
+    /// Created by extruding or modifying a face.
+    Face(CreatorFace),
+    /// Created procedurally without a sketch.
+    Procedural,
+}
+
 impl Solid {
+    pub fn sketch(&self) -> Option<&Sketch> {
+        match &self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_mut(&mut self) -> Option<&mut Sketch> {
+        match &mut self.creator {
+            SolidCreator::Sketch(sketch) => Some(sketch),
+            SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Procedural => None,
+        }
+    }
+
+    pub fn sketch_id(&self) -> Option<uuid::Uuid> {
+        self.sketch().map(|sketch| sketch.id)
+    }
+
+    pub fn original_id(&self) -> uuid::Uuid {
+        self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
     }
@@ -1573,7 +1712,7 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
+            Self::Circle { radius, .. } => Some(TAU * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1584,7 +1723,7 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                Some(2.0 * std::f64::consts::PI * radius)
+                Some(TAU * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
@@ -1892,6 +2031,8 @@ pub struct UnsolvedSegment {
     pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: UnsolvedSegmentKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<TagIdentifier>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -1932,6 +2073,13 @@ pub struct Segment {
     pub id: Uuid,
     pub object_id: ObjectId,
     pub kind: SegmentKind,
+    pub surface: SketchSurface,
+    /// The engine ID of the sketch that this is a part of.
+    pub sketch_id: Uuid,
+    #[serde(skip)]
+    pub sketch: Option<Sketch>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<TagIdentifier>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -1997,8 +2145,8 @@ pub struct AbstractSegment {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 pub enum SegmentRepr {
-    Unsolved { segment: UnsolvedSegment },
-    Solved { segment: Segment },
+    Unsolved { segment: Box<UnsolvedSegment> },
+    Solved { segment: Box<Segment> },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
