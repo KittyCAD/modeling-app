@@ -27,9 +27,15 @@ use crate::{
     std::{
         args::TyF64,
         axis_or_reference::Axis2dOrPoint2d,
+        shapes::POINT_ZERO_ZERO,
         utils::{point_3d_to_mm, point_to_mm},
     },
 };
+pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -771,7 +777,7 @@ impl CircularPattern {
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
-    let center: [TyF64; 2] = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center: Option<[TyF64; 2]> = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     let rotate_duplicates = args.get_kw_arg_opt("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
@@ -794,7 +800,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 async fn inner_pattern_circular_2d(
     sketch_set: Vec<Sketch>,
     instances: u32,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     arc_degrees: Option<f64>,
     rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
@@ -806,6 +812,7 @@ async fn inner_pattern_circular_2d(
     if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_sketches);
     }
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let data = CircularPattern2dData {
         instances,
         center,
@@ -857,7 +864,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     let axis = axis.to_point3d();
 
     // The center about which to make the pattern. This is a 3D vector.
-    let center: [TyF64; 3] = args.get_kw_arg("center", &RuntimeType::point3d(), exec_state)?;
+    let center: Option<[TyF64; 3]> = args.get_kw_arg_opt("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
@@ -886,7 +893,7 @@ async fn inner_pattern_circular_3d(
     solids: Vec<Solid>,
     instances: u32,
     axis: [f64; 3],
-    center: [TyF64; 3],
+    center: Option<[TyF64; 3]>,
     arc_degrees: Option<f64>,
     rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
@@ -907,6 +914,7 @@ async fn inner_pattern_circular_3d(
     }
 
     let mut solids = Vec::new();
+    let center = center.unwrap_or(POINT_ZERO_ZERO_ZERO);
     let data = CircularPattern3dData {
         instances,
         axis,
