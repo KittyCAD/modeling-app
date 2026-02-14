@@ -22,6 +22,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
 import { toUtf16 } from '@src/lang/errors'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
 
@@ -45,6 +46,9 @@ export function BodiesPane(props: AreaTypeComponentProps) {
       i++
     }
   }
+
+  // TODO: Remove this early return once bodies support functions and imports
+  if (!IS_STAGING_OR_DEBUG) return null
 
   return (
     <LayoutPanel
