@@ -402,11 +402,12 @@ export fn circle(
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
-  /// The center of the ellipse.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
   /// The minor radius of the ellipse.
   minorRadius: number(Length),
+  /// The center of the ellipse.
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0].
   majorRadius?: number(Length),
   /// The major axis of the ellipse.
@@ -1201,8 +1202,9 @@ export fn polygon(
   /// The number of sides in the polygon.
   numSides: number(Count),
   /// The center point of the polygon.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.
   inscribed?: bool = true,
 ): Sketch {}
@@ -1565,8 +1567,9 @@ export fn patternCircular2d(
   /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
   instances: number(Count),
   /// The center about which to make the pattern. This is a 2D vector.
-  @(snippetArray = ["0", "0"])
-  center: Point2d,
+  /// If not given, defaults to `[0, 0]`.
+  @(includeInSnippet = true, snippetArray = ["0", "0"])
+  center?: Point2d,
   /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
   arcDegrees?: number(Angle) = 360deg,
   /// Whether or not to rotate the duplicates as they are copied.
