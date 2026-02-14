@@ -265,7 +265,7 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
-  selectSurface = async (operation: 'flip-surface') => {
+  selectSurface = async (operation: 'blend-surface' | 'flip-surface') => {
     await this.page
       .getByRole('button', { name: 'caret down surface: open menu' })
       .click()

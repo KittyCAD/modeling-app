@@ -1782,6 +1782,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'text',
     prepareToEdit: prepareToEditAppearance,
   },
+  blend: {
+    label: 'Blend',
+    icon: 'blend',
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
