@@ -25,11 +25,13 @@ export interface MlEphantConversationProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: (request: string, mode: MlCopilotMode, attachments: File[]) => void
   onCancel: () => void
+  onInterrupt: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
+  isInterrupted: boolean
   userAvatarSrc?: string
   userBlockedOnPayment?: boolean
   defaultPrompt?: string
@@ -179,7 +181,9 @@ interface MlEphantConversationInputProps {
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
   onCancel: MlEphantConversationProps['onCancel']
+  onInterrupt: MlEphantConversationProps['onInterrupt']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
+  isInterrupted: MlEphantConversationProps['isInterrupted']
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
@@ -341,9 +345,18 @@ export const MlEphantConversationInput = (
           onKeyDown={(e) => {
             const isOnlyEnter =
               e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey)
-            if (isOnlyEnter) {
+            // Can send if not disabled, and either not interrupted or interrupted and ready to send new instructions
+            const canSend =
+              !props.disabled &&
+              (props.hasPromptCompleted || props.isInterrupted)
+            if (isOnlyEnter && canSend) {
               e.preventDefault()
               onClick()
+            }
+            // Escape key triggers interrupt during processing
+            if (e.key === 'Escape' && !props.hasPromptCompleted) {
+              e.preventDefault()
+              props.onInterrupt()
             }
           }}
           onPaste={handlePaste}
@@ -391,12 +404,16 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            {props.hasPromptCompleted ? (
+            {props.hasPromptCompleted || props.isInterrupted ? (
               <button
                 data-testid="ml-ephant-conversation-input-button"
-                disabled={props.disabled}
+                disabled={props.disabled || props.isInterrupted}
                 onClick={onClick}
-                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
+                className={`m-0 p-1 rounded-sm border-none ${
+                  props.isInterrupted
+                    ? 'bg-chalkboard-30 text-chalkboard-50 dark:bg-chalkboard-80 dark:text-chalkboard-60 cursor-not-allowed'
+                    : 'bg-ml-green hover:bg-ml-green text-chalkboard-100'
+                }`}
               >
                 <CustomIcon name="arrowShortUp" className="w-5 h-5" />
                 <Tooltip position="top" hoverOnly={true}>
@@ -415,6 +432,33 @@ export const MlEphantConversationInput = (
                 </Tooltip>
               </button>
             )}
+            <button
+              data-testid="ml-ephant-conversation-interrupt-button"
+              disabled={props.hasPromptCompleted && !props.isInterrupted}
+              onClick={() => {
+                if (props.isInterrupted && value) {
+                  // After interrupt, clicking sends the updated message
+                  onClick()
+                } else if (!props.hasPromptCompleted) {
+                  // During processing, clicking sends interrupt
+                  props.onInterrupt()
+                }
+              }}
+              className={`m-0 p-1 rounded-sm border-none ${
+                props.hasPromptCompleted && !props.isInterrupted
+                  ? 'bg-chalkboard-30 text-chalkboard-50 dark:bg-chalkboard-80 dark:text-chalkboard-60 cursor-not-allowed'
+                  : 'bg-yellow-400 text-chalkboard-100 hover:bg-yellow-300'
+              }`}
+            >
+              <CustomIcon name="pause" className="w-5 h-5" />
+              <Tooltip position="top" hoverOnly={true}>
+                <span>
+                  {props.isInterrupted
+                    ? 'Send updated instructions'
+                    : 'Interrupt'}
+                </span>
+              </Tooltip>
+            </button>
           </div>
         </div>
       </div>
@@ -535,10 +579,12 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 props.userBlockedOnPayment || props.disabled || props.isLoading
               }
               hasPromptCompleted={props.hasPromptCompleted}
+              isInterrupted={props.isInterrupted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
+              onInterrupt={props.onInterrupt}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
