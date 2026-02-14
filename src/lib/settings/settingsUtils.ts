@@ -76,6 +76,9 @@ export function configurationToSettingsPayload(
       useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      backfaceColor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.backface_color
+      ),
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
       fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
@@ -124,6 +127,7 @@ export function settingsPayloadToConfiguration(
         use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
+        backface_color: configuration?.modeling?.backfaceColor,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
         fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,

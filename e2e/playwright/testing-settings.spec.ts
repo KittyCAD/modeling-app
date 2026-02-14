@@ -1,7 +1,9 @@
 import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
@@ -605,6 +607,114 @@ test.describe(
               u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
             )
             .toBeLessThan(15)
+        })
+      }
+    )
+
+    test(
+      'Changing backface color setting updates back-face color in scene',
+      { tag: ['@macos', '@windows'] },
+      async ({ context, page, homePage, scene, cmdBar }) => {
+        const u = await getUtils(page)
+        const surfacePixel = { x: 600, y: 250 }
+        const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-200, 0])
+  |> line(end = [400, 0])
+surface001 = extrude(profile001, length = 400, bodyType = SURFACE)`
+
+        const makeLookAtSurfaceCommand = (sideY: number): EngineCommand => ({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            center: { x: 0, y: 0, z: 200 },
+            vantage: { x: 0, y: sideY, z: 200 },
+            up: { x: 0, y: 0, z: 1 },
+          },
+        })
+        const syncCameraCommand: EngineCommand = {
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        }
+
+        const lookAtSurfaceSide = async (sideY: number) => {
+          await u.openDebugPanel()
+          await u.sendCustomCmd(makeLookAtSurfaceCommand(sideY))
+          await page.waitForTimeout(100)
+          await u.sendCustomCmd(syncCameraCommand)
+          await u.closeDebugPanel()
+          await page.waitForTimeout(500)
+        }
+
+        const getSurfacePixel = async () => {
+          const streamCoords = await scene.convertPagePositionToStream(
+            surfacePixel.x,
+            surfacePixel.y
+          )
+          const [pixel] = await u.getPixelRGBs(streamCoords, 1)
+          if (!pixel) {
+            throw new Error('Unable to read target surface pixel')
+          }
+          return pixel
+        }
+
+        const setBackfaceColor = async (hex: string, hexUppercase: string) => {
+          await cmdBar.openCmdBar()
+          await cmdBar.chooseCommand('Settings · modeling · backface color')
+          await cmdBar.currentArgumentInput.fill(hex)
+          await cmdBar.progressCmdBar()
+
+          const toastMessage = page.getByText(
+            `Set backface color to "${hexUppercase}" as a user default`
+          )
+          await expect(toastMessage).toBeVisible()
+          await expect(toastMessage).not.toBeVisible()
+          await scene.settled(cmdBar)
+        }
+
+        await test.step('Setup scene with a large surface and load modeling view', async () => {
+          await context.addInitScript((code) => {
+            localStorage.setItem('persistCode', code)
+          }, initialCode)
+          await page.setBodyDimensions({ width: 1200, height: 500 })
+          await homePage.goToModelingScene()
+          await scene.settled(cmdBar)
+          await page.waitForTimeout(1000)
+        })
+
+        let backfaceSideY = 350
+
+        await test.step('Set backface color to red and find the backface-view side', async () => {
+          await setBackfaceColor('#ff0000', '#FF0000')
+
+          await lookAtSurfaceSide(350)
+          const [redPosR, _redPosG, redPosB] = await getSurfacePixel()
+          const redScorePos = redPosR - redPosB
+
+          await lookAtSurfaceSide(-350)
+          const [redNegR, _redNegG, redNegB] = await getSurfacePixel()
+          const redScoreNeg = redNegR - redNegB
+
+          backfaceSideY = redScorePos >= redScoreNeg ? 350 : -350
+          expect(Math.max(redScorePos, redScoreNeg)).toBeGreaterThan(8)
+        })
+
+        await test.step('Set backface color to blue and verify backface pixel shifts to blue', async () => {
+          await setBackfaceColor('#0000ff', '#0000FF')
+          await lookAtSurfaceSide(backfaceSideY)
+
+          await expect
+            .poll(
+              async () => {
+                const [r, _g, b] = await getSurfacePixel()
+                return b - r
+              },
+              { timeout: 15_000 }
+            )
+            .toBeGreaterThan(8)
         })
       }
     )
