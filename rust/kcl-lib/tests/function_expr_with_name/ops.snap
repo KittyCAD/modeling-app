@@ -119,7 +119,7 @@ description: Operations executed function_expr_with_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -181,7 +181,7 @@ description: Operations executed function_expr_with_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"

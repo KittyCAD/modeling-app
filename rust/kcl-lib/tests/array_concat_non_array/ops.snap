@@ -41,7 +41,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -103,7 +103,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -165,7 +165,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -227,7 +227,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -289,7 +289,7 @@ description: Operations executed array_concat_non_array.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"

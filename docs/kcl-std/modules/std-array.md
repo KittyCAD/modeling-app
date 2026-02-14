@@ -19,4 +19,5 @@ Functions for manipulating arrays of values.
 * [`pop`](/docs/kcl-std/functions/std-array-pop)
 * [`push`](/docs/kcl-std/functions/std-array-push)
 * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
+* [`slice`](/docs/kcl-std/functions/std-array-slice)
 

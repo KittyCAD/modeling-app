@@ -213,6 +213,69 @@ fn inner_concat(
     KclValue::HomArray { value: new, ty }
 }
 
+pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let start: Option<i64> = args.get_kw_arg_opt("start", &RuntimeType::count(), exec_state)?;
+    let end: Option<i64> = args.get_kw_arg_opt("end", &RuntimeType::count(), exec_state)?;
+
+    if start.is_none() && end.is_none() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Either `start` or `end` must be provided".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let Ok(len) = i64::try_from(array.len()) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Array length {} exceeds maximum supported length", array.len()),
+            vec![args.source_range],
+        )));
+    };
+    let mut computed_start = start.unwrap_or(0);
+    let mut computed_end = end.unwrap_or(len);
+
+    if computed_start < 0 {
+        computed_start += len;
+    }
+    if computed_end < 0 {
+        computed_end += len;
+    }
+
+    if let Some(start) = start
+        && (computed_start < 0 || computed_start >= len)
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Slice start index {start} is out of bounds for array of length {len}"),
+            vec![args.source_range],
+        )));
+    }
+    if let Some(end) = end
+        && (computed_end < 0 || computed_end > len)
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Slice end index {end} is out of bounds for array of length {len}"),
+            vec![args.source_range],
+        )));
+    }
+
+    if computed_start >= computed_end {
+        return Ok(KclValue::HomArray { value: Vec::new(), ty });
+    }
+
+    let Some(sliced) = array.get(computed_start as usize..computed_end as usize) else {
+        let message = "Failed to compute array slice".to_owned();
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message,
+            vec![args.source_range],
+        )));
+    };
+    Ok(KclValue::HomArray {
+        value: sliced.to_vec(),
+        ty,
+    })
+}
+
 pub async fn flatten(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let array_value: KclValue = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
     let mut flattened = Vec::new();
