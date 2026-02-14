@@ -22,7 +22,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -70,15 +70,10 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const {
-    commandBarActor,
-    kclManager,
-    rustContext,
-    useCommandBarState,
-    useSettings,
-  } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager, rustContext, useSettings } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
@@ -160,7 +155,7 @@ function CommandBarKclInput({
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeyWrapper(
     ['mod + k', 'esc'],
-    () => commandBarActor.send({ type: 'Close' }),
+    () => commands.send({ type: 'Close' }),
     kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )

@@ -2,7 +2,7 @@ import { Menu } from '@headlessui/react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
@@ -81,7 +81,8 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
-  const { commandBarActor, kclManager, settingsActor } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager, settingsActor } = useSingletons()
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -163,7 +164,7 @@ export const KclEditorMenu = () => {
               onClick={() => {
                 const currentProject =
                   settingsActor.getSnapshot().context.currentProject
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     name: 'add-kcl-file-to-project',

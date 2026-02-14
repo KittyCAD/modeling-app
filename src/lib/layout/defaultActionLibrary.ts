@@ -3,7 +3,7 @@ import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
 /**
@@ -11,7 +11,8 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
  * we should make it possible to register your own in an extension.
  */
 export const useDefaultActionLibrary = () => {
-  const { commandBarActor, kclManager, settingsActor } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager, settingsActor } = useSingletons()
 
   return Object.freeze({
     export: {
@@ -24,7 +25,7 @@ export const useDefaultActionLibrary = () => {
       },
       shortcut: 'Ctrl + Shift + E',
       execute: () =>
-        commandBarActor.send({
+        commands.send({
           type: 'Find and select command',
           data: { name: 'Export', groupId: 'modeling' },
         }),
@@ -36,7 +37,7 @@ export const useDefaultActionLibrary = () => {
       execute: () =>
         sendAddFileToProjectCommandForCurrentProject(
           settingsActor,
-          commandBarActor
+          commands.actor
         ),
     },
     make: {
@@ -46,7 +47,7 @@ export const useDefaultActionLibrary = () => {
       },
       shortcut: 'Ctrl + Shift + M',
       execute: () =>
-        commandBarActor.send({
+        commands.send({
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         }),

@@ -16,7 +16,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
@@ -99,23 +99,23 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commandBarActor, engineCommandManager, kclManager, settingsActor } =
-    useSingletons()
+  const { commands } = useApp()
+  const { engineCommandManager, kclManager, settingsActor } = useSingletons()
   const platform = usePlatform()
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const machineManager = useContext(MachineManagerContext)
-  const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
-  const commands = useSelector(commandBarActor, commandsSelector)
+  const commandList = useSelector(commands.actor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
-      commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
+      commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
     )
   const machineCount = machineManager.machines.length
 
@@ -158,7 +158,7 @@ function ProjectMenuPopover({
           onClick: () =>
             sendAddFileToProjectCommandForCurrentProject(
               settingsActor,
-              commandBarActor
+              commands.actor
             ),
         },
         {
@@ -182,7 +182,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(exportCommandInfo),
           onClick: () =>
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
@@ -206,7 +206,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: makeCommandInfo,
             })
@@ -233,7 +233,7 @@ function ProjectMenuPopover({
       platform,
       findCommand,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      commandBarActor.send,
+      commands.send,
       engineCommandManager,
       onProjectClose,
       isDesktop,

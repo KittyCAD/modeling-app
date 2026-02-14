@@ -29,7 +29,7 @@ import {
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -46,7 +46,8 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
-    const { kclManager, commandBarActor } = useSingletons()
+    const { commands } = useApp()
+    const { kclManager } = useSingletons()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -113,7 +114,7 @@ const Toolbar_ = memo(
         props.state,
         props.send,
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        commandBarActor.send,
+        commands.send,
         sketchPathId,
 
         kclManager.editorView.hasFocus,

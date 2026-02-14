@@ -25,7 +25,7 @@ import { reportRejection } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getDeleteKeys } from '@src/lib/utils'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -61,8 +61,8 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { commands } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     getLayout,
     kclManager,
@@ -71,7 +71,6 @@ export const ModelingMachineProvider = ({
     sceneInfra,
     setLayout,
     settingsActor,
-    useCommandBarState,
     useSettings,
   } = useSingletons()
   const systemDeps = useMemo(
@@ -79,9 +78,9 @@ export const ModelingMachineProvider = ({
       sceneInfra,
       rustContext,
       sceneEntitiesManager,
-      commandBarActor,
+      commandBarActor: commands.actor,
     }),
-    [sceneInfra, rustContext, sceneEntitiesManager, commandBarActor]
+    [sceneInfra, rustContext, sceneEntitiesManager, commands.actor]
   )
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
@@ -145,7 +144,7 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
-        commandBarActor,
+        commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
         // React Suspense will await this
@@ -432,7 +431,7 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
 
   // Global Esc handler for sketch solve mode when command bar is closed
   useHotkeys(

@@ -13,7 +13,7 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import {
   useFolders,
   useProjectDirectoryPath,
@@ -28,7 +28,8 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commandBarActor, kclManager, systemIOActor } = useSingletons()
+  const { commands } = useApp()
+  const { kclManager, systemIOActor } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
@@ -135,7 +136,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
               projectRef.current?.path + electron.path.sep,
               ''
             )
-            commandBarActor.send({
+            commands.send({
               type: 'Find and select command',
               data: {
                 name: 'Insert',

@@ -4,13 +4,13 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
-  const { commandBarActor, useCommandBarState } = useSingletons()
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
   const {
     context: { argumentsToSubmit, selectedCommand, reviewValidationError },
   } = commandBarState
@@ -19,7 +19,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
-  useHotkeys('esc', () => commandBarActor.send({ type: 'Close' }), {
+  useHotkeys('esc', () => commands.send({ type: 'Close' }), {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
@@ -45,7 +45,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         ]
         const arg = selectedCommand?.args[argName]
         if (!arg) return
-        commandBarActor.send({
+        commands.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -62,7 +62,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   function submitCommand(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    commandBarActor.send({
+    commands.send({
       type: 'Submit command',
       output: { argumentsToSubmit },
     })
@@ -137,7 +137,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                     data-testid={`cmd-bar-add-optional-arg-${argName}`}
                     type="button"
                     onClick={() => {
-                      commandBarActor.send({
+                      commands.send({
                         type: 'Edit argument',
                         data: { arg: { ...arg, name: argName } },
                       })

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -89,10 +89,10 @@ function CommandBarVector2DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
-  const { commandBarActor, kclManager, rustContext, useCommandBarState } =
-    useSingletons()
+  const { commands } = useApp()
+  const { kclManager, rustContext } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const argMachineContext = useSelector(
     arg.machineActor,
@@ -175,7 +175,7 @@ function CommandBarVector2DInput({
   const yInputRef = useRef<HTMLInputElement>(null)
 
   // Close the command bar
-  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {
@@ -247,7 +247,7 @@ function CommandBarVector2DInput({
     nextInputRef?: React.RefObject<HTMLInputElement | null>
   ) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      commandBarActor.send({ type: 'Close' })
+      commands.send({ type: 'Close' })
     }
     if (e.key === 'Backspace' && e.metaKey) {
       stepBack()

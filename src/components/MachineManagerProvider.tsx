@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react'
 
 import type { components } from '@src/lib/machine-api'
 
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -36,7 +36,7 @@ export const MachineManagerProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   const [machines, setMachines] = useState<MachinesListing>([])
   const [machineApiIp, setMachineApiIp] = useState<string | null>(null)
   const [currentMachine, setCurrentMachine] = useState<
@@ -98,7 +98,7 @@ export const MachineManagerProvider = ({
       setCurrentMachine,
     }
 
-    commandBarActor.send({
+    commands.send({
       type: 'Set machine manager',
       data: machineManagerNext,
     })
