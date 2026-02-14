@@ -189,7 +189,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -389,7 +388,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -589,7 +587,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -789,7 +786,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -989,7 +985,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -1189,7 +1184,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -1389,7 +1383,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -1589,7 +1582,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -1789,7 +1781,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -1989,7 +1980,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2189,7 +2179,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2389,7 +2378,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2589,7 +2577,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2789,7 +2776,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -2989,7 +2975,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3189,7 +3174,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3389,7 +3373,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3589,7 +3572,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3789,7 +3771,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -3989,7 +3970,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -4266,7 +4246,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -4466,7 +4445,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -4666,7 +4644,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -4866,7 +4843,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -5066,7 +5042,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -5266,7 +5241,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -5466,7 +5440,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -5666,7 +5639,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -5866,7 +5838,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -6066,7 +6037,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -6266,7 +6236,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -6466,7 +6435,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -6666,7 +6634,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -6866,7 +6833,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -7066,7 +7032,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -7266,7 +7231,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -7466,7 +7430,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -7666,7 +7629,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -7866,7 +7828,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -8066,7 +8027,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -8343,7 +8303,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -8543,7 +8502,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -8743,7 +8701,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -8943,7 +8900,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -9143,7 +9099,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -9343,7 +9298,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -9543,7 +9497,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -9743,7 +9696,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -9943,7 +9895,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -10143,7 +10094,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -10343,7 +10293,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -10543,7 +10492,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -10743,7 +10691,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -10943,7 +10890,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -11143,7 +11089,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -11343,7 +11288,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -11543,7 +11487,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -11743,7 +11686,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -11943,7 +11885,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -12143,7 +12084,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -12420,7 +12360,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -12620,7 +12559,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -12820,7 +12758,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -13020,7 +12957,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -13220,7 +13156,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -13420,7 +13355,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -13620,7 +13554,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -13820,7 +13753,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -14020,7 +13952,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -14220,7 +14151,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -14420,7 +14350,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -14620,7 +14549,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -14820,7 +14748,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -15020,7 +14947,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -15220,7 +15146,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -15420,7 +15345,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -15620,7 +15544,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -15820,7 +15743,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -16020,7 +15942,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -16220,7 +16141,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -16497,7 +16417,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -16697,7 +16616,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -16897,7 +16815,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -17097,7 +17014,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -17297,7 +17213,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -17497,7 +17412,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -17697,7 +17611,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -17897,7 +17810,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -18097,7 +18009,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -18297,7 +18208,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -18497,7 +18407,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -18697,7 +18606,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -18897,7 +18805,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -19097,7 +19004,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -19297,7 +19203,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -19497,7 +19402,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -19697,7 +19601,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -19897,7 +19800,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -20097,7 +19999,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -20297,7 +20198,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -20574,7 +20474,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -20774,7 +20673,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -20974,7 +20872,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -21174,7 +21071,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -21374,7 +21270,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -21574,7 +21469,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -21774,7 +21668,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -21974,7 +21867,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -22174,7 +22066,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -22374,7 +22265,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -22574,7 +22464,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -22774,7 +22663,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -22974,7 +22862,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -23174,7 +23061,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -23374,7 +23260,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -23574,7 +23459,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -23774,7 +23658,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -23974,7 +23857,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -24174,7 +24056,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -24374,7 +24255,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -24651,7 +24531,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -24851,7 +24730,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -25051,7 +24929,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -25251,7 +25128,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -25451,7 +25327,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -25651,7 +25526,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -25851,7 +25725,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -26051,7 +25924,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -26251,7 +26123,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -26451,7 +26322,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -26651,7 +26521,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -26851,7 +26720,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -27051,7 +26919,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -27251,7 +27118,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -27451,7 +27317,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -27651,7 +27516,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -27851,7 +27715,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -28051,7 +27914,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -28251,7 +28113,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -28451,7 +28312,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -28728,7 +28588,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -28928,7 +28787,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -29128,7 +28986,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -29328,7 +29185,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -29528,7 +29384,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -29728,7 +29583,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -29928,7 +29782,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -30128,7 +29981,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -30328,7 +30180,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -30528,7 +30379,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -30728,7 +30578,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -30928,7 +30777,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -31128,7 +30976,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -31328,7 +31175,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -31528,7 +31374,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -31728,7 +31573,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -31928,7 +31772,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -32128,7 +31971,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -32328,7 +32170,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -32528,7 +32369,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -32805,7 +32645,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -33005,7 +32844,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -33205,7 +33043,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -33405,7 +33242,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -33605,7 +33441,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -33805,7 +33640,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -34005,7 +33839,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -34205,7 +34038,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -34405,7 +34237,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -34605,7 +34436,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -34805,7 +34635,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -35005,7 +34834,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -35205,7 +35033,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -35405,7 +35232,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -35605,7 +35431,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -35805,7 +35630,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -36005,7 +35829,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -36205,7 +36028,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -36405,7 +36227,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -36605,7 +36426,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -36882,7 +36702,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -37082,7 +36901,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -37282,7 +37100,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -37482,7 +37299,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -37682,7 +37498,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -37882,7 +37697,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -38082,7 +37896,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -38282,7 +38095,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -38482,7 +38294,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -38682,7 +38493,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -38882,7 +38692,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -39082,7 +38891,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -39282,7 +39090,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -39482,7 +39289,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -39682,7 +39488,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -39882,7 +39687,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -40082,7 +39886,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -40282,7 +40085,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -40482,7 +40284,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -40682,7 +40483,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -40959,7 +40759,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -41159,7 +40958,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -41359,7 +41157,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -41559,7 +41356,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -41759,7 +41555,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -41959,7 +41754,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -42159,7 +41953,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -42359,7 +42152,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -42559,7 +42351,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -42759,7 +42550,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -42959,7 +42749,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -43159,7 +42948,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -43359,7 +43147,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -43559,7 +43346,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -43759,7 +43545,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -43959,7 +43744,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -44159,7 +43943,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -44359,7 +44142,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -44559,7 +44341,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -44759,7 +44540,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -45036,7 +44816,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -45236,7 +45015,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -45436,7 +45214,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -45636,7 +45413,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -45836,7 +45612,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -46036,7 +45811,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -46236,7 +46010,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -46436,7 +46209,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -46636,7 +46408,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -46836,7 +46607,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -47036,7 +46806,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -47236,7 +47005,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -47436,7 +47204,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -47636,7 +47403,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -47836,7 +47602,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -48036,7 +47801,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -48236,7 +48000,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -48436,7 +48199,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -48636,7 +48398,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -48836,7 +48597,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -49113,7 +48873,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -49313,7 +49072,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -49513,7 +49271,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -49713,7 +49470,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -49913,7 +49669,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -50113,7 +49868,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -50313,7 +50067,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -50513,7 +50266,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -50713,7 +50465,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -50913,7 +50664,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -51113,7 +50863,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -51313,7 +51062,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -51513,7 +51261,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -51713,7 +51460,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -51913,7 +51659,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -52113,7 +51858,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -52313,7 +52057,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -52513,7 +52256,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -52713,7 +52455,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -52913,7 +52654,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -53190,7 +52930,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -53390,7 +53129,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -53590,7 +53328,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -53790,7 +53527,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -53990,7 +53726,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -54190,7 +53925,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -54390,7 +54124,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -54590,7 +54323,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -54790,7 +54522,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -54990,7 +54721,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -55190,7 +54920,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -55390,7 +55119,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -55590,7 +55318,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -55790,7 +55517,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -55990,7 +55716,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -56190,7 +55915,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -56390,7 +56114,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -56590,7 +56313,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -56790,7 +56512,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -56990,7 +56711,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -57267,7 +56987,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -57467,7 +57186,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -57667,7 +57385,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -57867,7 +57584,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -58067,7 +57783,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -58267,7 +57982,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -58467,7 +58181,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -58667,7 +58380,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -58867,7 +58579,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -59067,7 +58778,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -59267,7 +58977,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -59467,7 +59176,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -59667,7 +59375,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -59867,7 +59574,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -60067,7 +59773,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -60267,7 +59972,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -60467,7 +60171,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -60667,7 +60370,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -60867,7 +60569,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -61067,7 +60768,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -61344,7 +61044,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -61544,7 +61243,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -61744,7 +61442,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -61944,7 +61641,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -62144,7 +61840,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -62344,7 +62039,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -62544,7 +62238,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -62744,7 +62437,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -62944,7 +62636,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -63144,7 +62835,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -63344,7 +63034,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -63544,7 +63233,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -63744,7 +63432,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -63944,7 +63631,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -64144,7 +63830,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -64344,7 +64029,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -64544,7 +64228,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -64744,7 +64427,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -64944,7 +64626,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -65144,7 +64825,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -65421,7 +65101,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -65621,7 +65300,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -65821,7 +65499,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -66021,7 +65698,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -66221,7 +65897,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -66421,7 +66096,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -66621,7 +66295,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -66821,7 +66494,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -67021,7 +66693,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -67221,7 +66892,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -67421,7 +67091,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -67621,7 +67290,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -67821,7 +67489,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -68021,7 +67688,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -68221,7 +67887,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -68421,7 +68086,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -68621,7 +68285,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -68821,7 +68484,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -69021,7 +68683,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -69221,7 +68882,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -69498,7 +69158,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -69698,7 +69357,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -69898,7 +69556,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -70098,7 +69755,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -70298,7 +69954,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -70498,7 +70153,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -70698,7 +70352,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -70898,7 +70551,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -71098,7 +70750,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -71298,7 +70949,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -71498,7 +71148,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -71698,7 +71347,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -71898,7 +71546,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -72098,7 +71745,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -72298,7 +71944,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -72498,7 +72143,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -72698,7 +72342,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -72898,7 +72541,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -73098,7 +72740,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -73298,7 +72939,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -73575,7 +73215,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -73775,7 +73414,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -73975,7 +73613,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -74175,7 +73812,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -74375,7 +74011,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -74575,7 +74210,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -74775,7 +74409,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -74975,7 +74608,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -75175,7 +74807,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -75375,7 +75006,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -75575,7 +75205,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -75775,7 +75404,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -75975,7 +75603,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -76175,7 +75802,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -76375,7 +76001,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -76575,7 +76200,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -76775,7 +76399,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -76975,7 +76598,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -77175,7 +76797,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -77375,7 +76996,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -77652,7 +77272,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -77852,7 +77471,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -78052,7 +77670,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -78252,7 +77869,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -78452,7 +78068,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -78652,7 +78267,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -78852,7 +78466,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -79052,7 +78665,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -79252,7 +78864,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -79452,7 +79063,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -79652,7 +79262,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -79852,7 +79461,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -80052,7 +79660,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -80252,7 +79859,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -80452,7 +80058,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -80652,7 +80257,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -80852,7 +80456,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -81052,7 +80655,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -81252,7 +80854,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -81452,7 +81053,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -81729,7 +81329,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -81929,7 +81528,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -82129,7 +81727,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -82329,7 +81926,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -82529,7 +82125,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -82729,7 +82324,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -82929,7 +82523,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -83129,7 +82722,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -83329,7 +82921,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -83529,7 +83120,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -83729,7 +83319,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -83929,7 +83518,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -84129,7 +83717,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -84329,7 +83916,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -84529,7 +84115,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -84729,7 +84314,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -84929,7 +84513,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -85129,7 +84712,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -85329,7 +84911,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -85529,7 +85110,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -85806,7 +85386,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -86006,7 +85585,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -86206,7 +85784,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -86406,7 +85983,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -86606,7 +86182,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -86806,7 +86381,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -87006,7 +86580,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -87206,7 +86779,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -87406,7 +86978,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -87606,7 +87177,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -87806,7 +87376,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -88006,7 +87575,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -88206,7 +87774,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -88406,7 +87973,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -88606,7 +88172,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -88806,7 +88371,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -89006,7 +88570,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -89206,7 +88769,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -89406,7 +88968,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -89606,7 +89167,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -89883,7 +89443,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -90083,7 +89642,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -90283,7 +89841,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -90483,7 +90040,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -90683,7 +90239,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -90883,7 +90438,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -91083,7 +90637,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -91283,7 +90836,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -91483,7 +91035,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -91683,7 +91234,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -91883,7 +91433,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -92083,7 +91632,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -92283,7 +91831,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -92483,7 +92030,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -92683,7 +92229,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -92883,7 +92428,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -93083,7 +92627,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -93283,7 +92826,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -93483,7 +93025,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -93683,7 +93224,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -93960,7 +93500,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -94160,7 +93699,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -94360,7 +93898,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -94560,7 +94097,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -94760,7 +94296,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -94960,7 +94495,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -95160,7 +94694,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -95360,7 +94893,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -95560,7 +95092,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -95760,7 +95291,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -95960,7 +95490,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -96160,7 +95689,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -96360,7 +95888,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -96560,7 +96087,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -96760,7 +96286,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -96960,7 +96485,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -97160,7 +96684,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -97360,7 +96883,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -97560,7 +97082,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -97760,7 +97281,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -98037,7 +97557,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -98237,7 +97756,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.005524819484196713
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -98437,7 +97955,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.08839711174714741
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -98637,7 +98154,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 0.4475103782199338
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -98837,7 +98353,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 1.4143537879543586
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -99037,7 +98552,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 3.453012177622946
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -99237,7 +98751,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 7.1601660515189405
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -99437,7 +98950,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 13.265091581556307
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -99637,7 +99149,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 22.629660607269738
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -99837,7 +99348,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 36.248340635814635
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -100037,7 +99547,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 53.75165936418534
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -100237,7 +99746,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 67.37033939273027
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -100437,7 +99945,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 76.73490841844368
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -100637,7 +100144,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 82.83983394848106
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -100837,7 +100343,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 86.54698782237705
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -101037,7 +100542,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 88.58564621204563
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -101237,7 +100741,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.55248962178007
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -101437,7 +100940,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.91160288825286
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -101637,7 +101139,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 89.9944751805158
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
@@ -101837,7 +101338,6 @@ description: Artifact commands twisted-wire-sculpture.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": false,
               "origin": {
                 "type": "custom",
                 "origin": {
