@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing face_api_fillet_edge_refs_variants.kcl
+---
+KCL Engine error
+
+  × engine: No common edge found between the specified faces
+    ╭─[29:1]
+ 28 │ // Test variant 2: fillet bottom edge using disambiguator (startCap)
+ 29 │ fillet(solid001, radius = 0.1, edgeRefs = [{ faces = [hi, yoyo], disambiguators = [startCap] }])
+    · ────────────────────────────────────────────────┬───────────────────────────────────────────────
+    ·                                                 ╰── tests/face_api_fillet_edge_refs_variants/input.kcl
+ 30 │ 
+    ╰────

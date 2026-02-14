@@ -68,8 +68,13 @@ export fn fillet(
   @solid: Solid,
   /// The radius of the fillet
   radius: number(Length),
-  /// The paths you want to fillet
-  tags: [Edge; 1+],
+  /// The paths you want to fillet (legacy API)
+  tags?: [Edge; 1+],
+  /// Edge references using face ids (new API). Each element must be an object with:
+  /// - `faces`: [Face | Tag; 1+] - Array of faces (or tags referring to faces) that share the edge(s) to fillet
+  /// - `disambiguators?`: [Face | Tag] - Optional array of faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index to select a specific edge when multiple edges share the same faces (0-based)
+  edgeRefs?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
