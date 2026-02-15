@@ -1261,7 +1261,11 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  return { graphSelections, otherSelections: [] } as Selections
+  return {
+    graphSelections,
+    otherSelections: [],
+    graphSelectionsV2: [],
+  } as Selections
 }
 
 export function findOperationArtifact(

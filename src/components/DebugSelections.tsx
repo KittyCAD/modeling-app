@@ -145,6 +145,7 @@ function codeRangeToIds(
     selectionRanges: {
       graphSelections: [],
       otherSelections: [],
+      graphSelectionsV2: [],
     },
     isShiftDown: kclManager.isShiftDown,
     ast: kclManager.ast,

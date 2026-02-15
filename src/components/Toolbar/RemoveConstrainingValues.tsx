@@ -46,6 +46,7 @@ export function removeConstrainingValuesInfo(
         ),
       })
     ),
+    graphSelectionsV2: [],
   }
   const isAllTooltips = nodes.every(
     (node) =>

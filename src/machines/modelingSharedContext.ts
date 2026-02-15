@@ -47,6 +47,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     selectionRanges: {
       graphSelections: [],
       otherSelections: [],
+      graphSelectionsV2: [], // Phase 2.1: Initialize V2 selections
     },
     sketchDetails: null,
     sketchSolveInit: null,
@@ -96,6 +97,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     selectionRanges: {
       graphSelections: [],
       otherSelections: [],
+      graphSelectionsV2: [], // Phase 2.1: Initialize V2 selections
     },
     sketchDetails: null,
     sketchSolveInit: null,

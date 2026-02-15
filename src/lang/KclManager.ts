@@ -265,6 +265,7 @@ export class KclManager extends EventTarget {
   private _selectionRanges: Selections = {
     otherSelections: [],
     graphSelections: [],
+    graphSelectionsV2: [],
   }
   undoDepth = signal(0)
   redoDepth = signal(0)
@@ -1085,6 +1086,7 @@ export class KclManager extends EventTarget {
       returnVal = {
         graphSelections: [],
         otherSelections: [],
+        graphSelectionsV2: [],
       }
 
       for (const path of optionalParams.focusPath) {

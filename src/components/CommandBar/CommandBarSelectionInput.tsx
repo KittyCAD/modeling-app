@@ -116,6 +116,7 @@ function CommandBarSelectionInput({
       : selection || {
           graphSelections: [],
           otherSelections: [],
+          graphSelectionsV2: [],
         }
 
     onSubmit(resolvedSelection)
@@ -142,6 +143,7 @@ function CommandBarSelectionInput({
         ? selection
         : selection || {
             graphSelections: [],
+            graphSelectionsV2: [],
             otherSelections: [],
           }
 

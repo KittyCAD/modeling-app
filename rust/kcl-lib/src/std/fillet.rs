@@ -2,7 +2,11 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::{CutType, CutTypeV2}};
+use kcmc::{
+    ModelingCmd, each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{CutType, CutTypeV2},
+};
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 
@@ -67,10 +71,10 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    
+
     // Check if edgeRefs is provided (new API)
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edgeRefs", &RuntimeType::any_array(), exec_state)?;
-    
+
     if let Some(edge_refs) = edge_refs {
         // New API: use edgeRefs
         let value = inner_fillet_with_edge_refs(solid, radius, edge_refs, tolerance, tag, exec_state, args).await?;
@@ -85,13 +89,11 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
                 Ok(KclValue::Solid { value })
             }
-            Err(_) => {
-                Err(KclError::new_semantic(KclErrorDetails {
-                    source_ranges: vec![args.source_range],
-                    message: "You must provide either 'tags' or 'edgeRefs' to fillet edges".to_owned(),
-                    backtrace: Default::default(),
-                }))
-            }
+            Err(_) => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: "You must provide either 'tags' or 'edgeRefs' to fillet edges".to_owned(),
+                backtrace: Default::default(),
+            })),
         }
     }
 }
@@ -241,7 +243,7 @@ async fn inner_fillet_with_edge_refs(
     }
 
     let mut solid = solid.clone();
-    
+
     // Parse edgeRefs and resolve tags to UUIDs
     let mut edge_references = Vec::new();
     for edge_ref_value in edge_refs {
@@ -256,7 +258,7 @@ async fn inner_fillet_with_edge_refs(
                 }));
             }
         };
-        
+
         // Get faces array
         let faces_value = edge_ref_obj.get("faces").ok_or_else(|| {
             KclError::new_type(KclErrorDetails {
@@ -265,7 +267,7 @@ async fn inner_fillet_with_edge_refs(
                 backtrace: Default::default(),
             })
         })?;
-        
+
         let faces_array = match faces_value {
             KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
             _ => {
@@ -276,7 +278,7 @@ async fn inner_fillet_with_edge_refs(
                 }));
             }
         };
-        
+
         if faces_array.is_empty() {
             return Err(KclError::new_type(KclErrorDetails {
                 message: "edgeRef 'faces' must have at least one face".to_string(),
@@ -284,13 +286,13 @@ async fn inner_fillet_with_edge_refs(
                 backtrace: Default::default(),
             }));
         }
-        
+
         // Resolve faces to UUIDs
         let mut face_uuids = Vec::new();
         for face_value in faces_array {
             face_uuids.push(resolve_face_id(&face_value, solid.id, exec_state, &args).await?);
         }
-        
+
         // Get disambiguators (optional)
         let mut disambiguator_uuids = Vec::new();
         if let Some(disambiguators_value) = edge_ref_obj.get("disambiguators") {
@@ -308,7 +310,7 @@ async fn inner_fillet_with_edge_refs(
                 disambiguator_uuids.push(resolve_face_id(&disambiguator_value, solid.id, exec_state, &args).await?);
             }
         }
-        
+
         // Get index (optional)
         let index = match edge_ref_obj.get("index") {
             Some(KclValue::Number { value, .. }) => Some(*value as u32),
@@ -321,7 +323,7 @@ async fn inner_fillet_with_edge_refs(
             }
             None => None, // Not provided - will fillet all matching edges
         };
-        
+
         // Use the EdgeReference from shared module
         // Note: This requires the updated modeling-api with the new EdgeReference struct
         // If compilation fails here, make sure modeling-api is rebuilt
@@ -332,13 +334,13 @@ async fn inner_fillet_with_edge_refs(
         let builder = EdgeReference::builder()
             .faces(face_uuids)
             .disambiguators(disambiguator_uuids);
-        
+
         let edge_ref = if let Some(index_val) = index {
             builder.index(index_val).build()
         } else {
             builder.build()
         };
-        
+
         edge_references.push(edge_ref);
     }
 
@@ -348,27 +350,23 @@ async fn inner_fillet_with_edge_refs(
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }
-    
+
     // Use Solid3dCutEdgeReferences if available, otherwise fall back to Solid3dCutEdges
     // This requires the updated modeling-api
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::Solid3dCutEdgeReferences {
-                    object_id: solid.id,
-                    edges_references: edge_references.clone(),
-                    cut_type: CutTypeV2::Fillet {
-                        radius: LengthUnit(radius.to_mm()),
-                        second_length: None,
-                    },
-                    tolerance: LengthUnit(
-                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
-                    ),
-                    strategy: Default::default(),
-                    extra_face_ids,
+            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
+                object_id: solid.id,
+                edges_references: edge_references.clone(),
+                cut_type: CutTypeV2::Fillet {
+                    radius: LengthUnit(radius.to_mm()),
+                    second_length: None,
                 },
-            ),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
+                strategy: Default::default(),
+                extra_face_ids,
+            }),
         )
         .await?;
 

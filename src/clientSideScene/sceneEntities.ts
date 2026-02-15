@@ -4362,6 +4362,7 @@ function computeSelectionFromSourceRangeAndAST(
         codeRef: codeRefFromRange(sourceRange, ast),
       },
     ],
+    graphSelectionsV2: [],
     otherSelections: [],
   }
   return selection

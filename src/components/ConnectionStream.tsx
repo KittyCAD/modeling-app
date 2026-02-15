@@ -10,7 +10,7 @@ import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sendSelectEventToEngine } from '@src/lib/selections'
+import { sendQueryEntityTypeWithPoint } from '@src/lib/selections'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
@@ -95,7 +95,7 @@ export const ConnectionStream = (props: {
       if (sceneInfra.camControls.wasDragging === true) return
 
       if (btnName(e.nativeEvent).left) {
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         }).catch(reportRejection)
       }
@@ -125,7 +125,7 @@ export const ConnectionStream = (props: {
           return
         }
 
-        sendSelectEventToEngine(e, videoRef.current, {
+        sendQueryEntityTypeWithPoint(e, videoRef.current, {
           engineCommandManager,
         })
           .then((result) => {

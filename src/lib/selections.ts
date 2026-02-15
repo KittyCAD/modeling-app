@@ -1,6 +1,6 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import type { WebSocketRequest } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -14,7 +14,6 @@ import {
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
@@ -42,6 +41,10 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
+import type {
+  EntityReference,
+  SelectionV2,
+} from '@src/machines/modelingSharedTypes'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -73,8 +76,69 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-export async function getEventForSelectWithPoint(
-  { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
+/**
+ * Maps the engine's EntityReference format to the frontend's EntityReference format.
+ * Engine format (snake_case): { face: { face_id }, edge: { faces, disambiguators?, index? }, vertex: { faces, disambiguators?, index? } }
+ * Frontend format: { type: 'face', faceId }, { type: 'edge', faces, disambiguators?, index? }, { type: 'vertex', faces, disambiguators?, index? }
+ */
+function mapEngineEntityReferenceToFrontend(
+  engineRef: any
+): EntityReference | null {
+  if (!engineRef) return null
+
+  // Handle snake_case format (engine uses serde rename_all = "snake_case")
+  if (engineRef.face && engineRef.face.face_id) {
+    return {
+      type: 'face',
+      faceId: engineRef.face.face_id,
+    }
+  }
+  if (engineRef.edge && engineRef.edge.faces) {
+    return {
+      type: 'edge',
+      faces: engineRef.edge.faces,
+      disambiguators: engineRef.edge.disambiguators,
+      index: engineRef.edge.index,
+    }
+  }
+  if (engineRef.vertex && engineRef.vertex.faces) {
+    return {
+      type: 'vertex',
+      faces: engineRef.vertex.faces,
+      disambiguators: engineRef.vertex.disambiguators,
+      index: engineRef.vertex.index,
+    }
+  }
+
+  // Also handle PascalCase format (if the API uses that)
+  if (engineRef.Face && engineRef.Face.face_id) {
+    return {
+      type: 'face',
+      faceId: engineRef.Face.face_id,
+    }
+  }
+  if (engineRef.Edge && engineRef.Edge.faces) {
+    return {
+      type: 'edge',
+      faces: engineRef.Edge.faces,
+      disambiguators: engineRef.Edge.disambiguators,
+      index: engineRef.Edge.index,
+    }
+  }
+  if (engineRef.Vertex && engineRef.Vertex.faces) {
+    return {
+      type: 'vertex',
+      faces: engineRef.Vertex.faces,
+      disambiguators: engineRef.Vertex.disambiguators,
+      index: engineRef.Vertex.index,
+    }
+  }
+
+  return null
+}
+
+export async function getEventForQueryEntityTypeWithPoint(
+  engineEvent: any, // Using any for now since TypeScript types may not be updated yet
   {
     artifactGraph,
     rustContext,
@@ -83,27 +147,80 @@ export async function getEventForSelectWithPoint(
     rustContext: RustContext
   }
 ): Promise<ModelingMachineEvent | null> {
-  if (!data?.entity_id) {
+  const data = engineEvent?.data as { reference?: any } | undefined
+  if (!data?.reference) {
+    // No reference - clear selection (clicked in empty space)
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
     }
   }
-  if ([X_AXIS_UUID, Y_AXIS_UUID].includes(data.entity_id)) {
+
+  const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+  if (!entityRef) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
+
+  if (
+    entityRef.type === 'edge' &&
+    entityRef.faces.length === 0 &&
+    (!entityRef.disambiguators || entityRef.disambiguators.length === 0)
+  ) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
+
+  // Get the entity ID from the EntityReference to find the artifact
+  let entityId: string | undefined
+  if (entityRef.type === 'face') {
+    entityId = entityRef.faceId
+  } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
+    // For edges, we need to find the edge artifact from the faces
+    // Try to find an edge artifact that connects these faces
+    // This is a temporary approach - ideally we'd query the engine for the edge ID
+    // For now, we'll try to find it from the artifact graph
+    const faceArtifacts = entityRef.faces
+      .map((faceId) => artifactGraph.get(faceId))
+      .filter(Boolean)
+    if (faceArtifacts.length > 0) {
+      // Try to find a sweepEdge that connects these faces
+      // This is a simplified approach
+      const firstFace = faceArtifacts[0]
+      if (
+        firstFace &&
+        (firstFace.type === 'wall' || firstFace.type === 'cap')
+      ) {
+        // Look for edges in the commonSurfaceIds
+        // This is not ideal but works for now
+        entityId = firstFace.id
+      }
+    }
+  } else if (entityRef.type === 'vertex' && entityRef.faces.length > 0) {
+    // Similar approach for vertices
+    entityId = entityRef.faces[0]
+  }
+
+  // Handle special cases (axes, default planes)
+  if (entityId && [X_AXIS_UUID, Y_AXIS_UUID].includes(entityId)) {
     return {
       type: 'Set selection',
       data: {
         selectionType: 'axisSelection',
-        selection: X_AXIS_UUID === data.entity_id ? 'x-axis' : 'y-axis',
+        selection: X_AXIS_UUID === entityId ? 'x-axis' : 'y-axis',
       },
     }
   }
 
-  // Check for default plane selection
   const foundDefaultPlane =
+    entityId &&
     rustContext.defaultPlanes !== null &&
     Object.entries(rustContext.defaultPlanes).find(
-      ([, plane]) => plane === data.entity_id
+      ([, plane]) => plane === entityId
     )
   if (foundDefaultPlane) {
     return {
@@ -112,39 +229,37 @@ export async function getEventForSelectWithPoint(
         selectionType: 'defaultPlaneSelection',
         selection: {
           name: foundDefaultPlane[0] as DefaultPlaneStr,
-          id: data.entity_id,
+          id: entityId!,
         },
       },
     }
   }
 
-  let _artifact = artifactGraph.get(data.entity_id)
-  if (!_artifact) {
-    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
-    // we should still return an empty singleCodeCursor to plug into the selection logic
-    // (i.e. if the user is holding shift they can keep selecting)
-    // but we should also put up a toast
-    // toast.error('some edges or faces are not currently selectable')
-    showUnsupportedSelectionToast()
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
+  let codeRefs: any[] | undefined
+
+  if (entityId) {
+    const _artifact = artifactGraph.get(entityId)
+    if (_artifact) {
+      const refs = getCodeRefsByArtifactId(entityId, artifactGraph)
+      codeRefs = refs || undefined
     }
   }
-  const codeRefs = getCodeRefsByArtifactId(data.entity_id, artifactGraph)
-  if (_artifact && codeRefs) {
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: {
-          artifact: _artifact,
-          codeRef: codeRefs[0],
-        },
-      },
-    }
+
+  // Create V2 selection only - don't create V1 selection
+  const selectionV2: SelectionV2 = {
+    entityRef,
+    codeRef: codeRefs?.[0],
   }
-  return null
+
+  // Return V2 selection only - don't include V1 selection
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selectionV2,
+      // Explicitly don't set 'selection' to avoid creating V1 selection
+    },
+  }
 }
 
 export function getEventForSegmentSelection(
@@ -383,6 +498,7 @@ export function processCodeMirrorRanges({
         selection: {
           otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
           graphSelections: selections,
+          graphSelectionsV2: [],
         },
       },
     },
@@ -516,7 +632,9 @@ export function getSelectionCountByType(
   const selectionsByType: SelectionCountsByType = new Map()
   if (
     !selection ||
-    (!selection.graphSelections.length && !selection.otherSelections.length)
+    (!selection.graphSelections.length &&
+      !selection.otherSelections.length &&
+      !selection.graphSelectionsV2.length)
   )
     return 'none'
 
@@ -525,37 +643,53 @@ export function getSelectionCountByType(
     selectionsByType.set(type, count + 1)
   }
 
-  selection.otherSelections.forEach((selection) => {
-    if (typeof selection === 'string') {
-      incrementOrInitializeSelectionType('other')
-    } else if ('name' in selection) {
-      incrementOrInitializeSelectionType('plane')
-    }
-  })
+  const hasV2Selections = selection.graphSelectionsV2.length > 0
 
-  selection.graphSelections.forEach((graphSelection) => {
-    if (!graphSelection.artifact) {
-      /**
-       * TODO: remove this heuristic-based selection type detection.
-       * Currently, if you've created a sketch and have not left sketch mode,
-       * the selection will be a segment selection with no artifact.
-       * This is because the mock execution does not update the artifact graph.
-       * Once we move the artifactGraph creation to WASM, we can remove this,
-       * as the artifactGraph will always be up-to-date.
-       */
-      if (isSingleCursorInPipe(selection, ast)) {
-        incrementOrInitializeSelectionType('segment')
-        return
-      } else {
-        console.warn(
-          'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
-          JSON.stringify(graphSelection)
-        )
+  if (!hasV2Selections) {
+    selection.otherSelections.forEach((selection) => {
+      if (typeof selection === 'string') {
         incrementOrInitializeSelectionType('other')
-        return
+      } else if ('name' in selection) {
+        incrementOrInitializeSelectionType('plane')
+      }
+    })
+
+    selection.graphSelections.forEach((graphSelection) => {
+      if (!graphSelection.artifact) {
+        /**
+         * TODO: remove this heuristic-based selection type detection.
+         * Currently, if you've created a sketch and have not left sketch mode,
+         * the selection will be a segment selection with no artifact.
+         * This is because the mock execution does not update the artifact graph.
+         * Once we move the artifactGraph creation to WASM, we can remove this,
+         * as the artifactGraph will always be up-to-date.
+         */
+        if (isSingleCursorInPipe(selection, ast)) {
+          incrementOrInitializeSelectionType('segment')
+          return
+        } else {
+          console.warn(
+            'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
+            JSON.stringify(graphSelection)
+          )
+          incrementOrInitializeSelectionType('other')
+          return
+        }
+      }
+      incrementOrInitializeSelectionType(graphSelection.artifact.type)
+    })
+  }
+
+  selection.graphSelectionsV2.forEach((v2Selection) => {
+    if (v2Selection.entityRef) {
+      if (v2Selection.entityRef.type === 'edge') {
+        incrementOrInitializeSelectionType('sweepEdge')
+      } else if (v2Selection.entityRef.type === 'vertex') {
+        incrementOrInitializeSelectionType('other')
+      } else if (v2Selection.entityRef.type === 'face') {
+        incrementOrInitializeSelectionType('other')
       }
     }
-    incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
   return selectionsByType
@@ -585,16 +719,23 @@ export function canSubmitSelectionArg(
     inputType: 'selection' | 'selectionMixed'
   }
 ) {
-  return (
-    selectionsByType !== 'none' &&
-    [...selectionsByType.entries()].every(([type, count]) => {
-      const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
-      return (
-        foundIndex !== -1 &&
-        (!argument.multiple ? count < 2 && count > 0 : count > 0)
-      )
-    })
+  if (selectionsByType === 'none') {
+    return false
+  }
+
+  // Filter to only selection types that match the argument's allowed types
+  const relevantSelections = [...selectionsByType.entries()].filter(([type]) =>
+    argument.selectionTypes.includes(type as Artifact['type'])
   )
+
+  if (relevantSelections.length === 0) {
+    return false
+  }
+
+  // Check if all relevant selections are valid
+  return relevantSelections.every(([type, count]) => {
+    return !argument.multiple ? count < 2 && count > 0 : count > 0
+  })
 }
 
 /**
@@ -776,7 +917,7 @@ export function codeToIdSelections(
     .filter(isNonNullable)
 }
 
-export async function sendSelectEventToEngine(
+export async function sendQueryEntityTypeWithPoint(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   videoRef: HTMLVideoElement,
   systemDeps: {
@@ -791,7 +932,7 @@ export async function sendSelectEventToEngine(
   let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
-      type: 'select_with_point',
+      type: 'query_entity_type_with_point' as any, // Type may not be in generated types yet
       selected_at_window: { x, y },
       selection_type: 'add',
     },
@@ -807,10 +948,10 @@ export async function sendSelectEventToEngine(
   }
   const singleRes = res
   if (isModelingResponse(singleRes)) {
-    const mr = singleRes.resp.data.modeling_response
-    if (mr.type === 'select_with_point') return mr.data
+    const mr = singleRes.resp.data.modeling_response as any
+    if (mr.type === 'query_entity_type_with_point') return mr.data
   }
-  return { entity_id: '' }
+  return undefined
 }
 
 export function updateSelections(
@@ -873,6 +1014,7 @@ export function updateSelections(
         ? newSelections
         : pathToNodeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
+    graphSelectionsV2: prevSelectionRanges.graphSelectionsV2 || [],
   }
 }
 
@@ -1288,5 +1430,6 @@ export function selectAllInCurrentSketch(
   return {
     graphSelections,
     otherSelections: [],
+    graphSelectionsV2: [],
   }
 }

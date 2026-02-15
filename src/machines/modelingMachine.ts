@@ -707,7 +707,11 @@ export const modelingMachine = setup({
         event.type === 'change tool' ? event.data.tool || 'none' : 'none',
     }),
     'reset selections': assign({
-      selectionRanges: { graphSelections: [], otherSelections: [] },
+      selectionRanges: {
+        graphSelections: [],
+        otherSelections: [],
+        graphSelectionsV2: [],
+      },
     }),
     'enter sketching mode': assign({ currentMode: 'sketching' }),
     'enter modeling mode': assign({ currentMode: 'modeling' }),
@@ -1380,6 +1384,7 @@ export const modelingMachine = setup({
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
+          graphSelectionsV2: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
           if (!setSelections.selection && kclManager.isShiftDown) {
@@ -1389,16 +1394,36 @@ export const modelingMachine = setup({
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
+              graphSelectionsV2: selectionRanges.graphSelectionsV2 || [], // Preserve V2
             }
-          } else if (!setSelections.selection && !kclManager.isShiftDown) {
+          } else if (
+            !setSelections.selection &&
+            !setSelections.selectionV2 &&
+            !kclManager.isShiftDown
+          ) {
             selections = {
               graphSelections: [],
               otherSelections: [],
+              graphSelectionsV2: [],
             }
-          } else if (setSelections.selection && !kclManager.isShiftDown) {
-            selections = {
-              graphSelections: [setSelections.selection],
-              otherSelections: [],
+          } else if (
+            (setSelections.selection || setSelections.selectionV2) &&
+            !kclManager.isShiftDown
+          ) {
+            if (setSelections.selectionV2) {
+              selections = {
+                graphSelections: selectionRanges.graphSelections || [],
+                otherSelections: selectionRanges.otherSelections || [],
+                graphSelectionsV2: [setSelections.selectionV2],
+              }
+            } else if (setSelections.selection) {
+              selections = {
+                graphSelections: [setSelections.selection],
+                otherSelections: [],
+                graphSelectionsV2: selectionRanges.graphSelectionsV2 || [],
+              }
+            } else {
+              selections = selectionRanges
             }
           } else if (setSelections.selection && kclManager.isShiftDown) {
             // selecting and deselecting multiple objects
@@ -1415,6 +1440,7 @@ export const modelingMachine = setup({
              */
 
             let updatedSelections: typeof selectionRanges.graphSelections
+            let updatedSelectionsV2: typeof selectionRanges.graphSelectionsV2
 
             // 1. General case: Artifact exists, use its ID
             if (setSelections.selection.artifact?.id) {
@@ -1431,11 +1457,27 @@ export const modelingMachine = setup({
                     selection.artifact?.id !==
                     setSelections.selection?.artifact?.id
                 )
+                updatedSelectionsV2 = (
+                  selectionRanges.graphSelectionsV2 || []
+                ).filter(
+                  (sel) =>
+                    sel.entityRef?.type === 'edge' &&
+                    sel.entityRef.faces.some(
+                      (faceId) =>
+                        setSelections.selection?.artifact?.id === faceId
+                    ) === false
+                )
               } else {
                 // add it
                 updatedSelections = [
                   ...selectionRanges.graphSelections,
                   setSelections.selection,
+                ]
+                updatedSelectionsV2 = [
+                  ...(selectionRanges.graphSelectionsV2 || []),
+                  ...(setSelections.selectionV2
+                    ? [setSelections.selectionV2]
+                    : []),
                 ]
               }
             } else {
@@ -1458,11 +1500,22 @@ export const modelingMachine = setup({
                   (selection) =>
                     JSON.stringify(selection.codeRef?.range) !== selectionRange
                 )
+                updatedSelectionsV2 = (
+                  selectionRanges.graphSelectionsV2 || []
+                ).filter(
+                  (sel) => JSON.stringify(sel.codeRef?.range) !== selectionRange
+                )
               } else {
                 // add it
                 updatedSelections = [
                   ...selectionRanges.graphSelections,
                   setSelections.selection,
+                ]
+                updatedSelectionsV2 = [
+                  ...(selectionRanges.graphSelectionsV2 || []),
+                  ...(setSelections.selectionV2
+                    ? [setSelections.selectionV2]
+                    : []),
                 ]
               }
             }
@@ -1470,6 +1523,7 @@ export const modelingMachine = setup({
             selections = {
               graphSelections: updatedSelections,
               otherSelections: selectionRanges.otherSelections,
+              graphSelectionsV2: updatedSelectionsV2 || [],
             }
           }
 
@@ -1528,11 +1582,13 @@ export const modelingMachine = setup({
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
+              graphSelectionsV2: selectionRanges.graphSelectionsV2 || [],
             }
           } else {
             selections = {
               graphSelections: [],
               otherSelections: [setSelections.selection],
+              graphSelectionsV2: [],
             }
           }
           return {
@@ -5865,7 +5921,11 @@ export const modelingMachine = setup({
           if (event.type !== 'Prompt-to-edit' || !event.data) {
             return {
               prompt: '',
-              selection: { graphSelections: [], otherSelections: [] },
+              selection: {
+                graphSelections: [],
+                otherSelections: [],
+                graphSelectionsV2: [],
+              },
             }
           }
           return event.data

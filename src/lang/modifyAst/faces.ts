@@ -851,7 +851,7 @@ export function retrieveFaceSelectionsFromOpArgs(
     }
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  const faces = { graphSelections, otherSelections: [], graphSelectionsV2: [] }
   return { solids, faces }
 }
 
@@ -937,6 +937,7 @@ export function buildSolidsAndFacesExprs(
       }
     }),
     otherSelections: [],
+    graphSelectionsV2: [],
   }
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
