@@ -361,31 +361,54 @@ export function handleSelectionBatch({
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  selections.graphSelections.forEach(({ artifact }) => {
-    artifact?.id &&
-      selectionToEngine.push({
-        id: artifact?.id,
-        range:
-          getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
-          defaultSourceRange(),
-      })
-  })
-  const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
-    selectionToEngine,
-    systemDeps
-  )
+  // Check if we have V2 selections (face-based EntityReference)
+  const hasV2Selections = selections.graphSelectionsV2.length > 0
+  let engineEvents: WebSocketRequest[] = []
+
+  if (hasV2Selections) {
+    // Use V2 selections with select_entity endpoint
+    const entityReferences: EntityReference[] = selections.graphSelectionsV2
+      .map((v2Sel) => v2Sel.entityRef)
+      .filter((ref): ref is EntityReference => ref !== undefined)
+    engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
+  } else {
+    // Fall back to V1 selections with select_clear + select_add
+    selections.graphSelections.forEach(({ artifact }) => {
+      artifact?.id &&
+        selectionToEngine.push({
+          id: artifact?.id,
+          range:
+            getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
+            defaultSourceRange(),
+        })
+    })
+    engineEvents = resetAndSetEngineEntitySelectionCmds(
+      selectionToEngine,
+      systemDeps
+    )
+  }
+  // Build codeMirror ranges from both V1 and V2 selections
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
       const safeEnd = Math.min(codeRef.range[1], code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
+  selections.graphSelectionsV2.forEach(({ codeRef }) => {
+    if (codeRef?.range?.[1]) {
+      const safeEnd = Math.min(codeRef.range[1], code.length)
+      ranges.push(EditorSelection.cursor(safeEnd))
+    }
+  })
+
+  const totalSelections =
+    selections.graphSelections.length + selections.graphSelectionsV2.length
   if (ranges.length)
     return {
       engineEvents,
       codeMirrorSelection: EditorSelection.create(
         ranges,
-        selections.graphSelections.length - 1
+        totalSelections > 0 ? totalSelections - 1 : 0
       ),
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
@@ -600,6 +623,29 @@ function resetAndSetEngineEntitySelectionCmds(
       cmd_id: uuidv4(),
     },
   ]
+}
+
+function setEngineEntitySelectionV2(
+  entityReferences: EntityReference[],
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
+): WebSocketRequest[] {
+  if (
+    systemDeps.engineCommandManager.connection?.pingIntervalId === undefined
+  ) {
+    return []
+  }
+  return [
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_entity',
+        entities: entityReferences,
+      } as any, // @kittycad/lib types may not be updated yet, but engine supports it
+      cmd_id: uuidv4(),
+    },
+  ] as WebSocketRequest[]
 }
 
 /**
