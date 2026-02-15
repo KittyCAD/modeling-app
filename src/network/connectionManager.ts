@@ -624,7 +624,8 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
     } else if (
-      cmd.type === 'highlight_set_entity' &&
+      (cmd.type === 'highlight_set_entity' ||
+        cmd.type === 'highlight_query_entity') &&
       this.connection.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
@@ -950,9 +951,6 @@ export class ConnectionManager extends EventTarget {
       height: 256,
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
-      },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
       },
     })
   }

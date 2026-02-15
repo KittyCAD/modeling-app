@@ -4,13 +4,16 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
+  getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
+  mapEngineEntityReferenceToFrontend,
   selectDefaultSketchPlane,
   selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
+import type { SourceRange } from '@src/lang/wasm'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -31,16 +34,27 @@ export function useEngineConnectionSubscriptions() {
     if (!engineCommandManager) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
-      // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
-      event: 'highlight_set_entity',
-      callback: ({ data }) => {
-        if (data?.entity_id) {
-          const codeRefs = getCodeRefsByArtifactId(
-            data.entity_id,
+      // Note this is our hover logic, "highlight_query_entity" is the event that is fired when we hover over an entity
+      event: 'highlight_query_entity' as any, // TODO: Add to generated types
+      callback: ({ data }: { data: any }) => {
+        if (data?.reference) {
+          // Map from engine format to frontend format
+          const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+          if (!entityRef) {
+            kclManager.setHighlightRange([defaultSourceRange()])
+            return
+          }
+          const codeRefs = getCodeRefsFromEntityReference(
+            entityRef,
             kclManager.artifactGraph
           )
-          if (codeRefs) {
-            kclManager.setHighlightRange(codeRefs.map(({ range }) => range))
+          if (codeRefs && codeRefs.length > 0) {
+            const ranges = codeRefs.map(
+              (codeRef: { range: SourceRange }) => codeRef.range
+            )
+            kclManager.setHighlightRange(ranges)
+          } else {
+            kclManager.setHighlightRange([defaultSourceRange()])
           }
         } else if (
           !kclManager.highlightRange ||

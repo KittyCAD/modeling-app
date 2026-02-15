@@ -30,12 +30,14 @@ import {
   getCodeRefsByArtifactId,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
+  getArtifactOfTypes,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
+  CodeRef,
   ExecState,
   Expr,
   Program,
@@ -81,7 +83,7 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
  * Engine format (snake_case): { face: { face_id }, edge: { faces, disambiguators?, index? }, vertex: { faces, disambiguators?, index? } }
  * Frontend format: { type: 'face', faceId }, { type: 'edge', faces, disambiguators?, index? }, { type: 'vertex', faces, disambiguators?, index? }
  */
-function mapEngineEntityReferenceToFrontend(
+export function mapEngineEntityReferenceToFrontend(
   engineRef: any
 ): EntityReference | null {
   if (!engineRef) return null
@@ -1478,4 +1480,147 @@ export function selectAllInCurrentSketch(
     otherSelections: [],
     graphSelectionsV2: [],
   }
+}
+
+/**
+ * Get code references from an EntityReference by traversing the artifact graph.
+ * For edges: finds the two faces, then finds their corresponding wall/cap artifacts,
+ * then finds the segments those walls correspond to.
+ * For faces: finds the wall/cap artifact and its corresponding segment.
+ * For vertices: similar traversal through faces.
+ */
+export function getCodeRefsFromEntityReference(
+  entityRef: EntityReference,
+  artifactGraph: ArtifactGraph
+): Array<{ range: SourceRange }> | null {
+  const codeRefs: Array<{ range: SourceRange }> = []
+
+  if (entityRef.type === 'face' && entityRef.faceId) {
+    // For faces, find the wall/cap artifact and traverse to segment
+    const faceArtifact = artifactGraph.get(entityRef.faceId)
+    if (!faceArtifact) {
+      return null
+    }
+
+    // Wall artifacts have segId pointing to the segment
+    if (faceArtifact.type === 'wall' && faceArtifact.segId) {
+      const segArtifact = getArtifactOfTypes(
+        { key: faceArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (!err(segArtifact) && segArtifact.codeRef) {
+        codeRefs.push({ range: segArtifact.codeRef.range })
+      }
+      // Also get the extrude (sweep) codeRef, like getCodeRefsByArtifactId does
+      const extrusion = getSweepFromSuspectedSweepSurface(
+        entityRef.faceId,
+        artifactGraph
+      )
+      if (!err(extrusion) && extrusion.codeRef) {
+        codeRefs.push({ range: extrusion.codeRef.range })
+      }
+    }
+    // Cap artifacts - get both the cap codeRef and the extrude
+    else if (faceArtifact.type === 'cap') {
+      const capCodeRef = getCapCodeRef(faceArtifact, artifactGraph)
+      if (!err(capCodeRef)) {
+        codeRefs.push({ range: capCodeRef.range })
+      }
+      // Also get the extrude (sweep) codeRef
+      const extrusion = getSweepFromSuspectedSweepSurface(
+        entityRef.faceId,
+        artifactGraph
+      )
+      if (!err(extrusion) && extrusion.codeRef) {
+        codeRefs.push({ range: extrusion.codeRef.range })
+      }
+    }
+  } else if (
+    entityRef.type === 'edge' &&
+    entityRef.faces &&
+    entityRef.faces.length >= 2
+  ) {
+    // For edges, find segments from both faces and disambiguators
+    const faceIds = [...entityRef.faces]
+    // Also include disambiguator faces
+    if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
+      faceIds.push(...entityRef.disambiguators)
+    }
+    const seenSegments = new Set<string>()
+
+    for (const faceId of faceIds) {
+      const faceArtifact = artifactGraph.get(faceId)
+      if (!faceArtifact) {
+        continue
+      }
+
+      // Wall artifacts have segId pointing to the segment
+      if (faceArtifact.type === 'wall' && faceArtifact.segId) {
+        if (!seenSegments.has(faceArtifact.segId)) {
+          seenSegments.add(faceArtifact.segId)
+          const segArtifact = getArtifactOfTypes(
+            { key: faceArtifact.segId, types: ['segment'] },
+            artifactGraph
+          )
+          if (!err(segArtifact) && segArtifact.codeRef) {
+            codeRefs.push({ range: segArtifact.codeRef.range })
+          }
+        }
+        // For edges, don't include the extrude - only highlight the segments
+        // (The extrude highlighting is only for face hover, not edge hover)
+      }
+      // Cap artifacts - for edges, only highlight the cap, not the extrude
+      else if (faceArtifact.type === 'cap') {
+        const capCodeRef = getCapCodeRef(faceArtifact, artifactGraph)
+        if (!err(capCodeRef)) {
+          codeRefs.push({ range: capCodeRef.range })
+        }
+        // For edges, don't include the extrude - only highlight the cap
+        // (The extrude highlighting is only for face hover, not edge hover)
+      }
+    }
+  } else if (
+    entityRef.type === 'vertex' &&
+    entityRef.faces &&
+    entityRef.faces.length >= 3
+  ) {
+    // For vertices, find segments from all faces (typically 3+) and disambiguators
+    const faceIds = [...entityRef.faces]
+    // Also include disambiguator faces
+    if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
+      faceIds.push(...entityRef.disambiguators)
+    }
+    const seenSegments = new Set<string>()
+
+    for (const faceId of faceIds) {
+      const faceArtifact = artifactGraph.get(faceId)
+      if (!faceArtifact) {
+        continue
+      }
+
+      if (faceArtifact.type === 'wall' && faceArtifact.segId) {
+        if (!seenSegments.has(faceArtifact.segId)) {
+          seenSegments.add(faceArtifact.segId)
+          const segArtifact = getArtifactOfTypes(
+            { key: faceArtifact.segId, types: ['segment'] },
+            artifactGraph
+          )
+          if (!err(segArtifact) && segArtifact.codeRef) {
+            codeRefs.push({ range: segArtifact.codeRef.range })
+          }
+        }
+        // For vertices (like edges), don't include the extrude - only highlight the segments
+        // (The extrude highlighting is only for face hover, not vertex hover)
+      } else if (faceArtifact.type === 'cap') {
+        const capCodeRef = getCapCodeRef(faceArtifact, artifactGraph)
+        if (!err(capCodeRef)) {
+          codeRefs.push({ range: capCodeRef.range })
+        }
+        // For vertices (like edges), don't include the extrude - only highlight the cap
+        // (The extrude highlighting is only for face hover, not vertex hover)
+      }
+    }
+  }
+
+  return codeRefs.length > 0 ? codeRefs : null
 }
