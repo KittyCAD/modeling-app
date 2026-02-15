@@ -4,6 +4,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
+  getEventForQueryEntityTypeWithPoint,
   selectDefaultSketchPlane,
   selectionBodyFace,
   selectOffsetSketchPlane,
@@ -54,17 +55,17 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'query_entity_type_with_point' as any, // TODO: Add to generated types when OpenAPI spec is updated
       callback: (engineEvent) => {
-        ;(async () => {
-          if (stateRef.current.matches('Sketch no face')) return
-          const { getEventForQueryEntityTypeWithPoint } = await import(
-            '@src/lib/selections'
-          )
-          const event = await getEventForQueryEntityTypeWithPoint(engineEvent, {
-            rustContext,
-            artifactGraph: kclManager.artifactGraph,
+        if (stateRef.current.matches('Sketch no face')) return
+        void getEventForQueryEntityTypeWithPoint(engineEvent, {
+          rustContext,
+          artifactGraph: kclManager.artifactGraph,
+        })
+          .then((event) => {
+            if (event) {
+              send(event)
+            }
           })
-          event && send(event)
-        })().catch(reportRejection)
+          .catch(reportRejection)
       },
     })
     return () => {
