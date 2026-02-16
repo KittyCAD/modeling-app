@@ -17,7 +17,6 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-
 // TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
 // and replace it with `graphSelectionsV2`, so normalising to `graphSelections` is going to mean more refactoring
 // later, but at least it's working and tsc will tell us most/all of the places that need to be updated.
