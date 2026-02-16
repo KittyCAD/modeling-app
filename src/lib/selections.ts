@@ -78,69 +78,6 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-/**
- * Engine's EntityReference format (snake_case, discriminated union).
- * The engine sends exactly one of these variants.
- * TODO combine with modeling-app/src/machines/modelingSharedTypes.ts, why are the types so close but different still
- */
-type EngineEntityReference =
-  | { plane: { plane_id: string } }
-  | { face: { face_id: string } }
-  | {
-      edge: {
-        faces: string[]
-        disambiguators?: string[]
-        index?: number
-      }
-    }
-  | {
-      vertex: {
-        faces: string[]
-        disambiguators?: string[]
-        index?: number
-      }
-    }
-
-/**
- * Maps the engine's EntityReference format to the frontend's EntityReference format.
- */
-export function mapEngineEntityReferenceToFrontend(
-  engineRef: EngineEntityReference | null | undefined
-): EntityReference | null {
-  if (!engineRef) return null
-
-  if ('plane' in engineRef && engineRef.plane?.plane_id) {
-    return {
-      type: 'plane',
-      planeId: engineRef.plane.plane_id,
-    }
-  }
-  if ('face' in engineRef && engineRef.face?.face_id) {
-    return {
-      type: 'face',
-      faceId: engineRef.face.face_id,
-    }
-  }
-  if ('edge' in engineRef && engineRef.edge?.faces) {
-    return {
-      type: 'edge',
-      faces: engineRef.edge.faces,
-      disambiguators: engineRef.edge.disambiguators,
-      index: engineRef.edge.index,
-    }
-  }
-  if ('vertex' in engineRef && engineRef.vertex?.faces) {
-    return {
-      type: 'vertex',
-      faces: engineRef.vertex.faces,
-      disambiguators: engineRef.vertex.disambiguators,
-      index: engineRef.vertex.index,
-    }
-  }
-
-  return null
-}
-
 export async function getEventForQueryEntityTypeWithPoint(
   engineEvent: any, // Using any for now since TypeScript types may not be updated yet
   {
@@ -160,7 +97,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+  const entityRef =
+    (data.reference as EntityReference | null | undefined) ?? null
   if (!entityRef) {
     return {
       type: 'Set selection',

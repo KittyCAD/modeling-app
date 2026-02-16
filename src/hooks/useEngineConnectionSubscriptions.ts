@@ -6,11 +6,11 @@ import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
-  mapEngineEntityReferenceToFrontend,
   selectDefaultSketchPlane,
   selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SourceRange } from '@src/lang/wasm'
@@ -39,7 +39,8 @@ export function useEngineConnectionSubscriptions() {
       callback: ({ data }: { data: any }) => {
         if (data?.reference) {
           // Map from engine format to frontend format
-          const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+          const entityRef =
+            (data.reference as EntityReference | null | undefined) ?? null
           if (!entityRef) {
             kclManager.setHighlightRange([defaultSourceRange()])
             return
@@ -77,7 +78,8 @@ export function useEngineConnectionSubscriptions() {
           const data = engineEvent.data as { reference?: any } | undefined
           if (!data?.reference) return
 
-          const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+          const entityRef =
+            (data.reference as EntityReference | null | undefined) ?? null
           if (!entityRef) return
 
           // Extract plane ID from EntityReference
