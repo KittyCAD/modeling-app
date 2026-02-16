@@ -128,7 +128,7 @@ function createEdgeRefObjectExpression(
   wasmInstance: ModuleType,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph
-): { expr: Expr; modifiedAst: Node<Program> } {
+): { expr: Expr; modifiedAst: Node<Program> } | Error {
   // Resolve face UUIDs to tags
   const faceTags: string[] = []
   let currentAst = ast
@@ -136,14 +136,16 @@ function createEdgeRefObjectExpression(
   for (const faceId of payload.faces) {
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
-      faceTags.push(faceId)
-      continue
+      return new Error(
+        `Could not find artifact for face ${faceId} in edge reference`
+      )
     }
 
     const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
-      faceTags.push(faceId)
-      continue
+      return new Error(
+        `Could not find codeRefs for face ${faceId} in edge reference`
+      )
     }
 
     const tagResult = modifyAstWithTagsForSelection(
@@ -153,8 +155,9 @@ function createEdgeRefObjectExpression(
       wasmInstance
     )
     if (err(tagResult)) {
-      faceTags.push(faceId)
-      continue
+      return new Error(
+        `Failed to create tag for face ${faceId}: ${tagResult.message}`
+      )
     }
 
     faceTags.push(tagResult.tags[0])
@@ -166,13 +169,11 @@ function createEdgeRefObjectExpression(
     for (const disambId of payload.disambiguators) {
       const disambArtifact = artifactGraph.get(disambId)
       if (!disambArtifact) {
-        disambiguatorTags.push(disambId)
         continue
       }
 
       const codeRefs = getCodeRefsByArtifactId(disambId, artifactGraph)
       if (!codeRefs || codeRefs.length === 0) {
-        disambiguatorTags.push(disambId)
         continue
       }
 
@@ -183,7 +184,6 @@ function createEdgeRefObjectExpression(
         wasmInstance
       )
       if (err(tagResult)) {
-        disambiguatorTags.push(disambId)
         continue
       }
 
@@ -304,6 +304,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
             modifiedAst,
             artifactGraph
           )
+          if (err(result)) {
+            console.warn('Failed to create edgeRef expression:', result)
+            continue
+          }
           bodyEdgeRefs.push(result.expr)
           modifiedAst = result.modifiedAst
         }
@@ -394,6 +398,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
               modifiedAst,
               artifactGraph
             )
+            if (err(result)) {
+              console.warn('Failed to create edgeRef expression:', result)
+              continue
+            }
             bodyEdgeRefs.push(result.expr)
             modifiedAst = result.modifiedAst
           }
@@ -416,6 +424,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
             modifiedAst,
             artifactGraph
           )
+          if (err(result)) {
+            console.warn('Failed to create edgeRef expression:', result)
+            continue
+          }
           bodyEdgeRefs.push(result.expr)
           modifiedAst = result.modifiedAst
         }
