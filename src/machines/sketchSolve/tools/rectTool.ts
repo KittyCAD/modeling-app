@@ -137,10 +137,15 @@ export const machine = setup({
                 })
               }
 
-              self._parent?.send({
+              const sendData: SketchSolveMachineEvent = {
                 type: 'update sketch outcome',
-                data: { ...result, writeToDisk: false },
-              })
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                  writeToDisk: false,
+                },
+              }
+              self._parent?.send(sendData)
               await new Promise((resolve) => requestAnimationFrame(resolve))
             } catch (err) {
               console.error('failed to edit segment', err)
@@ -397,7 +402,10 @@ export const machine = setup({
         finalize: {
           actions: [
             ({ self }) => {
-              self._parent?.send({ type: 'clear draft entities' })
+              const sendData: SketchSolveMachineEvent = {
+                type: 'clear draft entities',
+              }
+              self._parent?.send(sendData)
             },
             assign({
               origin: [0, 0],
