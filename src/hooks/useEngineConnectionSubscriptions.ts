@@ -69,7 +69,54 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'query_entity_type_with_point' as any, // TODO: Add to generated types when OpenAPI spec is updated
       callback: (engineEvent) => {
-        if (stateRef.current.matches('Sketch no face')) return
+        const isSketchNoFace = stateRef.current.matches('Sketch no face')
+
+        // Handle sketch plane selection directly when in 'Sketch no face' state
+        if (isSketchNoFace) {
+          if (!engineEvent || !('data' in engineEvent)) return
+          const data = engineEvent.data as { reference?: any } | undefined
+          if (!data?.reference) return
+
+          const entityRef = mapEngineEntityReferenceToFrontend(data.reference)
+          if (!entityRef) return
+
+          // Extract plane ID from EntityReference
+          let planeId: string | undefined
+          if (entityRef.type === 'plane') {
+            planeId = entityRef.planeId
+          } else if (entityRef.type === 'face') {
+            // Check if it's a default plane
+            const entityId = entityRef.faceId
+            const foundDefaultPlane =
+              entityId &&
+              rustContext.defaultPlanes !== null &&
+              Object.entries(rustContext.defaultPlanes).find(
+                ([, plane]) => plane === entityId
+              )
+            if (foundDefaultPlane) {
+              planeId = entityId
+            } else {
+              // Regular face - use faceId
+              planeId = entityId
+            }
+          }
+
+          if (planeId) {
+            void selectSketchPlane(
+              planeId,
+              context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
+              }
+            )
+          }
+          return
+        }
+
+        // Normal flow for other states
         void getEventForQueryEntityTypeWithPoint(engineEvent, {
           rustContext,
           artifactGraph: kclManager.artifactGraph,

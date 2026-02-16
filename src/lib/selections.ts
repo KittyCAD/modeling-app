@@ -79,23 +79,49 @@ export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 /**
+ * Engine's EntityReference format (snake_case, discriminated union).
+ * The engine sends exactly one of these variants.
+ * TODO combine with modeling-app/src/machines/modelingSharedTypes.ts, why are the types so close but different still
+ */
+type EngineEntityReference =
+  | { plane: { plane_id: string } }
+  | { face: { face_id: string } }
+  | {
+      edge: {
+        faces: string[]
+        disambiguators?: string[]
+        index?: number
+      }
+    }
+  | {
+      vertex: {
+        faces: string[]
+        disambiguators?: string[]
+        index?: number
+      }
+    }
+
+/**
  * Maps the engine's EntityReference format to the frontend's EntityReference format.
- * Engine format (snake_case): { face: { face_id }, edge: { faces, disambiguators?, index? }, vertex: { faces, disambiguators?, index? } }
- * Frontend format: { type: 'face', faceId }, { type: 'edge', faces, disambiguators?, index? }, { type: 'vertex', faces, disambiguators?, index? }
  */
 export function mapEngineEntityReferenceToFrontend(
-  engineRef: any
+  engineRef: EngineEntityReference | null | undefined
 ): EntityReference | null {
   if (!engineRef) return null
 
-  // Handle snake_case format (engine uses serde rename_all = "snake_case")
-  if (engineRef.face && engineRef.face.face_id) {
+  if ('plane' in engineRef && engineRef.plane?.plane_id) {
+    return {
+      type: 'plane',
+      planeId: engineRef.plane.plane_id,
+    }
+  }
+  if ('face' in engineRef && engineRef.face?.face_id) {
     return {
       type: 'face',
       faceId: engineRef.face.face_id,
     }
   }
-  if (engineRef.edge && engineRef.edge.faces) {
+  if ('edge' in engineRef && engineRef.edge?.faces) {
     return {
       type: 'edge',
       faces: engineRef.edge.faces,
@@ -103,36 +129,12 @@ export function mapEngineEntityReferenceToFrontend(
       index: engineRef.edge.index,
     }
   }
-  if (engineRef.vertex && engineRef.vertex.faces) {
+  if ('vertex' in engineRef && engineRef.vertex?.faces) {
     return {
       type: 'vertex',
       faces: engineRef.vertex.faces,
       disambiguators: engineRef.vertex.disambiguators,
       index: engineRef.vertex.index,
-    }
-  }
-
-  // Also handle PascalCase format (if the API uses that)
-  if (engineRef.Face && engineRef.Face.face_id) {
-    return {
-      type: 'face',
-      faceId: engineRef.Face.face_id,
-    }
-  }
-  if (engineRef.Edge && engineRef.Edge.faces) {
-    return {
-      type: 'edge',
-      faces: engineRef.Edge.faces,
-      disambiguators: engineRef.Edge.disambiguators,
-      index: engineRef.Edge.index,
-    }
-  }
-  if (engineRef.Vertex && engineRef.Vertex.faces) {
-    return {
-      type: 'vertex',
-      faces: engineRef.Vertex.faces,
-      disambiguators: engineRef.Vertex.disambiguators,
-      index: engineRef.Vertex.index,
     }
   }
 
@@ -179,7 +181,9 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   // Get the entity ID from the EntityReference to find the artifact
   let entityId: string | undefined
-  if (entityRef.type === 'face') {
+  if (entityRef.type === 'plane') {
+    entityId = entityRef.planeId
+  } else if (entityRef.type === 'face') {
     entityId = entityRef.faceId
   } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
@@ -736,6 +740,8 @@ export function getSelectionCountByType(
         incrementOrInitializeSelectionType('other')
       } else if (v2Selection.entityRef.type === 'face') {
         incrementOrInitializeSelectionType('other')
+      } else if (v2Selection.entityRef.type === 'plane') {
+        incrementOrInitializeSelectionType('plane')
       }
     }
   })

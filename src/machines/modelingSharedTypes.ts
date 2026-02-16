@@ -26,6 +26,10 @@ export type NonCodeSelection = Axis | DefaultPlaneSelection
 
 export type EntityReference =
   | {
+      type: 'plane'
+      planeId: string
+    }
+  | {
       type: 'face'
       faceId: string
     }
