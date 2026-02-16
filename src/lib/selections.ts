@@ -251,9 +251,14 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // For edges and vertices, use getCodeRefsFromEntityReference to handle face-based references
   let codeRefs: any[] | undefined
-
-  if (entityId) {
+  if (entityRef.type === 'edge' || entityRef.type === 'vertex') {
+    const refs = getCodeRefsFromEntityReference(entityRef, artifactGraph)
+    if (refs && refs.length > 0) {
+      codeRefs = refs.map((ref) => ({ range: ref.range }))
+    }
+  } else if (entityId) {
     const _artifact = artifactGraph.get(entityId)
     if (_artifact) {
       const refs = getCodeRefsByArtifactId(entityId, artifactGraph)
@@ -1590,9 +1595,10 @@ export function getCodeRefsFromEntityReference(
   } else if (
     entityRef.type === 'edge' &&
     entityRef.faces &&
-    entityRef.faces.length >= 2
+    entityRef.faces.length >= 1
   ) {
-    // For edges, find segments from both faces and disambiguators
+    // For edges, find segments from faces and disambiguators
+    // Handle both Solid3D (2+ faces) and Solid2D (1 face) cases
     const faceIds = [...entityRef.faces]
     // Also include disambiguator faces
     if (entityRef.disambiguators && entityRef.disambiguators.length > 0) {
@@ -1606,8 +1612,18 @@ export function getCodeRefsFromEntityReference(
         continue
       }
 
+      // For Solid2D: face is directly a solid2d artifact
+      if (faceArtifact.type === 'solid2d') {
+        // Get codeRef from the solid2d artifact
+        const solid2dCodeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+        if (solid2dCodeRefs && solid2dCodeRefs.length > 0) {
+          codeRefs.push({ range: solid2dCodeRefs[0].range })
+        }
+        // If we have an index, we could potentially highlight the specific curve/segment
+        // but for now, highlighting the whole profile is acceptable
+      }
       // Wall artifacts have segId pointing to the segment
-      if (faceArtifact.type === 'wall' && faceArtifact.segId) {
+      else if (faceArtifact.type === 'wall' && faceArtifact.segId) {
         if (!seenSegments.has(faceArtifact.segId)) {
           seenSegments.add(faceArtifact.segId)
           const segArtifact = getArtifactOfTypes(
