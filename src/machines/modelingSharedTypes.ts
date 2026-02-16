@@ -38,6 +38,10 @@ export type EntityReference =
       solid2dId: string
     }
   | {
+      type: 'solid3d'
+      solid3dId: string
+    }
+  | {
       type: 'edge'
       faces: string[]
       disambiguators?: string[]

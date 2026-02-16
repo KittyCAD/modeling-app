@@ -237,7 +237,9 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (selection.graphSelections.length || selection.otherSelections.length)
+        (selection?.graphSelections.length ||
+          selection?.otherSelections.length ||
+          selection?.graphSelectionsV2.length)
           ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
             ' selected'
           : 'Select code/objects, or skip'}

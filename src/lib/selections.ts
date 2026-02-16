@@ -193,6 +193,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     entityId = entityRef.faceId
   } else if (entityRef.type === 'solid2d') {
     entityId = entityRef.solid2dId
+  } else if (entityRef.type === 'solid3d') {
+    entityId = entityRef.solid3dId
   } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
     // Try to find an edge artifact that connects these faces
@@ -752,6 +754,10 @@ export function getSelectionCountByType(
         incrementOrInitializeSelectionType('plane')
       } else if (v2Selection.entityRef.type === 'solid2d') {
         incrementOrInitializeSelectionType('solid2d')
+      } else if (v2Selection.entityRef.type === 'solid3d') {
+        // Body picks from entity query are solid3d references.
+        // For command bar validation these behave like solid/sweep selections.
+        incrementOrInitializeSelectionType('sweep')
       }
     }
   })
@@ -1523,6 +1529,23 @@ export function getCodeRefsFromEntityReference(
     )
     if (codeRefsForSolid2d && codeRefsForSolid2d.length > 0) {
       codeRefs.push({ range: codeRefsForSolid2d[0].range })
+    }
+  } else if (entityRef.type === 'solid3d' && entityRef.solid3dId) {
+    // For solid3d, get the codeRef directly from the artifact
+    const solid3dArtifact = artifactGraph.get(entityRef.solid3dId)
+    if (
+      !solid3dArtifact ||
+      (solid3dArtifact.type !== 'sweep' &&
+        solid3dArtifact.type !== 'compositeSolid')
+    ) {
+      return null
+    }
+    const codeRefsForSolid3d = getCodeRefsByArtifactId(
+      entityRef.solid3dId,
+      artifactGraph
+    )
+    if (codeRefsForSolid3d && codeRefsForSolid3d.length > 0) {
+      codeRefs.push({ range: codeRefsForSolid3d[0].range })
     }
   } else if (entityRef.type === 'face' && entityRef.faceId) {
     // For faces, find the wall/cap artifact and traverse to segment
