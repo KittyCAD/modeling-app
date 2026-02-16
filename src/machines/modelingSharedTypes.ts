@@ -34,6 +34,10 @@ export type EntityReference =
       faceId: string
     }
   | {
+      type: 'solid2d'
+      solid2dId: string
+    }
+  | {
       type: 'edge'
       faces: string[]
       disambiguators?: string[]

@@ -27,6 +27,7 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
+  getCodeRefsByArtifactId,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
@@ -98,12 +99,53 @@ export function addExtrude({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  // V2 command bar picks (entity refs) need to be normalized into graphSelections,
+  // otherwise extrude() can be generated without its required first positional arg.
+  const normalizedV2GraphSelections = (sketches.graphSelectionsV2 || [])
+    .map((v2Selection) => {
+      if (v2Selection.codeRef) {
+        return { codeRef: v2Selection.codeRef }
+      }
+
+      const entityRef = v2Selection.entityRef
+      if (!entityRef) return null
+
+      let entityId: string | undefined
+      if (entityRef.type === 'solid2d') {
+        entityId = entityRef.solid2dId
+      } else if (entityRef.type === 'face') {
+        entityId = entityRef.faceId
+      } else if (entityRef.type === 'plane') {
+        entityId = entityRef.planeId
+      }
+
+      if (!entityId) return null
+      const codeRef = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
+      if (!codeRef) return null
+      return { codeRef }
+    })
+    .filter(
+      (
+        selection
+      ): selection is { codeRef: NonNullable<typeof selection>['codeRef'] } =>
+        Boolean(selection)
+    )
+
+  const normalizedSketches: Selections = {
+    graphSelections: [
+      ...sketches.graphSelections,
+      ...normalizedV2GraphSelections,
+    ],
+    otherSelections: sketches.otherSelections,
+    graphSelectionsV2: [],
+  }
+
   const vars: {
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
-  const faceSelections = sketches.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
+  const faceSelections = normalizedSketches.graphSelections.filter(
+    (selection) => isFaceArtifact(selection.artifact)
   )
   for (const faceSelection of faceSelections) {
     const res = modifyAstWithTagsForSelection(
@@ -121,10 +163,11 @@ export function addExtrude({
   }
 
   const nonFaceSelections: Selections = {
-    graphSelections: sketches.graphSelections.filter(
+    graphSelections: normalizedSketches.graphSelections.filter(
       (selection) => !isFaceArtifact(selection.artifact)
     ),
-    otherSelections: sketches.otherSelections,
+    otherSelections: normalizedSketches.otherSelections,
+    graphSelectionsV2: [],
   }
   if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(

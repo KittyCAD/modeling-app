@@ -97,8 +97,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  const entityRef =
-    (data.reference as EntityReference | null | undefined) ?? null
+  let entityRef = (data.reference as EntityReference | null | undefined) ?? null
   if (!entityRef) {
     return {
       type: 'Set selection',
@@ -117,12 +116,83 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // Check if a face EntityReference should be converted to solid2d
+  // This happens when clicking on a solid2d profile that hasn't been extruded yet
+  if (entityRef.type === 'face' && entityRef.faceId) {
+    // First, check if the faceId itself is a solid2d ID
+    const directSolid2d = artifactGraph.get(entityRef.faceId)
+    if (directSolid2d && directSolid2d.type === 'solid2d') {
+      entityRef = {
+        type: 'solid2d',
+        solid2dId: entityRef.faceId,
+      }
+    } else {
+      // Try to find solid2d through wall/cap -> segment/sweep -> path
+      const faceArtifact = artifactGraph.get(entityRef.faceId)
+      if (faceArtifact) {
+        let pathId: string | undefined
+
+        // For walls: face -> segment -> path
+        if (faceArtifact.type === 'wall') {
+          const segment = artifactGraph.get(faceArtifact.segId)
+          if (segment && segment.type === 'segment') {
+            pathId = segment.pathId
+          }
+        }
+        // For caps: face -> sweep -> path
+        else if (faceArtifact.type === 'cap') {
+          const sweep = artifactGraph.get(faceArtifact.sweepId)
+          if (sweep && sweep.type === 'sweep') {
+            pathId = sweep.pathId
+          }
+        }
+
+        // Check if the path has a solid2d_id
+        if (pathId) {
+          const path = artifactGraph.get(pathId)
+          if (path && path.type === 'path' && path.solid2dId) {
+            // Convert face EntityReference to solid2d EntityReference
+            entityRef = {
+              type: 'solid2d',
+              solid2dId: path.solid2dId,
+            }
+          }
+        } else {
+          // If we can't find a path through wall/cap, search all paths for a matching solid2d
+          // This handles the case where the solid2d hasn't been extruded yet
+          for (const [pathId, pathArtifact] of artifactGraph.entries()) {
+            if (pathArtifact.type === 'path' && pathArtifact.solid2dId) {
+              // Check if this solid2d's path matches the face somehow
+              // For now, we'll check if any segment in this path could be related
+              const solid2d = artifactGraph.get(pathArtifact.solid2dId)
+              if (solid2d && solid2d.type === 'solid2d') {
+                // If the faceId matches the solid2d ID or path ID, convert it
+                if (
+                  entityRef.faceId === pathArtifact.solid2dId ||
+                  entityRef.faceId === pathId
+                ) {
+                  entityRef = {
+                    type: 'solid2d',
+                    solid2dId: pathArtifact.solid2dId,
+                  }
+                  break
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   // Get the entity ID from the EntityReference to find the artifact
   let entityId: string | undefined
   if (entityRef.type === 'plane') {
     entityId = entityRef.planeId
   } else if (entityRef.type === 'face') {
     entityId = entityRef.faceId
+  } else if (entityRef.type === 'solid2d') {
+    entityId = entityRef.solid2dId
   } else if (entityRef.type === 'edge' && entityRef.faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
     // Try to find an edge artifact that connects these faces
@@ -680,6 +750,8 @@ export function getSelectionCountByType(
         incrementOrInitializeSelectionType('other')
       } else if (v2Selection.entityRef.type === 'plane') {
         incrementOrInitializeSelectionType('plane')
+      } else if (v2Selection.entityRef.type === 'solid2d') {
+        incrementOrInitializeSelectionType('solid2d')
       }
     }
   })
@@ -1439,7 +1511,20 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'face' && entityRef.faceId) {
+  if (entityRef.type === 'solid2d' && entityRef.solid2dId) {
+    // For solid2d, get the codeRef directly from the artifact
+    const solid2dArtifact = artifactGraph.get(entityRef.solid2dId)
+    if (!solid2dArtifact || solid2dArtifact.type !== 'solid2d') {
+      return null
+    }
+    const codeRefsForSolid2d = getCodeRefsByArtifactId(
+      entityRef.solid2dId,
+      artifactGraph
+    )
+    if (codeRefsForSolid2d && codeRefsForSolid2d.length > 0) {
+      codeRefs.push({ range: codeRefsForSolid2d[0].range })
+    }
+  } else if (entityRef.type === 'face' && entityRef.faceId) {
     // For faces, find the wall/cap artifact and traverse to segment
     const faceArtifact = artifactGraph.get(entityRef.faceId)
     if (!faceArtifact) {
