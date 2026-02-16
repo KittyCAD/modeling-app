@@ -1560,4 +1560,31 @@ export fn offset(
   @body: Solid,
   /// The distance to offset the surface by
   distance: number(Length),
+  /// Flip the new surface during creation
+  flip?: bool
+): Solid {}
+
+/// Blend two surfaces together. Uses [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface.
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-2, 0])
+///   |> angledLine(angle = 0deg, length = 4, tag = $rectangleSegmentA001)
+///   |> extrude(length = 2, bodyType = SURFACE)
+///   |> translate(y = 3, z = 2)
+/// 
+/// sketch002 = startSketchOn(XZ)
+/// profile002 = startProfile(sketch002, at = [-1, 0])
+///   |> angledLine(angle = 0deg, length = 2, tag = $rectangleSegmentA002)
+///   |> extrude(length = 2, bodyType = SURFACE)
+///   |> flipSurface()
+/// 
+/// edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001, lowerBound = 0.1, upperBound = 0.9)
+/// edge002 = getBoundedEdge(profile002, edge = rectangleSegmentA002)
+/// 
+/// blend([edge001, edge002])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn blend(
+   /// The two edges that will be blended.
+   @edges: [BoundedEdge; 2],
 ): Solid {}

@@ -71,6 +71,10 @@ impl TypedPath {
         }
     }
 
+    pub fn is_absolute(&self) -> bool {
+        self.0.is_absolute()
+    }
+
     pub fn join(&self, path: &str) -> Self {
         #[cfg(target_arch = "wasm32")]
         {

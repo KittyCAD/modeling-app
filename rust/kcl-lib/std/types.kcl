@@ -327,6 +327,10 @@ export type Helix
 @(impl = std_rust)
 export type Edge
 
+/// A [bounded edge](/docs/kcl-std/functions/std-sketch-getBoundedEdge) of a solid.
+@(impl = std_rust)
+export type BoundedEdge
+
 /// A point in two dimensional space.
 ///
 /// `Point2d` is an alias for a two-element array of [number](/docs/kcl-std/types/std-types-number)s. To write a value

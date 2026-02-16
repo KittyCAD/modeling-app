@@ -5,15 +5,18 @@ use std::collections::HashSet;
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, output as mout, shared::BodyType,
+    self as kcmc,
+    ok_response::OkModelingCmdResponse,
+    output as mout,
+    shared::{BodyType, FractionOfEdge, SurfaceEdgeReference},
     websocket::OkWebSocketResponseData,
 };
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, ModelingCmdMeta, Solid,
-        types::{ArrayLen, RuntimeType},
+        BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid, SolidCreator,
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, sketch::FaceTag},
 };
@@ -93,25 +96,46 @@ async fn inner_is_equal_body_type(
 pub async fn offset(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
     let distance = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
+    let flip = args.get_kw_arg_opt("flip", &RuntimeType::bool(), exec_state)?;
 
-    inner_offset(body, distance, exec_state, args)
+    inner_offset(body, distance, flip, exec_state, args)
         .await
         .map(Box::new)
         .map(|value| KclValue::Solid { value })
 }
 
-async fn inner_offset(body: Solid, distance: TyF64, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+async fn inner_offset(body: Solid, distance: TyF64, flip: Option<bool>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+    let id = exec_state.next_uuid();
     let _ = exec_state
-        .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), 
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::OffsetSurface::builder()
-                .surface_id(body.id)
-                .distance(LengthUnit(distance.to_mm()))
-                .build(),
+                    .surface_id(body.id)
+                    .distance(LengthUnit(distance.to_mm()))
+                    .flip(flip.unwrap_or_default())
+                    .build(),
             ),
-        ).await?;
+        )
+        .await?;
 
-    Ok(body)
+    //TODO: probably shouldn't be procedural
+    let solid = Solid {
+        id,
+        artifact_id: id.into(),
+        value: vec![],
+        creator: SolidCreator::Procedural,
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: vec![],
+        units: exec_state.length_unit(),
+        sectional: false,
+        meta: vec![crate::execution::Metadata {
+            source_range: args.source_range,
+        }],
+    };
+    //TODO: How do we pass back the two new edge ids that were created?
+    Ok(solid)
 }
 
 pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -159,7 +183,7 @@ async fn inner_delete_face(
     // User has to give us SOMETHING to delete.
     if tagged_faces.is_none() && face_indices.is_none() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "You must use either the `faces` or the `face_indices` parameter".to_string(),
+            "You must use either the `faces` or the `faceIndices` parameter".to_string(),
             vec![args.source_range],
         )));
     }
@@ -236,4 +260,65 @@ async fn inner_delete_face(
 
     // Return the same body, it just has fewer faces.
     Ok(body)
+}
+
+/// Create a new surface that blends between two edges of separate surface bodies
+pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let bounded_edges = args.get_unlabeled_kw_arg(
+        "edges",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            ArrayLen::Known(2),
+        ),
+        exec_state,
+    )?;
+
+    inner_blend(bounded_edges, exec_state, args.clone())
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
+    let id = exec_state.next_uuid();
+
+    let surface_refs: Vec<SurfaceEdgeReference> = edges
+        .iter()
+        .map(|edge| {
+            SurfaceEdgeReference::builder()
+                .object_id(edge.face_id)
+                .edges(vec![
+                    FractionOfEdge::builder()
+                        .edge_id(edge.edge_id)
+                        .lower_bound(edge.lower_bound)
+                        .upper_bound(edge.upper_bound)
+                        .build(),
+                ])
+                .build()
+        })
+        .collect();
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(mcmd::SurfaceBlend::builder().surfaces(surface_refs).build()),
+        )
+        .await?;
+
+    let solid = Solid {
+        id,
+        artifact_id: id.into(),
+        value: vec![],
+        creator: SolidCreator::Procedural,
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: vec![],
+        units: exec_state.length_unit(),
+        sectional: false,
+        meta: vec![crate::execution::Metadata {
+            source_range: args.source_range,
+        }],
+    };
+    //TODO: How do we pass back the two new edge ids that were created?
+    Ok(solid)
 }
