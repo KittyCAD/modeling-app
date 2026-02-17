@@ -676,7 +676,7 @@ const OperationItem = ({
               onClick={() => {
                 const exportDxf = async () => {
                   if (item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(item, {
+                  await exportSketchToDxf(item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -684,14 +684,29 @@ const OperationItem = ({
                     base64Decode,
                     browserSaveFile,
                   })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (item.type !== 'StdLibCall') return
+                  await exportSketchToDxf(item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
                 }
                 void exportDxf()
               }}
