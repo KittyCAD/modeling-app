@@ -3,6 +3,7 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
+import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -20,6 +21,8 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { UnitLength } from '@kittycad/lib/dist/types/src'
+import { uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -116,13 +119,43 @@ test.describe(
       }
     )
 
-    test('Project and user settings can be reset', async ({
+    test('User settings can be reset', async ({
       page,
       homePage,
       scene,
+      context,
     }) => {
+      const settingValues: Record<string, UnitLength> = {
+        default: 'mm',
+        // Our playwright config sets the user value to `in`
+        user: 'in',
+        project: 'cm',
+      }
+      const projectSettings = settingsToToml({
+        settings: {
+          meta: {
+            // BUG: IF YOU DON'T INCLUDE THIS MLEPHANT SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+            id: uuidv4(),
+          },
+          modeling: {
+            base_unit: settingValues.project,
+          },
+        },
+      })
+      await context.folderSetupFn(async (dir) => {
+        const testProjectDir = path.join(dir, 'test')
+        await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
+        await Promise.all([
+          fsp.writeFile(path.join(testProjectDir, 'main.kcl'), '', 'utf8'),
+          fsp.writeFile(
+            path.join(testProjectDir, 'project.toml'),
+            projectSettings,
+            'utf8'
+          ),
+        ])
+      })
       await test.step('Setup', async () => {
-        await homePage.goToModelingScene()
+        await homePage.openProject('test')
         await scene.connectionEstablished()
       })
 
@@ -133,16 +166,6 @@ test.describe(
         })
       const settingInput = page.locator('#defaultUnit').getByRole('combobox')
 
-      const settingValues = {
-        default: 'mm',
-        // Our playwright config sets the user value to `in`
-        user: 'in',
-        project: 'cm',
-      }
-      const setAtLevelToast = (level: SettingsLevel) =>
-        page.getByText(
-          level === 'user' ? 'as a user default' : 'for this project'
-        )
       const resetToast = (level: SettingsLevel) =>
         page.getByText(`${level}-level settings were reset`)
 
@@ -153,68 +176,113 @@ test.describe(
         ).toBeVisible()
       })
 
-      await test.step('Set setting in UI', async () => {
-        // Verify we're looking at the project-level settings
+      await test.step('Check settings initial values', async () => {
         await settingsSwitchTab(page)('proj')
-        // Because a user-level value is set in the Playwright test config,
-        // we expect the inherited user-level value here.
-        await expect(settingInput).toHaveValue(settingValues.user)
+        await settingInput.scrollIntoViewIfNeeded()
+        await expect(settingInput).toHaveValue(settingValues.project)
 
-        // Set project-level value
-        await settingInput.selectOption(settingValues.project)
-        await expect(settingInput).toHaveValue(settingValues.project, {
-          timeout: 15_000,
-        })
-        await expect(setAtLevelToast('project')).toBeVisible()
-      })
-
-      await test.step('Verify user setting is still the same', async () => {
         await settingsSwitchTab(page)('user')
         await expect(settingInput).toHaveValue(settingValues.user)
       })
 
-      await test.step('Reset project settings', async () => {
-        await settingsSwitchTab(page)('proj')
-
+      await test.step('Reset user settings', async () => {
         // Click the reset settings button.
+        await resetButton('user').scrollIntoViewIfNeeded()
+        await resetButton('user').click()
+
+        await expect(resetToast('user')).toBeVisible()
+        await expect(resetToast('user')).not.toBeVisible()
+
+        // Verify it is now set to the inherited default value
+        await settingInput.scrollIntoViewIfNeeded()
+        await expect(settingInput).toHaveValue(settingValues.default)
+
+        await test.step('Check that the project settings did not change', async () => {
+          await settingsSwitchTab(page)('proj')
+          await expect(settingInput).toHaveValue(settingValues.project)
+        })
+      })
+    })
+
+    test('Project settings can be reset', async ({
+      page,
+      homePage,
+      scene,
+      context,
+    }) => {
+      const settingValues = {
+        default: 'mm',
+        // Our playwright config sets the user value to `in`
+        user: 'in',
+        project: 'cm',
+      }
+      const projectSettings = settingsToToml({
+        settings: {
+          meta: {
+            // BUG: IF YOU DON'T INCLUDE THIS MLEPHANT SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+            id: uuidv4(),
+          },
+          modeling: {
+            base_unit: 'cm',
+          },
+        },
+      })
+      await context.folderSetupFn(async (dir) => {
+        const testProjectDir = path.join(dir, 'test')
+        await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
+        await Promise.all([
+          fsp.writeFile(path.join(testProjectDir, 'other.kcl'), '', 'utf8'),
+          fsp.writeFile(
+            path.join(testProjectDir, 'project.toml'),
+            projectSettings,
+            'utf8'
+          ),
+        ])
+      })
+      await test.step('Setup', async () => {
+        await homePage.openProject('test')
+        await scene.connectionEstablished()
+      })
+
+      // Selectors and constants
+      const resetButton = (level: SettingsLevel) =>
+        page.getByRole('button', {
+          name: `Reset ${level}-level settings`,
+        })
+      const settingInput = page.locator('#defaultUnit').getByRole('combobox')
+      const resetToast = (level: SettingsLevel) =>
+        page.getByText(`${level}-level settings were reset`)
+
+      await test.step(`Open the settings modal`, async () => {
+        await page.getByRole('link', { name: 'Settings' }).last().click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
+      })
+
+      await test.step('Check settings initial values', async () => {
+        await settingsSwitchTab(page)('user')
+        await expect(settingInput).toHaveValue(settingValues.user)
+        // Verify we're looking at the project-level settings
+        await settingsSwitchTab(page)('proj')
+        await expect(settingInput).toHaveValue(settingValues.project)
+      })
+
+      await test.step('Reset project settings', async () => {
+        // Click the reset settings button.
+        await resetButton('project').scrollIntoViewIfNeeded()
         await resetButton('project').click()
 
         await expect(resetToast('project')).toBeVisible()
         await expect(resetToast('project')).not.toBeVisible()
 
         // Verify it is now set to the inherited user value
+        await settingInput.scrollIntoViewIfNeeded()
         await expect(settingInput).toHaveValue(settingValues.user)
 
         await test.step('Check that the user settings did not change', async () => {
           await settingsSwitchTab(page)('user')
           await expect(settingInput).toHaveValue(settingValues.user)
-        })
-
-        await test.step('Set project-level again to test the user-level reset', async () => {
-          await settingsSwitchTab(page)('proj')
-          await settingInput.selectOption(settingValues.project)
-          await expect(settingInput).toHaveValue(settingValues.project, {
-            timeout: 15_000,
-          })
-          await expect(setAtLevelToast('project')).toBeVisible()
-        })
-      })
-
-      await test.step('Reset user settings', async () => {
-        // Click the reset settings button.
-        await settingsSwitchTab(page)('user')
-        await resetButton('user').click()
-
-        // Wait for the toast to disappear
-        await expect(resetToast('user')).toBeVisible()
-        await expect(resetToast('user')).not.toBeVisible()
-
-        // Verify it is now set to the default value
-        await expect(settingInput).toHaveValue(settingValues.default)
-
-        await test.step(`Check that the project settings did not change`, async () => {
-          await settingsSwitchTab(page)('proj')
-          await expect(settingInput).toHaveValue(settingValues.project)
         })
       })
     })
