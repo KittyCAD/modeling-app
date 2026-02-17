@@ -27,10 +27,8 @@ import {
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
-  type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -38,8 +36,6 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
 import { AppMachineEventType } from '@src/lib/types'
 import {
   defaultLayout,
@@ -96,7 +92,7 @@ export class App {
   }
 
   // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings = signal<SaveSettingsPayload | undefined>(undefined)
+  public lastSettings = signal<SaveSettingsPayload | undefined>(undefined)
   private settingsActor = createActor(settingsMachine, {
     input: {
       ...createSettings(),
@@ -175,88 +171,6 @@ export class App {
     )
     /** 🚨 Circular dependency alert 🚨 */
     kclManager.sceneEntitiesManager = sceneEntitiesManager
-
-    const onSettingsUpdate = ({ context }: SnapshotFrom<SettingsActorType>) => {
-      // Update line wrapping
-      const newWrapping = context.textEditor.textWrapping.current
-      if (newWrapping !== this.lastSettings.value?.textEditor.textWrapping) {
-        kclManager.setEditorLineWrapping(newWrapping)
-      }
-
-      // Update engine highlighting
-      const newHighlighting = context.modeling.highlightEdges.current
-      if (
-        newHighlighting !== this.lastSettings.value?.modeling.highlightEdges
-      ) {
-        engineCommandManager
-          .setHighlightEdges(newHighlighting)
-          .catch(reportRejection)
-      }
-
-      // Update cursor blinking
-      const newBlinking = context.textEditor.blinkingCursor.current
-      if (newBlinking !== this.lastSettings.value?.textEditor.blinkingCursor) {
-        document.documentElement.style.setProperty(
-          `--cursor-color`,
-          newBlinking ? 'auto' : 'transparent'
-        )
-        kclManager.setCursorBlinking(newBlinking)
-      }
-
-      // Update theme
-      const newTheme = context.app.theme.current
-      if (newTheme !== this.lastSettings.value?.app.theme) {
-        const resolvedTheme = getResolvedTheme(newTheme)
-        const opposingTheme = getOppositeTheme(newTheme)
-        sceneInfra.theme = opposingTheme
-        sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-        kclManager.setEditorTheme(resolvedTheme)
-        engineCommandManager.setTheme(newTheme).catch(reportRejection)
-      }
-
-      // Execute AST
-      try {
-        const relevantSetting = (s: SaveSettingsPayload | undefined) => {
-          return (
-            s?.modeling?.defaultUnit !== context.modeling.defaultUnit.current ||
-            s?.modeling.showScaleGrid !==
-              context.modeling.showScaleGrid.current ||
-            s?.modeling?.highlightEdges !==
-              context.modeling.highlightEdges.current
-          )
-        }
-
-        const settingsIncludeNewRelevantValues = relevantSetting(
-          this.lastSettings.value
-        )
-
-        // Unit changes requires a re-exec of code
-        if (settingsIncludeNewRelevantValues) {
-          kclManager.executeCode().catch(reportRejection)
-        }
-      } catch (e) {
-        console.error('Error executing AST after settings change', e)
-      }
-
-      this.lastSettings.value = getAllCurrentSettings(
-        getOnlySettingsFromContext(context)
-      )
-    }
-    this.settingsActor.subscribe(onSettingsUpdate)
-
-    this.settingsActor.subscribe((snapshot) => {
-      sceneInfra.camControls._setting_allowOrbitInSketchMode =
-        snapshot.context.app.allowOrbitInSketchMode.current
-
-      const newCurrentProjection =
-        snapshot.context.modeling.cameraProjection.current
-      if (
-        sceneInfra.camControls &&
-        newCurrentProjection !== sceneInfra.camControls.engineCameraProjection
-      ) {
-        sceneInfra.camControls.engineCameraProjection = newCurrentProjection
-      }
-    })
 
     if (typeof window !== 'undefined') {
       ;(window as any).engineCommandManager = engineCommandManager
