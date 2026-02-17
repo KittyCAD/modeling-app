@@ -48,6 +48,10 @@ export type EntityReference =
       index?: number
     }
   | {
+      type: 'solid2dEdge'
+      edgeId: string
+    }
+  | {
       type: 'vertex'
       faces: string[]
       disambiguators?: string[]

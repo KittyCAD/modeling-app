@@ -24,6 +24,7 @@ import type {
   Artifact,
   ArtifactGraph,
   CallExpressionKw,
+  CodeRef,
   Expr,
   ExpressionStatement,
   Name,
@@ -45,7 +46,10 @@ import {
   getSweepArtifactFromSelection,
   getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -122,12 +126,16 @@ export function entityReferenceToEdgeRefPayload(
 /**
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
+ * @param originalEdgeSelection - Optional original edge selection (segment/sweepEdge) for Solid2D edge handling
+ * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for V2-only selections)
  */
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
   wasmInstance: ModuleType,
   ast: Node<Program>,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  originalEdgeSelection?: Selection,
+  fallbackCodeRef?: CodeRef
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   // Resolve face UUIDs to tags
   const faceTags: string[] = []
@@ -148,20 +156,60 @@ export function createEdgeRefObjectExpression(
       )
     }
 
-    const tagResult = modifyAstWithTagsForSelection(
-      currentAst,
-      { artifact: faceArtifact, codeRef: codeRefs[0] },
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      return new Error(
-        `Failed to create tag for face ${faceId}: ${tagResult.message}`
-      )
-    }
+    // Handle Solid2D case: for Solid2D profiles, the "face" is actually the Solid2D itself
+    // We need to tag the segment directly instead of trying to tag the face
+    if (faceArtifact.type === 'solid2d') {
+      // For Solid2D edges, we need to use the original edge selection or fallback codeRef to tag the segment
+      let segmentPathToNode: PathToNode | undefined
 
-    faceTags.push(tagResult.tags[0])
-    currentAst = tagResult.modifiedAst
+      if (originalEdgeSelection?.artifact?.type === 'segment') {
+        // Use the segment artifact's codeRef
+        segmentPathToNode = originalEdgeSelection.artifact.codeRef.pathToNode
+      } else if (fallbackCodeRef?.pathToNode) {
+        // Fall back to the provided codeRef (from V2 selection)
+        segmentPathToNode = fallbackCodeRef.pathToNode
+      } else if (codeRefs[0]?.pathToNode) {
+        // Last resort: use the codeRef from the Solid2D (points to the profile, but we can try to find the segment)
+        // This is less ideal but might work if the segment is in the same path
+        segmentPathToNode = codeRefs[0].pathToNode
+      }
+
+      if (!segmentPathToNode || segmentPathToNode.length === 0) {
+        return new Error(
+          `Cannot create tag for Solid2D edge ${faceId}: could not find segment pathToNode. Original edge selection or codeRef is required.`
+        )
+      }
+
+      const tagResult = mutateAstWithTagForSketchSegment(
+        currentAst,
+        segmentPathToNode,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for Solid2D edge ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      faceTags.push(tagResult.tag)
+      currentAst = tagResult.modifiedAst
+    } else {
+      // Normal case: tag the face artifact
+      const tagResult = modifyAstWithTagsForSelection(
+        currentAst,
+        { artifact: faceArtifact, codeRef: codeRefs[0] },
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) {
+        return new Error(
+          `Failed to create tag for face ${faceId}: ${tagResult.message}`
+        )
+      }
+
+      faceTags.push(tagResult.tags[0])
+      currentAst = tagResult.modifiedAst
+    }
   }
 
   const disambiguatorTags: string[] = []

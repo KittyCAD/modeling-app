@@ -31,6 +31,7 @@ import {
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
+  Artifact,
   ArtifactGraph,
   Expr,
   LabeledArg,
@@ -628,22 +629,35 @@ export function addRevolve({
   // Handle axis/edge: Check if edge has V2 selections (edgeRefs) or use tag-based approach
   let axisExpr: Expr | null = null
   let edgeRefExpr: Expr | null = null
-  const useEdgeRefs =
-    edge &&
-    edge.graphSelectionsV2 &&
-    edge.graphSelectionsV2.length > 0 &&
-    edge.graphSelectionsV2[0]?.entityRef?.type === 'edge'
+  const hasV2Selections =
+    edge && edge.graphSelectionsV2 && edge.graphSelectionsV2.length > 0
+  const entityRefType = hasV2Selections
+    ? edge.graphSelectionsV2[0]?.entityRef?.type
+    : null
+
+  // Solid2dEdge uses legacy tag-based approach, not edgeRefs
+  // Only use edgeRefs for BRep edges (type === 'edge'), not for Solid2D edges
+  const useEdgeRefs = hasV2Selections && entityRefType === 'edge'
 
   if (useEdgeRefs && edge.graphSelectionsV2[0]?.entityRef) {
-    // Use edgeRefs (new API)
+    // Use edgeRefs (new API) - only for BRep edges, not Solid2D edges
     const entityRef = edge.graphSelectionsV2[0].entityRef
     if (entityRef.type === 'edge') {
       const payload = entityReferenceToEdgeRefPayload(entityRef)
+      // Get the original edge selection for Solid2D edge handling
+      // Prefer graphSelections (V1) which has the segment artifact directly
+      // Fall back to graphSelectionsV2 codeRef if V1 is not available
+      const originalEdgeSelection =
+        edge.graphSelections && edge.graphSelections.length > 0
+          ? edge.graphSelections[0]
+          : undefined
+      // Note: fallbackCodeRef removed - Solid2dEdge should use legacy path, not edgeRefs
       const edgeRefResult = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
         modifiedAst,
-        artifactGraph
+        artifactGraph,
+        originalEdgeSelection
       )
       if (err(edgeRefResult)) {
         return edgeRefResult
@@ -652,10 +666,50 @@ export function addRevolve({
       modifiedAst = edgeRefResult.modifiedAst
     }
   } else if (edge) {
-    // Use tag-based approach (legacy)
+    // Use tag-based approach (legacy) - for Solid2dEdge or V1 selections
+    // For Solid2dEdge, we need to normalize to V1 format (segment artifact)
+    let normalizedEdge = edge
+    if (
+      edge.graphSelectionsV2 &&
+      edge.graphSelectionsV2.length > 0 &&
+      edge.graphSelectionsV2[0]?.entityRef?.type === 'solid2dEdge'
+    ) {
+      // Solid2dEdge: the edgeId IS the segment artifact ID directly!
+      // When a segment becomes part of a solid2d, it becomes an edge, and the edgeId
+      // is the same as the original segment's artifact ID.
+      const edgeId = edge.graphSelectionsV2[0].entityRef.edgeId
+
+      // Look up the segment artifact directly by edgeId
+      const segmentArtifact = artifactGraph.get(edgeId)
+
+      // Verify it's a segment and has a codeRef
+      if (
+        segmentArtifact &&
+        segmentArtifact.type === 'segment' &&
+        segmentArtifact.codeRef
+      ) {
+        normalizedEdge = {
+          ...edge,
+          graphSelections: [
+            {
+              artifact: segmentArtifact,
+              codeRef: segmentArtifact.codeRef,
+            },
+          ],
+        }
+      } else {
+        // If we can't find the segment, return an error with debug info
+        return new Error(
+          `Could not find segment artifact for Solid2D edge with ID ${edgeId}. ` +
+            `Found artifact type: ${segmentArtifact?.type || 'undefined'}. ` +
+            `Please select the edge again.`
+        )
+      }
+    }
+
     const getAxisResult = getAxisExpressionAndIndex(
       axis,
-      edge,
+      normalizedEdge,
       modifiedAst,
       wasmInstance
     )
