@@ -583,33 +583,40 @@ export class KclManager extends EventTarget {
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
           await this.executeCode(newCode)
-          const { sceneGraph, execOutcome } =
+          const setProgramOutcome =
             await this.singletons.rustContext.hackSetProgram(
               this.ast,
               await jsAppSettings(this.singletons.rustContext.settingsActor)
             )
 
-          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-          // Always invalidate IDs for direct edits since we don't know what the user changed
-          const sceneGraphDelta: SceneGraphDelta = {
-            new_graph: sceneGraph,
-            new_objects: [],
-            invalidates_ids: true,
-            exec_outcome: execOutcome,
-          }
+          if (setProgramOutcome.type === 'Success') {
+            // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+            // Always invalidate IDs for direct edits since we don't know what the user changed
+            const sceneGraphDelta: SceneGraphDelta = {
+              new_graph: setProgramOutcome.sceneGraph,
+              new_objects: [],
+              invalidates_ids: true,
+              exec_outcome: setProgramOutcome.execOutcome,
+            }
 
-          const kclSource: SourceDelta = {
-            text: newCode,
-          }
+            const kclSource: SourceDelta = {
+              text: newCode,
+            }
 
-          // Send event to sketch solve machine via modeling machine
-          this.sendModelingEvent({
-            type: 'update sketch outcome',
-            data: {
-              kclSource,
-              sceneGraphDelta,
-            },
-          })
+            // Send event to sketch solve machine via modeling machine
+            this.sendModelingEvent({
+              type: 'update sketch outcome',
+              data: {
+                kclSource,
+                sceneGraphDelta,
+              },
+            })
+          } else {
+            console.debug(
+              'Error when executing after user edit:',
+              setProgramOutcome
+            )
+          }
         } else {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
