@@ -1,5 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -72,7 +72,7 @@ import {
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { drawSelection, EditorView, keymap } from '@codemirror/view'
-import type { StateFrom } from 'xstate'
+import { type StateFrom } from 'xstate'
 
 import {
   addLineHighlight,
@@ -94,7 +94,7 @@ import {
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
 } from '@src/editor/plugins/theme'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
   setAstEffect,
@@ -123,6 +123,7 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { App } from '@src/lib/app'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -144,7 +145,8 @@ type UpdateCodeEditorOptions = {
 // can easily become cyclic. Each will have its own Singletons type.
 interface Singletons {
   rustContext: RustContext
-  sceneInfra: SceneInfra
+  settings: App['settings']
+  commands: App['commands']
 }
 
 export enum KclManagerEvents {
@@ -210,11 +212,14 @@ export class KclManager extends EventTarget {
     }
     return this._wasmInstance
   }
-  private _sceneEntitiesManager?: SceneEntities
   readonly singletons: Singletons
   engineCommandManager: ConnectionManager
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
+
+  // Systems that hang off of the currently-executing file
+  public sceneInfra: SceneInfra
+  public sceneEntitiesManager: SceneEntities
 
   // CORE STATE
 
@@ -430,29 +435,11 @@ export class KclManager extends EventTarget {
     this.setDiagnostics(this.diagnostics)
   }
 
-  set sceneEntitiesManager(s: SceneEntities) {
-    this._sceneEntitiesManager = s
-  }
-  /**
-   * You probably should provide the `sceneEntitiesManager` singleton instead.
-   *
-   * This is for when you need the sceneEntitiesManager guaranteed to be there,
-   * and you have KclManager available but not other singletons for some reason,
-   * and you can somehow absolutely guarantee that sceneEntities has been set.
-   */
-  get sceneEntitiesManager() {
-    if (!this._sceneEntitiesManager) {
-      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
-      throw new Error('Requested SceneEntities too soon from within KclManager')
-    }
-    return this._sceneEntitiesManager
-  }
-
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
-    if (!isExecuting && this.executeIsStale && this._sceneEntitiesManager) {
+    if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -621,7 +608,7 @@ export class KclManager extends EventTarget {
           await this.executeCode(newCode)
           if (shouldResetCamera) {
             await resetCameraPosition({
-              sceneInfra: this.singletons.sceneInfra,
+              sceneInfra: this.sceneInfra,
               engineCommandManager: this.engineCommandManager,
               settingsActor: this.singletons.rustContext.settingsActor,
             })
@@ -665,6 +652,19 @@ export class KclManager extends EventTarget {
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView()
+    this.sceneInfra = new SceneInfra(
+      engineCommandManager,
+      wasmInstance,
+      singletons.settings.get
+    )
+    this.sceneEntitiesManager = new SceneEntities(
+      engineCommandManager,
+      this.sceneInfra,
+      this,
+      this.singletons.rustContext,
+      singletons.settings,
+      singletons.commands
+    )
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     if (isDesktop()) {
@@ -911,11 +911,11 @@ export class KclManager extends EventTarget {
           rustContext: this.singletons.rustContext,
         })
       )
-      if (this._sceneEntitiesManager) {
+      if (this.sceneEntitiesManager) {
         await setSelectionFilterToDefault({
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
-          sceneEntitiesManager: this._sceneEntitiesManager,
+          sceneEntitiesManager: this.sceneEntitiesManager,
           wasmInstance: await this.wasmInstancePromise,
         })
       }
@@ -963,7 +963,7 @@ export class KclManager extends EventTarget {
     this.dispatchUpdateOperations(execState.operations)
 
     if (!isInterrupted) {
-      this.singletons.sceneInfra.modelingSend({
+      this.sceneInfra.modelingSend({
         type: 'code edit during sketch',
       })
     }
@@ -1646,7 +1646,7 @@ export class KclManager extends EventTarget {
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
     wasmInstance: ModuleType
   ): void {
-    const sceneEntitiesManager = this._sceneEntitiesManager
+    const sceneEntitiesManager = this.sceneEntitiesManager
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return

@@ -128,8 +128,7 @@ export class CameraControls {
   perspectiveFovBeforeOrtho = 45
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
-  // TODO: proper dependency injection
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -280,9 +279,11 @@ export class CameraControls {
   constructor(
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
-    isOrtho = false
+    isOrtho = false,
+    getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
+    this.getSettings = getSettings
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -1071,10 +1072,6 @@ export class CameraControls {
    * Gotcha: This is not to be confused with Named Views, those have correct state.
    */
   overrideOldCameraStateToPreventDesync() {
-    if (!this.getSettings) {
-      return
-    }
-
     // Engine idle disconnection happened, we saved off the camera state
     // If the settings camera projection is different from the saved camera state we need to override it.
     const settings = this.getSettings()
@@ -1345,7 +1342,7 @@ export class CameraControls {
           )
     if (
       initialInteractionType === 'rotate' &&
-      this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
+      this.getSettings().modeling.cameraOrbit.current === 'trackball'
     ) {
       return 'rotatetrackball'
     }
@@ -1416,7 +1413,7 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
         if (this.enableRotate) {
           const orbitMode =
-            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+            this.getSettings().modeling.cameraOrbit.current !== 'spherical'
               ? 'rotatetrackball'
               : 'rotate'
           this.moveSender.send(() => {
@@ -1439,7 +1436,7 @@ export class CameraControls {
         velocity > 0
       ) {
         const orbitMode =
-          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+          this.getSettings().modeling.cameraOrbit.current !== 'spherical'
             ? 'rotatetrackball'
             : 'rotate'
 
@@ -1546,7 +1543,7 @@ const viewHeightFactor = (fov: number) => {
       /    | viewHeight/2
      /     |
     /      |
-   /↙️fov/2 |
+   /↙fov/2 |
   /________|
   \        |
    \._._._.|

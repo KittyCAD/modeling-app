@@ -185,6 +185,7 @@ import {
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { App } from '@src/lib/app'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -198,7 +199,7 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   readonly sketchSolveGroup: Group
@@ -206,18 +207,22 @@ export class SceneEntities {
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
 
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    settings: App['settings'],
+    commands: App['commands']
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.kclManager = kclManager
     this.rustContext = rustContext
+    this.getSettings = settings.get
+    this.commandBarActor = commands.actor
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
@@ -1012,10 +1017,6 @@ export class SceneEntities {
           maybeModdedAst,
           this.kclManager
         )
-        if (!this.commandBarActor) {
-          console.error('command bar actor not found.')
-          return
-        }
         const result = initSegment({
           prevSegment: sketch.paths[index - 1],
           callExpName,

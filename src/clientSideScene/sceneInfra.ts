@@ -44,6 +44,7 @@ import type {
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { signal } from '@preact/signals-core'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -329,7 +330,8 @@ export class SceneInfra {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInitPromise: Promise<ModuleType>
+    wasmInitPromise: Promise<ModuleType>,
+    getSettings: () => SettingsType
   ) {
     this.wasmInstancePromise = wasmInitPromise
     // SCENE
@@ -353,7 +355,8 @@ export class SceneInfra {
     this.camControls = new CameraControls(
       this.renderer.domElement,
       engineCommandManager,
-      false
+      false,
+      getSettings
     )
     this.camControls.cameraChange.add(this.onCameraChange)
     this.camControls.camera.layers.enable(SKETCH_LAYER)

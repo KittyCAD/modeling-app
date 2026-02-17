@@ -51,9 +51,7 @@ beforeEach(async () => {
   const {
     instance,
     engineCommandManager,
-    sceneInfra,
     kclManager,
-    sceneEntitiesManager,
     rustContext,
     commandBarActor,
   } = await buildTheWorldAndConnectToEngine()
@@ -61,8 +59,8 @@ beforeEach(async () => {
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
-  sceneInfraInThisFile = sceneInfra
-  sceneEntitiesManagerInThisFile = sceneEntitiesManager
+  sceneInfraInThisFile = kclManager.sceneInfra
+  sceneEntitiesManagerInThisFile = kclManager.sceneEntitiesManager
   commandBarActorInThisFile = commandBarActor
 })
 

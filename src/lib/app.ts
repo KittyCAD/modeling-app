@@ -2,13 +2,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
-
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type {
-  BaseUnit,
-  SaveSettingsPayload,
-} from '@src/lib/settings/settingsTypes'
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
@@ -152,36 +146,20 @@ export class App {
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
     const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
       rustContext,
-      sceneInfra,
+      settings: this.settings,
+      commands: this.commands,
     })
 
     // These are all late binding because of their circular dependency.
     // TODO: proper dependency injection.
     engineCommandManager.kclManager = kclManager
-    engineCommandManager.sceneInfra = sceneInfra
     engineCommandManager.rustContext = rustContext
-
-    kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
-      sceneInfra.baseUnit = unit
-    }
-
-    const sceneEntitiesManager = new SceneEntities(
-      engineCommandManager,
-      sceneInfra,
-      kclManager,
-      rustContext
-    )
-    /** 🚨 Circular dependency alert 🚨 */
-    kclManager.sceneEntitiesManager = sceneEntitiesManager
 
     if (typeof window !== 'undefined') {
       ;(window as any).engineCommandManager = engineCommandManager
       ;(window as any).kclManager = kclManager
-      ;(window as any).sceneInfra = sceneInfra
-      ;(window as any).sceneEntitiesManager = sceneEntitiesManager
       ;(window as any).rustContext = rustContext
       ;(window as any).engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
@@ -218,8 +196,8 @@ export class App {
       context: {
         kclManager: kclManager,
         engineCommandManager: engineCommandManager,
-        sceneInfra: sceneInfra,
-        sceneEntitiesManager: sceneEntitiesManager,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
         commandBarActor: this.commandBarActor,
         layout: defaultLayout,
       },
@@ -251,17 +229,11 @@ export class App {
       systemId: 'root',
     })
 
-    // These are all late binding because of their circular dependency.
-    // TODO: proper dependency injection.
-    sceneInfra.camControls.getSettings = this.settings.get
-    sceneEntitiesManager.getSettings = this.settings.get
-
     const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
     // This extension makes it possible to mark FS operations as un/redoable
     buildFSHistoryExtension(systemIOActor, kclManager)
 
     // TODO: proper dependency management
-    sceneEntitiesManager.commandBarActor = this.commandBarActor
     this.commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands
@@ -285,9 +257,9 @@ export class App {
     return {
       engineCommandManager,
       rustContext,
-      sceneInfra,
+      sceneInfra: kclManager.sceneInfra,
       kclManager,
-      sceneEntitiesManager,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       appActor,
       systemIOActor,
       getLayout,

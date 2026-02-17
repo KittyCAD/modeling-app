@@ -13,17 +13,19 @@ import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/network/connectionManager'
 import RustContext from '@src/lib/rustContext'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { KclManager } from '@src/lang/KclManager'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { settingsMachine } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import {
+  getOnlySettingsFromContext,
+  settingsMachine,
+} from '@src/machines/settingsMachine'
+import type { App } from '@src/lib/app'
+import { useSelector } from '@xstate/react'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -66,6 +68,12 @@ export async function buildTheWorldAndConnectToEngine() {
   const commandBarActor = createActor(commandBarMachine, {
     input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
+  const commands: App['commands'] = {
+    actor: commandBarActor,
+    send: (...args: Parameters<(typeof commandBarActor)['send']>) =>
+      commandBarActor.send(...args),
+    useState: () => useSelector(commandBarActor, (state) => state),
+  }
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
@@ -73,32 +81,29 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
+  const settings: App['settings'] = {
+    actor: settingsActor,
+    send: (...args: Parameters<(typeof settingsActor)['send']>) =>
+      settingsActor.send(...args),
+    get: () => getOnlySettingsFromContext(settingsActor.getSnapshot().context),
+    useSettings: () =>
+      useSelector(settingsActor, (state) => {
+        // We have to peel everything that isn't settings off
+        return getOnlySettingsFromContext(state.context)
+      }),
+  }
   const rustContext = new RustContext(
     engineCommandManager,
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
-    sceneInfra,
+    commands,
+    settings,
   })
   engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
-
-  const sceneEntitiesManager = new SceneEntities(
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
-  sceneEntitiesManager.commandBarActor = commandBarActor
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
-
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
 
   await new Promise((resolve, reject) => {
     engineCommandManager
@@ -128,9 +133,7 @@ export async function buildTheWorldAndConnectToEngine() {
     instance: await instancePromise,
     engineCommandManager,
     rustContext,
-    sceneInfra,
     kclManager,
-    sceneEntitiesManager,
     commandBarActor,
     settingsActor,
   }
@@ -167,6 +170,12 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const commandBarActor = createActor(commandBarMachine, {
     input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
+  const commands: App['commands'] = {
+    actor: commandBarActor,
+    send: (...args: Parameters<(typeof commandBarActor)['send']>) =>
+      commandBarActor.send(...args),
+    useState: () => useSelector(commandBarActor, (state) => state),
+  }
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
@@ -174,39 +183,34 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
+  const settings: App['settings'] = {
+    actor: settingsActor,
+    send: (...args: Parameters<(typeof settingsActor)['send']>) =>
+      settingsActor.send(...args),
+    get: () => getOnlySettingsFromContext(settingsActor.getSnapshot().context),
+    useSettings: () =>
+      useSelector(settingsActor, (state) => {
+        // We have to peel everything that isn't settings off
+        return getOnlySettingsFromContext(state.context)
+      }),
+  }
   const rustContext = new RustContext(
     engineCommandManager,
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
-    sceneInfra,
+    settings,
+    commands,
   })
   engineCommandManager.kclManager = kclManager
-  engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
-  const sceneEntitiesManager = new SceneEntities(
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
-
-  settingsActor.start()
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
-
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
     engineCommandManager,
     rustContext,
-    sceneInfra,
     kclManager,
-    sceneEntitiesManager,
     commandBarActor,
     settingsActor,
   }

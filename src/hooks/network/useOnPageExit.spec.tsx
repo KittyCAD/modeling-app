@@ -4,6 +4,7 @@ import { expect, vi, describe, test } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { createSettings } from '@src/lib/settings/initialSettings'
 
 // Helper function to create callbacks used for spying
 const createCallback = () => {
@@ -17,7 +18,9 @@ describe('useOnPageExit', () => {
     const initWasmMock = Promise.resolve({} as ModuleType)
     const engineCommandManager = new ConnectionManager()
     vi.spyOn(engineCommandManager, 'tearDown')
-    const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
+    const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock, () =>
+      createSettings()
+    )
     sceneInfra.camControls.oldCameraState = {
       eye_offset: 1.0,
       fov_y: 1.0,

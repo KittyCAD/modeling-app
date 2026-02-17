@@ -1,7 +1,13 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
-
+import {
+  type ActorRefFrom,
+  assertEvent,
+  assign,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 import type {
   SetSelections,
   MouseState,
@@ -7965,3 +7971,5 @@ export function pipeHasCircle({
   )
   return hasCircle
 }
+
+export type ModelingActor = ActorRefFrom<typeof modelingMachine>
