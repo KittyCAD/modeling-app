@@ -1329,6 +1329,28 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
+impl TryFrom<Expr> for BinaryPart {
+    type Error = String;
+
+    fn try_from(expr: Expr) -> Result<Self, Self::Error> {
+        match expr {
+            Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
+            Expr::Name(n) => Ok(BinaryPart::Name(n)),
+            Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
+            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
+            Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
+            Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
+            Expr::ArrayRangeExpression(n) => Ok(BinaryPart::ArrayRangeExpression(n)),
+            Expr::ObjectExpression(n) => Ok(BinaryPart::ObjectExpression(n)),
+            Expr::IfExpression(n) => Ok(BinaryPart::IfExpression(n)),
+            Expr::AscribedExpression(n) => Ok(BinaryPart::AscribedExpression(n)),
+            Expr::SketchVar(n) => Ok(BinaryPart::SketchVar(n)),
+            other => Err(format!("Expression type cannot be converted to BinaryPart: {other:?}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -2087,29 +2109,32 @@ impl ImportStatement {
         }
 
         match &self.path {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let name = s.to_string_lossy();
-                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
-                    let name = &name[..name.len() - 9];
-                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
-                    return Some(name[start..].to_owned());
-                }
-
-                let name = s.file_name()?;
-                if name.contains('\\') || name.contains('/') {
-                    return None;
-                }
-
-                // Remove the extension if it exists.
-                let extension = s.extension();
-                Some(if let Some(extension) = extension {
-                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
-                } else {
-                    name
-                })
-            }
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => Self::non_std_module_name(s),
             ImportPath::Std { path } => path.last().cloned(),
         }
+    }
+
+    /// Given the path to a non-std module, extract the module name if possible.
+    pub(crate) fn non_std_module_name(path: &TypedPath) -> Option<String> {
+        let name = path.to_string_lossy();
+        if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+            let name = &name[..name.len() - 9];
+            let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+            return Some(name[start..].to_owned());
+        }
+
+        let name = path.file_name()?;
+        if name.contains('\\') || name.contains('/') {
+            return None;
+        }
+
+        // Remove the extension if it exists.
+        let extension = path.extension();
+        Some(if let Some(extension) = extension {
+            name.trim_end_matches(extension).trim_end_matches('.').to_string()
+        } else {
+            name
+        })
     }
 }
 

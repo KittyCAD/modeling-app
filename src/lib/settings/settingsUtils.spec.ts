@@ -1,12 +1,20 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { join } from 'path'
 
+import {
+  parseProjectSettings,
+  serializeProjectConfiguration,
+} from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
+  getChangedSettingsAtLevel,
   getAllCurrentSettings,
   hiddenOnPlatform,
   projectConfigurationToSettingsPayload,
+  settingsPayloadToProjectConfiguration,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
@@ -137,5 +145,73 @@ describe('testing hiddenOnPlatform', () => {
     expect(hiddenOnPlatform(setting2, false)).toBe(false)
     expect(hiddenOnPlatform(setting3, false)).toBe(true)
     expect(hiddenOnPlatform(setting4, false)).toBe(false)
+  })
+})
+
+// This tests if default project level settings can override non-default user level settings.
+// Eg.:
+// user.showDebugPanel = true
+// project.showDebugPanel = false (the default is false)
+// Then we expect showDebugPanel to resolve to false.
+// We used to have a bug where this project level default value was not serialized,
+// this regression test protects against that.
+
+describe('project settings serialization regression', () => {
+  it('preserves explicit project defaults when user values differ', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    let settings = createSettings()
+
+    // Set User-level value to the non-default true
+    setSettingsAtLevel(settings, 'user', {
+      app: { showDebugPanel: true },
+    })
+
+    // Project-level value is set to the default value
+    setSettingsAtLevel(settings, 'project', {
+      app: { showDebugPanel: false },
+    })
+
+    const changedProjectSettings = getChangedSettingsAtLevel(
+      settings,
+      'project'
+    )
+    expect(changedProjectSettings.app?.showDebugPanel).toBe(false)
+
+    const serializedToml = serializeProjectConfiguration(
+      settingsPayloadToProjectConfiguration(changedProjectSettings),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    // Explicit project overrides should be present in serialized TOML.
+    expect(serializedToml).toContain('show_debug_panel = false')
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      serializedToml,
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    const parsedProjectPayload = projectConfigurationToSettingsPayload(
+      parsedProjectConfiguration
+    )
+    // Technically this is enough to check for:
+    // parsed showDebugPanel should be false
+    expect(parsedProjectPayload.app?.showDebugPanel).toBe(false)
+
+    // Double check: reapply parsed settings and verify project-level takes precedence
+    settings = createSettings()
+    setSettingsAtLevel(settings, 'user', {
+      app: { showDebugPanel: true },
+    })
+    setSettingsAtLevel(settings, 'project', parsedProjectPayload)
+
+    expect(settings.app.showDebugPanel.user).toBe(true)
+    expect(settings.app.showDebugPanel.project).toBe(false)
+    expect(settings.app.showDebugPanel.current).toBe(false)
   })
 })

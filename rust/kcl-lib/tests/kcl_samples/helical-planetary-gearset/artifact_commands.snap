@@ -24,32 +24,9 @@ description: Artifact commands helical-planetary-gearset.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "hide": true
       }
     },
     {
@@ -82,8 +59,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000018715245497711523,
-          "y": 30.564315377693887,
+          "x": 34.05405405405405,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -102,88 +79,22 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 90.0
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": 0.0
           },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
+          "radius": 34.05405405405405,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
           "end": {
-            "x": -2.7395038903503175,
-            "y": 32.88609308560011,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 360.0
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 625.3044620244902
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.55537482801479,
-            "y": 30.222937227930448,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 41,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
       }
     },
     {
@@ -214,32 +125,9 @@ description: Artifact commands helical-planetary-gearset.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "hide": true
       }
     },
     {
@@ -272,7 +160,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 35.67567567567568,
+          "x": 29.108871788279895,
           "y": 0.0,
           "z": 0.0
         }
@@ -292,22 +180,88 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "radius": 35.67567567567568,
-          "start": {
+          "type": "circular_involute",
+          "start_radius": 29.108871788279895,
+          "end_radius": 31.5,
+          "angle": {
             "unit": "degrees",
             "value": 0.0
           },
+          "reverse": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "x": 31.380132989889983,
+            "y": 2.7454058965512322,
+            "z": 0.0
           },
           "relative": false
         }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "circular_involute",
+          "start_radius": 29.108871788279895,
+          "end_radius": 31.5,
+          "angle": {
+            "unit": "degrees",
+            "value": -4.909029241427664
+          },
+          "reverse": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 28.75049327316279,
+            "y": 4.553630786124234,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "num_repetitions": 39,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": true
       }
     },
     {
@@ -340,54 +294,6 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.5
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -404,617 +310,31 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -1.0797253277941856,
-          "y": 30.54523805315085,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 92.02447128028268
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -3.899539205840894,
-            "y": 32.768789937715276,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 623.2799907442076
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.620197188311242,
-            "y": 30.043148271638135,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
+        "type": "twist_extrude",
+        "target": "[uuid]",
+        "distance": 5.0,
+        "faces": null,
+        "center_2d": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "y": 0.0
         },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        "total_rotation_angle": {
+          "unit": "degrees",
+          "value": -4.455168708487248
         },
-        "num_repetitions": 41,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.5
+        "angle_step_size": {
+          "unit": "degrees",
+          "value": 0.0
         },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 35.67567567567568,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "radius": 35.67567567567568,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 5.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -2.159450655588373,
-          "y": 30.487934455669738,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 94.05147558880067
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.056148270092621,
-            "y": 32.61035670873349,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 30.564315377693887,
-          "end_radius": 33.0,
-          "angle": {
-            "unit": "degrees",
-            "value": 621.2529864356896
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -6.679322218261533,
-            "y": 29.825559998292956,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 41,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 5.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 35.67567567567568,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "radius": 35.67567567567568,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "loft",
-        "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "v_degree": 2,
-        "bez_approximate_rational": false,
-        "base_curve_index": null,
         "tolerance": 0.0000001,
         "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -1240,32 +560,9 @@ description: Artifact commands helical-planetary-gearset.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "hide": true
       }
     },
     {
@@ -1298,8 +595,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000534721299934615,
-          "y": 8.732661536483969,
+          "x": 8.732661536483969,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -1323,7 +620,7 @@ description: Artifact commands helical-planetary-gearset.kcl
           "end_radius": 10.5,
           "angle": {
             "unit": "degrees",
-            "value": 90.0
+            "value": 0.0
           },
           "reverse": false
         }
@@ -1338,8 +635,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4214666427956213,
-            "y": 10.21697114108815,
+            "x": 10.21697114108815,
+            "y": 2.421466642795622,
             "z": 0.0
           },
           "relative": false
@@ -1358,7 +655,7 @@ description: Artifact commands helical-planetary-gearset.kcl
           "end_radius": 10.5,
           "angle": {
             "unit": "degrees",
-            "value": 611.9038409048754
+            "value": -18.096159095124644
           },
           "reverse": true
         }
@@ -1373,8 +670,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.3663307682419825,
-            "y": 7.562706733246366,
+            "x": 7.562706733246366,
+            "y": 4.366330768241983,
             "z": 0.0
           },
           "relative": false
@@ -1414,72 +711,6 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.5
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1496,369 +727,31 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 0.969549273937636,
-          "y": 8.678672232328719,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 83.62555782351659
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -1.2721503422803806,
-            "y": 10.422650023225183,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": -101.72171691864123
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -3.4996818147136093,
-            "y": 8.000725261284092,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
+        "type": "twist_extrude",
+        "target": "[uuid]",
+        "distance": 5.0,
+        "faces": null,
+        "center_2d": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "y": 0.0
         },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        "total_rotation_angle": {
+          "unit": "degrees",
+          "value": 14.850562361624158
         },
-        "num_repetitions": 11,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 5.0
+        "angle_step_size": {
+          "unit": "degrees",
+          "value": 0.0
         },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.9390985478752714,
-          "y": 8.514650570188689,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 77.17045767129224
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.09232333396144399,
-            "y": 10.499594106536035,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": -95.26661676641686
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -2.5780166821928443,
-            "y": 8.343452972068695,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 11,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "loft",
-        "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "v_degree": 2,
-        "bez_approximate_rational": false,
-        "base_curve_index": null,
         "tolerance": 0.0000001,
         "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -1885,6 +778,108 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 5.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": null,
+            "rotate_rpy": {
+              "property": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -4.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
       }
     },
     {
@@ -2084,32 +1079,9 @@ description: Artifact commands helical-planetary-gearset.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "hide": true
       }
     },
     {
@@ -2142,8 +1114,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000534721299934615,
-          "y": 8.732661536483969,
+          "x": 8.732661536483969,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -2167,7 +1139,7 @@ description: Artifact commands helical-planetary-gearset.kcl
           "end_radius": 10.5,
           "angle": {
             "unit": "degrees",
-            "value": 90.0
+            "value": 0.0
           },
           "reverse": false
         }
@@ -2182,8 +1154,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4214666427956213,
-            "y": 10.21697114108815,
+            "x": 10.21697114108815,
+            "y": 2.421466642795622,
             "z": 0.0
           },
           "relative": false
@@ -2202,7 +1174,7 @@ description: Artifact commands helical-planetary-gearset.kcl
           "end_radius": 10.5,
           "angle": {
             "unit": "degrees",
-            "value": 611.9038409048754
+            "value": -18.096159095124644
           },
           "reverse": true
         }
@@ -2217,8 +1189,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.3663307682419825,
-            "y": 7.562706733246366,
+            "x": 7.562706733246366,
+            "y": 4.366330768241983,
             "z": 0.0
           },
           "relative": false
@@ -2258,72 +1230,6 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.5
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2340,369 +1246,31 @@ description: Artifact commands helical-planetary-gearset.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -0.9695492739376368,
-          "y": 8.678672232328719,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 96.37444217648343
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -3.540841716679438,
-            "y": 9.884960290128769,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 605.529398728392
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.178990417615113,
-            "y": 7.0311759873464545,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
+        "type": "twist_extrude",
+        "target": "[uuid]",
+        "distance": 5.0,
+        "faces": null,
+        "center_2d": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "y": 0.0
         },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        "total_rotation_angle": {
+          "unit": "degrees",
+          "value": -14.850562361624158
         },
-        "num_repetitions": 11,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 5.0
+        "angle_step_size": {
+          "unit": "degrees",
+          "value": 0.0
         },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -1.9390985478752725,
-          "y": 8.514650570188689,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 102.82954232870779
-          },
-          "reverse": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.629706082759553,
-            "y": 9.424214640343205,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "circular_involute",
-          "start_radius": 8.732661536483969,
-          "end_radius": 10.5,
-          "angle": {
-            "unit": "degrees",
-            "value": 599.0742985761676
-          },
-          "reverse": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.936633887995845,
-            "y": 6.404354424193422,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 11,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid2d_add_hole",
-        "object_id": "[uuid]",
-        "hole_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "loft",
-        "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "v_degree": 2,
-        "bez_approximate_rational": false,
-        "base_curve_index": null,
         "tolerance": 0.0000001,
         "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -2729,6 +1297,82 @@ description: Artifact commands helical-planetary-gearset.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 5.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "tolerance": 0.0000001
       }
     },
     {
@@ -2742,7 +1386,7 @@ description: Artifact commands helical-planetary-gearset.kcl
             "translate": {
               "property": {
                 "x": 0.0,
-                "y": 20.7,
+                "y": 20.0,
                 "z": 0.0
               },
               "set": false,
@@ -2773,7 +1417,7 @@ description: Artifact commands helical-planetary-gearset.kcl
           "y": 0.0,
           "z": 0.0
         },
-        "num_repetitions": 2,
+        "num_repetitions": 3,
         "arc_degrees": 360.0,
         "rotate_duplicates": false
       }

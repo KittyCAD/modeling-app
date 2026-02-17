@@ -4,7 +4,7 @@ import { ActionIcon } from '@src/components/ActionIcon'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -18,17 +18,12 @@ import {
 import { BillingTransition } from '@src/machines/billingMachine'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
-  const {
-    billingActor,
-    kclManager,
-    systemIOActor,
-    useSettings,
-    useToken,
-    useUser,
-  } = useSingletons()
+  const { billing } = useApp()
+  const { kclManager, systemIOActor, useSettings } = useSingletons()
+  const { auth } = useApp()
   const settings = useSettings()
-  const user = useUser()
-  const token = useToken()
+  const user = auth.useUser()
+  const token = auth.useToken()
   const {
     context: contextModeling,
     send: sendModeling,
@@ -38,7 +33,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   const sendBillingUpdate = () => {
-    billingActor.send({
+    billing.send({
       type: BillingTransition.Update,
       apiToken: token,
     })

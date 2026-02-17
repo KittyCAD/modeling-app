@@ -51,7 +51,6 @@ import {
 import type { Project } from '@src/lib/project'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import React from 'react'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -66,28 +65,50 @@ export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
 export class App {
   singletons: ReturnType<typeof this.buildSingletons>
-  ReactContext: React.Context<typeof this.singletons>
+
+  /**
+   * THE bundle of WASM, a cornerstone of our app. We use this for:
+   * - settings parse/unparse
+   * - KCL parsing, execution, linting, and LSP
+   *
+   * Access this through `kclManager.wasmInstance`, not directly.
+   */
+  public wasmPromise = initialiseWasm()
+
+  private authActor = createActor(authMachine).start()
+  /** Auth system. Use `send` method to act with auth. */
+  auth = {
+    actor: this.authActor,
+    send: (...args: Parameters<typeof this.authActor.send>) =>
+      this.authActor.send(...args),
+    useAuthState: () => useSelector(this.authActor, (state) => state),
+    useToken: () => useSelector(this.authActor, (state) => state.context.token),
+    useUser: () => useSelector(this.authActor, (state) => state.context.user),
+  }
+
+  private billingActor = createActor(billingMachine, {
+    input: {
+      ...BILLING_CONTEXT_DEFAULTS,
+      urlUserService: () => withAPIBaseURL(''),
+    },
+  }).start()
+  /** The billing system for the app, which today focuses on Zookeeper credits */
+  billing = {
+    actor: this.billingActor,
+    send: this.billingActor.send.bind(this),
+    useContext: () => useSelector(this.billingActor, ({ context }) => context),
+  }
 
   constructor() {
     this.singletons = this.buildSingletons()
-    this.ReactContext = React.createContext(this.singletons)
   }
 
   /**
    * Build the world!
    */
   buildSingletons() {
-    /**
-     * THE bundle of WASM, a cornerstone of our app. We use this for:
-     * - settings parse/unparse
-     * - KCL parsing, execution, linting, and LSP
-     *
-     * Access this through `kclManager.wasmInstance`, not directly.
-     */
-    const initPromise = initialiseWasm()
-
     const commandBarActor = createActor(commandBarMachine, {
-      input: { commands: [], wasmInstancePromise: initPromise },
+      input: { commands: [], wasmInstancePromise: this.wasmPromise },
     }).start()
     const dummySettingsActor = createActor(settingsMachine, {
       input: { commandBarActor, ...createSettings() },
@@ -96,7 +117,7 @@ export class App {
     const engineCommandManager = new ConnectionManager()
     const rustContext = new RustContext(
       engineCommandManager,
-      initPromise,
+      this.wasmPromise,
       // HACK: convert settings to not be an XState actor to prevent the need for
       // this dummy-with late binding of the real thing.
       // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
@@ -106,8 +127,8 @@ export class App {
     // Accessible for tests mostly
     window.engineCommandManager = engineCommandManager
 
-    const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
-    const kclManager = new KclManager(engineCommandManager, initPromise, {
+    const sceneInfra = new SceneInfra(engineCommandManager, this.wasmPromise)
+    const kclManager = new KclManager(engineCommandManager, this.wasmPromise, {
       rustContext,
       sceneInfra,
     })
@@ -157,9 +178,8 @@ export class App {
           },
         })
     }
-    const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
+    const { SETTINGS, SYSTEM_IO } = ACTOR_IDS
     const appMachineActors = {
-      [AUTH]: authMachine,
       [SETTINGS]: settingsMachine.provide({
         actors: {
           persistSettings: fromPromise<
@@ -182,7 +202,7 @@ export class App {
               ...settings
             } = input.context
 
-            await saveSettings(initPromise, settings, currentProject?.path)
+            await saveSettings(this.wasmPromise, settings, currentProject?.path)
 
             if (input.toastCallback) {
               input.toastCallback()
@@ -292,8 +312,6 @@ export class App {
         },
       }),
       [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-      [COMMAND_BAR]: commandBarMachine,
-      [BILLING]: billingMachine,
     } as const
 
     const appMachine = setup({
@@ -318,7 +336,6 @@ export class App {
          * using the `actors` property in the `setup` function, and
          * inline them instead.
          */
-        spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
         spawnChild(appMachineActors[SETTINGS], {
           systemId: SETTINGS,
           input: {
@@ -329,20 +346,7 @@ export class App {
         spawnChild(appMachineActors[SYSTEM_IO], {
           systemId: SYSTEM_IO,
           input: {
-            wasmInstancePromise: initPromise,
-          },
-        }),
-        spawnChild(appMachineActors[COMMAND_BAR], {
-          systemId: COMMAND_BAR,
-          input: {
-            commands: [],
-          },
-        }),
-        spawnChild(appMachineActors[BILLING], {
-          systemId: BILLING,
-          input: {
-            ...BILLING_CONTEXT_DEFAULTS,
-            urlUserService: () => withAPIBaseURL(''),
+            wasmInstancePromise: this.wasmPromise,
           },
         }),
       ],
@@ -365,19 +369,6 @@ export class App {
     const appActor = createActor(appMachine, {
       systemId: 'root',
     })
-
-    /**
-     * GOTCHA: the type coercion of this actor works because it is spawned for
-     * the lifetime of {appActor}, but would not work if it were invoked
-     * or if it were destroyed under any conditions during {appActor}'s life
-     */
-    const authActor = appActor.system.get(AUTH) as ActorRefFrom<
-      (typeof appMachineActors)[typeof AUTH]
-    >
-    const useAuthState = () => useSelector(authActor, (state) => state)
-    const useToken = () =>
-      useSelector(authActor, (state) => state.context.token)
-    const useUser = () => useSelector(authActor, (state) => state.context.user)
 
     /**
      * GOTCHA: the type coercion of this actor works because it is spawned for
@@ -416,10 +407,6 @@ export class App {
     sceneEntitiesManager.commandBarActor = commandBarActor
     commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
-    const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
-      (typeof appMachineActors)[typeof BILLING]
-    >
-
     const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
       state
     const useCommandBarState = () => {
@@ -431,7 +418,7 @@ export class App {
       type: 'Add commands',
       data: {
         commands: [
-          ...createAuthCommands({ authActor }),
+          ...createAuthCommands({ authActor: this.authActor }),
           ...createProjectCommands({ systemIOActor }),
         ],
       },
@@ -452,15 +439,10 @@ export class App {
       kclManager,
       sceneEntitiesManager,
       appActor,
-      authActor,
-      useAuthState,
-      useToken,
-      useUser,
       settingsActor,
       getSettings,
       useSettings,
       systemIOActor,
-      billingActor,
       useCommandBarState,
       getLayout,
       useLayout,

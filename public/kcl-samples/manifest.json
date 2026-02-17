@@ -170,6 +170,19 @@
     "categories": [
       "Automotive"
     ],
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive"
+    ],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -193,6 +206,19 @@
     "multipleFiles": false,
     "title": "Sprocket Cassette",
     "description": "A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
+    "multipleFiles": false,
+    "title": "Ceiling Propeller",
+    "description": "A twisted ceiling fan geometry made using boolean cutouts",
     "files": [
       "main.kcl"
     ]
@@ -434,7 +460,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "dog-house-great-dane/main.kcl",
     "multipleFiles": true,
-    "title": "A Dog House for a Great Dane",
+    "title": "Dog House for a Great Dane",
     "description": "Assembly model of a dog house designed to accommodate a Great Dane, built using 2x4 lumber",
     "files": [
       "1528A31_strap-hinge.stp",
@@ -553,7 +579,7 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
+    "title": "Mounting bracket for the Focusrite Scarlett Solo audio interface",
     "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
     "files": [
       "main.kcl"
@@ -596,6 +622,20 @@
     "description": "A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.",
     "files": [
       "lib.kcl",
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "gas-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Gas Impeller",
+    "description": "The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed",
+    "files": [
       "main.kcl"
     ]
   },
@@ -925,6 +965,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "liquid-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Liquid Impeller",
+    "description": "An open-style impeller for a centrifugal liquid pump",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Construction",
       "Maker"
     ],
@@ -1190,8 +1244,8 @@
     ],
     "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
     "multipleFiles": false,
-    "title": "Ceiling Propeller",
-    "description": "A twisted 3-blade ceiling fan geometry made using boolean cutouts",
+    "title": "Propeller",
+    "description": "A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward",
     "files": [
       "main.kcl"
     ]
@@ -1358,10 +1412,14 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Construction",
+      "Manufacturing"
+    ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
-    "title": "@settings(defaultLengthUnit = mm)",
-    "description": "",
+    "title": "Sheet Metal Bracket",
+    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
     "files": [
       "main.kcl"
     ]
@@ -1809,6 +1867,19 @@
     "multipleFiles": false,
     "title": "Tube manifold",
     "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "twisted-wire-sculpture/main.kcl",
+    "multipleFiles": false,
+    "title": "Twisted wires",
+    "description": "Strange sculpture inspired by hot wire cutting.",
     "files": [
       "main.kcl"
     ]

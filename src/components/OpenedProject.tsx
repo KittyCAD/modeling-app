@@ -37,7 +37,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -74,8 +74,8 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  const { auth, billing } = useApp()
   const {
-    billingActor,
     systemIOActor,
     getSettings,
     settingsActor,
@@ -86,7 +86,6 @@ export function OpenedProject() {
     setLayout,
     getLayout,
     useSettings,
-    useToken,
   } = useSingletons()
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
@@ -157,7 +156,7 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settings = useSettings()
-  const authToken = useToken()
+  const authToken = auth.useToken()
   const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
@@ -198,7 +197,7 @@ export function OpenedProject() {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+    billing.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
@@ -231,6 +230,7 @@ export function OpenedProject() {
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
+            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -249,6 +249,7 @@ export function OpenedProject() {
     authToken,
     kclManager,
     systemIOActor,
+    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

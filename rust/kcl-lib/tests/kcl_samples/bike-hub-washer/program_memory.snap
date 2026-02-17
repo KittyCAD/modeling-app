@@ -467,6 +467,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
