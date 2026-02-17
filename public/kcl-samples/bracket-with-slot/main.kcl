@@ -59,16 +59,22 @@ bracketWithCountersunkHole = hole::hole(
   bracketBodySolid,
   face = seg02,
   cutAt = [uprightTabHoleCenterOffsetFromBend, 0],
-  holeBottom = hole::flat(),
-  holeBody = hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
-  holeType = hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = sheetMetalThickness, diameter = fastenerHoleDiameter),
+  holeType =   hole::countersink(angle = 90deg, diameter = countersinkOuterDiameter),
 )
 
 // slot sketch
 slotWidth = fastenerHoleDiameter
 slotOverallLength = fastenerHoleDiameter * 3
 slotSketch = startSketchOn(XY)
-slotProfile = startProfile(slotSketch, at = [slotCenterOffsetFromBend, -slotWidth / 2])
+slotProfile = startProfile(
+       slotSketch,
+       at = [
+         slotCenterOffsetFromBend,
+         -slotWidth / 2
+       ],
+     )
   |> xLine(length = -slotOverallLength)
   |> tangentialArc(end = [0, slotWidth], tag = $seg08)
   |> angledLine(angle = tangentToEnd(seg08), length = slotOverallLength)

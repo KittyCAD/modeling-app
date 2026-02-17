@@ -31,22 +31,22 @@ appearance(nodeSphereSolid, color = nodeColorHexadecimal)
 
 // nodes pattern
 nodesPatternAlongX = patternLinear3d(
-nodeSphereSolid,
-instances = gridInstancesPerAxis,
-distance = gridSpacingLength,
-axis = X,
+  nodeSphereSolid,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = X,
 )
 nodesPatternAlongXThenY = patternLinear3d(
-nodesPatternAlongX,
-instances = gridInstancesPerAxis,
-distance = gridSpacingLength,
-axis = Y,
+  nodesPatternAlongX,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Y,
 )
 nodesPatternAlongXThenYThenZ = patternLinear3d(
-nodesPatternAlongXThenY,
-instances = gridInstancesPerAxis,
-distance = gridSpacingLength,
-axis = Z,
+  nodesPatternAlongXThenY,
+  instances = gridInstancesPerAxis,
+  distance = gridSpacingLength,
+  axis = Z,
 )
 
 // rods

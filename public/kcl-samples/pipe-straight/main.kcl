@@ -15,11 +15,11 @@ boltHoleDiameterScale = 0.70
 
 pipeOutsideDiameter = pipeOutsideDiameterScale * flangeOutsideDiameter
 pipeWallThickness = requestedWallThicknessFraction * pipeOutsideDiameter
-pipeInsideDiameter = pipeOutsideDiameter - 2 * pipeWallThickness
+pipeInsideDiameter = pipeOutsideDiameter - (2 * pipeWallThickness)
 boltCircleDiameter = (pipeOutsideDiameter + flangeOutsideDiameter) / 2
 boltCircleRadius = boltCircleDiameter / 2
 finalBoltHoleDiameter = nominalBoltHoleDiameter * boltHoleDiameterScale
-pipeLengthBetweenFlangeInnerFaces = faceToFaceLength - 2 * flangeThickness
+pipeLengthBetweenFlangeInnerFaces = faceToFaceLength - (2 * flangeThickness)
 
 pipeRingSketch = startSketchOn(YZ)
 pipeOuterCircle = circle(pipeRingSketch, center = [0, 0], radius = pipeOutsideDiameter / 2)
@@ -32,9 +32,17 @@ flangeOuterCircle = circle(flangeSketch, center = [0, 0], radius = flangeOutside
 flangeBoreCircle = circle(flangeSketch, center = [0, 0], radius = pipeInsideDiameter / 2)
 flangeRingProfile = subtract2d(flangeOuterCircle, tool = flangeBoreCircle)
 seedBoltHole = circle(flangeSketch, center = [0, boltCircleRadius], diameter = finalBoltHoleDiameter)
-boltHolesRing = patternCircular2d([seedBoltHole], instances = boltHoleCount, center = [0, 0], arcDegrees = 360deg, rotateDuplicates = false)
+boltHolesRing = patternCircular2d(
+  [seedBoltHole],
+  instances = boltHoleCount,
+  center = [0, 0],
+  arcDegrees = 360deg,
+  rotateDuplicates = false,
+)
 flangePerforatedProfile = subtract2d(flangeRingProfile, tool = boltHolesRing)
 baseFlange = extrude(flangePerforatedProfile, length = flangeThickness, method = NEW)
 
-rightEndFlange = baseFlange |> translate(x = faceToFaceLength / 2 - flangeThickness, global = true)
-leftEndFlange = clone(rightEndFlange) |> rotate(axis = Y, angle = 180deg)
+rightEndFlange = baseFlange
+  |> translate(x = faceToFaceLength / 2 - flangeThickness, global = true)
+leftEndFlange = clone(rightEndFlange)
+  |> rotate(axis = Y, angle = 180deg)
