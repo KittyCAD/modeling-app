@@ -693,6 +693,7 @@ export const Thinking = (props: {
   }, [reasoningThoughts.length])
 
   const onReasoningPaneInteraction = useCallback(() => {
+    isProgrammaticScrollRef.current = false
     userHasInteractedWithPaneRef.current = true
   }, [])
 
@@ -776,12 +777,14 @@ export const Thinking = (props: {
     <div
       data-testid="ml-response-thinking-view"
       ref={refViewFull}
+      role="region"
       style={{ maxHeight: '20lh' }}
       className={`relative select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md ${!userHasManuallyScrolled ? 'scrollbar-hide' : ''}`}
       onScroll={onReasoningScroll}
       onWheel={onReasoningPaneInteraction}
       onTouchStart={onReasoningPaneInteraction}
       onPointerDown={onReasoningPaneInteraction}
+      onKeyDown={onReasoningPaneInteraction}
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {anyRowCollapse.length > 0 && (

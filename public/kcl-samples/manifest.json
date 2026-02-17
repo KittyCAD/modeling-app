@@ -155,6 +155,22 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Manufacturing",
+      "Automotive",
+      "Aerospace",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "bracket-with-slot/main.kcl",
+    "multipleFiles": false,
+    "title": "Adjustable L‑Bracket",
+    "description": "a compact 90° mounting bracket used to join parts at right angles; the slot provides alignment adjustment while the countersunk hole allows a flush screw head.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
@@ -940,6 +956,19 @@
     "categories": [
       "Maker"
     ],
+    "pathFromProjectDirectoryToFirstFile": "lattice-cubic/main.kcl",
+    "multipleFiles": false,
+    "title": "cubic lattice model",
+    "description": "Parametric three dimensional grid of spheres and rods used for teaching crystal lattice geometry and spatial repetition",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
     "title": "Lego Brick",
@@ -1166,6 +1195,20 @@
       "Manufacturing",
       "Construction"
     ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-elbow-90deg/main.kcl",
+    "multipleFiles": false,
+    "title": "90° Flanged Pipe Elbow",
+    "description": "Quarter‑turn elbow with two bolt‑up flanges used to join 94 × 71 mm pipe in industrial fluid systems.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Pipe and Flange Assembly",
@@ -1193,6 +1236,20 @@
     "multipleFiles": false,
     "title": "Pipe manifold",
     "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Each port provides an attachment point for a threaded pipe fitting",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-straight/main.kcl",
+    "multipleFiles": false,
+    "title": "Horizontal Pipe Spool",
+    "description": "Short, straight pipe section with two identical flat, bolted end flanges; used to connect flanged equipment or piping runs and to set a precise face-to-face length in real systems.",
     "files": [
       "main.kcl"
     ]
@@ -1867,6 +1924,19 @@
     "multipleFiles": false,
     "title": "Tube manifold",
     "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "twisted-wire-sculpture/main.kcl",
+    "multipleFiles": false,
+    "title": "Twisted wires",
+    "description": "Strange sculpture inspired by hot wire cutting.",
     "files": [
       "main.kcl"
     ]
