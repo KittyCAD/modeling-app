@@ -21,7 +21,7 @@ launchApp(app)
 
 /** The initialization sequence for this app */
 function launchApp(app: App) {
-  initSingletonBehavior(app.singletons)
+  initSingletonBehavior(app)
   if (window.electron) {
     initElectronBehavior(window.electron)
   }
@@ -29,7 +29,8 @@ function launchApp(app: App) {
 }
 
 /** initialize behaviors that rely on singletons */
-function initSingletonBehavior(singletons: App['singletons']) {
+function initSingletonBehavior(app: App) {
+  const { singletons } = app
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(
     singletons.kclManager,
@@ -43,7 +44,7 @@ function initSingletonBehavior(singletons: App['singletons']) {
       singletons.appActor.start()
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
-      singletons.commandBarActor.send({
+      app.commands.send({
         type: 'Add commands',
         data: {
           commands: [

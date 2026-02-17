@@ -2,14 +2,14 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 
 import styles from './KclEditorMenu.module.css'
 import { isDesktop } from '@src/lib/isDesktop'
 import Tooltip from '@src/components/Tooltip'
 
 export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
-  const { commandBarActor } = useSingletons()
+  const { commands } = useApp()
   return (
     <Menu>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
@@ -36,7 +36,7 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() =>
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'code',
@@ -52,7 +52,7 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() =>
-                commandBarActor.send({
+                commands.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'code',
