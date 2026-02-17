@@ -127,6 +127,10 @@ jobs:
         with:
           rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
+      - name: Install dependencies
+        run: |
+          cd rust/kcl-python-bindings
+          just setup-uv
       - name: Track start
         run: .github/ci-cd-scripts/track-step.sh
         env:
@@ -139,7 +143,6 @@ jobs:
       - name: Run tests
         run: |
           cd rust/kcl-python-bindings
-          just setup-uv
           just test || true # let TAB determine failure
           ../../.github/ci-cd-scripts/upload-results.sh
         env:
