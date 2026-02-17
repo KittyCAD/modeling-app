@@ -127,6 +127,15 @@ jobs:
         with:
           rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
+      - name: Track start
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration:kcl
+          CI_STEP: start
       - name: Run tests
         run: |
           cd rust/kcl-python-bindings
