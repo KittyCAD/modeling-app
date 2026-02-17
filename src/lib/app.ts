@@ -75,6 +75,16 @@ export class App {
    */
   public wasmPromise = initialiseWasm()
 
+  private commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [], wasmInstancePromise: this.wasmPromise },
+  }).start()
+  /** The command system for the app */
+  public commands = {
+    actor: this.commandBarActor,
+    send: this.commandBarActor.send.bind(this),
+    useState: () => useSelector(this.commandBarActor, (state) => state),
+  }
+
   private authActor = createActor(authMachine).start()
   /** Auth system. Use `send` method to act with auth. */
   auth = {
@@ -107,11 +117,8 @@ export class App {
    * Build the world!
    */
   buildSingletons() {
-    const commandBarActor = createActor(commandBarMachine, {
-      input: { commands: [], wasmInstancePromise: this.wasmPromise },
-    }).start()
     const dummySettingsActor = createActor(settingsMachine, {
-      input: { commandBarActor, ...createSettings() },
+      input: { commandBarActor: this.commandBarActor, ...createSettings() },
     })
 
     const engineCommandManager = new ConnectionManager()
@@ -326,7 +333,7 @@ export class App {
         engineCommandManager: engineCommandManager,
         sceneInfra: sceneInfra,
         sceneEntitiesManager: sceneEntitiesManager,
-        commandBarActor,
+        commandBarActor: this.commandBarActor,
         layout: defaultLayout,
       },
       entry: [
@@ -340,7 +347,7 @@ export class App {
           systemId: SETTINGS,
           input: {
             ...createSettings(),
-            commandBarActor: commandBarActor,
+            commandBarActor: this.commandBarActor,
           },
         }),
         spawnChild(appMachineActors[SYSTEM_IO], {
@@ -404,17 +411,11 @@ export class App {
     buildFSHistoryExtension(systemIOActor, kclManager)
 
     // TODO: proper dependency management
-    sceneEntitiesManager.commandBarActor = commandBarActor
-    commandBarActor.send({ type: 'Set kclManager', data: kclManager })
-
-    const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-      state
-    const useCommandBarState = () => {
-      return useSelector(commandBarActor, cmdBarStateSelector)
-    }
+    sceneEntitiesManager.commandBarActor = this.commandBarActor
+    this.commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
     // Initialize global commands
-    commandBarActor.send({
+    this.commandBarActor.send({
       type: 'Add commands',
       data: {
         commands: [
@@ -432,7 +433,6 @@ export class App {
       appActor.send({ type: AppMachineEventType.SetLayout, layout })
 
     return {
-      commandBarActor,
       engineCommandManager,
       rustContext,
       sceneInfra,
@@ -443,7 +443,6 @@ export class App {
       getSettings,
       useSettings,
       systemIOActor,
-      useCommandBarState,
       getLayout,
       useLayout,
       setLayout,

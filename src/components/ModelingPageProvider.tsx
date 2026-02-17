@@ -25,9 +25,8 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth } = useApp()
+  const { auth, commands } = useApp()
   const {
-    commandBarActor,
     engineCommandManager,
     kclManager,
     rustContext,
@@ -63,7 +62,7 @@ export const ModelingPageProvider = ({
       zoomToFitCommand,
     } = createStandardViewsCommands(engineCommandManager)
 
-    const commands = [
+    const namedViewCommands = [
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
@@ -75,22 +74,22 @@ export const ModelingPageProvider = ({
       leftViewCommand,
       zoomToFitCommand,
     ]
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: {
-        commands,
+        commands: namedViewCommands,
       },
     })
     return () => {
       // Remove commands if you go to the home page
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: {
-          commands,
+          commands: namedViewCommands,
         },
       })
     }
-  }, [commandBarActor, engineCommandManager, settingsActor])
+  }, [commands, engineCommandManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -103,7 +102,7 @@ export const ModelingPageProvider = ({
       PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
+    commands.send({
       type: 'Remove commands',
       data: {
         commands: [
@@ -114,14 +113,14 @@ export const ModelingPageProvider = ({
       },
     })
     if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [RouteTelemetryCommand, RouteSettingsCommand],
         },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
+      commands.send({
         type: 'Add commands',
         data: {
           commands: [
@@ -138,7 +137,7 @@ export const ModelingPageProvider = ({
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
-    commandBarActor,
+    commandBarActor: commands.actor,
     engineCommandManager,
     filePath,
     kclManager,
@@ -197,19 +196,19 @@ export const ModelingPageProvider = ({
   }, [kclManager, project, file])
 
   useEffect(() => {
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: { commands: kclCommandMemo },
     })
 
     return () => {
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: { commands: kclCommandMemo },
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
-  }, [commandBarActor.send, kclCommandMemo])
+  }, [commands.send, kclCommandMemo])
 
   return <div>{children}</div>
 }
