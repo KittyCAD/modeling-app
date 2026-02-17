@@ -21,7 +21,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { UnitLength } from '@kittycad/lib/dist/types/src'
+import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import { uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
