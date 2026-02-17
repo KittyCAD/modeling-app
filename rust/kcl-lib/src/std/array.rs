@@ -234,6 +234,7 @@ pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let mut computed_start = start.unwrap_or(0);
     let mut computed_end = end.unwrap_or(len);
 
+    // Negative indices count from the end.
     if computed_start < 0 {
         computed_start += len;
     }
@@ -241,25 +242,25 @@ pub async fn slice(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         computed_end += len;
     }
 
-    if let Some(start) = start
-        && (computed_start < 0 || computed_start >= len)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Slice start index {start} is out of bounds for array of length {len}"),
-            vec![args.source_range],
-        )));
+    fn empty_slice(ty: RuntimeType) -> KclValue {
+        KclValue::HomArray { value: Vec::new(), ty }
     }
-    if let Some(end) = end
-        && (computed_end < 0 || computed_end > len)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Slice end index {end} is out of bounds for array of length {len}"),
-            vec![args.source_range],
-        )));
+
+    if computed_start < 0 {
+        computed_start = 0;
+    }
+    if computed_start >= len {
+        return Ok(empty_slice(ty));
+    }
+    if computed_end > len {
+        computed_end = len;
+    }
+    if computed_end < 0 {
+        return Ok(empty_slice(ty));
     }
 
     if computed_start >= computed_end {
-        return Ok(KclValue::HomArray { value: Vec::new(), ty });
+        return Ok(empty_slice(ty));
     }
 
     let Some(sliced) = array.get(computed_start as usize..computed_end as usize) else {
