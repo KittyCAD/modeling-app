@@ -224,7 +224,9 @@ export const ModelingPageProvider = ({
   // TODO: pass in the settings as a dependency to these systems so that this is unnecessary,
   // and they just have the values they need.
   useEffect(() => {
-    const onSettingsUpdate = ({ context }: SnapshotFrom<SettingsActorType>) => {
+    const onSettingsUpdate = (snapshot: SnapshotFrom<SettingsActorType>) => {
+      const { context } = snapshot
+
       // Update line wrapping
       const newWrapping = context.textEditor.textWrapping.current
       if (newWrapping !== lastSettings.value?.textEditor.textWrapping) {
@@ -263,13 +265,12 @@ export const ModelingPageProvider = ({
       // Execute AST
       try {
         const relevantSetting = (s: SaveSettingsPayload | undefined) => {
-          return (
-            s?.modeling?.defaultUnit !== context.modeling.defaultUnit.current ||
-            s?.modeling.showScaleGrid !==
-              context.modeling.showScaleGrid.current ||
+          const hasScaleGrid =
+            s?.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
+          const hasHighlightEdges =
             s?.modeling?.highlightEdges !==
-              context.modeling.highlightEdges.current
-          )
+            context.modeling.highlightEdges.current
+          return hasScaleGrid || hasHighlightEdges
         }
 
         const settingsIncludeNewRelevantValues = relevantSetting(

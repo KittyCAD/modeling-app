@@ -46,6 +46,7 @@ import {
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { signal } from '@preact/signals-core'
+import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -91,8 +92,6 @@ export class App {
     useUser: () => useSelector(this.authActor, (state) => state.context.user),
   }
 
-  // TODO: refactor this to not require keeping around the last settings to compare to
-  public lastSettings = signal<SaveSettingsPayload | undefined>(undefined)
   private settingsActor = createActor(settingsMachine, {
     input: {
       ...createSettings(),
@@ -100,6 +99,12 @@ export class App {
       wasmInstancePromise: this.wasmPromise,
     },
   }).start()
+  // TODO: refactor this to not require keeping around the last settings to compare to
+  public lastSettings = signal<SaveSettingsPayload>(
+    getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settingsActor.getSnapshot().context)
+    )
+  )
   /** The settings system for the application */
   public settings = {
     actor: this.settingsActor,
