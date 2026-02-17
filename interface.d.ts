@@ -43,33 +43,28 @@ export interface IElectronAPI {
     callback: (eventType: string, path: string) => void
   ) => void
   readFile: typeof fs.readFile
-  copyFile: typeof fs.copyFile
   watchFileOff: (path: string, key: string) => void
-  writeFile: (
-    path: string,
-    data: string | Uint8Array
-  ) => ReturnType<typeof fs.writeFile>
+  writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
-  // This is synchronous.
-  exists: (path: string) => boolean
-  getPath: (name: string) => Promise<string>
+  getPath: (name: 'appData' | 'documents' | 'userData') => Promise<string>
   rm: typeof fs.rm
+  access: typeof fs.access
   stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
   ) => Promise<{ value: boolean; error: unknown }>
-  path: typeof path
+  path: path
   mkdir: typeof fs.mkdir
-  join: typeof path.join
+  path: typeof path
   sep: typeof path.sep
-  copy: typeof fs.cp
+  cp: typeof fs.cp
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (
     source: string | URL,
     destination: string | URL
   ) => Promise<void | Error>
-  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
+  rename: (prev: string, next: string) => Promise<undefined>
   packageJson: {
     name: string
   }
@@ -100,7 +95,6 @@ export interface IElectronAPI {
     callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
-  getPathUserData: () => Promise<string>
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any

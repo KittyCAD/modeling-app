@@ -1,5 +1,6 @@
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
+import electronfs, { type ElectronFSOptions } from '@src/lib/fs-zds/electronfs'
 
 function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
   return (
@@ -23,16 +24,17 @@ function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
 
 export enum StorageName {
   NoopFS = 'noopfs',
+  ElectronFS = 'electronfs',
 }
 
 const STORAGE_IMPL: Record<StorageName, IZooDesignStudioFS> = {
   [StorageName.NoopFS]: noopfs.impl,
+  [StorageName.ElectronFS]: electronfs.impl,
 }
 
-export type StorageBacking = {
-  type: StorageName.NoopFS
-  options: NoopFSOptions
-}
+export type StorageBacking =
+  | { type: StorageName.NoopFS; options: NoopFSOptions }
+  | { type: StorageName.ElectronFS; options: ElectronFSOptions }
 
 // We must assign an object to this variable, and not undefined, because this
 // object will act as a reference to all modules that import it. This reference
