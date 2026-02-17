@@ -142,6 +142,9 @@ async fn inner_mirror_2d(
                                 )));
                             }
                         }
+                        // Currently, frontend doesn't know if mirror2d will close the sketch or not.
+                        // Track that information.
+                        sketch.is_closed = crate::execution::ProfileClosed::Maybe;
                         Ok(())
                     })?;
             } else {
@@ -150,6 +153,13 @@ async fn inner_mirror_2d(
                     vec![args.source_range],
                 )));
             };
+        }
+        Axis2dOrEdgeReference::EdgeReference(_) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) or a tagged edge instead."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
         }
     }
 

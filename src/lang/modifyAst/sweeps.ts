@@ -49,7 +49,11 @@ import {
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
-import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import {
+  getEdgeTagCall,
+  entityReferenceToEdgeRefPayload,
+  createEdgeRefObjectExpression,
+} from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 
@@ -529,6 +533,7 @@ export function addLoft({
 
 export function addRevolve({
   ast,
+  artifactGraph,
   sketches,
   angle,
   wasmInstance,
@@ -542,6 +547,7 @@ export function addRevolve({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   angle: KclCommandValue
   wasmInstance: ModuleType
@@ -560,13 +566,57 @@ export function addRevolve({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  // V2 command bar picks (entity refs) need to be normalized into graphSelections,
+  // otherwise revolve() can be generated without its required first positional arg.
+  // TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
+  // and replace it with `graphSelectionsV2`, so normalising to `graphSelections` is going to mean more refactoring
+  // later, but at least it's working and tsc will tell us most/all of the places that need to be updated.
+  const normalizedV2GraphSelections = (sketches.graphSelectionsV2 || [])
+    .map((v2Selection) => {
+      if (v2Selection.codeRef) {
+        return { codeRef: v2Selection.codeRef }
+      }
+
+      const entityRef = v2Selection.entityRef
+      if (!entityRef) return null
+
+      let entityId: string | undefined
+      if (entityRef.type === 'solid2d') {
+        entityId = entityRef.solid2dId
+      } else if (entityRef.type === 'face') {
+        entityId = entityRef.faceId
+      } else if (entityRef.type === 'plane') {
+        entityId = entityRef.planeId
+      }
+
+      if (!entityId) return null
+      const codeRef = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
+      if (!codeRef) return null
+      return { codeRef }
+    })
+    .filter(
+      (
+        selection
+      ): selection is { codeRef: NonNullable<typeof selection>['codeRef'] } =>
+        Boolean(selection)
+    )
+
+  const normalizedSketches: Selections = {
+    graphSelections: [
+      ...sketches.graphSelections,
+      ...normalizedV2GraphSelections,
+    ],
+    otherSelections: sketches.otherSelections,
+    graphSelectionsV2: [],
+  }
+
   const vars = getVariableExprsFromSelection(
-    sketches,
+    normalizedSketches,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -575,15 +625,50 @@ export function addRevolve({
     return vars
   }
 
-  // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(
-    axis,
-    edge,
-    modifiedAst,
-    wasmInstance
-  )
-  if (err(getAxisResult) || !getAxisResult.generatedAxis) {
-    return new Error('Generated axis selection is missing.')
+  // Handle axis/edge: Check if edge has V2 selections (edgeRefs) or use tag-based approach
+  let axisExpr: Expr | null = null
+  let edgeRefExpr: Expr | null = null
+  const useEdgeRefs =
+    edge &&
+    edge.graphSelectionsV2 &&
+    edge.graphSelectionsV2.length > 0 &&
+    edge.graphSelectionsV2[0]?.entityRef?.type === 'edge'
+
+  if (useEdgeRefs && edge.graphSelectionsV2[0]?.entityRef) {
+    // Use edgeRefs (new API)
+    const entityRef = edge.graphSelectionsV2[0].entityRef
+    if (entityRef.type === 'edge') {
+      const payload = entityReferenceToEdgeRefPayload(entityRef)
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+      edgeRefExpr = edgeRefResult.expr
+      modifiedAst = edgeRefResult.modifiedAst
+    }
+  } else if (edge) {
+    // Use tag-based approach (legacy)
+    const getAxisResult = getAxisExpressionAndIndex(
+      axis,
+      edge,
+      modifiedAst,
+      wasmInstance
+    )
+    if (err(getAxisResult) || !getAxisResult.generatedAxis) {
+      return new Error('Generated axis selection is missing.')
+    }
+    axisExpr = getAxisResult.generatedAxis
+    modifiedAst = modifiedAst // getAxisResult might modify AST, but getAxisExpressionAndIndex doesn't return it
+  } else if (axis) {
+    // Use axis string
+    axisExpr = createLocalName(axis)
+  } else {
+    return new Error('Axis or edge selection is missing.')
   }
 
   // Extra labeled args expressions
@@ -609,9 +694,14 @@ export function addRevolve({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
+  const axisArgs = edgeRefExpr
+    ? [createLabeledArg('edgeRef', edgeRefExpr)]
+    : axisExpr
+      ? [createLabeledArg('axis', axisExpr)]
+      : []
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
     createLabeledArg('angle', valueOrVariable(angle)),
-    createLabeledArg('axis', getAxisResult.generatedAxis),
+    ...axisArgs,
     ...symmetricExpr,
     ...bidirectionalAngleExpr,
     ...tagStartExpr,
@@ -778,6 +868,7 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
         },
       ],
       otherSelections: [],
+      graphSelectionsV2: [],
     }
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
@@ -806,6 +897,7 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
         },
       ],
       otherSelections: [],
+      graphSelectionsV2: [],
     }
   } else {
     return new Error('The type of the axis argument is unsupported')

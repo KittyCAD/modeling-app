@@ -1210,6 +1210,7 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+        | ModelingCmd::RevolveAboutEdgeReference(kcmc::RevolveAboutEdgeReference { target, .. })
         | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
@@ -1220,7 +1221,7 @@ fn artifacts_to_update(
                     kittycad_modeling_cmds::shared::ExtrudeMethod::Merge
                 }
                 // Revolve variants behave like New bodies in std layer
-                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) => {
+                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) | ModelingCmd::RevolveAboutEdgeReference(_) => {
                     kittycad_modeling_cmds::shared::ExtrudeMethod::New
                 }
                 _ => kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
@@ -1231,6 +1232,7 @@ fn artifacts_to_update(
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
+                ModelingCmd::RevolveAboutEdgeReference(_) => SweepSubType::RevolveAboutEdge,
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();

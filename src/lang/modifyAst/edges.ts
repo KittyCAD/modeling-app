@@ -99,7 +99,7 @@ type FilletEdgeRefPayload = {
  * Converts an EntityReference (edge type) to a KCL edgeRefs payload object.
  * Only includes optional fields when they are actually present.
  */
-function entityReferenceToEdgeRefPayload(
+export function entityReferenceToEdgeRefPayload(
   entityRef: Extract<EntityReference, { type: 'edge' }>
 ): FilletEdgeRefPayload {
   const payload: FilletEdgeRefPayload = {
@@ -123,7 +123,7 @@ function entityReferenceToEdgeRefPayload(
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
  */
-function createEdgeRefObjectExpression(
+export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
   wasmInstance: ModuleType,
   ast: Node<Program>,

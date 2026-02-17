@@ -814,6 +814,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes

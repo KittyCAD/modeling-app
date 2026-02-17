@@ -5,14 +5,17 @@ use crate::{
     execution::{Plane, Sketch, Solid, TagIdentifier},
     std::{fillet::EdgeReference, sketch::FaceTag},
 };
+use kittycad_modeling_cmds::shared::EdgeReference as ModelingEdgeReference;
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
-    /// Tagged edge.
+    /// Tagged edge (simple: Uuid or Tag).
     Edge(EdgeReference),
+    /// Edge reference with faces, disambiguators, and index.
+    EdgeReference(ModelingEdgeReference),
 }
 
 /// A 3D axis or tagged edge.

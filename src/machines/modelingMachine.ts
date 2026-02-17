@@ -2960,6 +2960,7 @@ export const modelingMachine = setup({
         const { ast } = input.kclManager
         const astResult = addRevolve({
           ast,
+          artifactGraph: input.kclManager.artifactGraph,
           wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
