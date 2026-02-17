@@ -119,13 +119,11 @@ test.describe(
     test('Project and user settings can be reset', async ({
       page,
       homePage,
+      scene,
     }) => {
-      const u = await getUtils(page)
       await test.step('Setup', async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
-        await page.waitForTimeout(1000)
+        await scene.connectionEstablished()
       })
 
       // Selectors and constants
@@ -141,6 +139,10 @@ test.describe(
         user: 'in',
         project: 'cm',
       }
+      const setAtLevelToast = (level: SettingsLevel) =>
+        page.getByText(
+          level === 'user' ? 'as a user default' : 'for this project'
+        )
       const resetToast = (level: SettingsLevel) =>
         page.getByText(`${level}-level settings were reset`)
 
@@ -163,12 +165,11 @@ test.describe(
         await expect(settingInput).toHaveValue(settingValues.project, {
           timeout: 15_000,
         })
+        await expect(setAtLevelToast('project')).toBeVisible()
+      })
 
-        // Set user-level value
-        // It's the same component so this could fill too soon.
-        // We need to confirm to wait the user settings tab is loaded.
+      await test.step('Verify user setting is still the same', async () => {
         await settingsSwitchTab(page)('user')
-        await settingInput.selectOption(settingValues.user)
         await expect(settingInput).toHaveValue(settingValues.user)
       })
 
@@ -195,6 +196,7 @@ test.describe(
           await expect(settingInput).toHaveValue(settingValues.project, {
             timeout: 15_000,
           })
+          await expect(setAtLevelToast('project')).toBeVisible()
         })
       })
 
