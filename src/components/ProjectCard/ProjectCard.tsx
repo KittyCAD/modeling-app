@@ -75,7 +75,9 @@ function ProjectCard({
            */
           setImageUrl(imageUrl)
         }
-      } catch {}
+      } catch (e: unknown) {
+        console.log(e)
+      }
     }
 
     void getNumberOfFiles()

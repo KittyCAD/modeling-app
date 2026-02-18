@@ -24,8 +24,8 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await window.electron.mkdir(downloadDir, { recursive: true })
-        await window.electron.writeFile(
+        await fsZds.mkdir(downloadDir, { recursive: true })
+        await fsZds.writeFile(
           fsZds.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
@@ -55,7 +55,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       }
 
       // Write the file.
-      await window.electron.writeFile(
+      await fsZds.writeFile(
         filePathMeta.filePath,
         new Uint8Array(file.contents)
       )

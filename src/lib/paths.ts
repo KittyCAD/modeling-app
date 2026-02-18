@@ -1,6 +1,7 @@
 import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 
 import type { IElectronAPI } from '@root/interface'
 import {
@@ -152,7 +153,7 @@ export function joinRouterPaths(...parts: string[]): string {
  * or \dog\cat on POSIX
  */
 export function joinOSPaths(...parts: string[]): string {
-  const sep = window.electron?.path.sep || '/'
+  const sep = fsZds.sep
   const regexSep = sep === '/' ? '/' : '\\'
   return (
     (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
@@ -175,7 +176,7 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(targetPath: string): string {
-  return targetPath.split(window.electron?.path.sep ?? '/').pop() || ''
+  return targetPath.split(fsZds.sep).pop() || ''
 }
 
 /**
@@ -244,11 +245,11 @@ export function webSafeJoin(paths: string[]): string {
  * Splits any paths safely based on the runtime
  */
 export function desktopSafePathSplit(targetPath: string): string[] {
-  return targetPath.split(window.electron?.path.sep ?? '/')
+  return targetPath.split(fsZds.sep)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return paths.join(window.electron?.path.sep ?? '/')
+  return paths.join(fsZds.sep)
 }
 
 /**
@@ -309,7 +310,7 @@ export const isExtensionARelevantExtension = (
 export function getFilePathRelativeToProject(
   absoluteFilePath: string,
   projectName: string,
-  sep = window.electron?.path.sep ?? '/'
+  sep = fsZds.sep
 ) {
   // Gotcha: below we're gonna look for the index of the project name,
   // but what if the project name happens to be in the path earlier than the real one?
@@ -325,7 +326,7 @@ export function getFilePathRelativeToProject(
 
 async function getArchiveBasePath() {
   return desktopSafePathJoin([
-    (await window.electron?.getPath('userData')) ?? '/userData',
+    (await fsZds.getPath('userData')) ?? '/userData',
     ARCHIVE_DIR,
   ])
 }
@@ -342,7 +343,7 @@ export async function toArchivePath(absolutePath: string) {
     // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
     // Make that make sense, right? So our archive paths need to replace that character.
     const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
-    return window.electron?.path.join(basePath, absolutePathWithSafeDriveName)
+    return fsZds.join(basePath, absolutePathWithSafeDriveName)
   }
 
   return webSafeJoin([basePath, absolutePath])

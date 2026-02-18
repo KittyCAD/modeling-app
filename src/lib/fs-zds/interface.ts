@@ -1,7 +1,6 @@
 export interface IStat {
   dev: number
   ino: number
-  /** Slight divergence from NodeJS stat. We don't support the string literals or null. */
   mode: number // 'read' | 'write' | 'execute' | null
   nlink: number
   uid: number
@@ -20,11 +19,6 @@ export interface IStat {
   birthtime: Date
 }
 
-/**
- * Common interface for swappable implementations of most NodeJS `fs` and `path` operations.
- * We built this so that our web and desktop targets (and any future targets) could perform I/O operations
- * to a common interface, and provide implementations that work on their platform.
- */
 export interface IZooDesignStudioFS {
   resolve: (...strs: string[]) => string
   join: (...strs: string[]) => string
@@ -65,10 +59,8 @@ export interface IZooDesignStudioFS {
   mkdir: (path: string, options?: any) => Promise<undefined | string>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>
-  /** Lifecycle hook for module, where additional resources can be gathered asynchronously if needed. */
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   detach: () => Promise<undefined | void>
-  /** Lifecycle hook for module, where resources can be cleaned up asynchronously if needed. */
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   attach: () => Promise<undefined | void>
 }
