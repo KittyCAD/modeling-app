@@ -43,6 +43,70 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
 }
 
+fn sketch_on_cache_name(range: SourceRange) -> String {
+    format!("__kcl_sketch_on_{}_{}", range.module_id(), range.start())
+}
+
+#[cfg(feature = "artifact-graph")]
+fn default_plane_name_from_expr(expr: &Expr) -> Option<crate::engine::PlaneName> {
+    fn parse_name(name: &str, negative: bool) -> Option<crate::engine::PlaneName> {
+        use crate::engine::PlaneName;
+
+        match (name, negative) {
+            ("XY", false) => Some(PlaneName::Xy),
+            ("XY", true) => Some(PlaneName::NegXy),
+            ("XZ", false) => Some(PlaneName::Xz),
+            ("XZ", true) => Some(PlaneName::NegXz),
+            ("YZ", false) => Some(PlaneName::Yz),
+            ("YZ", true) => Some(PlaneName::NegYz),
+            _ => None,
+        }
+    }
+
+    match expr {
+        Expr::Name(name) => {
+            if !name.path.is_empty() {
+                return None;
+            }
+            parse_name(&name.name.name, false)
+        }
+        Expr::UnaryExpression(unary) => {
+            if unary.operator != UnaryOperator::Neg {
+                return None;
+            }
+            let crate::parsing::ast::types::BinaryPart::Name(name) = &unary.argument else {
+                return None;
+            };
+            if !name.path.is_empty() {
+                return None;
+            }
+            parse_name(&name.name.name, true)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn sketch_on_frontend_plane(
+    arguments: &[crate::parsing::ast::types::LabeledArg],
+    on_object_id: crate::front::ObjectId,
+) -> crate::front::Plane {
+    for arg in arguments {
+        let Some(label) = &arg.label else {
+            continue;
+        };
+        if label.name != "on" {
+            continue;
+        }
+        if let Some(name) = default_plane_name_from_expr(&arg.arg) {
+            return crate::front::Plane::Default(name);
+        }
+        break;
+    }
+
+    crate::front::Plane::Object(on_object_id)
+}
+
 impl<'a> StatementKind<'a> {
     fn expect_name(&self) -> &'a str {
         match self {
@@ -1100,16 +1164,42 @@ impl Node<SketchBlock> {
         }
 
         let range = SourceRange::from(self);
+        let on_cache_name = sketch_on_cache_name(range);
 
         // Evaluate arguments.
         let mut labeled = IndexMap::new();
         for labeled_arg in &self.arguments {
-            let source_range = SourceRange::from(labeled_arg.arg.clone());
+            let source_range = SourceRange::from(&labeled_arg.arg);
             let metadata = Metadata { source_range };
-            let value_cf = ctx
-                .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let value = control_continue!(value_cf);
+            let is_on_arg = matches!(&labeled_arg.label, Some(label) if label.name == "on");
+            let value = if is_on_arg && exec_state.sketch_mode() {
+                match exec_state.stack().get(&on_cache_name, source_range).cloned() {
+                    Ok(cached) => cached,
+                    Err(_) => {
+                        let value_cf = ctx
+                            .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                            .await?;
+                        control_continue!(value_cf)
+                    }
+                }
+            } else {
+                let value_cf = ctx
+                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                    .await?;
+                control_continue!(value_cf)
+            };
+            if is_on_arg && !exec_state.sketch_mode() {
+                if exec_state.stack().cur_frame_contains(&on_cache_name) {
+                    let cached_on = value.clone();
+                    exec_state
+                        .mut_stack()
+                        .update(&on_cache_name, move |cached, _| *cached = cached_on.clone());
+                } else {
+                    exec_state
+                        .mut_stack()
+                        .add(on_cache_name.clone(), value.clone(), source_range)?;
+                }
+            }
             let arg = Arg::new(value, source_range);
             match &labeled_arg.label {
                 Some(label) => {
@@ -1178,39 +1268,10 @@ impl Node<SketchBlock> {
             debug_assert!(false, "{message}");
             return Err(internal_err(message, range));
         };
-        let arg_on_expr_name = self
-            .arguments
-            .iter()
-            .find_map(|labeled_arg| {
-                if let Some(label) = &labeled_arg.label
-                    && label.name == "on"
-                {
-                    // Being a simple identifier only is required by the parser.
-                    if let Some(name) = labeled_arg.arg.ident_name() {
-                        Some(Ok(name))
-                    } else {
-                        let message = "A sketch block's `on` parameter must be a variable or identifier, not an arbitrary expression. The parser should have enforced this."
-                                .to_owned();
-                        debug_assert!(false, "{message}");
-                        Some(Err(internal_err(message, &labeled_arg.arg)))
-                    }
-                } else {
-                    None
-                }
-            })
-            .unwrap_or_else(|| {
-                Err(KclError::new_invalid_expression(KclErrorDetails::new(
-                    "sketch block requires an `on` parameter".to_owned(),
-                    vec![SourceRange::from(self)],
-                )))
-            })?
-            // Convert to owned so that we can do an exclusive borrow later.
-            .to_owned();
         #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = on_object_id;
-            drop(arg_on_expr_name);
-        }
+        let _ = on_object_id;
+        #[cfg(feature = "artifact-graph")]
+        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
         let sketch_id = {
             use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
@@ -1226,7 +1287,7 @@ impl Node<SketchBlock> {
             let sketch_scene_object = Object {
                 id: sketch_id,
                 kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: arg_on_expr_name },
+                    args: crate::front::SketchCtor { on: sketch_ctor_on },
                     plane: on_object_id,
                     segments: Default::default(),
                     constraints: Default::default(),
