@@ -14,6 +14,7 @@ export type CameraSystem =
   | 'Zoo'
   | 'OnShape'
   | 'Trackpad Friendly'
+  | 'Apple Trackpad'
   | 'Solidworks'
   | 'NX'
   | 'Creo'
@@ -23,6 +24,7 @@ export const cameraSystems: CameraSystem[] = [
   'Zoo',
   'OnShape',
   'Trackpad Friendly',
+  'Apple Trackpad',
   'Solidworks',
   'NX',
   'Creo',
@@ -53,6 +55,10 @@ export function mouseControlsToCameraSystem(
     // @ts-ignore: TS2678
     case 'autocad':
       return 'AutoCAD'
+    // TODO: understand why the values come back without underscores and fix the root cause
+    // @ts-ignore: TS2678
+    case 'apple_trackpad':
+      return 'Apple Trackpad'
     default:
       return undefined
   }
@@ -68,6 +74,8 @@ export function cameraSystemToMouseControl(
       return 'onshape'
     case 'Trackpad Friendly':
       return 'trackpad_friendly'
+    case 'Apple Trackpad':
+      return 'apple_trackpad' as MouseControlType
     case 'Solidworks':
       return 'solidworks'
     case 'NX':
@@ -84,6 +92,7 @@ export function cameraSystemToMouseControl(
 interface MouseGuardHandler {
   description: string
   callback: (e: MouseEvent) => boolean
+  scrollCallback?: (e: WheelEvent) => boolean
   lenientDragStartButton?: number
 }
 
@@ -91,6 +100,7 @@ interface MouseGuardZoomHandler {
   description: string
   dragCallback: (e: MouseEvent) => boolean
   scrollCallback: (e: WheelEvent) => boolean
+  pinchToZoom?: boolean
   lenientDragStartButton?: number
 }
 
@@ -157,6 +167,35 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       description: `${ALT} + Left click drag`,
       callback: (e) => btnName(e).left && e.altKey && !e.shiftKey && !e.metaKey,
       lenientDragStartButton: 0,
+    },
+  },
+  'Apple Trackpad': {
+    pan: {
+      description: 'Scroll or one finger drag',
+      callback: (e) => btnName(e).left && noModifiersPressed(e),
+      scrollCallback: (e) => e.deltaMode === 0 && noModifiersPressed(e),
+      lenientDragStartButton: 0,
+    },
+    zoom: {
+      description: 'Shift + Scroll or pinch',
+      dragCallback: () => false,
+      scrollCallback: (e) =>
+        e.deltaMode === 0 &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey,
+      pinchToZoom: true,
+    },
+    rotate: {
+      description: `${ALT} + Scroll`,
+      callback: () => false,
+      scrollCallback: (e) =>
+        e.deltaMode === 0 &&
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.shiftKey &&
+        !e.metaKey,
     },
   },
   Solidworks: {

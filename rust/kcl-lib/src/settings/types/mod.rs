@@ -335,6 +335,8 @@ pub enum MouseControlType {
     #[serde(rename = "onshape")]
     OnShape,
     TrackpadFriendly,
+    #[serde(alias = "Apple Trackpad")]
+    AppleTrackpad,
     Solidworks,
     Nx,
     Creo,

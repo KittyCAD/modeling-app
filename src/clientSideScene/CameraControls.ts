@@ -139,27 +139,17 @@ export class CameraControls {
   private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
   private _lastWheelEvent: WheelEvent | null = null
 
-  // Converts a screen space coordinate to world space
-  private screenToWorld(
-    event: WheelEvent | PointerEvent,
+  private screenToWorldFromCanvasPosition(
+    canvasX: number,
+    canvasY: number,
     camera?: Camera
   ): Vector3 {
-    let x = event.offsetX
-    let y = event.offsetY
-    if (event.target !== this.domElement) {
-      // There are some divs over the canvas that change event.offsetX, so manually calculate it
-      // We could just do this by default but the getBoundingClientRect() can be expensive
-      const rect = this.domElement.getBoundingClientRect()
-      x = event.clientX - rect.left
-      y = event.clientY - rect.top
-    }
-
     // Ideally we would have access to renderer drawing buffer size
     const width = this.domElement.clientWidth
     const height = this.domElement.clientHeight
     const ndc = new Vector3(
-      (x / width) * 2 - 1,
-      -(y / height) * 2 + 1,
+      (canvasX / width) * 2 - 1,
+      -(canvasY / height) * 2 + 1,
       0 // NDC z: 0 (halfway between camera near and far)
     )
     return ndc.unproject(camera || this.camera)
@@ -191,6 +181,35 @@ export class CameraControls {
           this.engineCommandManager.streamDimensions.height
       ),
     }
+  }
+
+  private screenToWorldFromClient(
+    clientX: number,
+    clientY: number,
+    camera?: Camera
+  ): Vector3 {
+    const rect = this.domElement.getBoundingClientRect()
+    return this.screenToWorldFromCanvasPosition(
+      clientX - rect.left,
+      clientY - rect.top,
+      camera
+    )
+  }
+
+  // Converts a screen space coordinate to world space.
+  private screenToWorld(
+    event: WheelEvent | PointerEvent,
+    camera?: Camera
+  ): Vector3 {
+    if (event.target === this.domElement) {
+      return this.screenToWorldFromCanvasPosition(
+        event.offsetX,
+        event.offsetY,
+        camera
+      )
+    }
+    // There are some divs over the canvas that change event.offsetX, so manually calculate it.
+    return this.screenToWorldFromClient(event.clientX, event.clientY, camera)
   }
 
   get engineCameraProjection(): CameraProjectionType {
@@ -596,6 +615,81 @@ export class CameraControls {
     }
   }
 
+  private sendWheelDragToEngine(
+    interaction: CameraDragInteractionType,
+    deltaX: number,
+    deltaY: number
+  ) {
+    // Scale CSS pixel deltas to stream pixel space, matching how
+    // streamToEngineWindowCoordinates maps mouse positions for drag events.
+    const { width, height } = this.domElement.getBoundingClientRect()
+    const streamW = this.engineCommandManager.streamDimensions.width
+    const streamH = this.engineCommandManager.streamDimensions.height
+    const scaledX = width > 0 ? Math.round((-deltaX * streamW) / width) : 0
+    const scaledY = height > 0 ? Math.round((-deltaY * streamH) / height) : 0
+
+    void this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests: [
+        {
+          cmd: {
+            type: 'camera_drag_start',
+            interaction,
+            window: { x: 0, y: 0 },
+          },
+          cmd_id: uuidv4(),
+        },
+        {
+          cmd: {
+            type: 'camera_drag_move',
+            interaction,
+            window: { x: scaledX, y: scaledY },
+          },
+          cmd_id: uuidv4(),
+        },
+        {
+          cmd: {
+            type: 'camera_drag_end',
+            interaction,
+            window: { x: scaledX, y: scaledY },
+          },
+          cmd_id: uuidv4(),
+        },
+      ],
+      responses: false,
+    })
+  }
+
+  private queueWheelPanForClient(event: WheelEvent) {
+    if (this.camera instanceof PerspectiveCamera) {
+      this.pendingPan = this.pendingPan ?? new Vector3()
+      const distance = this.camera.position.distanceTo(this.target)
+      const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+      this.pendingPan.x += event.deltaX * panSpeed
+      this.pendingPan.y += -event.deltaY * panSpeed
+      return
+    }
+
+    if (!this.pendingPan) {
+      this.pendingPan = new Vector3()
+      this.cameraDown = this.camera.clone()
+    }
+
+    const worldAtStart = this.screenToWorldFromClient(
+      event.clientX,
+      event.clientY,
+      this.cameraDown
+    )
+    const worldAtEnd = this.screenToWorldFromClient(
+      event.clientX - event.deltaX,
+      event.clientY - event.deltaY,
+      this.cameraDown
+    )
+
+    this.pendingPan.add(worldAtEnd.sub(worldAtStart))
+  }
+
   onMouseWheel = (event: WheelEvent) => {
     const interaction = this.getInteractionType(event)
     if (interaction === 'none') return
@@ -610,10 +704,13 @@ export class CameraControls {
           this.doZoom(deltaY)
         })
       } else {
-        // This case will get handled when we add pan and rotate using Apple trackpad.
-        console.error(
-          `Unexpected interaction type for engineToClient wheel event: ${interaction}`
-        )
+        this.moveSender.send(() => {
+          this.isDragging = true
+          this.handleStart()
+          this.sendWheelDragToEngine(interaction, event.deltaX, event.deltaY)
+          this.isDragging = false
+          this.handleEnd()
+        })
       }
       return
     }
@@ -632,8 +729,13 @@ export class CameraControls {
       // Record the world point under the mouse so we can keep it anchored during zoom
       this._zoomFocus = this.screenToWorld(event)
       this._lastWheelEvent = event
+    } else if (interaction === 'pan') {
+      this.queueWheelPanForClient(event)
+    } else if (interaction === 'rotate' || interaction === 'rotatetrackball') {
+      this.pendingRotation = this.pendingRotation ?? new Vector2()
+      this.pendingRotation.x += -event.deltaX
+      this.pendingRotation.y += -event.deltaY
     } else {
-      // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
         `Unexpected interaction type for wheel event: ${interaction}`
       )
@@ -1625,7 +1727,7 @@ function convertThreeCamValuesToEngineCam(
   }
 }
 
-function _getInteractionType(
+export function _getInteractionType(
   interactionGuards: MouseGuard,
   event: MouseEvent | WheelEvent,
   enablePan: boolean,
@@ -1633,6 +1735,13 @@ function _getInteractionType(
   enableZoom: boolean
 ): interactionType | 'none' {
   if (event instanceof WheelEvent) {
+    if (interactionGuards.zoom.pinchToZoom && isPinchToZoom(event)) {
+      if (enableZoom) return 'zoom'
+      return 'none'
+    }
+    if (enablePan && interactionGuards.pan.scrollCallback?.(event)) return 'pan'
+    if (enableRotate && interactionGuards.rotate.scrollCallback?.(event))
+      return 'rotate'
     if (enableZoom && interactionGuards.zoom.scrollCallback(event))
       return 'zoom'
   } else {
@@ -1642,6 +1751,11 @@ function _getInteractionType(
     if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
   }
   return 'none'
+}
+
+export function isPinchToZoom(event: WheelEvent): boolean {
+  // Browser-generated pinch gestures are currently represented as Ctrl+wheel.
+  return event.ctrlKey
 }
 
 /**
