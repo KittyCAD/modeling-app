@@ -161,6 +161,7 @@ export async function maybeWriteToDisk(electron: IElectronAPI) {
   if (args.telemetry) {
     setInterval(() => {
       const marks = getMarks()
+      performance.clearMarks()
       const deltaTotalTable = printDeltaTotal(marks)
       writeTelemetryFile(electron, deltaTotalTable.join('\n'))
         .then(() => {})
